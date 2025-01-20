@@ -1,0 +1,5 @@
+
+
+#virt manager
+virsh net-start default
+virsh net-autostart default
