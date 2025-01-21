@@ -13,6 +13,7 @@
     allowedTCPPortRanges = [
       { from = 1714; to = 1764; }
     ];
+    allowedTCPPorts = [5555];
   };
 
 

@@ -14,6 +14,7 @@
 
     htop
     nvtopPackages.full
+    duf
 
 
     zoxide                    # Fuzzy file search
@@ -22,11 +23,17 @@
     rsync
     stow
     python3
+
+    scrcpy
   ];
 
   # Enable BIND DNS server service
   services.bind.enable = true;
 
   programs.git.enable = true;
+
+  programs.adb.enable = true;
+  users.users.nova.extraGroups = ["adbusers" "kvm"];
+
 
 }
