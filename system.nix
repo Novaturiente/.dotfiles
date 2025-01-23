@@ -28,6 +28,7 @@
     kmenuedit
     okular
     plasma-systemmonitor
+    spectacle
   ];
 
   environment.systemPackages = with pkgs; [

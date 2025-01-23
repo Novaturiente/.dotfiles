@@ -25,6 +25,10 @@
     python3
 
     scrcpy
+    distrobox
+    gparted
+
+    affine
   ];
 
   # Enable BIND DNS server service
@@ -33,6 +37,11 @@
   programs.git.enable = true;
 
   programs.adb.enable = true;
+
+  virtualisation.podman = {
+    enable = true;
+  };
+
   users.users.nova.extraGroups = ["adbusers" "kvm"];
 
 

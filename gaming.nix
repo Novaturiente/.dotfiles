@@ -5,18 +5,17 @@
   hardware.graphics.enable32Bit = true;
 
   environment.systemPackages = with pkgs; [
-    steam-run
-    dwarfs 
     vulkan-tools
 
     wineWowPackages.staging 
     winetricks
     wineWowPackages.waylandFull
 
-    fuse-overlayfs
-    dwarfs
     gzip
     curl
+
+    dwarfs
+    fuse-overlayfs
   ];
 
   
