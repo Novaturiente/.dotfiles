@@ -1,13 +1,11 @@
 # NIX OS CONFIGURATION
 
 
-#virt manager
-#!/bin/bash
+# virt manager
 virsh net-start default
 virsh net-autostart default
 
 
-#ADB
-#!/bin/bash
+# adb
 adb tcpip 5555
 adb connect ip
