@@ -11,6 +11,7 @@
   services.flatpak.packages = [
     "net.lutris.Lutris"
     "app.zen_browser.zen"
+    "com.logseq.Logseq"
   ];
 
   services.flatpak.overrides = {

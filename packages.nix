@@ -28,7 +28,6 @@
     distrobox
     gparted
 
-    affine
   ];
 
   # Enable BIND DNS server service

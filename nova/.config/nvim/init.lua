@@ -179,3 +179,25 @@ require("toggleterm").setup {
 }
 
 vim.api.nvim_set_keymap("n", "<C-d>", ":ToggleTerm direction=float<CR>", { noremap = true, silent = true })
+
+-- Define a function to toggle focus between NvimTree and the previous window
+function ToggleNvimTreeFocus()
+  local view = require('nvim-tree.view')
+  if view.is_visible() then
+    if vim.fn.winnr() == view.get_winnr() then
+      vim.cmd('wincmd p') -- Focus on the previous window
+    else
+      view.focus() -- Focus on NvimTree
+    end
+  end
+end
+
+-- Create a keybinding to toggle NvimTree focus
+vim.api.nvim_set_keymap('n', '<M-Left>', ':lua ToggleNvimTreeFocus()<CR>', { noremap = true, silent = true })
+
+
+-- Automatically open nvim-tree when opening Neovim without arguments
+vim.cmd([[
+  autocmd VimEnter * if argc() == 0 | NvimTreeOpen | endif
+]])
+
