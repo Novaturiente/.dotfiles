@@ -14,8 +14,8 @@
       { from = 1714; to = 1764; }
     ];
     allowedTCPPorts = [5555];
+    allowedUDPPorts = [ ];
   };
-
 
   environment.plasma6.excludePackages = with pkgs.kdePackages; [
     plasma-browser-integration
@@ -41,7 +41,6 @@
     kdePackages.xdg-desktop-portal-kde
     kdePackages.kcoreaddons
     kdePackages.kirigami
-
     catppuccin-cursors.mochaMauve
     waybar                   
     pamixer                  
@@ -55,7 +54,6 @@
     slurp
     swappy                 
     rofi                    
-    scrcpy                  
     wlinhibit               
     hyprlock                
     xbindkeys               

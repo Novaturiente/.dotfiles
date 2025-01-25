@@ -3,35 +3,30 @@
 {
   
   environment.systemPackages = with pkgs; [
-
     home-manager
-
-    # Browser
-    mullvad-browser           # Privacy-focused browser with VPN
-    neovim                    # Modern text editor
-    ghostty                   # (Terminal tool, needs context)
-    wget                      # Command-line file downloader
-
+    mullvad-browser
+    neovim
+    ghostty
+    wget
     htop
     nvtopPackages.full
     duf
-
-
-    zoxide                    # Fuzzy file search
-    eza                        # Enhanced `ls`
-    pyright                   # Python type checker
+    zoxide
+    eza
+    pyright
     rsync
     stow
     python3
-
     scrcpy
     distrobox
     gparted
-
+    openssl
+    bluez
+    OVMFFull
+    lsof
   ];
 
   # Enable BIND DNS server service
-  services.bind.enable = true;
 
   programs.git.enable = true;
 

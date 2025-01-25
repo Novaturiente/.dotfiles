@@ -4,6 +4,8 @@ source ~/.config/fish/cachyos-config.fish
 
 zoxide init fish | source
 
+alias vi="nvim"
+
 # overwrite greeting
 # potentially disabling fastfetch
 #function fish_greeting

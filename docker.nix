@@ -2,7 +2,11 @@
 
 {
   
-  virtualisation.docker.enable = true;
+  virtualisation.docker = {
+    enable = true;
+  };
+  
+  hardware.nvidia-container-toolkit.enable = true;
 
   virtualisation.docker.storageDriver = "btrfs";
 
@@ -17,7 +21,12 @@
     iproute2
     libnotify
     netcat-gnu
+
+    nvidia-container-toolkit
   ];
 
+  boot.kernel.sysctl = {
+    ip_unprivileged_port_start = 80;
+  };
 }
 
