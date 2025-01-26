@@ -6,6 +6,9 @@ zoxide init fish | source
 
 alias vi="nvim"
 
+set VISUAL "nvim"
+set EDITOR "nvim"
+
 # overwrite greeting
 # potentially disabling fastfetch
 #function fish_greeting

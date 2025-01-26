@@ -9,8 +9,10 @@ in
 
   home.username = "nova";
   home.homeDirectory = "/home/nova";
+
+  home.enableNixpkgsReleaseCheck = false;
   
-  home.stateVersion = "24.11"; 
+  home.stateVersion = "25.05"; 
   home.packages = [
     pkgs.waybar
   ];
@@ -21,6 +23,7 @@ in
 
   home.sessionVariables = {
     EDITOR = "nvim";
+    VISUAL = "nvim";
   };
 
   programs.home-manager.enable = true;

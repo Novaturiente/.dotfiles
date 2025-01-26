@@ -21,8 +21,6 @@
     iproute2
     libnotify
     netcat-gnu
-
-    nvidia-container-toolkit
   ];
 
   boot.kernel.sysctl = {

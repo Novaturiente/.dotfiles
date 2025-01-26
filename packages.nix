@@ -24,9 +24,9 @@
     bluez
     OVMFFull
     lsof
+    baobab
+    ranger
   ];
-
-  # Enable BIND DNS server service
 
   programs.git.enable = true;
 
@@ -38,5 +38,9 @@
 
   users.users.nova.extraGroups = ["adbusers" "kvm"];
 
+  services.tailscale = {
+    enable = true;
+    useRoutingFeatures = "both";
+  };
 
 }

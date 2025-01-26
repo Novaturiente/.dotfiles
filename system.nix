@@ -74,7 +74,10 @@
   };
  
   fonts.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono"]; })
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.space-mono
+    nerd-fonts.fira-code
+  #  (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono"]; })
   ];
   
   security.polkit.enable = true;
@@ -96,7 +99,7 @@
   catppuccin.enable = true;
 
   environment.variables = {
-    XDG_MENU_PREFIX = "plasma-"; 
+    XDG_MENU_PREFIX = "plasma-";
   };
 
 }

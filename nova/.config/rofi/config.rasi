@@ -179,3 +179,5 @@ configuration {
 	me-accept-custom: "Control+MouseDPrimary";
 */
 }
+
+@theme "/run/current-system/sw/share/rofi/themes/Arc-Dark.rasi"
