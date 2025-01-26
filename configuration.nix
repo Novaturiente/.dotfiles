@@ -29,7 +29,7 @@
 
 
   # Set your time zone.
-  time.timeZone = "America/New_York";
+  time.timeZone = "Asia/Kolkata";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -55,9 +55,6 @@
     variant = "";
   };
 
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -72,7 +69,7 @@
   users.users.nova = {
     isNormalUser = true;
     description = "Nova";
-    extraGroups = [ "networkmanager" "wheel" "docker"];
+    extraGroups = [ "networkmanager" "wheel" "docker" "libvirtd"];
     shell = pkgs.fish;
     packages = with pkgs; [
     ];
