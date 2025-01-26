@@ -15,6 +15,7 @@
     setSocketVariable = true;
   };
 
+
   environment.systemPackages = with pkgs; [
     dialog
     freerdp3

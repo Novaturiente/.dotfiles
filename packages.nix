@@ -26,6 +26,12 @@
     lsof
     baobab
     ranger
+    fastfetch
+
+    usbimager
+    bluetui
+    bluez-tools
+    wireplumber
   ];
 
   programs.git.enable = true;
