@@ -7,7 +7,11 @@
   environment.systemPackages = with pkgs; [
     vulkan-tools
 
-    wineWowPackages.stable 
+    lutris
+
+    wineWowPackages.stable
+    wine
+    wine64
     winetricks
     wineWowPackages.waylandFull
 

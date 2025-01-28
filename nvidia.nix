@@ -2,21 +2,28 @@
 
 {
   # Enable OpenGL
+  services.xserver.videoDrivers = ["nvidia" ];
+  
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
+    extraPackages = with pkgs; [
+      vpl-gpu-rt
+      vulkan-loader
+      vulkan-tools
+      vulkan-validation-layers
+    ];
   };
 
   # Load Nvidia driver for Xorg and Wayland
-  services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
-    powerManagement.finegrained = true;
+    powerManagement.finegrained = false;
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.latest;
   };
 
   hardware.nvidia.prime = {
@@ -30,10 +37,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    vpl-gpu-rt
-    vulkan-loader
-    vulkan-tools
-    vulkan-validation-layers
     linuxPackages.nvidia_x11
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
@@ -44,6 +47,5 @@
   environment.variables = {
     XDG_DATA_DIRS = lib.mkForce "/run/opengl-driver/share:$XDG_DATA_DIRS";
   };
-
 }
 

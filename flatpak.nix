@@ -9,7 +9,6 @@
   }];
 
   services.flatpak.packages = [
-    "net.lutris.Lutris"
     "app.zen_browser.zen"
     "org.qbittorrent.qBittorrent"
   ];
