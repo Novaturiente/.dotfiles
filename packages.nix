@@ -28,10 +28,11 @@
     ranger
     fastfetch
 
-    usbimager
     bluetui
     bluez-tools
     wireplumber
+
+    unetbootin
   ];
 
   programs.git.enable = true;
