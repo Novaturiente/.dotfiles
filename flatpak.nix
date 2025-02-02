@@ -11,6 +11,7 @@
   services.flatpak.packages = [
     "app.zen_browser.zen"
     "org.qbittorrent.qBittorrent"
+    "com.github.tchx84.Flatseal"
   ];
 
   services.flatpak.overrides = {

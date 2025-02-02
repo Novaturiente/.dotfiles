@@ -23,29 +23,34 @@
     powerManagement.finegrained = false;
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
 
   hardware.nvidia.prime = {
-#    sync.enable = true;
-    offload = {
-      enable = true;
-      enableOffloadCmd = true;
-    };
-    intelBusId = "PCI:0:2:0";
+    sync.enable = true;
+#    offload = {
+#      enable = true;
+#      enableOffloadCmd = true;
+#    };
     nvidiaBusId = "PCI:1:0:0";
+    intelBusId = "PCI:0:2:0";
   };
 
   environment.systemPackages = with pkgs; [
     linuxPackages.nvidia_x11
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
+    virtualgl
   ];
 
   hardware.nvidia-container-toolkit.enable = true;
 
-  environment.variables = {
-    XDG_DATA_DIRS = lib.mkForce "/run/opengl-driver/share:$XDG_DATA_DIRS";
-  };
+  virtualisation.docker.daemon.settings.features.cdi = true;
+  virtualisation.docker.rootless.daemon.settings.features.cdi = true;
+
+#  environment.variables = {
+#    XDG_DATA_DIRS = lib.mkForce "/run/opengl-driver/share:$XDG_DATA_DIRS";
+#    VK_ICD_FILENAMES="/run/opengl-driver/share/vulkan/icd.d/intel_icd.x86_64.json";
+#  };
 }
 

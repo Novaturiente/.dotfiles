@@ -9,9 +9,6 @@
       ./packages.nix
       ./nvidia.nix
       ./flatpak.nix
-      ./docker.nix
-      ./fish.nix
-      ./gaming.nix
       ./virtualization.nix
     ];
 
@@ -19,14 +16,13 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 3;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-#  boot.kernelParams = ["nvidia_drm.modeset=1"];
+  boot.kernelPackages = pkgs.linuxPackages_6_12;
+  boot.kernelParams = ["nvidia_drm.modeset=1"];
 
   networking.hostName = "novarch"; # Define your hostname.
 
   # Enable networking
   networking.networkmanager.enable = true;
-
 
   # Set your time zone.
   time.timeZone = "Asia/Kolkata";
@@ -56,7 +52,6 @@
   };
 
   # Enable sound with pipewire.
-  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -69,7 +64,7 @@
   users.users.nova = {
     isNormalUser = true;
     description = "Nova";
-    extraGroups = [ "networkmanager" "wheel" "docker" "libvirtd"];
+    extraGroups = [ "networkmanager" "wheel" "docker" "libvirtd" "adbusers" "kvm"];
     shell = pkgs.fish;
     packages = with pkgs; [
     ];
@@ -83,6 +78,9 @@
 
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    ghostty
+    git
+    neovim
   ];
 
   # Enable Flakes

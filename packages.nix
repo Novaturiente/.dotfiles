@@ -3,51 +3,61 @@
 {
   
   environment.systemPackages = with pkgs; [
-    home-manager
     mullvad-browser
-    neovim
-    ghostty
     wget
-    htop
-    nvtopPackages.full
     duf
-    zoxide
-    eza
     pyright
     rsync
     stow
     python3
     scrcpy
-    distrobox
     gparted
     openssl
-    bluez
     OVMFFull
     lsof
     baobab
-    ranger
+    yazi
     fastfetch
+    gzip
+    curl
 
-    bluetui
-    bluez-tools
-    wireplumber
+    # Fish shell
+    fishPlugins.done
+    fishPlugins.fzf-fish
+    fishPlugins.forgit
+    fishPlugins.hydro
+    fzf
+    fishPlugins.grc
+    grc
+    zoxide
+    eza
 
-    unetbootin
+    # Gaming packages
+    vulkan-tools
+    lutris
+    gamescope
+    wineWowPackages.stable
+    winetricks
+    wineWowPackages.waylandFull
+    dwarfs
+    fuse-overlayfs
   ];
 
-  programs.git.enable = true;
-
   programs.adb.enable = true;
-
-  virtualisation.podman = {
-    enable = true;
-  };
-
-  users.users.nova.extraGroups = ["adbusers" "kvm"];
 
   services.tailscale = {
     enable = true;
     useRoutingFeatures = "both";
   };
 
+# Fish Terminal
+  programs.fish.enable = true;
+  
+# Gaming setup
+  security.wrappers.fuse = {
+    source = "${pkgs.fuse}/bin/fusermount";
+    group = "users";
+    owner = "nova";
+    capabilities = "cap_sys_admin=eip";
+  };
 }

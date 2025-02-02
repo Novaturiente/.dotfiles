@@ -41,6 +41,7 @@
     kdePackages.xdg-desktop-portal-kde
     kdePackages.kcoreaddons
     kdePackages.kirigami
+    polkit-kde-agent
     catppuccin-cursors.mochaMauve
     waybar                   
     pamixer                  
@@ -58,14 +59,16 @@
     hyprlock                
     xbindkeys               
     killall
-    swww                    
     waypaper                
-    polkit                   
-    hyprpolkitagent
     networkmanagerapplet
     gdk-pixbuf
-    xdg-desktop-portal
-    xdg-desktop-portal-hyprland
+
+    htop
+    nvtopPackages.full
+    bluetui
+    bluez-tools
+    wireplumber
+    bluez
   ];
 
   programs.hyprland = {
@@ -74,26 +77,23 @@
   };
  
   fonts.packages = with pkgs; [
-    nerd-fonts.jetbrains-mono
-    nerd-fonts.space-mono
-    nerd-fonts.fira-code
-  #  (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono"]; })
+ #   nerd-fonts.jetbrains-mono
+ #   nerd-fonts.space-mono
+ #   nerd-fonts.fira-code
+    (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono"]; })
   ];
   
-  security.polkit.enable = true;
-
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
+  security = {
+    polkit.enable = true;
+    pam.services.kwallet = {
+      name = "kwallet";
+      enableKwallet = true;
+    };
   };
 
   xdg.menus.enable = true;
   xdg.mime.enable = true;
   xdg.portal.enable = true;
-
 
   catppuccin.flavor = "mocha";
   catppuccin.enable = true;
