@@ -22,6 +22,9 @@
 
     #Development
     devenv
+    cmake
+    meson
+    cpio
 
     # Fish shell
     fishPlugins.done
