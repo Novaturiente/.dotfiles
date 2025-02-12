@@ -1,0 +1,14 @@
+services:
+  testing:
+    image: ubuntu:latest
+    command: nvidia-smi
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+

@@ -13,13 +13,15 @@
     scrcpy
     gparted
     openssl
-    OVMFFull
     lsof
     baobab
     yazi
     fastfetch
     gzip
     curl
+
+    #Development
+    devenv
 
     # Fish shell
     fishPlugins.done

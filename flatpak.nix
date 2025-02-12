@@ -12,6 +12,7 @@
     "app.zen_browser.zen"
     "org.qbittorrent.qBittorrent"
     "com.github.tchx84.Flatseal"
+    #"org.onlyoffice.desktopeditors"
   ];
 
   services.flatpak.overrides = {

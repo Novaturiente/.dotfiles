@@ -1,12 +1,16 @@
 services:
   ollama:
     volumes:
-      - ollama:/home/nova/Docker/ollama/.ollama
+      - /home/nova/Docker/docker_data/ollama:/root/.ollama
     container_name: ollama
     pull_policy: always
     tty: true
-    #    restart: unless-stopped
     image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+    environment:
+      DISPLAY: $DISPLAY
+      PATH: $PATH
+      NVIDIA_DRIVER_CAPABILITIES: all
+      NVIDIA_VISIBLE_DEVICES: all
     deploy:
       resources:
         reservations:
@@ -15,7 +19,6 @@ services:
               device_ids:
                 - nvidia.com/gpu=all
               capabilities: [gpu]
-
 
   open-webui:
     build:
@@ -26,7 +29,7 @@ services:
     image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
     container_name: open-webui
     volumes:
-      - open-webui:/app/backend/data
+      - /home/nova/Docker/docker_data/open-webui:/app/backend/data
     depends_on:
       - ollama
     ports:
@@ -36,8 +39,8 @@ services:
       - 'WEBUI_SECRET_KEY='
     extra_hosts:
       - host.docker.internal:host-gateway
-      #    restart: unless-stopped
 
 volumes:
   ollama: {}
   open-webui: {}
+

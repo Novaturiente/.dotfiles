@@ -20,4 +20,13 @@ services:
     volumes:
       - /home/nova/Docker/nextcloud/config:/config
       - /home/nova/Docker/nextcloud/data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: cdi
+              device_ids:
+                - nvidia.com/gpu=all
+              capabilities: [gpu]
+
     restart: unless-stopped

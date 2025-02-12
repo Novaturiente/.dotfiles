@@ -1,7 +1,13 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  services.xserver.enable = true; # optional
+  imports =
+    [ 
+      ./packages.nix
+      ./nvidia.nix
+      ./flatpak.nix
+      ./virtualization.nix
+    ];
   services.displayManager.ly.enable = true;
   services.desktopManager.plasma6.enable = true;
 
@@ -23,8 +29,6 @@
     kate
     elisa
     discover
-    kwallet
-    kwalletmanager
     kmenuedit
     okular
     plasma-systemmonitor
@@ -32,16 +36,6 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    kdePackages.knewstuff
-    kdePackages.kcmutils
-    kdePackages.kcmutils
-    kdePackages.kio
-    kdePackages.kservice
-    kdePackages.kdeconnect-kde
-    kdePackages.xdg-desktop-portal-kde
-    kdePackages.kcoreaddons
-    kdePackages.kirigami
-    polkit-kde-agent
     catppuccin-cursors.mochaMauve
     waybar                   
     pamixer                  
@@ -59,9 +53,11 @@
     hyprlock                
     xbindkeys               
     killall
-    waypaper                
+    waypaper
+    swww
     networkmanagerapplet
     gdk-pixbuf
+    networkmanagerapplet
 
     htop
     nvtopPackages.full
@@ -69,27 +65,21 @@
     bluez-tools
     wireplumber
     bluez
+    pciutils
+    usbutils
   ];
 
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
   };
- 
+
   fonts.packages = with pkgs; [
- #   nerd-fonts.jetbrains-mono
- #   nerd-fonts.space-mono
- #   nerd-fonts.fira-code
+  #  nerd-fonts.jetbrains-mono
+  #  nerd-fonts.space-mono
+  #  nerd-fonts.fira-code
     (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono"]; })
   ];
-  
-  security = {
-    polkit.enable = true;
-    pam.services.kwallet = {
-      name = "kwallet";
-      enableKwallet = true;
-    };
-  };
 
   xdg.menus.enable = true;
   xdg.mime.enable = true;
@@ -97,10 +87,11 @@
 
   catppuccin.flavor = "mocha";
   catppuccin.enable = true;
-
+  
   environment.variables = {
     XDG_MENU_PREFIX = "plasma-";
   };
 
+  services.xserver.excludePackages = [ pkgs.xterm ];
 }
 

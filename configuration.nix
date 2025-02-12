@@ -5,11 +5,6 @@
   imports =
     [ 
       ./hardware-configuration.nix
-      ./system.nix
-      ./packages.nix
-      ./nvidia.nix
-      ./flatpak.nix
-      ./virtualization.nix
     ];
 
   # Bootloader.
@@ -23,6 +18,8 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+
+  networking.wireless.enable = false;
 
   # Set your time zone.
   time.timeZone = "Asia/Kolkata";
@@ -43,7 +40,7 @@
   };
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  #services.xserver.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs,pkgs-unstable, ... }:
 
 {
   programs.virt-manager.enable = true;
@@ -15,15 +15,20 @@
 # Docker
   virtualisation.docker = {
     enable = true;
+    storageDriver = "btrfs";
+    package = pkgs-unstable.docker;
   };
   
-  hardware.nvidia-container-toolkit.enable = true;
-
-  virtualisation.docker.storageDriver = "btrfs";
-
   virtualisation.docker.rootless = {
     enable = true;
-    setSocketVariable = true;
+    #setSocketVariable = true;
+    daemon.settings = {
+      runtimes = {
+        nvidia = {
+          path = "${pkgs.nvidia-docker}/bin/nvidia-container-runtime";
+        };
+      };
+    };
   };
   
   virtualisation.podman = {
@@ -37,6 +42,7 @@
     libnotify
     netcat-gnu
     libvirt-glib
+    nvidia-docker
   ];
 }
 
