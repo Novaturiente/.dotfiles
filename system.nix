@@ -1,4 +1,4 @@
-{ inputs, config, lib, pkgs, modulesPath, ... }:
+{ inputs, config, lib, pkgs, modulesPath, pkgs-unstable, ... }:
 
 {
   imports =
@@ -8,6 +8,9 @@
       ./flatpak.nix
       ./virtualization.nix
     ];
+
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
 
   services.displayManager.ly.enable = true;
   services.desktopManager.plasma6.enable = true;
@@ -51,7 +54,6 @@
     mako
     slurp
     swappy                 
-    rofi                    
     wlinhibit               
     hyprlock                
     xbindkeys               
@@ -60,16 +62,17 @@
     swww
     networkmanagerapplet
     gdk-pixbuf
-    networkmanagerapplet
 
     htop
     nvtopPackages.full
-    bluetui
     bluez-tools
     wireplumber
     bluez
+    blueman
     pciutils
     usbutils
+    pkgs-unstable.rofi-wayland
+    swayosd
   ];
 
   programs.hyprland = {

@@ -1,7 +1,7 @@
 services:
   nginxmanager:
     image: 'jc21/nginx-proxy-manager:latest'
-    restart: unless-stopped
+    #restart: unless-stopped
     ports:
       - '80:80'
       - '81:81'
@@ -29,4 +29,4 @@ services:
                 - nvidia.com/gpu=all
               capabilities: [gpu]
 
-    restart: unless-stopped
+              #restart: unless-stopped

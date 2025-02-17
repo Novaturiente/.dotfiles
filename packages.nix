@@ -19,12 +19,10 @@
     fastfetch
     gzip
     curl
-
-    #Development
-    devenv
-    cmake
-    meson
-    cpio
+    bat
+    unzip
+    unrar
+    p7zip
 
     # Fish shell
     fishPlugins.done
@@ -38,14 +36,11 @@
     eza
 
     # Gaming packages
-    vulkan-tools
     lutris
     gamescope
     wineWowPackages.stable
     winetricks
     wineWowPackages.waylandFull
-    dwarfs
-    fuse-overlayfs
   ];
 
   programs.adb.enable = true;

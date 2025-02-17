@@ -1,8 +1,8 @@
 window-decoration = false
-background-opacity = 0.7
+background-opacity = 0.5
 confirm-close-surface = false
 
-theme = catppuccin-mocha
+theme = cyberpunk
 
 shell-integration = fish
 
@@ -15,4 +15,5 @@ keybind = alt+tab=toggle_tab_overview
 mouse-hide-while-typing = true
 gtk-adwaita = false
 
+font-family = JetBrains Mono
 

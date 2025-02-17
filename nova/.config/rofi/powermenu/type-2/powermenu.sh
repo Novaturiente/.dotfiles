@@ -15,17 +15,17 @@ dir="$HOME/.config/rofi/powermenu/type-2"
 theme='style-1'
 
 # CMDs
-uptime="`uptime -p | sed -e 's/up //g'`"
+uptime="`uptime | sed -e 's/up //g'`"
 host=`hostname`
 
 # Options
-shutdown=''
-reboot=''
-lock=''
-suspend=''
-logout=''
-yes=''
-no=''
+shutdown='󰐥'
+reboot=''
+lock='󰌾'
+suspend='󰒲'
+logout=''
+yes=''
+no=''
 
 # Rofi CMD
 rofi_cmd() {

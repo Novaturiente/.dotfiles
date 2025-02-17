@@ -1,10 +1,9 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
-  home.username = "nova";  # Replace with your actual username
-  home.homeDirectory = "/home/nova";  # Replace with your actual home directory
-
+  home.username = "nova"; 
+  home.homeDirectory = "/home/nova";  
   programs.home-manager.enable = true;
+  home.stateVersion = "24.11";
 
-  home.stateVersion = "24.11";  # Update this to match the version of home-manager
 }
