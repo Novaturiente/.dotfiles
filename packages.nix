@@ -41,6 +41,8 @@
     wineWowPackages.stable
     winetricks
     wineWowPackages.waylandFull
+
+    #Development
   ];
 
   programs.adb.enable = true;
