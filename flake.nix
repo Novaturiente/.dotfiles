@@ -10,12 +10,6 @@
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    hyprland.url = "github:hyprwm/Hyprland";
-    hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins";
-      inputs.hyprland.follows = "hyprland";
-    };
   };
 
   outputs = { self, nixpkgs, home-manager, catppuccin, nix-flatpak, nixpkgs-unstable, ... } @ inputs:
@@ -44,6 +38,7 @@
     homeConfigurations = {
       nova = home-manager.lib.homeManagerConfiguration {
         pkgs = import nixpkgs { inherit system; };
+	extraSpecialArgs = { inherit inputs; };
         modules = [
           ./home.nix
         ];
