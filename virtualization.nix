@@ -43,6 +43,7 @@
     netcat-gnu
     libvirt-glib
     nvidia-docker
+    distrobox
   ];
 }
 

@@ -43,6 +43,10 @@
     wineWowPackages.waylandFull
 
     #Development
+    cpio
+    cmake
+    gcc
+    gnumake
   ];
 
   programs.adb.enable = true;
