@@ -15,5 +15,6 @@ keybind = alt+tab=toggle_tab_overview
 mouse-hide-while-typing = true
 gtk-adwaita = false
 
-font-family = JetBrains Mono
+font-family = SpaceMono Nerd Font Mono
+font-size = 13
 

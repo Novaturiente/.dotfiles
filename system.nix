@@ -42,6 +42,7 @@
   environment.systemPackages = with pkgs; [
     home-manager
     kdePackages.kdeconnect-kde
+    kdePackages.dolphin
     catppuccin-cursors.mochaMauve
     waybar                   
     pamixer                  
@@ -73,6 +74,7 @@
     usbutils
     pkgs-unstable.rofi-wayland
     swayosd
+    hyprpolkitagent
   ];
 
   programs.hyprland = {
@@ -81,11 +83,14 @@
     portalPackage = pkgs.xdg-desktop-portal-hyprland;
   };
 
+  security.polkit.enable = true;
+
+
   fonts.packages = with pkgs; [
   #  nerd-fonts.jetbrains-mono
   #  nerd-fonts.space-mono
   #  nerd-fonts.fira-code
-    (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono"]; })
+    (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono" "AnonymousPro"]; })
   ];
 
   xdg.menus.enable = true;

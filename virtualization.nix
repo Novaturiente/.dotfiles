@@ -17,20 +17,14 @@
     enable = true;
     storageDriver = "btrfs";
     package = pkgs-unstable.docker;
-  };
-  
-  virtualisation.docker.rootless = {
-    enable = true;
-    #setSocketVariable = true;
-    daemon.settings = {
-      runtimes = {
-        nvidia = {
-          path = "${pkgs.nvidia-docker}/bin/nvidia-container-runtime";
-        };
+    rootless = {
+      enable = true;
+      daemon.settings = {
+        features.cdi = true;
+        runtimes.nvidia.path = "${pkgs.nvidia-docker}/bin/nvidia-container-runtime";
       };
     };
-  };
-  
+  };  
   virtualisation.podman = {
     enable = true;
   };
@@ -42,7 +36,6 @@
     libnotify
     netcat-gnu
     libvirt-glib
-    nvidia-docker
     distrobox
   ];
 }
