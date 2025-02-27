@@ -7,6 +7,7 @@
       ./nvidia.nix
       ./flatpak.nix
       ./virtualization.nix
+      ./extra.nix
     ];
 
   hardware.bluetooth.enable = true;
@@ -75,6 +76,7 @@
     pkgs-unstable.rofi-wayland
     swayosd
     hyprpolkitagent
+    sshfs
   ];
 
   programs.hyprland = {
@@ -104,6 +106,10 @@
     XDG_MENU_PREFIX = "plasma-";
   };
 
-  services.xserver.excludePackages = [ pkgs.xterm ];
+  #services.xserver.excludePackages = [ pkgs.xterm ];
+
+  environment.etc."fuse.conf".text = ''
+    user_allow_other
+  '';
 }
 

@@ -31,7 +31,7 @@
           ./system.nix
           catppuccin.nixosModules.catppuccin
           nix-flatpak.nixosModules.nix-flatpak
-        ];
+  	];
       };
     };
 
@@ -41,7 +41,7 @@
 	extraSpecialArgs = { inherit inputs; };
         modules = [
           ./home.nix
-        ];
+  	];
       };
     };
   };

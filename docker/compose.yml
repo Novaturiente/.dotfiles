@@ -6,6 +6,8 @@ services:
     pull_policy: always
     tty: true
     image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+    ports:
+      - 11434:11434
     environment:
       DISPLAY: $DISPLAY
       PATH: $PATH

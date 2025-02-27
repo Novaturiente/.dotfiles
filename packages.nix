@@ -23,6 +23,7 @@
     unzip
     unrar
     p7zip
+    vlc
 
     # Fish shell
     fishPlugins.done
@@ -35,18 +36,13 @@
     zoxide
     eza
 
-    # Gaming packages
-    lutris
-    gamescope
-    wineWowPackages.stable
-    winetricks
-    wineWowPackages.waylandFull
-
     #Development
     cpio
     cmake
     gcc
     gnumake
+    nmap
+    file
   ];
 
   programs.adb.enable = true;
