@@ -52,12 +52,6 @@
     useRoutingFeatures = "both";
   };
 
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
-  };
-
 # Fish Terminal
   programs.fish.enable = true;
   
