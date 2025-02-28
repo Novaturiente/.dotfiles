@@ -16,8 +16,14 @@
   let
     lib = nixpkgs.lib;
     system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-    unstable = nixpkgs-unstable.legacyPackages.${system};
+    pkgs = import nixpkgs {
+      inherit system;
+      config.allowUnfree = true;
+    };
+    unstable = import nixpkgs-unstable {
+      inherit system;
+      config.allowUnfree = true;
+    };
   in {
     nixosConfigurations = {
       novarch = lib.nixosSystem {
@@ -37,7 +43,10 @@
 
     homeConfigurations = {
       nova = home-manager.lib.homeManagerConfiguration {
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs { 
+          inherit system; 
+          config.allowUnfree = true; 
+        };
 	extraSpecialArgs = { inherit inputs; };
         modules = [
           ./home.nix
