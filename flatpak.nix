@@ -12,7 +12,6 @@
     "app.zen_browser.zen"
     "org.qbittorrent.qBittorrent"
     "com.github.tchx84.Flatseal"
-    "net.lutris.Lutris"
   ];
 
   services.flatpak.overrides = {

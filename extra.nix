@@ -3,6 +3,7 @@
 {
    environment.systemPackages = with pkgs-unstable; [
     # Gaming packages
+    lutris
     gamescope
     wineWowPackages.stable
     winetricks
