@@ -43,6 +43,15 @@
     gnumake
     nmap
     file
+    
+    #Gaming
+    bottles
+    lutris
+    gamescope
+    wineWowPackages.stable
+    winetricks
+    wineWowPackages.waylandFull
+    bottles
   ];
 
   programs.adb.enable = true;
@@ -54,6 +63,10 @@
 
 # Fish Terminal
   programs.fish.enable = true;
+
+  programs.gamescope = {
+    enable = true;
+  };
   
 # Gaming setup
   security.wrappers.fuse = {

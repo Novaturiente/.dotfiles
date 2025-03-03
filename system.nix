@@ -7,12 +7,13 @@
       ./nvidia.nix
       ./flatpak.nix
       ./virtualization.nix
-      ./extra.nix
+#      ./extra.nix
     ];
 
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
 
+  services.xserver.enable = true;
   services.displayManager.ly.enable = true;
   services.desktopManager.plasma6.enable = true;
 

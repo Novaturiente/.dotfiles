@@ -8,6 +8,7 @@
     wineWowPackages.stable
     winetricks
     wineWowPackages.waylandFull
+    bottles
   ];
 
 }
