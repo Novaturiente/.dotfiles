@@ -52,6 +52,8 @@
     winetricks
     wineWowPackages.waylandFull
     bottles
+
+    brave
   ];
 
   programs.adb.enable = true;

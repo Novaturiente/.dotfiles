@@ -12,7 +12,9 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 3;
   boot.kernelPackages = pkgs.linuxPackages_6_12;
-  boot.kernelParams = ["nvidia_drm.modeset=1"];
+  boot.kernelParams = [
+    "nvidia_drm.modeset=1"
+  ];
 
   networking.hostName = "novarch"; # Define your hostname.
 
@@ -58,7 +60,7 @@
   users.users.nova = {
     isNormalUser = true;
     description = "Nova";
-    extraGroups = [ "networkmanager" "wheel" "docker" "libvirtd" "adbusers" "kvm"];
+    extraGroups = [ "networkmanager" "wheel" "docker" "libvirtd" "adbusers" "kvm" "libvirt"];
     shell = pkgs.fish;
     packages = with pkgs; [
     ];

@@ -12,10 +12,13 @@ services:
     container_name: WinApps # Created Docker VM Name.
     environment:
       VERSION: "11"
-      RAM_SIZE: "8G" # RAM allocated to the Windows VM.
-      CPU_CORES: "8" # CPU cores allocated to the Windows VM.
+      RAM_SIZE: "12G" # RAM allocated to the Windows VM.
+      CPU_CORES: "12" # CPU cores allocated to the Windows VM.
       DISK_SIZE: "64G" # Size of the primary hard disk.
       HOME: "${HOME}" # Set path to Linux user home folder.
+      DISPLAY: $DISPLAY
+      NVIDIA_DRIVER_CAPABILITIES: all
+      NVIDIA_VISIBLE_DEVICES: all
     privileged: true # Grant the Windows VM extended privileges.
     ports:
       - 8006:8006 # Map '8006' on Linux host to '8006' on Windows VM --> For VNC Web Interface @ http://127.0.0.1:8006.
@@ -26,6 +29,14 @@ services:
     volumes:
       - data:/storage # Mount volume 'data' to use as Windows 'C:' drive.
       - ${HOME}:/shared # Mount Linux user home directory @ '\\host.lan\Data'.
-      - ./oem:/oem # Enables automatic post-install execution of 'oem/install.bat', applying Windows registry modifications contained within 'oem/RDPApps.reg'.
+      #- ./oem:/oem # Enables automatic post-install execution of 'oem/install.bat', applying Windows registry modifications contained within 'oem/RDPApps.reg'.
     devices:
       - /dev/kvm # Enable KVM.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: cdi
+              device_ids:
+                - nvidia.com/gpu=all
+              capabilities: [gpu]

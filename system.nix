@@ -109,6 +109,10 @@
 
   #services.xserver.excludePackages = [ pkgs.xterm ];
 
+  environment.sessionVariables = rec {
+    LIBVIRT_DEFAULT_URI="qemu:///system";
+  };
+
   environment.etc."fuse.conf".text = ''
     user_allow_other
   '';
