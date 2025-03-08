@@ -7,7 +7,7 @@
       ./nvidia.nix
       ./flatpak.nix
       ./virtualization.nix
-#      ./extra.nix
+      ./gaming.nix
     ];
 
   hardware.bluetooth.enable = true;
@@ -29,17 +29,6 @@
     allowedUDPPorts = [ ];
   };
 
-  environment.plasma6.excludePackages = with pkgs.kdePackages; [
-    plasma-browser-integration
-    konsole
-    kate
-    elisa
-    discover
-    kmenuedit
-    okular
-    plasma-systemmonitor
-    spectacle
-  ];
 
   environment.systemPackages = with pkgs; [
     home-manager
@@ -47,19 +36,16 @@
     kdePackages.dolphin
     catppuccin-cursors.mochaMauve
     waybar                   
-    pamixer                  
     playerctl                
     clipman                  
     wl-clipboard           
     alsa-utils             
-    brightnessctl          
     grim
     mako
     slurp
     swappy                 
     wlinhibit               
     hyprlock                
-    xbindkeys               
     killall
     waypaper
     swww
@@ -74,7 +60,7 @@
     blueman
     pciutils
     usbutils
-    pkgs-unstable.rofi-wayland
+    rofi-wayland
     swayosd
     hyprpolkitagent
     sshfs
@@ -87,7 +73,6 @@
   };
 
   security.polkit.enable = true;
-
 
   fonts.packages = with pkgs; [
   #  nerd-fonts.jetbrains-mono
@@ -109,12 +94,21 @@
 
   #services.xserver.excludePackages = [ pkgs.xterm ];
 
-  environment.sessionVariables = rec {
-    LIBVIRT_DEFAULT_URI="qemu:///system";
-  };
-
   environment.etc."fuse.conf".text = ''
     user_allow_other
   '';
+
+  environment.plasma6.excludePackages = with pkgs.kdePackages; [
+    plasma-browser-integration
+    konsole
+    kate
+    elisa
+    discover
+    kmenuedit
+    okular
+    plasma-systemmonitor
+    spectacle
+    plasma-systemmonitor
+  ];
 }
 

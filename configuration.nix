@@ -12,23 +12,14 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 3;
   boot.kernelPackages = pkgs.linuxPackages_6_12;
-  boot.kernelParams = [
-    "nvidia_drm.modeset=1"
-  ];
 
   networking.hostName = "novarch"; # Define your hostname.
-
-  # Enable networking
   networking.networkmanager.enable = true;
-
   networking.wireless.enable = false;
 
   # Set your time zone.
   time.timeZone = "Asia/Kolkata";
-
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
     LC_IDENTIFICATION = "en_US.UTF-8";
@@ -60,14 +51,13 @@
   users.users.nova = {
     isNormalUser = true;
     description = "Nova";
-    extraGroups = [ "networkmanager" "wheel" "docker" "libvirtd" "adbusers" "kvm" "libvirt"];
+    extraGroups = [ "networkmanager" "wheel" "docker" "libvirtd" "adbusers" "kvm" "qemu-libvirtd"];
     shell = pkgs.fish;
     packages = with pkgs; [
     ];
   };
 
-  # Install firefox.
-  programs.firefox.enable = true;
+  programs.fish.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -77,6 +67,7 @@
     ghostty
     git
     neovim
+    firefox
   ];
 
   # Enable Flakes

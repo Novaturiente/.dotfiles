@@ -28,10 +28,10 @@
       powerManagement.finegrained = true;
       open = false;
       nvidiaSettings = true;
-      package = config.boot.kernelPackages.nvidiaPackages.beta;
+      package = config.boot.kernelPackages.nvidiaPackages.stable;
 
       prime = {
-    #    sync.enable = true;
+        #sync.enable = true;
         offload = {
           enable = true;
           enableOffloadCmd = true;
@@ -43,7 +43,7 @@
   };
 
   environment.systemPackages = with pkgs; [
-    linuxPackages.nvidia_x11_beta
+    linuxPackages.nvidia_x11
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
     virtualgl

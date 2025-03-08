@@ -2,15 +2,21 @@
 
 {
   programs.virt-manager.enable = true;
-  users.groups.libvirtd.members = ["nova"];
   virtualisation.libvirtd = {
     enable = true;
     qemu = {
       package = pkgs.qemu_kvm;
       runAsRoot = true;
+      ovmf.enable = true;
     };
+    onBoot = "ignore";
+    onShutdown = "shutdown";
   };
   virtualisation.spiceUSBRedirection.enable = true;
+
+  environment.sessionVariables = rec {
+    LIBVIRT_DEFAULT_URI="qemu:///system";
+  };
 
 # Docker
   virtualisation.docker = {
@@ -31,12 +37,27 @@
 
   environment.systemPackages = with pkgs; [
     dialog
-    freerdp3
     iproute2
     libnotify
     netcat-gnu
     libvirt-glib
     distrobox
+    virtiofsd
   ];
+  
+  specialisation = {
+    gaming.configuration = {
+      system.nixos.tags = [ "gaming" ];
+      boot.blacklistedKernelModules = [ "nouveau" "nvidia" ];
+      boot.kernelParams = [ 
+        "intel_iommu=on" # For Intel CPUs
+        "iommu=pt"
+      ];
+      boot.kernelModules = [ "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ];
+      boot.extraModprobeConfig = ''
+        options vfio-pci ids=10de:25a9
+      '';
+    };
+  };
 }
 

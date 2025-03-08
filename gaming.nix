@@ -1,14 +1,12 @@
 { config, lib, pkgs, pkgs-unstable,... }:
 
 {
-   environment.systemPackages = with pkgs-unstable; [
+   environment.systemPackages = with pkgs; [
     # Gaming packages
     lutris
-    gamescope
-    wineWowPackages.stable
+    wineWowPackages.staging
     winetricks
     wineWowPackages.waylandFull
-    bottles
   ];
 
 }
