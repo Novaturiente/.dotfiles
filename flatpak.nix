@@ -12,6 +12,8 @@
     "app.zen_browser.zen"
     "org.qbittorrent.qBittorrent"
     "com.github.tchx84.Flatseal"
+    "org.remmina.Remmina"
+    "com.freerdp.FreeRDP"
   ];
 
   services.flatpak.overrides = {

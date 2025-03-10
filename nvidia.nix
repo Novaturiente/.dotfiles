@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, pkgs-unstable, ... }:
 
 {
   # Enable OpenGL
@@ -13,12 +13,6 @@
     graphics = {
       enable = true;
       enable32Bit = true;
-      extraPackages = with pkgs; [
-        vpl-gpu-rt
-        vulkan-loader
-        vulkan-tools
-        vulkan-validation-layers
-      ];
     };
     
     # Load Nvidia driver for Xorg and Wayland
@@ -47,11 +41,27 @@
     cudaPackages.cudatoolkit
     cudaPackages.cudnn
     virtualgl
+    vulkan-tools
+    vpl-gpu-rt
+    vulkan-loader
+    vulkan-validation-layers
+    vulkan-extension-layer
+    intel-media-driver
+    vaapiIntel
+    vaapiVdpau
+    libvdpau-va-gl
+    intel-media-driver
+    intel-compute-runtime
+    nvidia-vaapi-driver
+    libva
+    libva-utils
+    glxinfo
   ];
 
   hardware.nvidia-container-toolkit.enable = true;
 
   virtualisation.docker.daemon.settings.features.cdi = true;
   virtualisation.docker.rootless.daemon.settings.features.cdi = true;
+
 }
 

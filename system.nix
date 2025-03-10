@@ -8,6 +8,7 @@
       ./flatpak.nix
       ./virtualization.nix
       ./gaming.nix
+      ./fileserver.nix
     ];
 
   hardware.bluetooth.enable = true;
@@ -19,6 +20,7 @@
 
   networking.firewall = {
     enable = true;
+    allowPing = true;
     allowedUDPPortRanges = [
       { from = 1714; to = 1764; }
     ];
