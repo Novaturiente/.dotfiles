@@ -8,7 +8,7 @@
       ./flatpak.nix
       ./virtualization.nix
       ./gaming.nix
-      ./fileserver.nix
+#      ./fileserver.nix
     ];
 
   hardware.bluetooth.enable = true;

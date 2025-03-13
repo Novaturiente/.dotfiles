@@ -1,8 +1,10 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, pkgs-unstable, ... }:
 
 {
-  services.flatpak.enable = true;
-
+  services.flatpak = {
+    enable = true;
+    package = pkgs-unstable.flatpak;
+  };
   services.flatpak.remotes = lib.mkOptionDefault [{
     name = "flathub";
     location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
@@ -14,6 +16,8 @@
     "com.github.tchx84.Flatseal"
     "org.remmina.Remmina"
     "com.freerdp.FreeRDP"
+    "net.mullvad.MullvadBrowser"
+    "io.github.ungoogled_software.ungoogled_chromium"
   ];
 
   services.flatpak.overrides = {

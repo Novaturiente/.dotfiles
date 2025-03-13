@@ -17,3 +17,9 @@ alias winrestart="docker compose --file ~/.config/winapps/compose.yaml restart"
 #function fish_greeting
 #    # smth smth
 #end
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+#eval /home/nova/.conda/bin/conda "shell.fish" "hook" $argv | source
+# <<< conda initialize <<<
+

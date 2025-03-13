@@ -12,6 +12,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 3;
   boot.kernelPackages = pkgs.linuxPackages_6_12;
+  system.nixos.label = "_";
 
   networking.hostName = "novarch"; # Define your hostname.
   networking.networkmanager.enable = true;
@@ -67,7 +68,7 @@
     ghostty
     git
     neovim
-    firefox
+    #firefox
   ];
 
   # Enable Flakes

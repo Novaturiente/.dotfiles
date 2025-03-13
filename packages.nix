@@ -1,15 +1,13 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, pkgs-unstable, ... }:
 
 {
   environment.systemPackages = with pkgs; [
-    mullvad-browser
     wget
     duf
     pyright
     rsync
     stow
     python3
-    scrcpy
     gparted
     openssl
     lsof
@@ -42,23 +40,27 @@
     gnumake
     nmap
     file
-    
-    #Gaming
-#    bottles
-#    lutris
-#    gamescope
-#    wineWowPackages.stable
-#    winetricks
-#    wineWowPackages.waylandFull
-#    bottles
+    conda
   ];
 
   programs.adb.enable = true;
 
-  services.tailscale = {
-    enable = true;
-    useRoutingFeatures = "both";
-  };
+#  services.ollama = {
+#    enable = true;
+#    acceleration = "cuda";
+#    package = pkgs-unstable.ollama;
+#  };
+#
+#  services.open-webui = {
+#    enable = true;
+#    port = 3000;
+#    openFirewall = true;
+#  };
+#
+#  services.tailscale = {
+#    enable = true;
+#    useRoutingFeatures = "both";
+#  };
 
 # Gaming setup
   security.wrappers.fuse = {
