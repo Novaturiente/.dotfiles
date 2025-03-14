@@ -68,7 +68,8 @@
     ghostty
     git
     neovim
-    #firefox
+   # firefox
+    ungoogled-chromium
   ];
 
   # Enable Flakes

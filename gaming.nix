@@ -3,10 +3,12 @@
 {
    environment.systemPackages = with pkgs; [
     # Gaming packages
-#    lutris
+    pkgs-unstable.lutris
     wineWowPackages.staging
-    pkgs-unstable.winetricks
+    winetricks
     wineWowPackages.waylandFull
+    protonup-qt
+    gamescope
 
 #    (python3.withPackages (ps: with ps; [
 #      protobuf3_20  # Specifically use this version

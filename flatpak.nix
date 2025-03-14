@@ -17,7 +17,6 @@
     "org.remmina.Remmina"
     "com.freerdp.FreeRDP"
     "net.mullvad.MullvadBrowser"
-    "io.github.ungoogled_software.ungoogled_chromium"
   ];
 
   services.flatpak.overrides = {
