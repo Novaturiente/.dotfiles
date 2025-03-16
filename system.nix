@@ -66,6 +66,13 @@
     swayosd
     hyprpolkitagent
     sshfs
+
+    ripgrep
+    fd
+    tree-sitter
+    nodejs
+    lua
+    lua51Packages.luarocks
   ];
 
   programs.hyprland = {

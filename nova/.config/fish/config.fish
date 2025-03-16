@@ -71,7 +71,7 @@ function edit
 
   # Check if a file was selected
   if test -n "$file"
-    sudo nvim "$file"
+    nvim "$file"
   else
     echo "No file selected."
   end

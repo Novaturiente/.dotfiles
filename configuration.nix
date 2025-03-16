@@ -1,5 +1,5 @@
 
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs,pkgs-unstable, ... }:
 
 {
   imports =
@@ -67,7 +67,7 @@
   environment.systemPackages = with pkgs; [
     ghostty
     git
-    neovim
+    pkgs-unstable.neovim
    # firefox
     ungoogled-chromium
   ];
