@@ -259,3 +259,20 @@ vim.api.nvim_set_keymap('n', '<M-Left>', ':lua ToggleNvimTreeFocus()<CR>', { nor
 vim.cmd([[
   autocmd VimEnter * if argc() == 0 | NvimTreeOpen | endif
 ]])
+
+
+
+
+function ReloadConfig()
+  -- Reload the main config
+  dofile(vim.env.MYVIMRC)
+  
+  -- Reload Lazy.nvim managed plugins
+  require('lazy').sync()
+
+  print("Neovim configuration reloaded!")
+end
+
+-- Optionally, bind this to a key (e.g., <leader>rr)
+vim.api.nvim_set_keymap('n', '<leader>rr', ':lua ReloadConfig()<CR>', { noremap = true, silent = true })
+

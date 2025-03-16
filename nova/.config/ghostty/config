@@ -12,9 +12,11 @@ keybind = ctrl+shift+w=close_surface
 
 keybind = alt+tab=toggle_tab_overview
 
+keybind = ctrl+e=text:edit\n
+
 mouse-hide-while-typing = true
 gtk-adwaita = false
 
-font-family = SpaceMono Nerd Font Mono
-font-size = 13
+font-family = D2CodingLigature Nerd Font Mono
+font-size = 14
 

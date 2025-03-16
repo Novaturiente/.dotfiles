@@ -87,7 +87,7 @@
   #  nerd-fonts.jetbrains-mono
   #  nerd-fonts.space-mono
   #  nerd-fonts.fira-code
-    (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono" "AnonymousPro"]; })
+    (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono" "AnonymousPro" "D2Coding"]; })
   ];
 
   xdg.menus.enable = true;

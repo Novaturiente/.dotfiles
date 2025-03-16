@@ -41,6 +41,10 @@
     nmap
     file
     conda
+    cargo
+    rustc
+    rust-analyzer
+    rustfmt
   ];
 
   programs.adb.enable = true;
