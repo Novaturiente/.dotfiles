@@ -191,12 +191,28 @@ require('lazy').setup({
         ft = { "markdown", "Avante" },
       },
     },
-  }
+  },
 --
 --
 --
 --
 --###########################################################################################
+  {
+    dir = "~/projects/ollama.nvim",  -- Path to your local plugin
+    dev = true,  -- Mark as development plugin
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    config = function()
+      require("ollama").setup({
+        host = "http://localhost:11434",
+        model = "gemma3:4b",
+        system_prompt = "You are a helpful assistant."
+      })
+      require("ollama").init()
+    end,
+  }
 })
 
 -- Additional plugin configurations can go here

@@ -45,6 +45,7 @@
     rustc
     rust-analyzer
     rustfmt
+#    uv
   ];
 
   programs.adb.enable = true;

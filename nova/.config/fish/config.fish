@@ -24,11 +24,9 @@ alias winrestart="docker compose --file ~/.config/winapps/compose.yaml restart"
 # <<< conda initialize <<<
 
 function move
+    sudo true
 
-  sudo true
-
-  # List directories recursively, including hidden directories
-  set dir (sudo find ~/ -type d | fzf --header=(basename (status current-command)) \
+    set dir (sudo find ~/ -type d | sed "s|^$HOME|~|" | fzf --header=(basename (status current-command)) \
            --layout=reverse \
            --exact \
            --border=bold \
@@ -41,87 +39,117 @@ function move
            --header-first \
            --bind change:top \
            --prompt='> ')
-  
-  # Check if a directory was selected
-  if test -n "$dir"
-    # Get the absolute path of the selected directory
-    set abs_path (realpath "$dir")
-    cd "$abs_path"
-    echo "Selected directory: $abs_path"
-  else
-    echo "No directory selected."
-  end
+
+    if test -n "$dir"
+	echo "test dir $dir"
+
+	set expanded_dir (string replace -r '^~' $HOME "$dir")
+	
+        if test "$expanded_dir" != "$dir"
+	    echo "found ~"
+	    set dir $expanded_dir
+	    echo "mod dir $dir"
+	else
+	    echo "not found ~"
+	end
+
+        cd "$dir"
+    else
+        echo "No directory selected."
+    end
 end
 
 
 function edit
     sudo true
 
-    # Path to the file that logs recently opened files
-    set recent_file ~/.recently_opened_files
+    set file (sudo find ~/ -type f | fzf --header=(basename (status current-command)) \
+        --layout=reverse \
+        --exact \
+        --border=bold \
+        --border=rounded \
+        --margin=5% \
+        --multi \
+        --color=dark \
+        --height=95% \
+        --info=hidden \
+        --header-first \
+        --bind change:top \
+        --preview='bat --style=numbers --color=always --line-range=:500 {} 2>/dev/null || cat {} 2>/dev/null' \
+        --prompt='> ')
 
-    # Check if the recent file exists and has content
-    if test -f $recent_file
-        # Show recently opened files first in fzf
-        set file (cat $recent_file | fzf --header="Recently Opened Files" \
-             --layout=reverse \
-             --exact \
-             --border=bold \
-             --border=rounded \
-             --margin=5% \
-             --multi \
-             --color=dark \
-             --height=95% \
-             --info=hidden \
-             --header-first \
-             --bind change:top \
-	     --preview='bat --style=numbers --color=always --line-range=:500 {} 2>/dev/null || cat {} 2>/dev/null' \
-             --prompt='> ')
-
-        # If no file was selected from the recent list, fallback to find command
-        if test -z "$file"
-            set file (sudo find ~/ -type f | fzf --header=(basename (status current-command)) \
-                --layout=reverse \
-                --exact \
-                --border=bold \
-                --border=rounded \
-                --margin=5% \
-                --multi \
-                --color=dark \
-                --height=95% \
-                --info=hidden \
-                --header-first \
-                --bind change:top \
-		--preview='bat --style=numbers --color=always --line-range=:500 {} 2>/dev/null || cat {} 2>/dev/null' \
-		--prompt='> ')
-        end
-    else
-        # Fallback to find command if no recent file log exists
-        set file (sudo find ~/ -type f | fzf --header=(basename (status current-command)) \
-             --layout=reverse \
-             --exact \
-             --border=bold \
-             --border=rounded \
-             --margin=5% \
-             --multi \
-             --color=dark \
-             --height=95% \
-             --info=hidden \
-             --header-first \
-             --bind change:top \
-	     --preview='bat --style=numbers --color=always --line-range=:500 {} 2>/dev/null || cat {} 2>/dev/null' \
-             --prompt='> ')
-    end
-
-    # Check if a file was selected
+    
     if test -n "$file"
         set abs_path (realpath (dirname "$file"))
         cd "$abs_path"
-        
-        # Open the selected file with nvim
         fish -c "nvim $file"
+        
+        # Path to the file that logs recently opened files
+        set recent_file ~/.config/fish/.recently_opened_files
+    
+        # Check if the recent file log exists
+        if test -f $recent_file
+            # Read all lines into a variable
+            set recent_files (cat $recent_file)
+    
+            # Remove the file from the list if it's already in the file
+            set recent_files (string match -v -r "^$file\$" $recent_files)
+    
+            # Write each line back to the file, one by one
+            echo -n "" > $recent_file  # Clear the file first
+            for line in $recent_files
+                echo $line >> $recent_file
+            end
+        else
+            # Create the file if it doesn't exist
+            touch $recent_file
+        end
+    
+        # Append the newly opened file as the last line in the file
+        echo $file >> $recent_file
+    end
+end
 
-        # Log the opened file to the recent file log
+
+function edit-
+    sudo true
+
+    set recent_file ~/.config/fish/.recently_opened_files
+
+    if test -f $recent_file
+        set file (tac $recent_file | fzf --header="Recently Opened Files" \
+            --layout=reverse \
+            --exact \
+            --border=bold \
+            --border=rounded \
+            --margin=5% \
+            --multi \
+            --color=dark \
+            --height=95% \
+            --info=hidden \
+            --header-first \
+            --bind change:top \
+            --preview='bat --style=numbers --color=always --line-range=:500 {} 2>/dev/null || cat {} 2>/dev/null' \
+            --prompt='> ')
+
+    end
+
+    if test -n "$file"
+        set abs_path (realpath (dirname "$file"))
+        cd "$abs_path"
+        fish -c "nvim $file"
+        
+        set recent_file ~/.config/fish/.recently_opened_files
+        if test -f $recent_file
+            set recent_files (cat $recent_file)
+            set recent_files (string match -v -r "^$file\$" $recent_files)
+            echo -n "" > $recent_file  # Clear the file first
+            for line in $recent_files
+                echo $line >> $recent_file
+            end
+        else
+            touch $recent_file
+        end
         echo $file >> $recent_file
     else
         echo "No file selected."
