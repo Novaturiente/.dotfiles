@@ -45,7 +45,12 @@
     rustc
     rust-analyzer
     rustfmt
-#    uv
+    uv
+    python310
+    python312Packages.ollama
+
+    pkgs-unstable.firefox
+    geckodriver
   ];
 
   programs.adb.enable = true;

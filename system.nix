@@ -23,12 +23,14 @@
     allowPing = true;
     allowedUDPPortRanges = [
       { from = 1714; to = 1764; }
+      { from = 32768; to = 61000; }
     ];
     allowedTCPPortRanges = [
       { from = 1714; to = 1764; }
+      { from = 8008; to = 8009; }
     ];
     allowedTCPPorts = [5555];
-    allowedUDPPorts = [ ];
+    allowedUDPPorts = [];
   };
 
 
