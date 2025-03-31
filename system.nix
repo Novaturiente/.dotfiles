@@ -8,6 +8,7 @@
       ./flatpak.nix
       ./virtualization.nix
       ./gaming.nix
+      ./gnome.nix
 #      ./fileserver.nix
     ];
 
@@ -17,6 +18,8 @@
   services.xserver.enable = true;
   services.displayManager.ly.enable = true;
   services.desktopManager.plasma6.enable = true;
+
+  programs.ssh.askPassword = lib.mkForce "${pkgs.kdePackages.ksshaskpass.out}/bin/ksshaskpass";
 
   networking.firewall = {
     enable = true;
@@ -32,7 +35,6 @@
     allowedTCPPorts = [5555];
     allowedUDPPorts = [];
   };
-
 
   environment.systemPackages = with pkgs; [
     home-manager
@@ -75,6 +77,8 @@
     nodejs
     lua
     lua51Packages.luarocks
+
+    gnome-tweaks
   ];
 
   programs.hyprland = {
