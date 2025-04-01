@@ -17,7 +17,7 @@
 
   services.xserver.enable = true;
   services.displayManager.ly.enable = true;
-  services.desktopManager.plasma6.enable = true;
+#  services.desktopManager.plasma6.enable = true;
 
   programs.ssh.askPassword = lib.mkForce "${pkgs.kdePackages.ksshaskpass.out}/bin/ksshaskpass";
 
@@ -113,17 +113,17 @@
     user_allow_other
   '';
 
-  environment.plasma6.excludePackages = with pkgs.kdePackages; [
-    plasma-browser-integration
-    konsole
-    kate
-    elisa
-    discover
-    kmenuedit
-    okular
-    plasma-systemmonitor
-    spectacle
-    plasma-systemmonitor
-  ];
+#  environment.plasma6.excludePackages = with pkgs.kdePackages; [
+#    plasma-browser-integration
+#    konsole
+#    kate
+#    elisa
+#    discover
+#    kmenuedit
+#    okular
+#    plasma-systemmonitor
+#    spectacle
+#    plasma-systemmonitor
+#  ];
 }
 

@@ -2,11 +2,9 @@
 
 {
   # Enable OpenGL
-  services = {
-    xserver = {
+  services.xserver = {
       enable = true;
       videoDrivers = [ "nvidia" ];
-    };
   };
 
   hardware = {
@@ -22,7 +20,9 @@
       powerManagement.finegrained = true;
       open = true;
       nvidiaSettings = true;
-      package = config.boot.kernelPackages.nvidiaPackages.latest;
+#      package = config.boot.kernelPackages.nvidiaPackages.latest;
+      package = pkgs-unstable.linuxPackages_6_13.nvidiaPackages.beta;
+      
 
       prime = {
         #sync.enable = true;
@@ -37,31 +37,31 @@
   };
 
   environment.systemPackages = with pkgs; [
-    linuxPackages.nvidia_x11
-    cudaPackages.cudatoolkit
-    cudaPackages.cudnn
-    virtualgl
-    vulkan-tools
-    vpl-gpu-rt
-    vulkan-loader
-    vulkan-validation-layers
-    vulkan-extension-layer
-    intel-media-driver
-    vaapiIntel
-    vaapiVdpau
-    libvdpau-va-gl
-    intel-media-driver
-    intel-compute-runtime
-    nvidia-vaapi-driver
-    libva
-    libva-utils
-    glxinfo
+#    linuxPackages.nvidia_x11
+#    cudaPackages.cudatoolkit
+#    cudaPackages.cudnn
+#    virtualgl
+#    vulkan-tools
+#    vpl-gpu-rt
+#    vulkan-loader
+#    vulkan-validation-layers
+#    vulkan-extension-layer
+#    intel-media-driver
+#    vaapiIntel
+#    vaapiVdpau
+#    libvdpau-va-gl
+#    intel-media-driver
+#    intel-compute-runtime
+#    nvidia-vaapi-driver
+#    libva
+#    libva-utils
+#    glxinfo
   ];
 
-  hardware.nvidia-container-toolkit.enable = true;
+#  hardware.nvidia-container-toolkit.enable = true;
 
-  virtualisation.docker.daemon.settings.features.cdi = true;
-  virtualisation.docker.rootless.daemon.settings.features.cdi = true;
+#  virtualisation.docker.daemon.settings.features.cdi = true;
+#  virtualisation.docker.rootless.daemon.settings.features.cdi = true;
 
 }
 

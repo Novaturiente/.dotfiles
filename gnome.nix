@@ -6,7 +6,7 @@
   
   environment.systemPackages = with pkgs.gnomeExtensions; [
     dock-from-dash
-  ]
+  ];
 
   environment.gnome.excludePackages = with pkgs; [
     orca
@@ -28,6 +28,6 @@
     totem
     yelp
     gnome-software
-  ]
+  ];
 }
 
