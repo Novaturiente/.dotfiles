@@ -1,8 +1,10 @@
 window-decoration = false
-background-opacity = 0.5
+background-opacity = 0.7
 confirm-close-surface = false
 
-theme = cyberpunk
+gtk-titlebar = false
+
+theme = detuned
 
 shell-integration = fish
 

@@ -69,8 +69,7 @@
     ghostty
     git
     pkgs-unstable.neovim
-   # firefox
-    ungoogled-chromium
+    firefox
   ];
 
   # Enable Flakes

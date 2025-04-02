@@ -39,7 +39,7 @@
   environment.systemPackages = with pkgs; [
     home-manager
     kdePackages.kdeconnect-kde
-    kdePackages.dolphin
+#    kdePackages.dolphin
     catppuccin-cursors.mochaMauve
     waybar                   
     playerctl                

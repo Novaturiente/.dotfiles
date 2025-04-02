@@ -28,6 +28,10 @@
     totem
     yelp
     gnome-software
+    geary
+    epiphany
+    snapshot
+    simple-scan
   ];
 }
 
