@@ -6,13 +6,15 @@
 
   programs.dconf.enable = true;
  
-  environment.systemPackages = with pkgs.gnomeExtensions; [
-    dock-from-dash
-    blur-my-shell
-    caffeine
-    pop-shell
-    appindicator
-    network-speed-monitor
+  environment.systemPackages = with pkgs; [
+    gnomeExtensions.dock-from-dash
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.caffeine
+    gnomeExtensions.pop-shell
+    gnomeExtensions.appindicator
+    gnomeExtensions.network-speed-monitor
+    
+    gnome-tweaks
   ];
 
   environment.gnome.excludePackages = with pkgs; [

@@ -20,6 +20,6 @@ keybind = ctrl+r=text:edit-\n
 mouse-hide-while-typing = true
 gtk-adwaita = false
 
-font-family = D2CodingLigature Nerd Font Mono
+font-family = JetBrainsMono Nerd Font Mono
 font-size = 14
 

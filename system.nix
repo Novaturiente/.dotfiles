@@ -6,7 +6,7 @@
       ./packages.nix
       ./nvidia.nix
       ./flatpak.nix
-#      ./virtualization.nix
+      ./virtualization.nix
       ./gaming.nix
       ./gnome.nix
     ];
@@ -86,6 +86,7 @@
     nerd-fonts.jetbrains-mono
     nerd-fonts.space-mono
     nerd-fonts.fira-code
+    nerd-fonts.d2coding
   #  (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono" "AnonymousPro" "D2Coding"]; })
   ];
 
