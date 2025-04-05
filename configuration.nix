@@ -11,7 +11,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 3;
-  #boot.kernelPackages = pkgs.linuxPackages_6_12;
+  #boot.kernelPackages = pkgs.linuxPackages_6_13;
   boot.kernelPackages = pkgs.linuxPackages_latest;
   system.nixos.label = "_";
 

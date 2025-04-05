@@ -9,7 +9,6 @@
       ./virtualization.nix
       ./gaming.nix
       ./gnome.nix
-#      ./fileserver.nix
     ];
 
   hardware.bluetooth.enable = true;
@@ -17,9 +16,6 @@
 
   services.xserver.enable = true;
   services.displayManager.ly.enable = true;
-#  services.desktopManager.plasma6.enable = true;
-
-  programs.ssh.askPassword = lib.mkForce "${pkgs.kdePackages.ksshaskpass.out}/bin/ksshaskpass";
 
   networking.firewall = {
     enable = true;
@@ -39,7 +35,6 @@
   environment.systemPackages = with pkgs; [
     home-manager
     kdePackages.kdeconnect-kde
-#    kdePackages.dolphin
     catppuccin-cursors.mochaMauve
     waybar                   
     playerctl                
@@ -77,8 +72,6 @@
     nodejs
     lua
     lua51Packages.luarocks
-
-    gnome-tweaks
   ];
 
   programs.hyprland = {
@@ -90,10 +83,10 @@
   security.polkit.enable = true;
 
   fonts.packages = with pkgs; [
-  #  nerd-fonts.jetbrains-mono
-  #  nerd-fonts.space-mono
-  #  nerd-fonts.fira-code
-    (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono" "AnonymousPro" "D2Coding"]; })
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.space-mono
+    nerd-fonts.fira-code
+  #  (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "SpaceMono" "AnonymousPro" "D2Coding"]; })
   ];
 
   xdg.menus.enable = true;
@@ -104,26 +97,11 @@
   catppuccin.enable = true;
   
   environment.variables = {
-    XDG_MENU_PREFIX = "plasma-";
+    XDG_MENU_PREFIX = "gnome-";
   };
-
-  #services.xserver.excludePackages = [ pkgs.xterm ];
 
   environment.etc."fuse.conf".text = ''
     user_allow_other
   '';
-
-#  environment.plasma6.excludePackages = with pkgs.kdePackages; [
-#    plasma-browser-integration
-#    konsole
-#    kate
-#    elisa
-#    discover
-#    kmenuedit
-#    okular
-#    plasma-systemmonitor
-#    spectacle
-#    plasma-systemmonitor
-#  ];
 }
 

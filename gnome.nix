@@ -1,11 +1,18 @@
 { config, lib, pkgs,pkgs-unstable, ... }:
 
 {
-  
+
   services.xserver.desktopManager.gnome.enable = true;
-  
+
+  programs.dconf.enable = true;
+ 
   environment.systemPackages = with pkgs.gnomeExtensions; [
     dock-from-dash
+    blur-my-shell
+    caffeine
+    pop-shell
+    appindicator
+    network-speed-monitor
   ];
 
   environment.gnome.excludePackages = with pkgs; [

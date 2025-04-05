@@ -8,10 +8,7 @@
     wineWowPackages.waylandFull
     protonup-qt
     gamescope
-
   ];
-
-  programs.steam.gamescopeSession.enable = true;
 
   environment.variables = {
     PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION = "python";
