@@ -6,7 +6,7 @@
       ./packages.nix
       ./nvidia.nix
       ./flatpak.nix
-      ./virtualization.nix
+#      ./virtualization.nix
       ./gaming.nix
       ./gnome.nix
     ];
