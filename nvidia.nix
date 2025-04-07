@@ -56,6 +56,7 @@
     libva
     libva-utils
     glxinfo
+    nvidia-docker
   ];
 
   hardware.nvidia-container-toolkit.enable = true;

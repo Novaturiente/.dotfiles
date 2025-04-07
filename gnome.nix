@@ -7,13 +7,16 @@
   programs.dconf.enable = true;
  
   environment.systemPackages = with pkgs; [
-    gnomeExtensions.dock-from-dash
+    gnomeExtensions.dash-to-dock
     gnomeExtensions.blur-my-shell
     gnomeExtensions.caffeine
-    gnomeExtensions.pop-shell
-    gnomeExtensions.appindicator
-    gnomeExtensions.network-speed-monitor
+    gnomeExtensions.hide-top-bar
+    gnomeExtensions.user-themes
+    gnomeExtensions.clipboard-indicator
+    gnomeExtensions.arcmenu
+    gnomeExtensions.transparent-top-bar
     
+    gnome-extension-manager
     gnome-tweaks
   ];
 
@@ -41,6 +44,18 @@
     epiphany
     snapshot
     simple-scan
+    
+    gnome-shell-extensions
+#    gnomeExtensions.applications-menu
+#    gnomeExtensions.launch-new-instance
+#    gnomeExtensions.light-style
+#    gnomeExtensions.native-window-placement
+#    gnomeExtensions.places-status-indicator
+#    gnomeExtensions.status-icons
+#    gnomeExtensions.window-list
+#    gnomeExtensions.windownavigator
+#    gnomeExtensions.workspace-indicator
+#    gnomeExtensions.removable-drive-menu
   ];
 }
 

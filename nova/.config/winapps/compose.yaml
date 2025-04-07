@@ -1,37 +1,11 @@
 name: "winapps" # Docker Compose Project Name.
 volumes:
   data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /home/nova/Docker/winapps/
-      o: bind
 services:
   windows:
-    image: dockurr/windows # https://hub.docker.com/r/dockurr/windows
+    image: ghcr.io/dockur/windows:latest
     container_name: WinApps # Created Docker VM Name.
-    environment:
-      VERSION: "11"
-      RAM_SIZE: "12G" # RAM allocated to the Windows VM.
-      CPU_CORES: "12" # CPU cores allocated to the Windows VM.
-      DISK_SIZE: "64G" # Size of the primary hard disk.
-      HOME: "${HOME}" # Set path to Linux user home folder.
-      DISPLAY: $DISPLAY
-      NVIDIA_DRIVER_CAPABILITIES: all
-      NVIDIA_VISIBLE_DEVICES: all
-    privileged: true # Grant the Windows VM extended privileges.
-    ports:
-      - 8006:8006 # Map '8006' on Linux host to '8006' on Windows VM --> For VNC Web Interface @ http://127.0.0.1:8006.
-      - 3389:3389/tcp # Map '3389' on Linux host to '3389' on Windows VM --> For Remote Desktop Protocol (RDP).
-      - 3389:3389/udp # Map '3389' on Linux host to '3389' on Windows VM --> For Remote Desktop Protocol (RDP).
-    stop_grace_period: 120s # Wait 120 seconds before sending SIGTERM when attempting to shut down the Windows VM.
-    restart: "no" # Restart the Windows VM if the exit code indicates an error.
-    volumes:
-      - data:/storage # Mount volume 'data' to use as Windows 'C:' drive.
-      - ${HOME}:/shared # Mount Linux user home directory @ '\\host.lan\Data'.
-      #- ./oem:/oem # Enables automatic post-install execution of 'oem/install.bat', applying Windows registry modifications contained within 'oem/RDPApps.reg'.
-    devices:
-      - /dev/kvm # Enable KVM.
+    runtime: nvidia  # Remove this line
     deploy:
       resources:
         reservations:
@@ -40,3 +14,33 @@ services:
               device_ids:
                 - nvidia.com/gpu=all
               capabilities: [gpu]
+    environment:
+      VERSION: "11"
+      RAM_SIZE: "10G" # RAM allocated to the Windows VM.
+      CPU_CORES: "12" # CPU cores allocated to the Windows VM.
+      DISK_SIZE: "64G" # Size of the primary hard disk.
+      USERNAME: "Docker" # Edit here to set a custom Windows username. The default is 'MyWindowsUser'.
+      PASSWORD: "novarch" # Edit here to set a password for the Windows user. The default is 'MyWindowsPassword'.
+      HOME: "${HOME}" # Set path to Linux user home folder.
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: all
+    # Rest of your config remains the same
+    ports:
+      - 8006:8006 
+      - 3389:3389/tcp 
+      - 3389:3389/udp 
+    cap_add:
+      - NET_ADMIN  # Add network permission
+    stop_grace_period: 120s 
+    restart: on-failure 
+    volumes:
+      - data:/storage 
+      - ${HOME}:/shared 
+      #- ./oem:/oem 
+    devices:
+      - /dev/kvm # Enable KVM.
+      - /dev/net/tun # Enable tuntap
+      - /dev/nvidia0:/dev/nvidia0 # NVIDIA GPU device
+      - /dev/nvidiactl:/dev/nvidiactl # NVIDIA control interface
+      - /dev/nvidia-uvm:/dev/nvidia-uvm # NVIDIA Unified Memory
+      - /dev/nvidia-modeset:/dev/nvidia-modeset # NVIDIA mode setting

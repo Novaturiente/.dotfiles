@@ -21,6 +21,7 @@
     unrar
     p7zip
     vlc
+    jq
 
     # Fish shell
     fishPlugins.done
