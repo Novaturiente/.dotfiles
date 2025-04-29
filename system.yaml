@@ -1,0 +1,189 @@
+impl: http://github.com/blend-os/tracks/raw/main
+arch-repo: https://geo.mirror.pkgbuild.com
+repo: https://pkg-repo.blendos.co
+
+track: blendos-base
+
+packages:
+  # Base System
+   - linux
+   - inetutils
+   - xorg-xauth
+   - file
+   - cpio
+   - pciutils
+   - usbutils
+   - openssl
+
+  # Networking
+   - networkmanager
+   - network-manager-applet
+   - bluez
+   - bluez-tools
+   - blueman
+   - bluetui
+   - bluez-utils
+   - kdeconnect
+
+   - wireplumber
+   - pipewire-pulse
+   - pipewire
+
+  # Display & Graphics
+   - nvidia-open-dkms
+   - nvidia-utils
+   - lib32-nvidia-utils
+   - lib32-libglvnd
+   - lib32-gnutls
+   - gdk-pixbuf2
+   - vulkan-tools
+   - vulkan-icd-loader
+   - lib32-vulkan-icd-loader
+   - vulkan-intel
+   - lib32-vulkan-intel
+   - xorg-xwayland
+
+  # Window Management & Compositors
+   - hyprland
+   - hyprpolkitagent
+   - ly
+   - rofi-wayland
+   - waybar
+   - swww
+   - swayosd-git
+   - waypaper-git
+
+  # Utilities
+   - playerctl
+   - wl-clipboard
+   - grim
+   - slurp
+   - swappy
+   - zenity
+   - brightnessctl
+   - clipman
+   - power-profiles-daemon
+
+  # Appearance
+   - ttf-jetbrains-mono-nerd
+   - ttf-sourcecodepro-nerd
+   - ttf-firacode-nerd
+   - ttf-roboto-mono-nerd
+   - orchis-theme
+   - nwg-look
+   - qt6ct
+   - gnome-tweaks
+
+  # File Management
+   - nautilus
+   - baobab
+   - yazi
+
+  # Shells
+   - fish
+
+  # Terminal Emulators
+   - ghostty
+
+  # Command Line Tools
+   - eza
+   - zoxide
+   - ripgrep
+   - duf
+   - stow
+   - jq
+
+  # Text Editors
+   - neovim
+
+  # Package & Application Management
+   - flatpak
+   - protonup-qt
+   - extension-manager
+   - distrobox
+
+  # Virtualization
+   - libvirt
+   - qemu-full
+   - virt-manager
+   - docker
+   - docker-compose
+
+  # Development
+   - cmake
+   - meson
+   - cpio
+   - pkg-config
+   - tree-sitter
+   - nodejs
+   - lua
+   - luarocks
+   - cmake
+   - gcc
+   - cargo
+   - rust-analyzer
+   - rustfmt
+   - python-pip
+   - uv
+   - pyright
+   - cuda
+   - cuda-tools
+   - cudnn
+
+  # GNOME Desktop Environment
+   - gnome-shell
+   - gnome-control-center
+   - xdg-user-dirs
+   - xdg-desktop-portal
+   - xdg-desktop-portal-gnome
+   - xdg-desktop-portal-hyprland
+   - gnome-shell-extension-blur-my-shell
+   - gnome-shell-extension-dash-to-dock
+   - gnome-shell-extension-caffeine
+
+  # System Monitoring
+   - htop
+   - nvtop
+   - conky
+   - conky-manager
+
+  # Compatibility
+   - lutris
+   - wine
+   - winetricks
+   - wine-mono
+
+  # File Transfer
+   - sshfs
+
+  # Web Browsers
+   - firefox
+   - surf-git
+
+  # Archiving and Compression
+   - gzip
+   - unzip
+   - unrar
+   - 7zip
+
+  # Download Managers
+   - wget
+
+  # Network Tools
+   - nmap
+   - curl
+
+aur-packages:
+  - fish-done
+  - fish-fzf
+#  - gnome-shell-extension-clipboard-indicator
+
+services:
+  - switcheroo-control
+  - ly
+  - docker
+  - flatpak
+
+package-repos:
+  - name: 'chaotic-aur'
+    repo-url: 'https://cdn-mirror.chaotic.cx/$repo/$arch'
