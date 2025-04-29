@@ -13,14 +13,14 @@ services:
       PATH: $PATH
       NVIDIA_DRIVER_CAPABILITIES: all
       NVIDIA_VISIBLE_DEVICES: all
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: cdi
-              device_ids:
-                - nvidia.com/gpu=all
-              capabilities: [gpu]
+    #deploy:
+    #  resources:
+    #    reservations:
+    #      devices:
+    #        - driver: cdi
+    #          device_ids:
+    #            - nvidia.com/gpu=all
+    #          capabilities: [gpu]
 
   open-webui:
     build:
@@ -39,6 +39,8 @@ services:
       - 'WEBUI_SECRET_KEY='
     extra_hosts:
       - host.docker.internal:host-gateway
+    depends_on:
+      - ollama
 
 volumes:
   ollama: {}

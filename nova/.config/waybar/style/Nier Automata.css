@@ -1,325 +1,484 @@
+@import "catppuccin-frappe.css";
+
 * {
-	font-family: "JetBrainsMono Nerd Font";
-	font-weight: bold;
-	min-height: 0;
-	/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
-	font-size: 97%;
-	font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+  min-height: 0;
+  border: none;
+  margin: 0;
+  padding: 0;
 }
 
-  window#waybar {
-    background-color: rgba(0, 0, 0, 0);
-  }
+/* ----------------------------------------------------- MAIN BACKGROUND --- */
 
-  .modules-left {
-    border: 2px solid #f2e4cb;
-    background-color: #1e1e2e;
-    border-radius: 8px;
-    padding-right: 10px;
-    padding-left: 10px;
-  }
+window#waybar>box {
+  background: @main-bg;
+  margin: 2px;
+}
 
-  .modules-center {
-    border: 2px solid #1e1e2e;
-    background-color: #f2e4cb;
-    border-radius: 8px;
-    padding-right: 10px;
-    padding-left: 0px;
-  }
+/* --------------------------------------------------------- DROP SHADOW --- */
 
-  .modules-right {
-    border: 2px solid #f2e4cb;
-    background-color: #1e1e2e;
-    border-radius: 8px;
-    padding-right: 10px;
-    padding-left: 10px;
-  }
+window#waybar {
+  background: @shadow;
+}
 
-  #custom-launcher {
-    font-size: 20px;
-    color: #00bfff; /* deepskyblue */
-    padding-right: 10px;
-  }
+/* ------------------------------------------------------------ TOOLTIPS --- */
 
-  /* Workspace */
+tooltip {
+  background: @main-bg;
+  border: 1.5px solid @main-br;
+  border-radius: 8px;
+}
 
-#taskbar button,
+tooltip label {
+  color: @main-fg;
+  margin: -1.5px 3px;
+}
+
+/* ---------------------------------------- WORKSPACE BUTTONS and LABELS --- */
+
 #workspaces button {
-	  color: #7f849c;
-    box-shadow: none;
-	  text-shadow: none;
-    padding: 0px;
-    border-radius: 9px;
-    padding-left: 4px;
-    padding-right: 4px;
-    margin-top: 5px;
-    margin-bottom: 4px;
-    margin-left: 5px;
+  color: @module-fg;
+  border-radius: 8px;
+  box-shadow: none;
+  margin: 2px 0;
+  padding: 0 2px;
+  transition: none;
 }
 
-#taskbar button:hover,
 #workspaces button:hover {
-	  border-radius: 10px;
-	  color: #1e1e2e;
-	  background-color: #b69682;
-    padding-left: 4px;
-    padding-right: 4px;
+  color: @hover-fg;
+  background: @hover-bg;
+  text-shadow: none;
 }
 
-#workspaces button.persistent {
-	  color: #1e1e2e;
-	  border-radius: 10px;
-}
-
-#taskbar button.active,
 #workspaces button.active {
-	  color: #f2e4cb;
-	  background-color: #1e1e2e;
-    border-radius: 10px;
-    padding-left: 4px;
-    padding-right: 4px;
+  color: @active-fg;
+  background: @active-bg;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.4);
+  margin: 2px;
+  padding: 0 6px;
 }
 
-#workspaces button.urgent {
-	  color: #ff3030;
-    border-radius: 0px;
+/* ------------------------------------------------------------- GENERAL --- */
+
+#custom-ws,
+#workspaces,
+#window,
+#custom-cpuinfo,
+#memory,
+#cpu,
+#idle_inhibitor,
+#clock,
+#custom-wifi,
+#bluetooth,
+#custom-update,
+#mpris,
+#pulseaudio,
+#backlight,
+#battery,
+#custom-power {
+  opacity: 1;
+  color: @module-fg;
+  padding: 0 4px;
 }
 
-  #cpu,
-  #memory,
-  #temperature {
-    font-size: 14px;
-    background: #363a4f;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
+#custom-left1,
+#custom-left2,
+#custom-left3,
+#custom-left4,
+#custom-left5,
+#custom-left6,
+#custom-left7,
+#custom-left8 {
+  margin-bottom: 0;
+  text-shadow: -2px 0 2px rgba(0, 0, 0, 0.5);
+}
 
-  #cpu {
-    color: #eed49f;
-    padding: 0px 10px 0px 12px;
-    border-radius: 5px 0px 0px 5px;
-  }
+#custom-right1,
+#custom-right2,
+#custom-right3,
+#custom-right4,
+#custom-right5 {
+  margin-bottom: 0;
+  padding-right: 3px;
+  text-shadow: 2px 0 2px rgba(0, 0, 0, 0.5);
+}
 
-  #memory {
-    color: #a6da95;
-    padding: 0px 10px 0px 0px;
-  }
+/* ------------------------------------------------------------- MODULES --- */
 
-  #temperature {
-    color: #8aadf4;
-    padding: 0px 12px 0px 0px;
-    border-radius: 0px 5px 5px 0px;
-  }
+/* --------------------------------------------------------- window icon --- */
 
-  #custom-window-name {
-    margin-right: 10px;
-    color: #f2e4cb;
-  }
+#custom-ws {
+  background: @main-bg;
+}
 
-  #custom-pacman-update-icon {
-    background-color: #f2e4cb;
-    color: #1e1e2e;
-    padding-left: 5px;
-    padding-right: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-  }
+#custom-ws:hover {
+  color: @hover-fg;
+}
 
-  #custom-pacman-update {
-    color: #8bd5ca;
-    margin: 5px 10px 5px 0px;
-  }
+/* ---------------------------------------------------------- workspaces --- */
 
-  #battery {
-    color: #a6da95;
-    margin-right: 5px;
-    font-size: 12px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
+#custom-left1 {
+  color: @workspaces;
+  background: @main-bg;
+  margin-bottom: 0;
+  padding-left: 2px;
+}
 
-  #custom-power {
-    color: #ed8796;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    font-size: 12px;
-  }
+#workspaces {
+  background: @workspaces;
+}
 
-  #my_apps {
-    font-size: 12px;
-    background-color: #f2e4cb;
-    padding-left: 8px;
-    padding-right: 8px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    border-radius: 5px 5px 5px 5px;
-  }
+#custom-right1 {
+  color: @workspaces;
+  background: @main-bg;
+  text-shadow: 3px 0 2px rgba(0, 0, 0, 0.4);
+  margin-bottom: 0;
+}
 
-  #bluetooth,
-  #network,
-  #pulseaudio,
-  #backlight {
-    font-size: 12px;
-    background: #f2e4cb;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
+/* --------------------------------------------------------- temperature --- */
 
-  #connections {
-    font-size: 12px;
-  }
+#custom-paddc {
+  padding-right: 22px;
+}
 
-  #backlight {
-    color: #1e1e2e;
-    padding: 0px 5px 0px 10px;
-    border-radius: 5px 5px 5px 5px;
-  }
+#custom-left2 {
+  color: @cpuinfo;
+  background: @main-bg;
+  padding-left: 3px;
+}
 
-  #custom-wl-gammarelay-temperature {
-    font-size: 14px;
-    background: #363a4f;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
+#custom-cpuinfo {
+  background: @cpuinfo;
+  padding: 0 0 0 1px;
+}
 
-  #custom-wl-gammarelay-temperature {
-    color: #eed49f;
-    padding: 0px 10px 0px 10px;
-  }
+/* -------------------------------------------------------------- memory --- */
 
-  #pulseaudio {
-    color: #1e1e2e;
-    padding: 0px 10px 0px 10px;
-    border-radius: 5px 5px 5px 5px;
-  }
+#custom-left3 {
+  color: @memory;
+  background: @cpuinfo;
+  padding-left: 3px;
+}
 
-  #custom-right-arr {
-    color: #8aadf4;
-  }
+#memory {
+  background: @memory;
+  padding: 0 0 0 1px;
+}
 
-  #bluetooth {
-    color: #1e1e2e;
-    padding: 0px 10px 0px 10px;
-    border-radius: 5px 5px 5px 5px;
-  }
+#memory.warning {
+  color: @warning;
+}
 
-  #network {
-    color: #1e1e2e;
-    padding: 0px 14px 0px 10px;
-    border-radius: 5px 5px 5px 5px;
-  }
+#memory.critical {
+  color: @critical;
+}
 
-  #custom-dot {
-    color: #6e738d;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
+/* ----------------------------------------------------------------- cpu --- */
 
-  #custom-dot-alt {
-    color: #a5adcb;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
+#custom-left4 {
+  color: @cpu;
+  background: @memory;
+  padding-left: 3px;
+}
 
-  #custom-clock-icon {
-    background-color: #cad3f5;
-    color: #181926;
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-  }
+#cpu {
+  background: @cpu;
+}
 
-  #clock {
-    color: #1e1e2e;
-    margin-right: 5px;
-    margin-left: 5px;
-    margin-top: 5px;
-    margin-bottom: 4px;
-  }
+#custom-leftin1 {
+  color: @cpu;
+  margin-bottom: -1px;
+}
 
-  #custom-music {
-    background: #363a4f;
-    border-radius: 10px;
-    margin-top: 3px;
-    margin-bottom: 3px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
+/* --------------------------------------------------------- distro icon --- */
 
-  #custom-music.Playing {
-    text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.377);
-    font-weight: bold;
-    color: #fff;
-  }
+#custom-left5 {
+  color: @distro-bg;
+  background: @main-bg;
+  text-shadow: none;
+  margin-bottom: -2px;
+  padding-left: 3px;
+}
 
-  #custom-music.Paused,
-  #custom-music.Stopped {
-    background: #161925;
-  }
+#custom-distro {
+  color: @distro-fg;
+  background: @distro-bg;
+  margin: 0 -1px -2px 0;
+  padding: 0 0 0 3px;
+  text-shadow: 0 0 1.5px rgba(0, 0, 0, 1);
+}
 
-  #language {
-    color: #f2e4cb;
-    margin-right: 5px;
-    font-size: 12px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
+#custom-right2 {
+  color: @distro-bg;
+  background: @main-bg;
+  text-shadow: none;
+  margin-bottom: -2px;
+}
 
-  #custom-swaync {
-    color: #1e1e2e;
-    margin-right: 5px;
-    margin-left: 5px;
-    font-size: 12px;
-  }
+/* ---------------------------------------------------------------- time --- */
 
-  #idle_inhibitor {
-    color: #1e1e2e;
-    font-size: 12px;
-    margin-left: 5px;
-  }
+#custom-rightin1 {
+  color: @time;
+  margin-bottom: -1px;
+}
 
-/*----My apps----*/
+#idle_inhibitor {
+  background: @time;
+  padding: 0 0 0 7px;
+}
 
-  #custom-vesktop {
-    padding-right: 9px;
-    font-size: 12px;
-  }
+#idle_inhibitor:hover {
+  color: @hover-fg;
+}
 
-  #custom-telegram {
-    padding-right: 13px;
-    font-size: 12px;
-  }
+#clock.time {
+  background: @time;
+  margin-left: -2px;
+  padding: 0 3px 0 0;
+}
 
-  #custom-thunar {
-    padding-right: 13px;
-    font-size: 12px;
-  }
+#custom-right3 {
+  color: @time;
+  background: @date;
+}
 
-  #custom-codium {
-    padding-right: 5px;
-    font-size: 12px;
-  }
+/* ---------------------------------------------------------------- date --- */
 
-  #custom-librewolf {
-    padding-right: 13px;
-    font-size: 12px;
-  }
+#clock.date {
+  background: @date;
+}
 
-  #custom-menu {
-    color: #f2e4cb;
-    font-size: 12px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
+#clock.date:hover {
+  color: @hover-fg;
+}
 
-  #custom-power {
-    margin-top: 5px;
-    margin-bottom: 5px;
-  }
+#custom-right4 {
+  color: @date;
+  background: @tray;
+}
 
-  #custom-cava_mviz {
-    color: #f2e4cb;
-  }
+/* ---------------------------------------------------------------- tray --- */
+
+#custom-wifi {
+  background: @tray;
+  padding: 0 8px 0 5px;
+}
+
+#custom-wifi:hover {
+  color: @hover-fg;
+}
+
+#bluetooth {
+  background: @tray;
+  padding-right: 5px;
+}
+
+#bluetooth:hover {
+  color: @hover-fg;
+}
+
+#custom-update {
+  padding-right: 8px;
+  background: @tray;
+}
+
+#custom-update:hover {
+  color: @hover-fg;
+}
+
+#custom-right5 {
+  color: @tray;
+  background: @main-bg;
+}
+
+/* ---------------------------------------------------------- media info --- */
+
+#mpris {
+  background: @main-bg;
+  padding: 0 8px 0;
+}
+
+#mpris:hover {
+  color: @hover-fg;
+}
+
+/*
+    output device
+*/
+
+#custom-left6 {
+  color: @pulseaudio;
+  background: @main-bg;
+  padding-left: 3px;
+}
+
+#pulseaudio {
+  background: @pulseaudio;
+}
+
+#pulseaudio:hover {
+  color: @hover-fg;
+}
+
+/* ---------------------------------------------------------- brightness --- */
+
+#custom-left7 {
+  color: @backlight;
+  background: @pulseaudio;
+  padding-left: 2px;
+}
+
+#backlight {
+  background: @backlight;
+}
+
+/* ------------------------------------------------------------- battery --- */
+
+#custom-left8 {
+  color: @battery;
+  background: @backlight;
+  padding-left: 2px;
+}
+
+#battery {
+  color: @module-fg;
+  background: @battery;
+}
+
+#battery.warning {
+  color: @warning;
+}
+
+#battery.critical {
+  color: @critical;
+}
+
+#battery.charging {
+  color: @charging;
+}
+
+/* -------------------------------------------------------- power button --- */
+
+#custom-leftin2 {
+  color: @battery;
+  background: @main-bg;
+  margin-bottom: -1px;
+}
+
+#custom-power {
+  color: @main-bg;
+  background: @power;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  margin: 2px 4px 2px 0;
+  padding: 0 6px 0 9px;
+}
+
+#custom-power:hover {
+  color: @hover-fg;
+  background: @hover-bg;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------- FONT SIZES --- */
+
+/*
+    NOTE: Be careful when changing font sizes, as they
+    can affect alignment.
+
+    Try adjusting whole numbers first, then refine with
+    decimals.
+
+    If you increase or decrease a value, make the same
+    change to all properties in this section to keep
+    the layout consistent.
+*/
+
+* {
+  font-family: "RobotoMono Nerd Font";
+  font-size: 13px;
+  font-weight: bold;
+}
+
+tooltip label,
+#window label,
+#mpris {
+  font-weight: normal;
+}
+
+/* ----------------------------------------------- left and right arrows --- */
+
+#custom-left1,
+#custom-left2,
+#custom-left3,
+#custom-left4,
+#custom-left5,
+#custom-left6,
+#custom-left7,
+#custom-left8,
+#custom-right1,
+#custom-right2,
+#custom-right3,
+#custom-right4,
+#custom-right5 {
+  font-size: 20px;
+}
+
+/* ---------------------------------------------- left and right inverse --- */
+
+#custom-leftin1,
+#custom-leftin2,
+#custom-rightin1 {
+  font-size: 20px;
+}
+
+/* -------------------------------------------------------------- distro --- */
+
+#custom-distro {
+  font-size: 20px;
+}
+
+#custom-left5,
+#custom-right2 {
+  font-size: 20px;
+}
+
+/*
+    Adjust these properties as well to keep the design
+    consistent.
+*/
+
+#workspaces button {
+  border-radius: 8px;
+  padding: 0 2px;
+}
+
+#workspaces button.active {
+  padding: 0 6px;
+}
+
+#custom-power {
+  border-radius: 10px;
+  padding: 0 6px 0 9px;
+}
+
+/*
+    NOTE: If your changes don’t take effect, they might
+    be overridden by `animation.css`.
+
+    To fix this, copy your updated font sizes from this
+    file and paste them into the corresponding `*_expand`
+    keyframes.
+
+    For example, if you change the font size of the
+    distro icon, update it in `distro_expand`.
+
+    - distro icon → `distro_expand` (line 143)
+    - power button → `power_expand` (line 158)
+    - all other modules → `module_expand` (line 172)
+*/
+
+@import "animation.css";

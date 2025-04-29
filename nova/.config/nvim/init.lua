@@ -1,15 +1,8 @@
-vim.cmd("set verbosefile=/tmp/nvim-log.txt")
-vim.cmd("set verbose=10")
-
--- Line number
+-- General Settings
 vim.wo.number = true
-
--- Set leader key to space
 vim.g.mapleader = ' '
-
- -- Use the system clipboard
 vim.opt.clipboard = 'unnamedplus'
-
+vim.o.mouse = 'a'  
 
 -- Automatically install Lazy.nvim if not present
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
@@ -21,88 +14,98 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.runtimepath:prepend(lazypath)
 
--- Lazy.nvim setup
+-- ========================================================
+-- 🔌 PLUGIN SETUP (Managed via Lazy.nvim)
+-- This section includes plugin configurations for UI, LSP,
+-- completions, terminal integration, file explorer, and more.
+-- ========================================================
 require('lazy').setup({
-  -- Add your plugins here
-  --Theme
-  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
-  -- File explorer
-    {
+--  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+  {
+    'projekt0n/github-nvim-theme',
+    name = 'github-theme',
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    priority = 1000, -- make sure to load this before all the other start plugins
+    config = function()
+      require('github-theme').setup({
+        -- ...
+      })
+  
+      vim.cmd('colorscheme github_dark')
+    end,
+  },
+  {
     'nvim-tree/nvim-tree.lua',
-    requires = { 'nvim-tree/nvim-web-devicons' }, -- optional, for file icons
+    requires = { 'nvim-tree/nvim-web-devicons' },
     config = function()
       require('nvim-tree').setup {}
     end
   },
 
-  -- Completion plugins
   {
     'hrsh7th/nvim-cmp',
     dependencies = {
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-buffer',
-      'hrsh7th/cmp-path', -- Path completion for file names and paths
+      'hrsh7th/cmp-path',
       'hrsh7th/cmp-cmdline',
       'hrsh7th/cmp-nvim-lsp-signature-help',
     },
     config = function()
       local cmp = require('cmp')
       cmp.setup({
-        completion = {
-          completeopt = 'menu,menuone,noinsert',
-        },
+        completion = { completeopt = 'menu,menuone,noinsert' },
+	window = {
+    	  completion = cmp.config.window.bordered(),
+	  documentation = cmp.config.window.bordered(),
+  	},
         mapping = {
           ['<C-k>'] = cmp.mapping.select_prev_item(),
           ['<C-j>'] = cmp.mapping.select_next_item(),
           ['<C-Space>'] = cmp.mapping.complete(),
-          ['<CR>'] = cmp.mapping.confirm({ select = true }),
+          ['<Tab>'] = cmp.mapping.confirm({ select = true }),
         },
         sources = {
           { name = 'nvim_lsp' },
           { name = 'buffer' },
-          { name = 'path' }, -- Enable path completion
+          { name = 'path' },
         },
       })
     end,
   },
-
-  --Toggle Terminal
   {'akinsho/toggleterm.nvim', version = "*", config = true},
-
-  -- Syntax Highlighting
   { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' },
-
-  -- Status Line
   { 'nvim-lualine/lualine.nvim' },
-
-  -- Notifications
   {'rcarriga/nvim-notify'},
-
-  --Vim commands auto complete
   {'gelguy/wilder.nvim'},
-
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {},
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+      "rcarriga/nvim-notify",
+    }
+  },
   {
     'nvim-telescope/telescope.nvim', tag = '0.1.8',
--- or                              , branch = '0.1.x',
-      dependencies = { 'nvim-lua/plenary.nvim' }
+    dependencies = { 'nvim-lua/plenary.nvim' }
   },
-
-
-  -- LSP Config and Setup (Add this section)
+  {
+    'windwp/nvim-autopairs',
+    event = "InsertEnter",
+    config = true
+  },
   {
     'neovim/nvim-lspconfig',
     config = function()
-      -- Import and configure nvim-cmp for LSP support
       local cmp = require('cmp')
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-      -- nvim-cmp setup
       cmp.setup({
         snippet = {
           expand = function(args)
-            vim.fn["vsnip#anonymous"](args.body)  -- For `vsnip` users
-            -- You can configure other snippet engines here if needed
-            -- require('luasnip').lsp_expand(args.body) -- For `luasnip`
+            vim.fn["vsnip#anonymous"](args.body)
           end,
         },
         mapping = cmp.mapping.preset.insert({
@@ -110,185 +113,166 @@ require('lazy').setup({
           ['<C-f>'] = cmp.mapping.scroll_docs(4),
           ['<C-Tab>'] = cmp.mapping.complete(),
           ['<C-e>'] = cmp.mapping.abort(),
-          ['<CR>'] = cmp.mapping.confirm({ select = true }),
+          ['<Tab>'] = cmp.mapping.confirm({ select = true }),
         }),
         sources = cmp.config.sources({
           { name = 'nvim_lsp' },
-          { name = 'vsnip' },  -- For `vsnip` users
-          -- Add other snippet engines here if required
-          -- { name = 'luasnip' },
-          -- { name = 'ultisnips' },
-          -- { name = 'snippy' },
+          { name = 'vsnip' },
         }, {
           { name = 'buffer' },
         })
       })
 
-      -- Setup LSP servers with cmp_nvim_lsp
       local lspconfig = require('lspconfig')
-      lspconfig['pyright'].setup {  -- Example LSP server (Pyright)
-        capabilities = capabilities
-      }
-      lspconfig['ts_ls'].setup {  -- Example LSP server (tsserver)
-        capabilities = capabilities
-      }
-      -- Add more LSP servers as needed (e.g., 'clangd', 'gopls', 'rust_analyzer', etc.)
+      lspconfig['pyright'].setup { capabilities = capabilities }
+      lspconfig['ts_ls'].setup { capabilities = capabilities }
     end
   },
-
-  -- Custom Parameters (with default)
---#####################################################################################################################################
-  {
-    "yetone/avante.nvim",
-    event = "VeryLazy",
-    version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
-    opts = {
-      -- add any opts here
-      -- for example
-      provider = "ollama",
-      ollama = {
-        model = "gemma3:4b", -- your desired model (or use gpt-4o, etc.)
-      },
-    },
-    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-    build = "make",
-    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "stevearc/dressing.nvim",
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      --- The below dependencies are optional,
-      "echasnovski/mini.pick", -- for file_selector provider mini.pick
-      "nvim-telescope/telescope.nvim", -- for file_selector provider telescope
-      "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
-      "ibhagwan/fzf-lua", -- for file_selector provider fzf
-      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-      "zbirenbaum/copilot.lua", -- for providers='copilot'
-      {
-        -- support for image pasting
-        "HakonHarnes/img-clip.nvim",
-        event = "VeryLazy",
-        opts = {
-          -- recommended settings
-          default = {
-            embed_image_as_base64 = false,
-            prompt_for_file_name = false,
-            drag_and_drop = {
-              insert_mode = true,
-            },
-            -- required for Windows users
-            use_absolute_path = true,
-          },
-        },
-      },
-      {
-        -- Make sure to set this up properly if you have lazy=true
-        'MeanderingProgrammer/render-markdown.nvim',
-        opts = {
-          file_types = { "markdown", "Avante" },
-        },
-        ft = { "markdown", "Avante" },
-      },
-    },
-  },
---
---
---
---
---###########################################################################################
-  {
-    dir = "~/projects/ollama.nvim",  -- Path to your local plugin
-    dev = true,  -- Mark as development plugin
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope.nvim",
-    },
-    config = function()
-      require("ollama").setup({
-        host = "http://localhost:11434",
-        model = "gemma3:4b",
-        system_prompt = "You are a helpful assistant."
-      })
-      require("ollama").init()
-    end,
-  }
 })
 
--- Additional plugin configurations can go here
+-- ====================
+-- 🌳 UI and UX Enhancements
+-- ====================
+--vim.cmd.colorscheme "cyberdream"
 
--- Keybinding to toggle nvim-tree
+local wilder = require('wilder')
+wilder.setup({ modes = { ':', '/', '?' } })
+
+require("noice").setup({
+  lsp = {
+    override = {
+      ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+      ["vim.lsp.util.stylize_markdown"] = true,
+      ["cmp.entry.get_documentation"] = true,
+    },
+  },
+  presets = {
+    bottom_search = true,
+    command_palette = true,
+    long_message_to_split = true,
+    inc_rename = false,
+    lsp_doc_border = false,
+  },
+})
+
+-- ====================
+-- 🗝️ KEYBINDINGS
+-- ====================
+
+-- File Tree
 vim.api.nvim_set_keymap('n', '<leader>e', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
 
--- Key mappings for tabs
-vim.api.nvim_set_keymap('n', '<C-t>', ':tabnew<CR>', { noremap = true, silent = true }) -- Open new tab
-vim.api.nvim_set_keymap('n', '<C-Tab>', ':tabnext<CR>', { noremap = true, silent = true }) -- Next tab
-vim.api.nvim_set_keymap('n', '<C-S-Tab>', ':tabprevious<CR>', { noremap = true, silent = true }) -- Previous tab
+-- Tabs
+vim.api.nvim_set_keymap('n', '<C-t>', ':tabnew<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-Tab>', ':tabnext<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-S-Tab>', ':tabprevious<CR>', { noremap = true, silent = true })
 
-
--- Key bindings for telescope
+-- Telescope
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
 vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
 
+-- Terminal Open
+vim.api.nvim_set_keymap("n", "<M-v>", ":ToggleTerm direction=vertical size=50<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<C-d>", ":ToggleTerm direction=vertical size=50<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<M-h>", ":ToggleTerm direction=horizontal size=10<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<M-d>", ":ToggleTerm direction=float<CR>", { noremap = true, silent = true })
 
-local wilder = require('wilder')
-wilder.setup({modes = {':', '/', '?'}})
+-- Toggle Terminal Focus
+function ToggleTerminalFocus()
+  local term_buf_type = "terminal"
+  local buf_type = vim.api.nvim_buf_get_option(0, "buftype")
 
---Color 
-vim.cmd.colorscheme "catppuccin"
-
-
---Terminal keymap
-vim.api.nvim_set_keymap("n", "<Leader>tr", ":ToggleTerm direction=vertical size=50<CR>", { noremap = true, silent = true })
-
-vim.api.nvim_set_keymap("n", "<Leader>tb", ":ToggleTerm direction=horizontal size=10<CR>", { noremap = true, silent = true })
-
-
-require("toggleterm").setup {
-  size = 20,  -- Adjust the default size
-  open_mapping = nil,  -- Disable the default keymap
-  direction = "float",  -- Ensure it's a floating terminal
-}
-
-vim.api.nvim_set_keymap("n", "<C-d>", ":ToggleTerm direction=float<CR>", { noremap = true, silent = true })
-
--- Define a function to toggle focus between NvimTree and the previous window
-function ToggleNvimTreeFocus()
-  local view = require('nvim-tree.view')
-  if view.is_visible() then
-    if vim.fn.winnr() == view.get_winnr() then
-      vim.cmd('wincmd p') -- Focus on the previous window
-    else
-      view.focus() -- Focus on NvimTree
+  if buf_type == term_buf_type then
+    vim.cmd("wincmd p")
+  else
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      local buf = vim.api.nvim_win_get_buf(win)
+      local btype = vim.api.nvim_buf_get_option(buf, "buftype")
+      if btype == term_buf_type then
+        vim.api.nvim_set_current_win(win)
+        return
+      end
     end
   end
 end
 
--- Create a keybinding to toggle NvimTree focus
+vim.api.nvim_set_keymap('n', '<M-Right>', ':lua ToggleTerminalFocus()<CR>', { noremap = true, silent = true })
+
+-- Toggle NvimTree Focus
+function ToggleNvimTreeFocus()
+  local view = require('nvim-tree.view')
+  if view.is_visible() then
+    if vim.fn.winnr() == view.get_winnr() then
+      vim.cmd('wincmd p')
+    else
+      view.focus()
+    end
+  end
+end
+
 vim.api.nvim_set_keymap('n', '<M-Left>', ':lua ToggleNvimTreeFocus()<CR>', { noremap = true, silent = true })
 
-
--- Automatically open nvim-tree when opening Neovim without arguments
+-- Auto open nvim-tree on startup
 vim.cmd([[
   autocmd VimEnter * if argc() == 0 | NvimTreeOpen | endif
 ]])
 
-
-
-
+-- Reload config
 function ReloadConfig()
-  -- Reload the main config
   dofile(vim.env.MYVIMRC)
-  
-  -- Reload Lazy.nvim managed plugins
   require('lazy').sync()
-
   print("Neovim configuration reloaded!")
 end
+--vim.api.nvim_set_keymap('n', '<leader>rr', ':lua ReloadConfig()<CR>', { noremap = true, silent = true })
 
--- Optionally, bind this to a key (e.g., <leader>rr)
-vim.api.nvim_set_keymap('n', '<leader>rr', ':lua ReloadConfig()<CR>', { noremap = true, silent = true })
+-- Focus back to the editor (from terminal or NvimTree)
+function FocusEditor()
+  local buf_type = vim.api.nvim_buf_get_option(0, "buftype")
+  local filetype = vim.bo.filetype
 
+  if buf_type == "terminal" or filetype == "NvimTree" then
+    vim.cmd("wincmd p") -- go to previous window
+  end
+end
+vim.api.nvim_set_keymap('n', '<M-Down>', ':lua FocusEditor()<CR>', { noremap = true, silent = true })
+
+
+require("notify").setup({
+  timeout = 300,
+  top_down = false,
+})
+
+-- Define this globally once
+local Terminal = require('toggleterm.terminal').Terminal
+
+-- Single persistent terminal instance
+local python_runner = nil
+
+function RunPythonFile()
+  -- Create terminal only once
+  if not python_runner then
+    python_runner = Terminal:new({
+      direction = "float",
+      close_on_exit = true,
+      hidden = true,
+    })
+  end
+
+  local file = vim.fn.expand("%:p")
+
+  -- Open if it's not open yet
+  if not python_runner:is_open() then
+    python_runner:toggle()
+  end
+
+  -- Send the Python run command
+  python_runner:send("python3 " .. file)
+end
+
+-- Keymap
+vim.api.nvim_set_keymap("n", "<leader>r", ":lua RunPythonFile()<CR>", { noremap = true, silent = true })
+
+vim.o.guifont = "Adwaita"
