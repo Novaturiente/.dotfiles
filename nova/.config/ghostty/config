@@ -4,7 +4,7 @@ confirm-close-surface = false
 
 gtk-titlebar = false
 
-theme = detuned
+theme = FishTank
 
 shell-integration = fish
 
@@ -17,7 +17,7 @@ keybind = alt+tab=toggle_tab_overview
 mouse-hide-while-typing = true
 gtk-adwaita = false
 
-#font-family = JetBrainsMono Nerd Font Mono
-font-family = FiraCodeNerdFont
+font-family = JetBrainsMono Nerd Font Mono
+#font-family = RobotoMono Nerd Font Mono
 font-size = 14
 
