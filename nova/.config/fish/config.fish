@@ -9,9 +9,6 @@ alias vi="nvim"
 set VISUAL "nvim"
 set EDITOR "nvim"
 
-alias winstart="docker compose --file ~/.config/winapps/compose.yaml start"
-alias winstop="docker compose --file ~/.config/winapps/compose.yaml stop"
-alias winrestart="docker compose --file ~/.config/winapps/compose.yaml restart"
 alias systemupdate="sudo akshara update && reboot"
 
 set NVIM_LOG_FILE "$HOME/.cache/nvim/my_custom_log.txt"

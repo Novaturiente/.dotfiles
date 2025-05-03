@@ -13,14 +13,13 @@ services:
       PATH: $PATH
       NVIDIA_DRIVER_CAPABILITIES: all
       NVIDIA_VISIBLE_DEVICES: all
-    #deploy:
-    #  resources:
-    #    reservations:
-    #      devices:
-    #        - driver: cdi
-    #          device_ids:
-    #            - nvidia.com/gpu=all
-    #          capabilities: [gpu]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
   open-webui:
     build:
