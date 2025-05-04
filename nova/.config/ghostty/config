@@ -1,5 +1,5 @@
 window-decoration = false
-background-opacity = 0.7
+background-opacity = 0.5
 confirm-close-surface = false
 
 gtk-titlebar = false
