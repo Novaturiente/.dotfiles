@@ -12,3 +12,6 @@ set EDITOR "nvim"
 alias systemupdate="sudo akshara update && reboot"
 
 set NVIM_LOG_FILE "$HOME/.cache/nvim/my_custom_log.txt"
+
+set -U fish_user_paths ~/.npm-global/bin $fish_user_paths
+
