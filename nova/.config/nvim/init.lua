@@ -143,12 +143,7 @@ require('lazy').setup({
   -- === Terminal ===
   {'akinsho/toggleterm.nvim', version = "*", config = true}, -- Toggleable terminal
   {'liangxianzhe/floating-input.nvim'},
-  {
-    "AckslD/messages.nvim",
-    config = function()
-      require("messages").setup()
-    end,
-  },
+
   -- === Syntax Highlighting & Text Objects ===
   {
     'nvim-treesitter/nvim-treesitter',

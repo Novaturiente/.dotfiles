@@ -1,6 +1,7 @@
 local M = {}
 
 function M.copy_visual_to_clipboard()
+  local vim = vim
   local bufnr = vim.api.nvim_get_current_buf()
   local start_pos = vim.api.nvim_buf_get_mark(bufnr, "<")
   local end_pos = vim.api.nvim_buf_get_mark(bufnr, ">")
