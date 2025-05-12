@@ -2,6 +2,8 @@ set fish_greeting
 
 source ~/.config/fish/cachyos-config.fish
 
+source ~/.env.fish
+
 zoxide init fish | source
 
 alias vi="nvim"

@@ -142,7 +142,13 @@ require('lazy').setup({
 
   -- === Terminal ===
   {'akinsho/toggleterm.nvim', version = "*", config = true}, -- Toggleable terminal
-
+  {'liangxianzhe/floating-input.nvim'},
+  {
+    "AckslD/messages.nvim",
+    config = function()
+      require("messages").setup()
+    end,
+  },
   -- === Syntax Highlighting & Text Objects ===
   {
     'nvim-treesitter/nvim-treesitter',
@@ -281,6 +287,21 @@ require('lazy').setup({
       require('uv').setup()
     end,
   },
+  -- Golang plugin
+  {
+    "ray-x/go.nvim",
+    dependencies = {  -- optional packages
+      "ray-x/guihua.lua",
+      "neovim/nvim-lspconfig",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    config = function()
+      require("go").setup()
+    end,
+    event = {"CmdlineEnter"},
+    ft = {"go", 'gomod'},
+    build = ':lua require("go.install").update_all_sync()' -- if you need to install/update all binaries
+  },
 })
 
 -- ========================================================
@@ -405,6 +426,19 @@ rt.setup({
 })
 
 
+-- Go SLP CONFIG
+require('go').setup()
+-- Run gofmt + goimports on save
+local format_sync_grp = vim.api.nvim_create_augroup("goimports", {})
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.go",
+  callback = function()
+   require('go.format').goimports()
+  end,
+  group = format_sync_grp,
+})
+
+
 --Completion Plugin Setup
 local cmp = require'cmp'
 cmp.setup({
@@ -457,7 +491,6 @@ cmp.setup({
   },
 })
 
-
 -- Run current file
 local Terminal = require("toggleterm.terminal").Terminal
 
@@ -470,6 +503,8 @@ function RunFile()
     cmd = 'fish -c "uv run ' .. file .. '; fish"'
   elseif ext == "rs" then
     cmd = 'fish -c "cargo run; fish"'
+  elseif ext == "go" then
+    cmd = 'fish -c "go run ' .. file .. '; fish"'
   else
     print("No run command for extension: " .. ext)
     return
@@ -564,6 +599,11 @@ function ReloadConfig()
 end
 vim.api.nvim_set_keymap('n', '<leader>rc', ':lua ReloadConfig()<CR>', { noremap = true, silent = true, desc = "Reload Config" })
 
+-- Buffer navigation
+vim.api.nvim_set_keymap('n', '<M-Right>', ':bnext<CR>', { noremap = true, silent = true, desc = "Buffer: Next" })
+vim.api.nvim_set_keymap('n', '<M-Left>', ':bprev<CR>', { noremap = true, silent = true, desc = "Buffer: Previous" })
+
+
 -- Keybinding Cheatsheet
 require("keybindings.cheatsheet")
 vim.api.nvim_set_keymap("n", "<leader>xs", ":lua require'keybindings.cheatsheet'.show_cheat_sheet()<CR>", { noremap = true, silent = true, desc = "Show Keybinding Cheatsheet" })
@@ -573,23 +613,7 @@ vim.api.nvim_set_keymap("n", "<leader>xs", ":lua require'keybindings.cheatsheet'
 -- 📂 AUTOCOMMANDS
 -- ========================================================
 
--- Auto open nvim-tree on startup if no file is opened
--- vim.cmd([[
---   autocmd VimEnter * if argc() == 0 | NvimTreeOpen | endif
--- ]])
---
---
--- vim.api.nvim_create_autocmd("LspAttach", {
---   group = vim.api.nvim_create_augroup('lsp_attach_disable_ruff_hover', { clear = true }),
---   callback = function(args)
---     local client = vim.lsp.get_client_by_id(args.data.client_id)
---     if client == nil then
---       return
---     end
---     if client.name == 'ruff' then
---       -- Disable hover in favor of Pyright
---       client.server_capabilities.hoverProvider = false
---     end
---   end,
---   desc = 'LSP: Disable hover capability from Ruff',
--- })
+vim.keymap.set('v', '<leader>y', function()
+  require('custom').copy_visual_to_clipboard()
+end, { noremap = true, silent = true })
+
