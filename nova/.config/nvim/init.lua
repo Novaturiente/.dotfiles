@@ -2,6 +2,7 @@
 -- ✨ GENERAL SETTINGS
 -- ========================================================
 
+local vim = vim
 -- Enable line numbers
 vim.wo.number = true
 -- Set leader key to space
@@ -89,10 +90,10 @@ require('lazy').setup({
     name = 'tokyonight',
     lazy = false,
     priority = 1000,
-    -- config = function()
-    --   require('tokyonight').setup({})
-    --   vim.cmd('colorscheme tokyonight-night')
-    -- end,
+   config = function()
+      require('tokyonight').setup({})
+      vim.cmd('colorscheme tokyonight-night')
+    end,
   },
   {
     "scottmckendry/cyberdream.nvim",
@@ -334,18 +335,18 @@ require("notify").setup({
   top_down = false,
 })
 
--- theme configuration
-require("cyberdream").setup({
-    variant = "default",
-    transparent = true,
-    saturation = 0.7,
-    italic_comments = false,
-    -- Apply a modern borderless look to pickers like Telescope, Snacks Picker & Fzf-Lua
-    borderless_pickers = false,
-    terminal_colors = true,
-    cache = false,
-})
-vim.cmd("colorscheme cyberdream")
+-- -- theme configuration
+-- require("cyberdream").setup({
+--     variant = "default",
+--     transparent = false,
+--     saturation = 0.7,
+--     italic_comments = false,
+--     -- Apply a modern borderless look to pickers like Telescope, Snacks Picker & Fzf-Lua
+--     borderless_pickers = false,
+--     terminal_colors = true,
+--     cache = false,
+-- })
+-- vim.cmd("colorscheme cyberdream")
 
 -- ========================================================
 -- 🛠️ HELPER FUNCTIONS
@@ -598,6 +599,11 @@ vim.api.nvim_set_keymap('n', '<leader>rc', ':lua ReloadConfig()<CR>', { noremap 
 vim.api.nvim_set_keymap('n', '<M-Right>', ':bnext<CR>', { noremap = true, silent = true, desc = "Buffer: Next" })
 vim.api.nvim_set_keymap('n', '<M-Left>', ':bprev<CR>', { noremap = true, silent = true, desc = "Buffer: Previous" })
 
+-- Trigger AI
+vim.keymap.set('v', '<leader>y', function()
+  require('custom').copy_visual_to_clipboard()
+end, { noremap = true, silent = true })
+
 
 -- Keybinding Cheatsheet
 require("keybindings.cheatsheet")
@@ -607,8 +613,3 @@ vim.api.nvim_set_keymap("n", "<leader>xs", ":lua require'keybindings.cheatsheet'
 -- ========================================================
 -- 📂 AUTOCOMMANDS
 -- ========================================================
-
-vim.keymap.set('v', '<leader>y', function()
-  require('custom').copy_visual_to_clipboard()
-end, { noremap = true, silent = true })
-

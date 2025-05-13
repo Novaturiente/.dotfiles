@@ -1,7 +1,6 @@
 local M = {}
-
+local vim = vim
 function M.copy_visual_to_clipboard()
-  local vim = vim
   local bufnr = vim.api.nvim_get_current_buf()
   local start_pos = vim.api.nvim_buf_get_mark(bufnr, "<")
   local end_pos = vim.api.nvim_buf_get_mark(bufnr, ">")
@@ -20,7 +19,7 @@ function M.copy_visual_to_clipboard()
     vim.fn.setreg('+', combined_text)
     local plugin_path = debug.getinfo(1, "S").source:sub(2)
     local plugin_dir = vim.fn.fnamemodify(plugin_path, ":h")
-    local ai_binary = plugin_dir .. "/ai"
+    local ai_binary = plugin_dir .. "/ollama"
     if vim.fn.filereadable(ai_binary) ~= 1 then
       vim.notify("Error: 'ai' binary not found at: " .. ai_binary, vim.log.levels.ERROR)
       return
@@ -75,7 +74,6 @@ function M.copy_visual_to_clipboard()
         vim.api.nvim_buf_set_keymap(float_buf, 'n', 'y', 
           ':let @+ = join(getline(1, "$"), "\\n")<CR>:echo "Response copied to clipboard again"<CR>', 
           { noremap = true, silent = true })
-        vim.api.nvim_buf_set_keymap(float_buf, 'n', 'q', ':q<CR>', { noremap = true, silent = true })
       end,
       on_stderr = function(_, data)
         os.remove(temp_file)

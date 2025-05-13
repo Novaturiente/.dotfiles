@@ -3,7 +3,7 @@
 # Configuration Variables
 THEME="bookmarks"
 BOOKMARKS_FILE="$HOME/.dotfiles/.bookmarks"
-BROWSER="surf"
+BROWSER="qutebrowser"
 export GDK_BACKEND=x11
 
 if [[ ! -a "${BOOKMARKS_FILE}" ]]; then
