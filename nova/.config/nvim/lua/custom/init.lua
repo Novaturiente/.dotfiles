@@ -19,7 +19,7 @@ function M.copy_visual_to_clipboard()
     vim.fn.setreg('+', combined_text)
     local plugin_path = debug.getinfo(1, "S").source:sub(2)
     local plugin_dir = vim.fn.fnamemodify(plugin_path, ":h")
-    local ai_binary = plugin_dir .. "/ollama"
+    local ai_binary = plugin_dir .. "/ai"
     if vim.fn.filereadable(ai_binary) ~= 1 then
       vim.notify("Error: 'ai' binary not found at: " .. ai_binary, vim.log.levels.ERROR)
       return

@@ -12,6 +12,10 @@ config.set('content.javascript.clipboard', 'access-paste', 'https://github.com')
 config.set('colors.webpage.darkmode.enabled', True)
 config.set('colors.webpage.darkmode.policy.page', 'always')
 config.set('colors.webpage.preferred_color_scheme', "dark")
+config.bind('<Ctrl-/>', 'spawn mpv {url}')
+config.bind('xx', 'hint links spawn mpv {hint-url}')
+config.bind('xz', 'hint links spawn mpv --add-to-queue {hint-url}')
+config.set('content.autoplay', False)
 
 c.url.searchengines = {
     'DEFAULT':  'https://google.com/search?hl=en&q={}'
