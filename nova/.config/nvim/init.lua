@@ -601,7 +601,11 @@ vim.api.nvim_set_keymap('n', '<M-Left>', ':bprev<CR>', { noremap = true, silent 
 
 -- Trigger AI
 vim.keymap.set('v', '<leader>y', function()
-  require('custom').copy_visual_to_clipboard()
+  require('gemini').copy_visual_to_clipboard()
+end, { noremap = true, silent = true })
+
+vim.keymap.set('v', '<leader>o', function()
+  require('ollama').copy_visual_to_clipboard()
 end, { noremap = true, silent = true })
 
 
