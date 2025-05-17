@@ -3,7 +3,7 @@ services:
     volumes:
       - /home/nova/Docker/docker_data/ollama:/root/.ollama
     container_name: ollama
-    pull_policy: always
+#    pull_policy: always
     tty: true
     image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
     ports:
@@ -29,7 +29,7 @@ services:
       dockerfile: Dockerfile
     image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
     container_name: open-webui
-    pull_policy: always
+#    pull_policy: always
     volumes:
       - /home/nova/Docker/docker_data/open-webui:/app/backend/data
     ports:

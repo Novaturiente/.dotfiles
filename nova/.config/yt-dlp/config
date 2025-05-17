@@ -1,1 +1,1 @@
---extractor-args youtube:player_client=tvhtml5;player_skip=configs
+../../.dotfiles/nova/.config/yt-dlp/config

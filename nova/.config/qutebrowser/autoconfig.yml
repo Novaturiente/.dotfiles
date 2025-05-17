@@ -6,7 +6,5 @@
 
 config_version: 2
 settings:
-  bindings.commands:
-    global:
-      normal:
-        ',v': spawn mpv {url}
+  content.javascript.clipboard:
+    https://chatgpt.com: access-paste
