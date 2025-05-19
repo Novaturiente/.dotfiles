@@ -1,60 +1,21 @@
-#impl: http://github.com/blend-os/tracks/raw/main
+impl: http://github.com/blend-os/tracks/raw/main
 arch-repo: https://geo.mirror.pkgbuild.com
 repo: https://pkg-repo.blendos.co
 
-track: 'custom'
+track: blendos-base
 
 packages:
-
   # ESSENTIAL - Base System & Core Functionality
-  - arch-install-scripts           # Arch installation scripts.
-  - archlinux-keyring              # Package signature keyring.
-  - pacman                         # Arch package manager.
-  - systemd                        # System and service manager.
-  - coreutils                      # Essential system utilities.
-  - glibc                          # GNU C Library.
-  - gcc-libs                       # GCC libraries.
-  - bash                           # Default shell.
-  - shadow                         # User and group management.
-  - systemd-sysvcompat             # SysV init compatibility.
-  - linux-firmware                 # Hardware firmware.
-  - intel-ucode                    # Intel CPU microcode updates.
-  - linux-zen                      # Optimized kernel (optional).
-  - linux-zen-headers              # Zen kernel headers (optional).
-  - e2fsprogs                      # ext2/3/4 filesystem tools.
-  - dosfstools                     # FAT filesystem tools.
-  - gptfdisk                       # GPT partitioning tool.
-  - efibootmgr                     # UEFI boot manager.
-  - grub                           # Bootloader.
-  - iproute2                       # IP address/routing utilities.
-  - iputils                        # Networking utilities (ping).
-  - dhclient                       # DHCP client.
-  - networkmanager                 # Network management daemon.
-  - pciutils                       # PCI device utilities.
-  - usbutils                       # USB device utilities.
-  - findutils                      # File/directory search.
-  - grep                           # Pattern search tool.
-  - sed                            # Stream editor.
-  - tar                            # Archive tool.
-  - gzip                           # Compression utility.
-  - bzip2                          # Compression utility.
-  - xz                             # Compression utility.
-  - gettext                        # Internationalization tools.
-  - base-devel                     # Development tools.
-  - man-db                         # Man page database.
-  - man-pages                      # Manual pages.
-  - sudo                           # Execute commands as root.
-  - openssh                        # Secure communication/remote login.
-  - rsync                          # File/directory synchronization.
-  - usb_modeswitch                 # USB mode switching utility.
   - inetutils                      # Basic networking utilities like ping, hostname
   - file                           # Determines file type
   - cpio                           # Tool to copy files to/from archives
+  - pciutils                       # Tools for PCI devices
+  - usbutils                       # Tools for USB devices
   - openssl                        # Toolkit for SSL/TLS encryption
   - pacman-contrib                 # Pacman system scripts
   - xorg-xauth                     # X authentication utility
   - xdg-user-dirs                  # Manage user directories
-
+  - bash                           # Command-line shell (if not already a base package)
   # ESSENTIAL - Display & Graphics (Critical for GUI)
   - nvidia-dkms                    # NVIDIA driver (DKMS version)
   - nvidia-utils                   # NVIDIA driver utilities
@@ -81,6 +42,8 @@ packages:
   - nvidia-container-toolkit       # NVIDIA container runtime support
   - lib32-nvidia-utils             # 32-bit NVIDIA utilities for multilib apps
   - lib32-libglvnd                 # 32-bit OpenGL vendor-neutral dispatch
+  # RECOMMENDED - Bluetooth
+  - ttf-jetbrains-mono-nerd        # JetBrains Mono Nerd Font
   # RECOMMENDED - Command Line Tools
   - eza                            # Modern replacement for `ls`
   - zoxide                         # Smarter `cd` command
@@ -106,6 +69,7 @@ packages:
   - hypridle                       # Hyprland Idle manager
   - hyprlock                       # Hyprland lock screen
   - hyprutils                      # Hyprland utilities
+  - hyprland-qtutils               # Hyprland qt integration
   - rofi-wayland                   # Launcher for Wayland (Rofi fork)
   - waybar                         # Customizable Wayland status bar
   - swww                           # Wallpaper daemon for Wayland
@@ -117,12 +81,14 @@ packages:
   - playerctl                      # Control media players via CLI
   - slurp                          # Select region for grim
   - swappy                         # GUI image annotator for screenshots
-  - zenity                         # Display GTK dialogs from shell scripts
+  - zenity                            # Display GTK dialogs from shell scripts
+  - brightnessctl                  # CLI to control screen brightness
   - clipman                        # Clipboard manager for Wayland
   - udiskie                        # Mount usb devices
   # OPTIONAL - Appearance
+  - ttf-sourcecodepro-nerd         # Source Code Pro Nerd Font
+  - ttf-firacode-nerd              # Fira Code Nerd Font
   - ttf-roboto-mono-nerd           # Roboto Mono Nerd Font
-  - ttf-jetbrains-mono-nerd        # JetBrains Mono Nerd Font
   - otf-font-awesome               # Awesome font
   - nwg-look                       # GTK appearance configuration utility
   - qt6ct                          # Configure Qt6 application themes
@@ -169,6 +135,7 @@ packages:
   - nodejs                         # JavaScript runtime
   - npm                            # Node.js package manager
   - lua                            # Lightweight scripting language
+  - lua51                          # Lua 5.1 version
   - luarocks                       # Package manager for Lua modules
   - gcc                            # GNU Compiler Collection
   - go                             # Go programming language
@@ -226,6 +193,7 @@ packages:
   - unrar                          # Extract RAR files
   - 7zip                           # High-compression archive tool
   # OPTIONAL - Network Tools
+  - nmap                           # Network scanning and security auditing
   - curl                           # Transfer data from or to a server
   - qbittorrent                    # BitTorrent client
   - wget                           # Command-line file downloader
@@ -240,7 +208,6 @@ aur-packages:
   - nautilus-admin-gtk4
 
 services:
-  - networkmanager
   - bluetooth
   - ly
   - docker
