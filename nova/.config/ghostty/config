@@ -18,6 +18,6 @@ mouse-hide-while-typing = true
 gtk-adwaita = false
 
 #font-family = JetBrainsMono Nerd Font Mono
-font-family = RobotoMono Nerd Font Mono
+font-family = AdwaitaMono
 font-size = 14
 
