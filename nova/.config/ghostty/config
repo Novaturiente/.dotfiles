@@ -7,7 +7,7 @@ confirm-close-surface = false
 
 gtk-titlebar = false
 
-theme = cyberpunk
+theme = Atom
 
 # shell-integration = fish
 

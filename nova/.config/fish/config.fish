@@ -2,7 +2,9 @@ set fish_greeting
 
 source ~/.config/fish/cachyos-config.fish
 
-source ~/.env.fish
+if test -f ~/.env.fish
+  source ~/.env.fish
+end
 
 zoxide init fish | source
 
