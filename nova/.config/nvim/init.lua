@@ -356,15 +356,17 @@ require("notify").setup({
 require("mason").setup({
     ui = {
         icons = {
-            package_installed = "",
-            package_pending = "",
-            package_uninstalled = "",
+            package_installed = "",
+            package_pending = "",
+            package_uninstalled = "",
         },
     }
 })
+
 require("mason-lspconfig").setup({
   ensure_installed = { "pyright", "rust_analyzer", "ruff" },
 })
+
 require("mason-nvim-dap").setup({
     ensure_installed = { "python", "codelldb" }
 })
@@ -372,6 +374,7 @@ require("mason-nvim-dap").setup({
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+-- LSP settings
 vim.opt.completeopt = {'menuone', 'noselect', 'noinsert'}
 vim.opt.shortmess = vim.opt.shortmess + { c = true}
 vim.api.nvim_set_option('updatetime', 300) 
@@ -381,49 +384,117 @@ set signcolumn=yes
 autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })
 ]])
 
--- PYTHON LSP CONFIG
+-- Global LSP keybindings function
+local function setup_lsp_keybindings(bufnr)
+  local opts = { noremap = true, silent = true, buffer = bufnr }
+  
+  -- Navigation
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+  vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+  vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, opts)
+  
+  -- Documentation
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+  
+  -- Code actions and fixes
+  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+  vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, opts)
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+  vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format({ async = true }) end, opts)
+  
+  -- Diagnostics
+  vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+  vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+  vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
+  vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
+end
 
-require('lspconfig').pyright.setup {
+-- Common on_attach function for all LSP servers
+local function on_attach(client, bufnr)
+  setup_lsp_keybindings(bufnr)
+end
+
+-- PYTHON LSP CONFIG - Using both Pyright and Ruff without conflicts
+-- Pyright: Type checking, completions, navigation, refactoring
+lspconfig.pyright.setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
   settings = {
     pyright = {
+      -- Let ruff handle imports and formatting
+      disableOrganizeImports = true,
     },
     python = {
       analysis = {
-      },
-    },
-  },
-}
-
-lspconfig.ruff.setup({})
-
--- == RUST LSP CONFIG == 
-lspconfig.rust_analyzer.setup({
-  capabilities = require("cmp_nvim_lsp").default_capabilities(),
-  settings = {
-    ["rust-analyzer"] = {
-      checkOnSave = {
-        command = "clippy", -- optional
+        -- Disable pyright's linting diagnostics to avoid conflicts with ruff
+        ignore = { '*' },
+        -- Keep type checking and other analysis features
+        typeCheckingMode = "basic", -- or "strict" if you want more type checking
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
       },
     },
   },
 })
 
-local rt = require("rust-tools")
+-- Ruff: Fast linting, formatting, and code fixes
+lspconfig.ruff.setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+  init_options = {
+    settings = {
+      -- Any ruff-specific settings
+      args = {},
+    }
+  }
+})
 
+-- RUST LSP CONFIG
+lspconfig.rust_analyzer.setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+  settings = {
+    ["rust-analyzer"] = {
+      checkOnSave = {
+        command = "clippy",
+      },
+      cargo = {
+        allFeatures = true,
+      },
+      procMacro = {
+        enable = true,
+      },
+    },
+  },
+})
+
+-- Rust tools setup
+local rt = require("rust-tools")
 rt.setup({
   server = {
-    on_attach = function(_, bufnr)
-      -- Hover actions
-      vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
-      -- Code action groups
-      vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+    capabilities = capabilities,
+    on_attach = function(client, bufnr)
+      on_attach(client, bufnr) -- Call our common on_attach first
+      
+      -- Rust-specific keybindings
+      local opts = { noremap = true, silent = true, buffer = bufnr }
+      vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, opts)
+      vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, opts)
     end,
   },
 })
 
+-- Go LSP CONFIG
+require('go').setup({
+  lsp_cfg = {
+    capabilities = capabilities,
+    on_attach = on_attach,
+  }
+})
 
--- Go SLP CONFIG
-require('go').setup()
 -- Run gofmt + goimports on save
 local format_sync_grp = vim.api.nvim_create_augroup("goimports", {})
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -434,8 +505,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   group = format_sync_grp,
 })
 
-
---Completion Plugin Setup
+-- Completion Plugin Setup
 local cmp = require'cmp'
 cmp.setup({
   -- Enable LSP snippets
@@ -444,48 +514,161 @@ cmp.setup({
         vim.fn["vsnip#anonymous"](args.body)
     end,
   },
-  mapping = {
+  mapping = cmp.mapping.preset.insert({
+    -- Better navigation with arrow keys and Ctrl+j/k
+    ['<Up>'] = cmp.mapping.select_prev_item(),
+    ['<Down>'] = cmp.mapping.select_next_item(),
+    ['<C-j>'] = cmp.mapping.select_next_item(),
+    ['<C-k>'] = cmp.mapping.select_prev_item(),
+    
+    -- Original navigation (keep for compatibility)
     ['<C-p>'] = cmp.mapping.select_prev_item(),
     ['<C-n>'] = cmp.mapping.select_next_item(),
-    -- Add tab support
-    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
-    ['<C-S-f>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    
+    -- Scroll documentation
+    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+    
+    -- Complete
     ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.close(),
-    ['<Tab>'] = cmp.mapping.confirm({
-      behavior = cmp.ConfirmBehavior.Insert,
-      select = true,
-    })
-  },
-  -- Installed sources:
-  sources = {
-    { name = 'path' },                              -- file paths
-    { name = 'nvim_lsp', keyword_length = 3 },      -- from language server
-    { name = 'nvim_lsp_signature_help'},            -- display function signatures with current parameter emphasized
-    { name = 'nvim_lua', keyword_length = 2},       -- complete neovim's Lua runtime API such vim.lsp.*
-    { name = 'buffer', keyword_length = 2 },        -- source current buffer
-    { name = 'vsnip', keyword_length = 2 },         -- nvim-cmp source for vim-vsnip 
-    { name = 'calc'},                               -- source for math calculation
-  },
+    
+    -- Close completion menu
+    ['<C-e>'] = cmp.mapping.abort(),
+    
+    -- Accept completion
+    ['<CR>'] = cmp.mapping.confirm({
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = false, -- Only confirm explicitly selected items
+    }),
+    
+    -- Tab to accept selected item or select first item
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        local entry = cmp.get_selected_entry()
+        if not entry then
+          cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+        end
+        cmp.confirm()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+    
+    -- Shift+Tab for previous item
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+  }),
+  
+  -- Installed sources (reordered for better priority)
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp', priority = 1000 },
+    { name = 'vsnip', priority = 750 },
+    { name = 'nvim_lsp_signature_help', priority = 700 },
+  }, {
+    { name = 'path', priority = 250 },
+    { name = 'buffer', keyword_length = 3, priority = 50 },
+    { name = 'nvim_lua', priority = 300 },
+    { name = 'calc', priority = 150 },
+  }),
+  
+  -- Enhanced window configuration
   window = {
-      completion = cmp.config.window.bordered(),
-      documentation = cmp.config.window.bordered(),
+    completion = cmp.config.window.bordered({
+      winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
+    }),
+    documentation = cmp.config.window.bordered({
+      winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
+    }),
   },
+  
+  -- Enhanced formatting
   formatting = {
-      fields = {'menu', 'abbr', 'kind'},
-      format = function(entry, item)
-          local menu_icon ={
-              nvim_lsp = 'λ',
-              vsnip = '⋗',
-              buffer = 'Ω',
-              path = '🖫',
-          }
-          item.menu = menu_icon[entry.source.name]
-          return item
-      end,
+    fields = {'kind', 'abbr', 'menu'},
+    format = function(entry, item)
+      local kind_icons = {
+        Text = "",
+        Method = "󰆧",
+        Function = "󰊕",
+        Constructor = "",
+        Field = "󰇽",
+        Variable = "󰂡",
+        Class = "󰠱",
+        Interface = "",
+        Module = "",
+        Property = "󰜢",
+        Unit = "",
+        Value = "󰎠",
+        Enum = "",
+        Keyword = "󰌋",
+        Snippet = "",
+        Color = "󰏘",
+        File = "󰈙",
+        Reference = "",
+        Folder = "󰉋",
+        EnumMember = "",
+        Constant = "󰏿",
+        Struct = "",
+        Event = "",
+        Operator = "󰆕",
+        TypeParameter = "󰅲",
+      }
+      
+      local menu_icon = {
+        nvim_lsp = '[LSP]',
+        vsnip = '[Snippet]',
+        buffer = '[Buffer]',
+        path = '[Path]',
+        nvim_lua = '[Lua]',
+        calc = '[Calc]',
+      }
+      
+      -- Kind icons
+      item.kind = string.format('%s %s', kind_icons[item.kind] or "", item.kind)
+      
+      -- Source
+      item.menu = menu_icon[entry.source.name] or string.format('[%s]', entry.source.name)
+      
+      return item
+    end,
+  },
+  
+  -- Experimental features
+  experimental = {
+    ghost_text = true, -- Show preview of completion
   },
 })
+
+-- Additional diagnostic configuration
+vim.diagnostic.config({
+  virtual_text = {
+    prefix = '●', -- Could be '■', '▎', 'x', '●'
+    source = "always",
+  },
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
+  float = {
+    focusable = false,
+    style = 'minimal',
+    border = 'rounded',
+    source = 'always',
+    header = '',
+    prefix = '',
+  },
+})
+
+-- Diagnostic signs
+local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+end
 
 -- Run current file
 local Terminal = require("toggleterm.terminal").Terminal
@@ -561,7 +744,7 @@ function ToggleTerminalFocus()
     end
   end
 end
-vim.api.nvim_set_keymap('n', '<M-Right>', ':lua ToggleTerminalFocus()<CR>', { noremap = true, silent = true, desc = "Focus Terminal" })
+vim.api.nvim_set_keymap('n', '<M-Up>', ':lua ToggleTerminalFocus()<CR>', { noremap = true, silent = true, desc = "Focus Terminal" })
 
 -- Toggle NvimTree Focus
 function ToggleNvimTreeFocus()
@@ -574,7 +757,7 @@ function ToggleNvimTreeFocus()
     end
   end
 end
-vim.api.nvim_set_keymap('n', '<M-Left>', ':lua ToggleNvimTreeFocus()<CR>', { noremap = true, silent = true, desc = "Focus Terminal" })
+vim.api.nvim_set_keymap('n', '<M-Down>', ':lua ToggleNvimTreeFocus()<CR>', { noremap = true, silent = true, desc = "Focus Terminal" })
 
 -- Focus back to the editor (from terminal or NvimTree)
 function FocusEditor()
@@ -607,6 +790,34 @@ end, { noremap = true, silent = true })
 vim.keymap.set('v', '<leader>o', function()
   require('ollama').copy_visual_to_clipboard()
 end, { noremap = true, silent = true })
+
+-- Copy Diagnostics
+vim.keymap.set('n', '<leader>cc', function()
+  local diagnostics = vim.diagnostic.get(0, { lnum = vim.api.nvim_win_get_cursor(0)[1] - 1 })
+  if vim.tbl_isempty(diagnostics) then
+    print("No diagnostics to copy")
+    return
+  end
+  local lines = {}
+  for _, d in ipairs(diagnostics) do
+    table.insert(lines, d.message)
+  end
+  local text = table.concat(lines, "\n")
+  vim.fn.setreg('+', text)
+  vim.notify("Copied diagnostic to clipboard", vim.log.levels.INFO)
+end, { noremap = true, silent = true, desc = "Copy Diagnostic to Clipboard" })
+
+-- Supress Errors
+vim.keymap.set('n', '<leader>cx', function()
+  local line = vim.api.nvim_get_current_line()
+  if not line:find("# type: ignore") then
+    vim.api.nvim_set_current_line(line .. "  # type: ignore")
+    vim.notify("Added '# type: ignore' to suppress Pyright warning", vim.log.levels.INFO)
+  else
+    vim.notify("'# type: ignore' already present", vim.log.levels.WARN)
+  end
+end, { noremap = true, silent = true, desc = "Suppress Pyright Error" })
+
 
 
 -- Keybinding Cheatsheet

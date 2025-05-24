@@ -1,12 +1,15 @@
+command = "~/.dotfiles/start_tmux.sh"
+window-padding-x = 10
+window-padding-y = 10,8
 window-decoration = false
-background-opacity = 0.8
+background-opacity = 0.9
 confirm-close-surface = false
 
 gtk-titlebar = false
 
-theme = cyberdream
+theme = cyberpunk
 
-shell-integration = fish
+# shell-integration = fish
 
 keybind = ctrl+shift+t=new_tab
 keybind = ctrl+shift+tab=next_tab
@@ -19,5 +22,5 @@ gtk-adwaita = false
 
 #font-family = JetBrainsMono Nerd Font Mono
 font-family = AdwaitaMono
-font-size = 14
+font-size = 13
 
