@@ -3,7 +3,8 @@
 @theme "~/.config/rofi/theme.rasi"
 
 configuration {
-  font:                     "JetBrainsMono Nerd Font 8";
+  font:                     "JetBrainsMono Nerd Font 10";
+  show-icons: false;
 }
 
 /* Window */
@@ -12,7 +13,7 @@ window {
   location:                 north;
   anchor:                   south;
   y-offset:                 3px;
-  width:                    240px;
+  width:                    300px;
   border:                   3px;
   border-radius:            10px;
   border-color:             @main-br;
@@ -28,7 +29,7 @@ mainbox {
 }
 
 textbox-custom {
-  font:                     "JetBrainsMono Nerd Font Bold 8";
+  font:                     "JetBrainsMono Nerd Font Bold 10";
   horizontal-align:         0.5;
   padding:                  1px 0;
   expand:                   false;
@@ -67,9 +68,9 @@ listview {
   border:                   2px 0 0 0;
   border-radius:            8px;
   border-color:             @main-br;
-  lines:                    6;
+  lines:                    8;
   fixed-height:             false;
-  dynamic:                  false;
+  dynamic:                  true;
   cycle:                    false;
   margin:                   0 0 -2px;
   padding:                  6px 6px 40px;

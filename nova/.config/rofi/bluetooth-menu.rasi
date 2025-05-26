@@ -3,7 +3,7 @@
 @theme "~/.config/rofi/theme.rasi"
 
 configuration {
-  font:                     "JetBrainsMono Nerd Font 8";
+  font:                     "JetBrainsMono Nerd Font 12";
 }
 
 /* Window */
@@ -12,7 +12,7 @@ window {
   location:                 north;
   anchor:                   south;
   y-offset:                 3px;
-  width:                    240px;
+  width:                    300px;
   border:                   3px;
   border-radius:            10px;
   border-color:             @main-br;
@@ -28,7 +28,7 @@ mainbox {
 }
 
 textbox-custom {
-  font:                     "JetBrainsMono Nerd Font Bold 8";
+  font:                     "JetBrainsMono Nerd Font Bold 12";
   horizontal-align:         0.5;
   padding:                  1px 0;
   expand:                   false;

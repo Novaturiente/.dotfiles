@@ -90,10 +90,10 @@ require('lazy').setup({
     name = 'tokyonight',
     lazy = false,
     priority = 1000,
-   config = function()
-      require('tokyonight').setup({})
-      vim.cmd('colorscheme tokyonight-night')
-    end,
+   -- config = function()
+   --    require('tokyonight').setup({})
+   --    vim.cmd('colorscheme tokyonight-night')
+   --  end,
   },
   {
     "scottmckendry/cyberdream.nvim",
@@ -335,18 +335,17 @@ require("notify").setup({
   top_down = false,
 })
 
--- -- theme configuration
--- require("cyberdream").setup({
---     variant = "default",
---     transparent = false,
---     saturation = 0.7,
---     italic_comments = false,
---     -- Apply a modern borderless look to pickers like Telescope, Snacks Picker & Fzf-Lua
---     borderless_pickers = false,
---     terminal_colors = true,
---     cache = false,
--- })
--- vim.cmd("colorscheme cyberdream")
+-- theme configuration
+require("cyberdream").setup({
+    variant = "auto",
+    transparent = true,
+    saturation = 1,
+    italic_comments = true,
+    borderless_pickers = true,
+    terminal_colors = true,
+    cache = true,
+})
+vim.cmd("colorscheme cyberdream")
 
 -- ========================================================
 -- 🛠️ HELPER FUNCTIONS

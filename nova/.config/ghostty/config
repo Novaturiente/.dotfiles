@@ -1,13 +1,13 @@
 command = "~/.dotfiles/start_tmux.sh"
 window-padding-x = 10
-window-padding-y = 10,8
+window-padding-y = 10,9
 window-decoration = false
 background-opacity = 0.9
 confirm-close-surface = false
 
 gtk-titlebar = false
 
-theme = Atom
+theme = cyberdream
 
 # shell-integration = fish
 
@@ -23,4 +23,3 @@ gtk-adwaita = false
 #font-family = JetBrainsMono Nerd Font Mono
 font-family = AdwaitaMono
 font-size = 13
-

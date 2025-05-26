@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Configuration Variables
-THEME="bookmarks"
 BOOKMARKS_FILE="$HOME/.dotfiles/.bookmarks"
 BROWSER="qutebrowser"
 export GDK_BACKEND=x11
@@ -10,7 +8,7 @@ if [[ ! -a "${BOOKMARKS_FILE}" ]]; then
     touch "${BOOKMARKS_FILE}"
 fi
 
-INPUT=$(rofi -dmenu -theme bookmarks.rasi -p "#B#" < "$BOOKMARKS_FILE")
+INPUT=$(rofi -dmenu -theme tokyonight -p "#B#" < "$BOOKMARKS_FILE")
 
 if [[ $INPUT == "+"* ]]; then
     INPUT="${INPUT#+}"
