@@ -1,238 +1,239 @@
-#impl: http://github.com/blend-os/tracks/raw/main
+impl: http://github.com/blend-os/tracks/raw/main
 arch-repo: https://geo.mirror.pkgbuild.com
 repo: https://pkg-repo.blendos.co
 
-track: 'custom'
+track: blendos-base
 
 packages:
-
   # ESSENTIAL - Base System & Core Functionality
-  - arch-install-scripts           # Arch installation scripts.
-  - archlinux-keyring              # Package signature keyring.
-  - pacman                         # Arch package manager.
-  - systemd                        # System and service manager.
-  - coreutils                      # Essential system utilities.
-  - glibc                          # GNU C Library.
-  - gcc-libs                       # GCC libraries.
-  - bash                           # Default shell.
-  - shadow                         # User and group management.
-  - systemd-sysvcompat             # SysV init compatibility.
-  - linux-firmware                 # Hardware firmware.
-  - intel-ucode                    # Intel CPU microcode updates.
-  - linux-zen                      # Optimized kernel (optional).
-  - linux-zen-headers              # Zen kernel headers (optional).
-  - e2fsprogs                      # ext2/3/4 filesystem tools.
-  - dosfstools                     # FAT filesystem tools.
-  - gptfdisk                       # GPT partitioning tool.
-  - efibootmgr                     # UEFI boot manager.
-  - grub                           # Bootloader.
-  - iproute2                       # IP address/routing utilities.
-  - iputils                        # Networking utilities (ping).
-  - dhclient                       # DHCP client.
-  - networkmanager                 # Network management daemon.
-  - pciutils                       # PCI device utilities.
-  - usbutils                       # USB device utilities.
-  - findutils                      # File/directory search.
-  - grep                           # Pattern search tool.
-  - sed                            # Stream editor.
-  - tar                            # Archive tool.
-  - gzip                           # Compression utility.
-  - bzip2                          # Compression utility.
-  - xz                             # Compression utility.
-  - gettext                        # Internationalization tools.
-  - base-devel                     # Development tools.
-  - man-db                         # Man page database.
-  - man-pages                      # Manual pages.
-  - sudo                           # Execute commands as root.
-  - openssh                        # Secure communication/remote login.
-  - rsync                          # File/directory synchronization.
-  - usb_modeswitch                 # USB mode switching utility.
-  - inetutils                      # Basic networking utilities like ping, hostname
-  - file                           # Determines file type
-  - cpio                           # Tool to copy files to/from archives
-  - openssl                        # Toolkit for SSL/TLS encryption
-  - pacman-contrib                 # Pacman system scripts
+  - cpio                           # Archive file copier
+  - linux                          # Linux kernel
+  - linux-headers                  # Kernel headers
+  - openssl                        # SSL/TLS toolkit
+  - pacman-contrib                 # Pacman helper tools
   - xorg-xauth                     # X authentication utility
   - xdg-user-dirs                  # Manage user directories
-
+  
   # ESSENTIAL - Display & Graphics (Critical for GUI)
-  - nvidia-dkms                    # NVIDIA driver (DKMS version)
+  - nvidia-dkms                    # NVIDIA DKMS driver
   - nvidia-utils                   # NVIDIA driver utilities
-  - xf86-video-intel               # Intel GPU driver (If applicable)
-  - xorg-xwayland                  # XWayland for running X apps in Wayland
+  - nvidia-prime
   - vulkan-icd-loader              # Vulkan loader
+  - wayland-protocols              # Wayland protocol specs
+  - xf86-video-intel               # Intel GPU driver
+  - xorg-xwayland                  # XWayland for X apps
+  - intel-ucode                    # Microcode update files for Intel CPUs
+  
   # ESSENTIAL - Window Management & Compositors
-  - hyprland                   # Dynamic tiling Wayland compositor
-  - ly                             # TUI display manager
-  - xdg-desktop-portal             # Desktop integration portal for sandboxed apps
-  - xdg-desktop-portal-hyprland    # Hyprland backend for xdg-desktop-portal
+  - hyprland                       # Wayland compositor
+  - greetd
+  - greetd-tuigreet
+  - cosmic-greeter
+  - wlroots                        # Wayland compositor library
+  - xdg-desktop-portal             # Desktop integration portal
+  - xdg-desktop-portal-hyprland    # Hyprland portal backend
+  
   # IMPORTANT - Networking
-  - networkmanager                 # Network connection manager
+  - networkmanager                 # Network manager
+  
   # IMPORTANT - Multimedia
+  - pipewire                       # Multimedia server
+  - pipewire-pulse                 # PulseAudio compatibility
   - wireplumber                    # PipeWire session manager
-  - pipewire-pulse                 # PulseAudio compatibility layer for PipeWire
-  - pipewire                       # Modern multimedia server
+  
   # IMPORTANT - Utilities
-  - wl-clipboard                   # Clipboard utilities for Wayland
-  - grim                           # Screenshot utility for Wayland
+  - grim                           # Screenshot tool
+  - wl-clipboard                   # Wayland clipboard tool
+  
   # RECOMMENDED - NVIDIA Features
-  - nvidia-settings                # NVIDIA Configuration tool
-  - nvidia-prime                   # NVDIA Prime offload
-  - nvidia-container-toolkit       # NVIDIA container runtime support
-  - lib32-nvidia-utils             # 32-bit NVIDIA utilities for multilib apps
-  - lib32-libglvnd                 # 32-bit OpenGL vendor-neutral dispatch
+  - lib32-libglvnd                 # 32-bit OpenGL dispatch
+  - lib32-nvidia-utils             # 32-bit NVIDIA utilities
+  - nvidia-container-toolkit       # NVIDIA container tools
+  - nvidia-settings                # NVIDIA settings tool
+  
   # RECOMMENDED - Command Line Tools
-  - eza                            # Modern replacement for `ls`
-  - zoxide                         # Smarter `cd` command
-  - ripgrep                        # Fast search tool (grep alternative)
-  # OPTIONAL - Power Management
-  - tlp                            # Power profile management
-  # OPTIONAL - Networking (GUI and extended functionality)
-  - network-manager-applet         # GUI applet for NetworkManager
-  - bluez-tools                    # CLI utilities for BlueZ
-  - blueman                        # GTK Bluetooth manager
-  - bluez-utils                    # Additional utilities for BlueZ
-  - kdeconnect                     # Integrates phone with desktop (via network)
-  # OPTIONAL - Graphics (Extended Support)
-  - gdk-pixbuf2                    # Image loading library used by GTK
-  - vulkan-tools                   # Vulkan development tools
-  - lib32-vulkan-icd-loader        # 32-bit Vulkan loader
-  - vulkan-intel                   # Vulkan drivers for Intel GPUs
-  - lib32-vulkan-intel             # 32-bit Intel Vulkan drivers
-  - bbswitch                       # Kernel module to switch graphics card
-  - lib32-gnutls                   # 32-bit SSL/TLS library
-  # OPTIONAL - Hyprland Extras
-  - hyprpolkitagent                # Polkit authentication agent for Hyprland
-  - hypridle                       # Hyprland Idle manager
-  - hyprlock                       # Hyprland lock screen
-  - hyprutils                      # Hyprland utilities
-  - rofi-wayland                   # Launcher for Wayland (Rofi fork)
-  - waybar                         # Customizable Wayland status bar
-  - swww                           # Wallpaper daemon for Wayland
-  - swayosd-git                    # On-screen display for audio/brightness keys
-  - waypaper-git                   # Wallpaper setter for Wayland
-  - mako                           # Notification daemon
-  - swaync                         # Notification center
-  # OPTIONAL - Utilities
-  - playerctl                      # Control media players via CLI
-  - slurp                          # Select region for grim
-  - swappy                         # GUI image annotator for screenshots
-  - zenity                         # Display GTK dialogs from shell scripts
-  - clipman                        # Clipboard manager for Wayland
-  - udiskie                        # Mount usb devices
+  - eza                            # Modern ls alternative
+  - ripgrep                        # Fast grep alternative
+  - zoxide                         # Smarter cd command
+  
   # OPTIONAL - Appearance
-  - ttf-roboto-mono-nerd           # Roboto Mono Nerd Font
-  - ttf-jetbrains-mono-nerd        # JetBrains Mono Nerd Font
-  - otf-font-awesome               # Awesome font
-  - nwg-look                       # GTK appearance configuration utility
-  - qt6ct                          # Configure Qt6 application themes
-  - qt6-wayland                    # QT support for wayland
-  - qt5ct                          # Configure Qt5 application themes
-  - qt5-wayland                    # QT support for wayland
-  - kvantum                        # Kvantum theme manager
-  - kvantum-qt5                    # Kvantum for Qt5
+  - bibata-cursor-theme            # Bibata cursor theme
   - fluent-icon-theme-git          # Fluent icon theme
-  - bibata-cursor-theme            # Bibata cursor
-  # OPTIONAL - File Management
-  - nautilus                       # Nautilus file manager
-  - nautilus-image-converter       # Resize and rotate images
-  - nautilus-open-any-terminal     # Open terminals in selected directory
-  # OPTIONAL - Shells
-  - fish                           # User-friendly shell
-  # OPTIONAL - Terminal Emulators
-  - ghostty                        # GPU-accelerated terminal emulator
-  # OPTIONAL - System Monitoring
-  - htop                           # Resource monitor with a modern UI
-  - nvtop                          # Monitor NVIDIA GPU usage
-  - powertop                       # Monitor power usage
-  - fastfetch                      # System info fetch tool
+  - kvantum                        # Qt theme engine
+  - kvantum-qt5                    # Kvantum for Qt5
+  - nwg-look                       # GTK theme manager
+  - otf-font-awesome               # Font Awesome
+  - qt5-wayland                    # Qt5 Wayland support
+  - qt5ct                          # Qt5 theme manager
+  - qt6-wayland                    # Qt6 Wayland support
+  - qt6ct                          # Qt6 theme manager
+  - ttf-jetbrains-mono-nerd        # JetBrains Mono Nerd Font
+  - ttf-roboto-mono-nerd           # Roboto Mono Nerd Font
+  
   # OPTIONAL - Command Line Tools
-  - duf                            # Disk usage viewer
-  - stow                           # Symlink manager for dotfiles
-  - jq                             # CLI JSON processor
-  - fd                             # Fast, user-friendly `find` alternative
-  # OPTIONAL - Text Editors
-  - neovim                         # Modern fork of Vim
-  # OPTIONAL - Package & Application Management
-  - flatpak                        # Universal application packaging system
-  - protonup-qt                    # GUI tool to manage Proton versions
-  - distrobox                      # Run any Linux distro in containers
-  # OPTIONAL - Virtualization
-  - gnome-boxes                    # Gnome Boxes
-  - docker                         # Container engine
-  - docker-compose                 # Define and run multi-container apps
+  - dialog                         # Terminal dialogs
+  - duf                            # Disk usage analyzer
+  - fd                             # Find alternative
+  - jq                             # JSON processor
+  - stow                           # Dotfile manager
+  
+  # OPTIONAL - Compatibility (Gaming)
+  - alsa-lib                       # ALSA library
+  - alsa-plugins                   # ALSA plugins
+  - gamescope-git                  # Game compositor
+  - gamescope-session-git          # Gamescope session
+  - giflib                         # GIF library
+  - gnutls                         # TLS library
+  - gtk3                           # GTK 3 toolkit
+  - gtk4                           # GTK 4 toolkit
+  - lib32-alsa-lib                 # 32-bit ALSA library
+  - lib32-alsa-plugins             # 32-bit ALSA plugins
+  - lib32-giflib                   # 32-bit GIF library
+  - lib32-gst-plugins-base-libs    # 32-bit GStreamer base
+  - lib32-libgcrypt                # 32-bit crypto library
+  - lib32-libgpg-error             # 32-bit GPG error lib
+  - lib32-libpng                   # 32-bit PNG library
+  - lib32-libpulse                 # 32-bit PulseAudio
+  - lib32-libva                    # 32-bit VA-API
+  - lib32-libxcomposite            # 32-bit Xcomposite
+  - lib32-mpg123                   # 32-bit MP3 decoder
+  - lib32-ncurses                  # 32-bit terminal library
+  - lib32-openal                   # 32-bit OpenAL
+  - lib32-sqlite                   # 32-bit SQLite
+  - lib32-vulkan-icd-loader        # 32-bit Vulkan loader
+  - lib32-vulkan-intel             # 32-bit Intel Vulkan
+  - libgcrypt                      # Crypto library
+  - libgpg-error                   # GPG error library
+  - libinput                       # Input library
+  - libpng                         # PNG library
+  - libpulse                       # PulseAudio library
+  - libva                          # VA-API library
+  - libxcomposite                  # Xcomposite library
+  - libxkbcommon                   # Keyboard handling lib
+  - lutris                         # Game manager
+  - mpg123                         # MP3 decoder
+  - ncurses                        # Terminal library
+  - openal                         # OpenAL audio library
+  - sqlite                         # SQLite database
+  - vulkan-intel                   # Intel Vulkan drivers
+  - vulkan-tools                   # Vulkan tools
+  - vulkan-validation-layers       # Vulkan validation
+  - wine-staging                   # Wine for gaming
+  
   # OPTIONAL - Development
-  - cmake                          # Cross-platform build system
-  - meson                          # Build system optimized for speed
-  - pkg-config                     # Manage compile/link flags for libraries
-  - tree-sitter                    # Incremental parsing system
+  - cargo                          # Rust package manager
+  - cmake                          # Build system
+  - cuda                           # NVIDIA CUDA toolkit
+  - cuda-tools                     # CUDA development tools
+  - cudnn                          # CUDA deep learning lib
+  - gcc                            # GNU compiler
+  - go                             # Go language
+  - lua                            # Lua language
+  - luarocks                       # Lua package manager
+  - meson                          # Build system
   - nodejs                         # JavaScript runtime
   - npm                            # Node.js package manager
-  - lua                            # Lightweight scripting language
-  - luarocks                       # Package manager for Lua modules
-  - gcc                            # GNU Compiler Collection
-  - go                             # Go programming language
-  - cargo                          # Rust package manager and build tool
-  - rust-analyzer                  # LSP server for Rust
-  - rustfmt                        # Rust code formatter
+  - pkg-config                     # Build configuration
+  - pyright                        # Python type checker
   - python-pip                     # Python package installer
-  - python-pynvim                  # Python support for Neovim plugins
-  - uv                             # Python package manager (fast pip alternative)
-  - pyright                        # Static type checker for Python
-  - cuda                           # NVIDIA CUDA toolkit
-  - cuda-tools                     # Developer tools for CUDA
-  - cudnn                          # Deep neural network library for CUDA
-  # OPTIONAL - Compatibility (Gaming)
-  - lutris                         # Game manager for Wine, etc.
-  - wine-staging                   # Gaming Main Wine environment
-  - gamescope                      # Gaming gamescope
-  - giflib                         # Gaming Image support
-  - lib32-giflib                   # Gaming 32-bit version
-  - libpng                         # Gaming Needed for textures/images
-  - lib32-libpng                   # Gaming 32-bit version
-  - gnutls                         # Gaming Required for secure network protocols
-  - mpg123                         # Gaming MP3 audio decoder
-  - lib32-mpg123                   # Gaming 32-bit audio support
-  - openal                         # Gaming 3D positional audio
-  - lib32-openal                   # Gaming 32-bit audio
-  - libpulse                       # Gaming PulseAudio sup(even if using PipeWire)
-  - lib32-libpulse                 # Gaming 32-bit PulseAudio
-  - libgpg-error                   # Gaming Required for crypto
-  - lib32-libgpg-error             # Gaming 32-bit
-  - alsa-plugins                   # Gaming ALSA sound plugins
-  - lib32-alsa-plugins             # Gaming 32-bit ALSA
-  - alsa-lib                       # Gaming Core ALSA support
-  - lib32-alsa-lib                 # Gaming 32-bit
-  - sqlite                         # Gaming Used by some launchers and game clients
-  - lib32-sqlite                   # Gaming 32-bit
-  - libxcomposite                  # Gaming Needed for compositing in X11
-  - lib32-libxcomposite            # Gaming 32-bit
-  - libgcrypt                      # Gaming Crypto library
-  - lib32-libgcrypt                # Gaming 32-bit
-  - ncurses                        # Gaming Text interface (used by Wine apps)
-  - lib32-ncurses                  # Gaming 32-bit
-  - libva                          # Gaming Video acceleration
-  - lib32-libva                    # Gaming 32-bit
-  - gtk3                           # Gaming GUI support
-  - gtk4                           # Gaming GUI support
-  - lib32-gtk3                     # Gaming 32-bit
-  - gst-plugins-base-libs          # Gaming Multimedia support
-  - lib32-gst-plugins-base-libs    # Gaming 32-bit
-  # OPTIONAL - Web Browsers
-  - qutebrowser                    # Web browser
-  - python-adblock
-  # OPTIONAL - Archiving and Compression
-  - unzip                          # Extract ZIP files
-  - unrar                          # Extract RAR files
-  - 7zip                           # High-compression archive tool
-  # OPTIONAL - Network Tools
-  - curl                           # Transfer data from or to a server
-  - qbittorrent                    # BitTorrent client
-  - wget                           # Command-line file downloader
-  - sshfs                          # Mount remote filesystems over SSH
-   # OPTIONAL - Media players
-  - mpv                            # MPV player
+  - python-pynvim                  # Neovim Python support
+  - rust-analyzer                  # Rust LSP server
+  - rustfmt                        # Rust code formatter
+  - tree-sitter                    # Syntax parser
+  - uv                             # Python package manager
+  - mysql                          # MySQL Community edition
+  - tk                             # Tkinter
+  
+  # OPTIONAL - File Management
+  - nautilus                       # GNOME file manager
+  - nautilus-image-converter       # Image converter
+  - nautilus-open-any-terminal     # Open terminal in folder
+  
+  # OPTIONAL - Hyprland Extras
+  - brightnessctl                  # Brightness control
+  - hypridle                       # Hyprland idle manager
+  - hyprlock                       # Hyprland lock screen
+  - hyprpolkitagent                # Hyprland polkit agent
+  - hyprutils                      # Hyprland utilities
+  - rofi-wayland                   # Wayland launcher
+  - swaync                         # Notification center
+  - swayosd-git                    # On-screen display
+  # - waypaper-git                  # Wallpaper setter
+  # - swww                           # Wallpaper daemon
+  - wpaperd
+  - waybar                         # Wayland status bar
+  
+  # OPTIONAL - Media Players
+  - mpv                            # Media player
   - qimgv                          # Image viewer
+  
+  # OPTIONAL - Multimedia
+  - bluez-tools                    # Bluetooth tools
+  - blueman                        # Bluetooth manager
+  - bluez-utils                    # Bluetooth utilities
+  - kdeconnect                     # Phone integration
+  
+  # OPTIONAL - Network Tools
+  - curl                           # Data transfer tool
+  - qbittorrent                    # BitTorrent client
+  - sshfs                          # SSH filesystem
+  - wget                           # File downloader
+  
+  # OPTIONAL - Networking (GUI and extended functionality)
+  - network-manager-applet         # NetworkManager GUI
+  
+  # OPTIONAL - Package & Application Management
+  - distrobox                      # Linux containers
+  - flatpak                        # Universal package manager
+  - protonup-qt                    # Proton version manager
+  
+  # OPTIONAL - Power Management
+  - tlp                            # Power profile manager
+  - tlp-rdw
+  
+  # OPTIONAL - Shells
+  - fish                           # Friendly shell
+  
+  # OPTIONAL - System Monitoring
+  - fastfetch                      # System info fetcher
+  - htop                           # Process viewer
+  - nvtop                          # NVIDIA GPU monitor
+  - powertop                       # Power usage monitor
+  - entr                           # Nofify when file changes
+  
+  # OPTIONAL - Terminal Emulators
+  - ghostty                        # GPU-accelerated terminal
+  
+  # OPTIONAL - CLI tools
+  - tmux                           # Terminal multiplexer
+  - bat                            # cat alternative 
+
+  # OPTIONAL - Text Editors
+  - neovim                         # Vim fork
+  
+  # OPTIONAL - Utilities
+  - clipman                        # Clipboard manager
+  - gparted                        # Partition editor
+  - playerctl                      # Media player controller
+  - slurp                          # Region selector
+  - swappy                         # Screenshot annotator
+  - udiskie                        # USB automounter
+  - zenity                         # GTK dialogs
+  
+  # OPTIONAL - Virtualization
+  - docker                         # Container engine
+  - docker-compose                 # Multi-container apps
+  - gnome-boxes                    # Virtual machine manager
+  
+  # OPTIONAL - Web Browsers
+  - python-adblock                 # Adblock for Python
+  - qutebrowser                    # Keyboard-focused browser
+  
+  # OPTIONAL - Archiving and Compression
+  - 7zip                           # Archive tool
+  - unrar                          # RAR extractor
+  - unzip                          # ZIP extractor
+
 
 aur-packages:
   - fish-done
@@ -240,12 +241,11 @@ aur-packages:
   - nautilus-admin-gtk4
 
 services:
-  - networkmanager
+  - tlp
   - bluetooth
-  - ly
+  - greetd
   - docker
   - flatpak
-  - tlp
 
 package-repos:
   - name: 'chaotic-aur'

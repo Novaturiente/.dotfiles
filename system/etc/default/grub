@@ -62,6 +62,6 @@ GRUB_THEME="/boot/grub/themes/CyberSynchro/theme.txt"
 # operating systems.
 #GRUB_DISABLE_OS_PROBER=false
 
-GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} nvidia_drm.modeset=1 splash i915.enable_psr=1"
+GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} nvidia_drm.modeset=1 splash i915.enable_psr=1 nvidia.NVreg_PreserveVideoMemoryAllocations=1 nvidia.NVreg_EnableMSI=1"
 
 GRUB_TIMEOUT=3
