@@ -54,7 +54,7 @@ GRUB_THEME="/boot/grub/themes/CyberSynchro/theme.txt"
 # GRUB_SAVEDEFAULT=true
 
 # Uncomment to disable submenus in boot menu
- GRUB_DISABLE_SUBMENU=y
+GRUB_DISABLE_SUBMENU=y
 
 # Probing for other operating systems is disabled for security reasons. Read
 # documentation on GRUB_DISABLE_OS_PROBER, if still want to enable this
@@ -63,5 +63,7 @@ GRUB_THEME="/boot/grub/themes/CyberSynchro/theme.txt"
 #GRUB_DISABLE_OS_PROBER=false
 
 GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} nvidia_drm.modeset=1 splash i915.enable_psr=1 nvidia.NVreg_PreserveVideoMemoryAllocations=1 nvidia.NVreg_EnableMSI=1"
+
+GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} cryptdevice=UUID=14dc8794-501e-478d-be52-ecb4086cc39d:root root=/dev/mapper/root"
 
 GRUB_TIMEOUT=3

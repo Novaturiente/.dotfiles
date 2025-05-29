@@ -1,4 +1,4 @@
-command = "~/.dotfiles/start_tmux.sh"
+#command = "~/.dotfiles/start_tmux.sh"
 window-padding-x = 10
 window-padding-y = 10,9
 window-decoration = false
