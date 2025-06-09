@@ -1,0 +1,32 @@
+services:
+  nginxmanager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    #restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - /home/nova/Docker/nginx/data:/data
+      - /home/nova/Docker/nginx/letsencrypt:/etc/letsencrypt
+
+  nextcloud:
+    image: lscr.io/linuxserver/nextcloud:latest
+    container_name: nextcloud
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /home/nova/Docker/nextcloud/config:/config
+      - /home/nova/Docker/nextcloud/data:/data
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: cdi
+              device_ids:
+                - nvidia.com/gpu=all
+              capabilities: [gpu]
+
+              #restart: unless-stopped
