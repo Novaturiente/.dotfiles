@@ -1,4 +1,4 @@
-# Github Setup
+## Github Setup
 
 - Generate SSH key
 ```

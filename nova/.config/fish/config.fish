@@ -77,4 +77,4 @@ alias egrep='egrep --color=auto'
 # Get the error messages from journalctl
 alias jctl="journalctl -p 3 -xb"
 
-alias windows="com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound"
+alias winconnect="com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound"

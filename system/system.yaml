@@ -71,7 +71,6 @@ packages:
   
   # OPTIONAL - Command Line Tools
   - dialog                         # Terminal dialogs
-  - duf                            # Disk usage analyzer
   - fd                             # Find alternative
   - jq                             # JSON processor
   - stow                           # Dotfile manager
@@ -141,7 +140,6 @@ packages:
   - tree-sitter                    # Syntax parser
   - uv                             # Python package manager
   - mysql                          # MySQL Community edition
-  - tk                             # Tkinter
   
   # OPTIONAL - File Management
   - nautilus                       # GNOME file manager
@@ -160,8 +158,6 @@ packages:
   - swayosd-git                    # On-screen display
   - wpaperd
   - waybar                         # Wayland status bar
-  - fprintd                        # Fingerprint reader
-  - imagemagick                    # Fprintd support
   
   # OPTIONAL - Media Players
   - mpv                            # Media player
@@ -241,7 +237,6 @@ aur-packages:
   - fish-done
   - fish-fzf
   - nautilus-admin-gtk4
-  - libfprint-tod-git
 
 services:
   - systemd-resolved
