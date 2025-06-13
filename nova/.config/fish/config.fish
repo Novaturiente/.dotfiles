@@ -78,3 +78,9 @@ alias egrep='egrep --color=auto'
 alias jctl="journalctl -p 3 -xb"
 
 alias winconnect="com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound"
+
+alias ollama="podman exec -it ollama ollama"
+alias ollamaup="podman-compose -f ~/.dotfiles/podman/ollama.yml up -d"
+alias ollamadown="podman-compose -f ~/.dotfiles/podman/ollama.yml down"
+
+source ~/.config/fish/prompt.fish

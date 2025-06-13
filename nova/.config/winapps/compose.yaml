@@ -21,11 +21,11 @@ services:
     cap_add:
       - NET_ADMIN  # Add network permission
     stop_grace_period: 120s 
-    restart: no 
+    restart: "no" 
     volumes:
       - data:/storage 
       - ${HOME}:/shared 
-      # - ./oem:/oem 
+      - ./oem:/oem 
     devices:
       - /dev/kvm # Enable KVM.
       - /dev/net/tun # Enable tuntap

@@ -1,10 +1,53 @@
 -- ========================================================
 -- ✨ GENERAL SETTINGS
 -- ========================================================
+
 local vim = vim
+-- Enable line numbers
+vim.wo.number = true
+-- Set leader key to space
+vim.g.mapleader = ' '
+-- Use system clipboard
+vim.opt.clipboard = 'unnamedplus'
+-- Enable mouse support
+vim.o.mouse = 'a'
+-- Manual folding
+vim.o.foldmethod = "manual"
+-- Enable folding
+vim.o.foldenable = true
+-- Set tab to 4 spaces
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
 
 vim.loader.enable()
 vim.opt.updatetime = 300
+
+-- Enable persistent undo
+vim.o.undofile = true
+-- Set undo directory
+vim.o.undodir = vim.fn.stdpath("data") .. "/undo"
+
+-- Autocommands to save and load view (including folds)
+local remember_folds_group = vim.api.nvim_create_augroup("remember_folds", { clear = true })
+
+vim.api.nvim_create_autocmd({"BufWinLeave"}, {
+  pattern = "*",
+  callback = function()
+    if vim.fn.expand("%:p") ~= "" and vim.fn.buflisted(vim.api.nvim_get_current_buf()) == 1 then
+      vim.cmd("mkview")
+    end
+  end,
+  group = remember_folds_group,
+})
+
+vim.api.nvim_create_autocmd({"BufWinEnter"}, {
+  pattern = "*",
+  command = "silent! loadview",
+  group = remember_folds_group,
+})
+
+vim.opt.sessionoptions:append("folds")
 
 -- Prevent errors when plugins are not yet installed
 local function safe_require(module)
@@ -36,9 +79,6 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.runtimepath:prepend(lazypath)
 
--- Load core settings
-require('settings')
-
 -- ========================================================
 -- 📦 PLUGIN MANAGEMENT (Lazy.nvim)
 -- ========================================================
@@ -55,8 +95,195 @@ require('lazy').setup({
       vim.cmd('colorscheme tokyonight-night')
     end,
   },
-  -- Load plugins from lua/plugins.lua
-  require('plugins'),
+
+  -- == UI Enhancements ==
+  { "RRethy/vim-illuminate" },
+  { "numToStr/Comment.nvim" },
+  { "m-demare/hlargs.nvim" },
+  { 'danilamihailov/beacon.nvim' },
+  { "nvim-tree/nvim-web-devicons", opts = {} },
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    init = function()
+      vim.o.timeout = true
+      vim.o.timeoutlen = 300
+    end,
+    opts = {}
+  },
+  {
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      dashboard = { enabled = true, example = "files"},
+      explorer = { enabled = true },
+      indent = { enabled = true },
+      picker = { enabled = true },
+      quickfile = { enabled = true },
+      scroll = { enabled = true },
+      words = { enabled = true },
+      terminal = { enabled = true, interactive = true, },
+    },
+    keys = {
+      { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
+      { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
+      { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Files" },
+      { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
+      { "<leader>fr", function() Snacks.picker.recent() end, desc = "Recent" },
+      { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
+      { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
+    }
+  },
+
+  -- === File Explorer ===
+  {
+    'nvim-tree/nvim-tree.lua',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require('nvim-tree').setup {}
+    end
+  },
+
+  -- === Terminal ===
+  {'akinsho/toggleterm.nvim', version = "*", config = true},
+  {'liangxianzhe/floating-input.nvim'},
+
+  -- === Syntax Highlighting & Text Objects ===
+  {
+    'nvim-treesitter/nvim-treesitter',
+    run = ':TSUpdate',
+    config = function()
+      require('nvim-treesitter.configs').setup {
+        ensure_installed = { "lua", "vim", "vimdoc", "query", "jsonc", "python", "c", "cpp" }, -- Added C/C++
+        auto_install = true,
+        highlight = {
+          enable = true,
+          additional_vim_regex_highlighting = false,
+        },
+        indent = { enable = true },
+        rainbow = {
+          enable = true,
+          extended_mode = true,
+          max_file_lines = nil,
+        }
+      }
+    end
+  },
+  {
+    'tzachar/highlight-undo.nvim',
+    opts = {
+      hlgroup = "HighlightUndo",
+      duration = 300,
+      -- Optional: ignore specific file types
+      ignored_filetypes = { "neo-tree", "TelescopePrompt", ... },
+    },
+  },
+
+  -- === Utility Plugins ===
+  {
+    'windwp/nvim-autopairs',
+    event = "InsertEnter",
+    config = true
+  },
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require('lualine').setup {
+        options = {
+          theme = 'tokyonight-moon',
+          section_separators = { left = '', right = '' },
+          component_separators = { left = '|', right = '|' },
+        },
+        sections = {
+          lualine_b = {'branch', 'diff', 'diagnostics'},
+          lualine_c = {{'filename', path = 1}},
+        }
+      }
+    end
+  },
+  {'rcarriga/nvim-notify'},
+  {
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {},
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+      "rcarriga/nvim-notify",
+    }
+  },
+  {
+    'nvim-telescope/telescope.nvim',
+    tag = '0.1.8',
+    dependencies = { 'nvim-lua/plenary.nvim' }
+  },
+  {
+    "folke/trouble.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {},
+    cmd = "Trouble",
+    keys = {
+      {
+        "<leader>xx",
+        "<cmd>Trouble diagnostics toggle<cr>",
+        desc = "Diagnostics (Trouble)",
+      },
+      {
+        "<leader>xX",
+        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+        desc = "Buffer Diagnostics (Trouble)",
+      },
+      {
+        "<leader>cs",
+        "<cmd>Trouble symbols toggle focus=false<cr>",
+        desc = "Symbols (Trouble)",
+      },
+      {
+        "<leader>cl",
+        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+        desc = "LSP Definitions / references / ... (Trouble)",
+      },
+      {
+        "<leader>xL",
+        "<cmd>Trouble loclist toggle<cr>",
+        desc = "Location List (Trouble)",
+      },
+      {
+        "<leader>xQ",
+        "<cmd>Trouble qflist toggle<cr>",
+        desc = "Quickfix List (Trouble)",
+      },
+    },
+  },
+
+  -- === Development Plugins ===
+  -- LSP
+  { "neovim/nvim-lspconfig" },
+  { "williamboman/mason.nvim", build = ":MasonUpdate", config = true },
+  { "williamboman/mason-lspconfig.nvim" },
+  {"mfussenegger/nvim-dap"},
+
+  -- Autocompletion
+  { "hrsh7th/nvim-cmp" },
+  { "hrsh7th/cmp-nvim-lsp" },
+  { "hrsh7th/cmp-buffer" },
+  { "hrsh7th/cmp-path" },
+  { "hrsh7th/cmp-nvim-lua" },
+  { "hrsh7th/cmp-nvim-lsp-signature-help" },
+  { "L3MON4D3/LuaSnip" },
+  { "saadparwaiz1/cmp_luasnip",
+     dependencies = {
+      "rafamadriz/friendly-snippets",
+    },
+  },
+
+  -- LSP UI
+  {
+    "nvimdev/lspsaga.nvim",
+    event = "LspAttach",
+    config = true,
+  },
 })
 
 -- ========================================================
@@ -119,16 +346,396 @@ require("which-key").setup({
 })
 
 -- ========================================================
--- 🛠️ HELPER FUNCTIONS (LSP & DAP Setup)
+-- 🛠️ HELPER FUNCTIONS
 -- ========================================================
-require('lsp.setup')
+
+-- mason & LSP setup
+require("mason").setup({
+    ui = {
+        icons = {
+            package_installed = "",
+            package_pending = "",
+            package_uninstalled = "",
+        },
+    }
+})
+
+require("mason-lspconfig").setup({
+  ensure_installed = { "pyright", "ruff", "clangd" }, -- Added clangd for C/C++
+})
+
+local lspconfig = require("lspconfig")
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+-- LSP settings
+vim.opt.completeopt = {'menuone', 'noselect', 'noinsert'}
+vim.opt.shortmess = vim.opt.shortmess + { c = true}
+vim.api.nvim_set_option('updatetime', 300) 
+
+vim.cmd([[
+set signcolumn=yes
+autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })
+]])
+
+-- Global LSP keybindings function
+local function setup_lsp_keybindings(bufnr)
+  local opts = { noremap = true, silent = true, buffer = bufnr }
+  
+  -- Navigation
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+  vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+  vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, opts)
+  
+  -- Documentation
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+  
+  -- Code actions and fixes
+  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+  vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, opts)
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+  vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format({ async = true }) end, opts)
+  
+  -- Diagnostics
+  vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+  vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+  vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
+  vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
+end
+
+-- Common on_attach function for all LSP servers
+local function on_attach(client, bufnr)
+  setup_lsp_keybindings(bufnr)
+  
+  -- Set up buffer-local keymaps with which-key descriptions
+  local wk = require("which-key")
+  wk.register({
+    g = {
+      d = { vim.lsp.buf.definition, "Go to definition" },
+      D = { vim.lsp.buf.declaration, "Go to declaration" },
+      i = { vim.lsp.buf.implementation, "Go to implementation" },
+      r = { vim.lsp.buf.references, "Go to references" },
+      t = { vim.lsp.buf.type_definition, "Go to type definition" },
+    },
+    K = { vim.lsp.buf.hover, "Hover documentation" },
+    ["<C-k>"] = { vim.lsp.buf.signature_help, "Signature help" },
+    ["<leader>"] = {
+      c = {
+        a = { vim.lsp.buf.code_action, "Code action" },
+      },
+      r = {
+        n = { vim.lsp.buf.rename, "Rename symbol" },
+      },
+      f = { function() vim.lsp.buf.format({ async = true }) end, "Format buffer" },
+    },
+  }, { buffer = bufnr })
+end
+
+-- PYTHON LSP CONFIG (Kept)
+lspconfig.pyright.setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+  settings = {
+    pyright = {
+      disableOrganizeImports = true,
+    },
+    python = {
+      analysis = {
+        ignore = { '*' },
+        typeCheckingMode = "basic",
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
+      },
+    },
+  },
+})
+
+lspconfig.ruff.setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+  init_options = {
+    settings = {
+      args = {},
+    }
+  }
+})
+
+-- C/C++ LSP CONFIG (Added)
+lspconfig.clangd.setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+  cmd = {
+    "clangd",
+    "--background-index",
+    "--clang-tidy",
+    "--header-insertion=never",
+    "--completion-style=detailed",
+    "--function-arg-placeholders=true",
+  },
+})
+
+-- Auto format on save
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = { "*.lua", "*.py", "*.c", "*.cpp", "*.h", "*.hpp" }, -- Added C/C++ file types
+  callback = function()
+    vim.lsp.buf.format({ async = false })
+  end,
+})
+
+-- Completion Plugin Setup
+local cmp = require'cmp'
+local luasnip = require('luasnip')
+
+-- Load friendly-snippets
+require('luasnip.loaders.from_vscode').lazy_load()
+
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<Up>'] = cmp.mapping.select_prev_item(),
+    ['<Down>'] = cmp.mapping.select_next_item(),
+    ['<C-j>'] = cmp.mapping.select_next_item(),
+    ['<C-k>'] = cmp.mapping.select_prev_item(),
+    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-n>'] = cmp.mapping.select_next_item(),
+    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = false,
+    }),
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        local entry = cmp.get_selected_entry()
+        if not entry then
+          cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+        end
+        cmp.confirm()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp', priority = 1000 },
+    { name = 'luasnip', priority = 750 },
+    { name = 'nvim_lsp_signature_help', priority = 700 },
+  }, {
+    { name = 'path', priority = 250 },
+    { name = 'buffer', keyword_length = 3, priority = 50 },
+    { name = 'nvim_lua', priority = 300 },
+    { name = 'calc', priority = 150 },
+  }),
+  window = {
+    completion = cmp.config.window.bordered({
+      winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
+    }),
+    documentation = cmp.config.window.bordered({
+      winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
+    }),
+  },
+  formatting = {
+    fields = {'kind', 'abbr', 'menu'},
+    format = function(entry, item)
+      local kind_icons = {
+        Text = "",
+        Method = "󰆧",
+        Function = "󰊕",
+        Constructor = "",
+        Field = "󰇽",
+        Variable = "󰂡",
+        Class = "󰠱",
+        Interface = "",
+        Module = "",
+        Property = "󰜢",
+        Unit = "",
+        Value = "󰎠",
+        Enum = "",
+        Keyword = "󰌋",
+        Snippet = "",
+        Color = "󰏘",
+        File = "󰈙",
+        Reference = "",
+        Folder = "󰉋",
+        EnumMember = "",
+        Constant = "󰏿",
+        Struct = "",
+        Event = "",
+        Operator = "󰆕",
+        TypeParameter = "󰅲",
+      }
+      
+      local menu_icon = {
+        nvim_lsp = '[LSP]',
+        luasnip = '[Snippet]',
+        buffer = '[Buffer]',
+        path = '[Path]',
+        nvim_lua = '[Lua]',
+        calc = '[Calc]',
+      }
+      
+      item.kind = string.format('%s %s', kind_icons[item.kind] or "", item.kind)
+      item.menu = menu_icon[entry.source.name] or string.format('[%s]', entry.source.name)
+      
+      return item
+    end,
+  },
+  experimental = {
+    ghost_text = true,
+  },
+})
+
+-- Additional diagnostic configuration
+vim.diagnostic.config({
+  virtual_text = {
+    prefix = '●',
+    source = "always",
+  },
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
+  float = {
+    focusable = false,
+    style = 'minimal',
+    border = 'rounded',
+    source = 'always',
+    header = '',
+    prefix = '',
+  },
+})
+
+-- Run current file
+local Terminal = require("toggleterm.terminal").Terminal
+
+function RunFile()
+  local ext = vim.fn.expand('%:e')
+  local file = vim.fn.expand('%')
+  local cmd = nil
+
+  if ext == "py" then
+    cmd = 'fish -c "uv run ' .. file .. '; fish"'
+  -- Added C/C++ run commands
+  elseif ext == "c" then
+    cmd = string.format('fish -c "gcc -g %s -o %s && ./%s; fish"', file, vim.fn.expand('%:r'), vim.fn.expand('%:r'))
+  elseif ext == "cpp" then
+    cmd = string.format('fish -c "g++ -g %s -o %s && ./%s; fish"', file, vim.fn.expand('%:r'), vim.fn.expand('%:r'))
+  else
+    print("No run command for extension: " .. ext)
+    return
+  end
+
+  local term = Terminal:new({
+    cmd = cmd,
+    direction = "float",
+    close_on_exit = true,
+    hidden = true
+  })
+  term:toggle()
+end
+
+-- Configure Undo history
+require('highlight-undo').setup({ duration = 600 })
 
 -- ========================================================
 -- 🗝️ KEYBINDINGS
 -- ========================================================
-require('keymaps')
 
--- ========================================================
--- 📂 AUTOCOMMANDS
--- ========================================================
-require('autocmds')
+-- Register keybindings with which-key
+local wk = require("which-key")
+
+-- File Tree
+require("which-key").add {
+  { "<leader>o", ":NvimTreeToggle<CR>", desc = "Toggle file explorer" },
+}
+
+-- Tabs
+require("which-key").add {
+  { "<C-t", ":tabnew<CR>", desc = "New tab" },
+}
+
+-- Telescope
+local builtin = require('telescope.builtin')
+require("which-key").add {
+  { "<leader>fg", builtin.live_grep, desc = "Live grep" },
+  { "<leader>fb", builtin.buffers,   desc = "Find buffers" },
+  { "<leader>fh", builtin.help_tags, desc = "Help tags" },
+}
+
+-- Terminal
+require("which-key").add {
+  { "<M-v>", ":ToggleTerm direction=vertical size=50<CR>",  desc = "Vertical terminal" },
+  { "<M-d>", ":ToggleTerm direction=vertical size=50<CR>",  desc = "Vertical terminal" },
+  { "<M-h>", ":ToggleTerm direction=horizontal size=10<CR>",desc = "Horizontal terminal" },
+  { "<C-d>", ":ToggleTerm direction=float<CR>",            desc = "Floating terminal" },
+}
+
+-- Buffer navigation
+require("which-key").add {
+  { "<M-Right>", ":bnext<CR>",     desc = "Next buffer" },
+  { "<M-Left>",  ":bprev<CR>",     desc = "Previous buffer" },
+  { "<leader>q", ":bd<CR>",        desc = "Close buffer" },
+}
+
+-- Run file
+require("which-key").add {
+  { "<leader>r", RunFile, desc = "Run current file" },
+}
+
+-- Diagnostics
+require("which-key").add {
+  {
+    "<leader>cc",
+    function()
+      -- Copy all diagnostics on the current line to the clipboard
+      local diagnostics = vim.diagnostic.get(0, {
+        lnum = vim.api.nvim_win_get_cursor(0)[1] - 1,
+      })
+      if vim.tbl_isempty(diagnostics) then
+        print("No diagnostics to copy")
+        return
+      end
+      local lines = {}
+      for _, d in ipairs(diagnostics) do
+        table.insert(lines, d.message)
+      end
+      local text = table.concat(lines, "\n")
+      vim.fn.setreg("+", text)
+      vim.notify("Copied diagnostic to clipboard", vim.log.levels.INFO)
+    end,
+    desc = "Copy diagnostic to clipboard",
+  },
+  {
+    "<leader>cx",
+    function()
+      -- Append "# type: ignore" to suppress a Pyright warning on this line
+      local line = vim.api.nvim_get_current_line()
+      if not line:find("# type: ignore") then
+        vim.api.nvim_set_current_line(line .. "  # type: ignore")
+        vim.notify("Added '# type: ignore' to suppress Pyright warning", vim.log.levels.INFO)
+      else
+        vim.notify("'# type: ignore' already present", vim.log.levels.WARN)
+      end
+    end,
+    desc = "Suppress Pyright error",
+  },
+}
