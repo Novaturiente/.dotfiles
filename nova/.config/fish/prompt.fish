@@ -135,7 +135,7 @@ function fish_prompt
     # Runtime/Language segment
     set -l runtime (get_runtime_indicator)
     if test -n "$runtime"
-        make_segment "$runtime" $powerline_color_status_fg
+        make_segment " $runtime" $powerline_color_status_fg
     end
 
     # Newline for the second line of the prompt
