@@ -1,13 +1,11 @@
-# Fish Shell Powerline Theme Configuration
-# Add this to your ~/.config/fish/config.fish file
+# Fish Shell Theme Configuration
 
-# --- Powerline Characters (requires a Nerd Font) ---
+set -gx VIRTUAL_ENV_DISABLE_PROMPT 1
+
+# --- Characters (requires a Nerd Font) ---
 set -g powerline_chars_separator ""
 set -g powerline_chars_branch ""
-set -g powerline_chars_lock ""
-set -g powerline_chars_gear "⚙"
-set -g powerline_chars_lightning "⚡"
-set -g powerline_chars_home "🏠"
+set -g powerline_chars_home "🐧"
 set -g powerline_chars_folder "📁"
 set -g powerline_chars_git ""
 set -g powerline_chars_python ""
@@ -76,8 +74,8 @@ function get_runtime_indicator
     if test -f "package.json"
         set -a indicators "$powerline_chars_node js"
     end
-    if test -f "Dockerfile" -o -f "docker-compose.yml"
-        set -a indicators "$powerline_chars_docker docker"
+    if test -f "Containerfile" -o -f "podman-compose.yml" -o -f "Dockerfile"
+      set -a indicators "$powerline_chars_docker podman"
     end
 
     if test (count $indicators) -gt 0
@@ -89,6 +87,14 @@ end
 
 # Right-side prompt (Time)
 function fish_right_prompt
+    if set -q VIRTUAL_ENV
+        set -l venv_name (basename (dirname $VIRTUAL_ENV))
+        set -l py_version (python -c "import platform; print(platform.python_version())" 2>/dev/null)
+        set_color $powerline_color_status_fg
+        echo -n "($venv_name; $py_version) "
+        set_color normal
+    end
+
     set_color $powerline_color_time_fg
     echo -n "🕐 "(date '+%H:%M:%S')
     set_color normal
