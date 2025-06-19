@@ -768,3 +768,9 @@ require("which-key").add {
     desc = "Suppress Pyright error",
   },
 }
+
+-- Open specific files
+wk.add{
+  {"<leader>wn", "<cmd>edit ~/.config/nvim/init.lua<cr>", desc = "Open Neovim config"},
+  {"<leader>ww", "<cmd>edit ~/Notes/index.md<cr>", desc = "Open Notes"}
+}
