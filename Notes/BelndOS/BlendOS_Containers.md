@@ -18,8 +18,6 @@ user shell my-first-container
 ```
 user associate apt my-first-container
 ```
-install a package with `sudo apt install [pkg]`
-
 #### Deleting associations
 ```
 user dissociate apt

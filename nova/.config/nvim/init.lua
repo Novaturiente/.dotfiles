@@ -155,7 +155,7 @@ require('lazy').setup({
     run = ':TSUpdate',
     config = function()
       require('nvim-treesitter.configs').setup {
-        ensure_installed = { "lua", "vim", "vimdoc", "query", "jsonc", "python", "c", "cpp" }, -- Added C/C++
+        ensure_installed = { "lua", "vim", "vimdoc", "query", "jsonc", "python", "c", "cpp", "rust" }, -- Added C/C++
         auto_install = true,
         highlight = {
           enable = true,
@@ -256,6 +256,24 @@ require('lazy').setup({
       },
     },
   },
+  {
+    "epwalsh/obsidian.nvim",
+    version = "*",
+    lazy = true,
+    ft = "markdown",
+
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    opts = {
+      workspaces = {
+        {
+          name = "notes",
+          path = "~/Notes",
+        },
+      },
+    },
+  },
 
   -- === Development Plugins ===
   -- LSP
@@ -307,11 +325,28 @@ require("noice").setup({
   },
 })
 
-local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
-for type, icon in pairs(signs) do
-  local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-end
+vim.diagnostic.config({
+  virtual_text = { prefix = '●', source = "always" },
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = " ",
+      [vim.diagnostic.severity.WARN]  = " ",
+      [vim.diagnostic.severity.HINT]  = " ",
+      [vim.diagnostic.severity.INFO]  = " ",
+    },
+  },
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
+  float = {
+    focusable = false,
+    style = 'minimal',
+    border = 'rounded',
+    source = 'always',
+    header = '',
+    prefix = '',
+  },
+})
 
 require("notify").setup({
   timeout = 300,
@@ -377,59 +412,37 @@ set signcolumn=yes
 autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })
 ]])
 
--- Global LSP keybindings function
-local function setup_lsp_keybindings(bufnr)
-  local opts = { noremap = true, silent = true, buffer = bufnr }
-  
-  -- Navigation
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-  vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, opts)
-  
-  -- Documentation
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-  
-  -- Code actions and fixes
-  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
-  vim.keymap.set('v', '<leader>ca', vim.lsp.buf.code_action, opts)
-  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-  vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format({ async = true }) end, opts)
-  
-  -- Diagnostics
-  vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-  vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
-  vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
-  vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
-end
-
 -- Common on_attach function for all LSP servers
 local function on_attach(client, bufnr)
-  setup_lsp_keybindings(bufnr)
-  
   -- Set up buffer-local keymaps with which-key descriptions
-  local wk = require("which-key")
-  wk.register({
-    g = {
-      d = { vim.lsp.buf.definition, "Go to definition" },
-      D = { vim.lsp.buf.declaration, "Go to declaration" },
-      i = { vim.lsp.buf.implementation, "Go to implementation" },
-      r = { vim.lsp.buf.references, "Go to references" },
-      t = { vim.lsp.buf.type_definition, "Go to type definition" },
-    },
-    K = { vim.lsp.buf.hover, "Hover documentation" },
-    ["<C-k>"] = { vim.lsp.buf.signature_help, "Signature help" },
-    ["<leader>"] = {
-      c = {
-        a = { vim.lsp.buf.code_action, "Code action" },
-      },
-      r = {
-        n = { vim.lsp.buf.rename, "Rename symbol" },
-      },
-      f = { function() vim.lsp.buf.format({ async = true }) end, "Format buffer" },
-    },
+  client.server_capabilities.offsetEncoding = "utf-8"
+  
+  -- This single block now handles both creating the keymap AND registering it with which-key
+  require("which-key").add({
+    mode = "n", -- Set the mode for all keys in this table
+    { "gd", vim.lsp.buf.definition, desc = "Go to definition" },
+    { "gD", vim.lsp.buf.declaration, desc = "Go to declaration" },
+    { "gi", vim.lsp.buf.implementation, desc = "Go to implementation" },
+    { "gr", vim.lsp.buf.references, desc = "Go to references" },
+    { "gt", vim.lsp.buf.type_definition, desc = "Go to type definition" },
+    { "K",  vim.lsp.buf.hover, desc = "Hover documentation" },
+    { "<C-k>", vim.lsp.buf.signature_help, desc = "Signature help" },
+    { "<leader>ca", vim.lsp.buf.code_action, desc = "Code action" },
+    { "<leader>rn", vim.lsp.buf.rename, desc = "Rename symbol" },
+    { "<leader>f", function() vim.lsp.buf.format({ async = true }) end, desc = "Format buffer" },
+    
+    -- You can also add your diagnostic keybindings here for consistency
+    { "[d", vim.diagnostic.goto_prev, desc = "Previous diagnostic" },
+    { "]d", vim.diagnostic.goto_next, desc = "Next diagnostic" },
+    { "<leader>e", vim.diagnostic.open_float, desc = "Line diagnostics" },
+    { "<leader>ql", vim.diagnostic.setloclist, desc = "List diagnostics" },
+
+  }, { buffer = bufnr })
+
+  -- If you have mappings for other modes (e.g., visual mode), you can add another block
+  require("which-key").add({
+    mode = "v",
+    { "<leader>ca", vim.lsp.buf.code_action, desc = "Code action" },
   }, { buffer = bufnr })
 end
 
@@ -476,9 +489,23 @@ lspconfig.clangd.setup({
   },
 })
 
+-- Rust LSP CONFIG
+lspconfig.rust_analyzer.setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+  settings = {
+    ["rust-analyzer"] = {
+      cargo = { allFeatures = true },
+      checkOnSave = {
+        command = "clippy"
+      },
+    }
+  }
+})
+
 -- Auto format on save
 vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = { "*.lua", "*.py", "*.c", "*.cpp", "*.h", "*.hpp" }, -- Added C/C++ file types
+  pattern = { "*.lua", "*.py", "*.c", "*.cpp", "*.h", "*.hpp", "*.rs" }, -- Added C/C++ file types
   callback = function()
     vim.lsp.buf.format({ async = false })
   end,
@@ -639,6 +666,8 @@ function RunFile()
     cmd = string.format('fish -c "gcc -g %s -o %s && ./%s; fish"', file, vim.fn.expand('%:r'), vim.fn.expand('%:r'))
   elseif ext == "cpp" then
     cmd = string.format('fish -c "g++ -g %s -o %s && ./%s; fish"', file, vim.fn.expand('%:r'), vim.fn.expand('%:r'))
+  elseif ext == "rs" then
+  cmd = 'fish -c "cargo run; fish"'
   else
     print("No run command for extension: " .. ext)
     return

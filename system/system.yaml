@@ -11,16 +11,13 @@ packages:
   - linux-headers                  # Kernel headers
   - openssl                        # SSL/TLS toolkit
   - pacman-contrib                 # Pacman helper tools
-  - xorg-xauth                     # X authentication utility
   - xdg-user-dirs                  # Manage user directories
   
   # ESSENTIAL - Display & Graphics (Critical for GUI)
   - nvidia-dkms                    # NVIDIA DKMS driver
   - nvidia-utils                   # NVIDIA driver utilities
-  - nvidia-prime
   - vulkan-icd-loader              # Vulkan loader
   - wayland-protocols              # Wayland protocol specs
-  - xf86-video-intel               # Intel GPU driver
   - xorg-xwayland                  # XWayland for X apps
   - intel-ucode                    # Microcode update files for Intel CPUs
   
@@ -28,9 +25,9 @@ packages:
   - hyprland                       # Wayland compositor
   - greetd
   - greetd-tuigreet
-  - cosmic-greeter
   - xdg-desktop-portal             # Desktop integration portal
   - xdg-desktop-portal-hyprland    # Hyprland portal backend
+  - xdg-desktop-portal-gtk
   
   # IMPORTANT - Networking
   - networkmanager                 # Network manager
@@ -58,14 +55,14 @@ packages:
   # OPTIONAL - Appearance
   - bibata-cursor-theme            # Bibata cursor theme
   - fluent-icon-theme-git          # Fluent icon theme
-  - kvantum                        # Qt theme engine
-  - kvantum-qt5                    # Kvantum for Qt5
+  # - kvantum                        # Qt theme engine
+  # - kvantum-qt5                    # Kvantum for Qt5
+  # - qt5-wayland                    # Qt5 Wayland support
+  # - qt5ct                          # Qt5 theme manager
+  # - qt6-wayland                    # Qt6 Wayland support
+  # - qt6ct                          # Qt6 theme manager
   - nwg-look                       # GTK theme manager
   - otf-font-awesome               # Font Awesome
-  - qt5-wayland                    # Qt5 Wayland support
-  - qt5ct                          # Qt5 theme manager
-  - qt6-wayland                    # Qt6 Wayland support
-  - qt6ct                          # Qt6 theme manager
   - ttf-jetbrains-mono-nerd        # JetBrains Mono Nerd Font
   - ttf-roboto-mono-nerd           # Roboto Mono Nerd Font
   
@@ -78,12 +75,10 @@ packages:
   # OPTIONAL - Compatibility (Gaming)
   - alsa-lib                       # ALSA library
   - alsa-plugins                   # ALSA plugins
-  - gamescope-git                  # Game compositor
-  - gamescope-session-git          # Gamescope session
+  - gamescope                      # Game compositor
   - giflib                         # GIF library
   - gnutls                         # TLS library
   - gtk3                           # GTK 3 toolkit
-  - gtk4                           # GTK 4 toolkit
   - lib32-alsa-lib                 # 32-bit ALSA library
   - lib32-alsa-plugins             # 32-bit ALSA plugins
   - lib32-giflib                   # 32-bit GIF library
@@ -93,29 +88,24 @@ packages:
   - lib32-libpng                   # 32-bit PNG library
   - lib32-libpulse                 # 32-bit PulseAudio
   - lib32-libva                    # 32-bit VA-API
-  - lib32-libxcomposite            # 32-bit Xcomposite
   - lib32-mpg123                   # 32-bit MP3 decoder
   - lib32-ncurses                  # 32-bit terminal library
   - lib32-openal                   # 32-bit OpenAL
   - lib32-sqlite                   # 32-bit SQLite
   - lib32-vulkan-icd-loader        # 32-bit Vulkan loader
-  - lib32-vulkan-intel             # 32-bit Intel Vulkan
   - libgcrypt                      # Crypto library
   - libgpg-error                   # GPG error library
   - libinput                       # Input library
   - libpng                         # PNG library
   - libpulse                       # PulseAudio library
   - libva                          # VA-API library
-  - libxcomposite                  # Xcomposite library
   - libxkbcommon                   # Keyboard handling lib
   - lutris                         # Game manager
   - mpg123                         # MP3 decoder
   - ncurses                        # Terminal library
   - openal                         # OpenAL audio library
   - sqlite                         # SQLite database
-  - vulkan-intel                   # Intel Vulkan drivers
   - vulkan-tools                   # Vulkan tools
-  - vulkan-validation-layers       # Vulkan validation
   - wine-staging                   # Wine for gaming
   
   # OPTIONAL - Development
@@ -123,7 +113,6 @@ packages:
   - cmake                          # Build system
   - cuda                           # NVIDIA CUDA toolkit
   - cuda-tools                     # CUDA development tools
-  - cudnn                          # CUDA deep learning lib
   - gcc                            # GNU compiler
   - go                             # Go language
   - lua                            # Lua language
@@ -139,13 +128,10 @@ packages:
   - rustfmt                        # Rust code formatter
   - tree-sitter                    # Syntax parser
   - uv                             # Python package manager
-  - mysql                          # MySQL Community edition
   
   # OPTIONAL - File Management
-  - nautilus                       # GNOME file manager
-  - nautilus-image-converter       # Image converter
-  - nautilus-open-any-terminal     # Open terminal in folder
-  - baobab                         # Disk usage analizer
+  - ncdu                           # Disk usage analizer
+  - pcmanfm-gtk3                   # File manager
   
   # OPTIONAL - Hyprland Extras
   - brightnessctl                  # Brightness control
@@ -155,7 +141,7 @@ packages:
   - hyprutils                      # Hyprland utilities
   - rofi-wayland                   # Wayland launcher
   - swaync                         # Notification center
-  - swayosd-git                    # On-screen display
+  - swayosd                        # On-screen display
   - wpaperd
   - waybar                         # Wayland status bar
   
@@ -179,9 +165,8 @@ packages:
   - network-manager-applet         # NetworkManager GUI
   
   # OPTIONAL - Package & Application Management
-  - distrobox                      # Linux containers
   - flatpak                        # Universal package manager
-  - protonup-qt                    # Proton version manager
+  - protonup                       # Proton version manager
   
   # OPTIONAL - Power Management
   - tlp                            # Power profile manager
@@ -194,7 +179,6 @@ packages:
   - fastfetch                      # System info fetcher
   - htop                           # Process viewer
   - nvtop                          # NVIDIA GPU monitor
-  - powertop                       # Power usage monitor
   - entr                           # Nofify when file changes
   
   # OPTIONAL - Terminal Emulators
@@ -206,7 +190,6 @@ packages:
 
   # OPTIONAL - Text Editors
   - neovim                         # Vim fork
-  - obsidian                       # Obsidian Note taking
   
   # OPTIONAL - Utilities
   - clipman                        # Clipboard manager
@@ -218,8 +201,8 @@ packages:
   - zenity                         # GTK dialogs
   
   # OPTIONAL - Virtualization
-  - docker                         # Container engine
-  - docker-compose                 # Multi-container apps
+  - podman
+  - podman-compose
   - gnome-boxes                    # Virtual machine manager
   
   # OPTIONAL - Web Browsers
@@ -232,11 +215,17 @@ packages:
   - unrar                          # RAR extractor
   - unzip                          # ZIP extractor
 
+  # - libayatana-appindicator
+  # - r-quick-share
+  # - gtk4                           # GTK 4 toolkit
+  # - mysql                          # MySQL Community edition
+  # - cudnn                          # CUDA deep learning lib
+  # - vulkan-intel                   # Intel Vulkan drivers
+  # - lib32-vulkan-intel             # 32-bit Intel Vulkan
 
 aur-packages:
   - fish-done
   - fish-fzf
-  - nautilus-admin-gtk4
 
 services:
   - systemd-resolved
@@ -244,7 +233,6 @@ services:
   - tlp
   - bluetooth
   - greetd
-  - docker
   - flatpak
 
 package-repos:
