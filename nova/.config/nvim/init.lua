@@ -28,6 +28,8 @@ vim.o.undofile = true
 -- Set undo directory
 vim.o.undodir = vim.fn.stdpath("data") .. "/undo"
 
+vim.opt.conceallevel = 1
+
 -- Autocommands to save and load view (including folds)
 local remember_folds_group = vim.api.nvim_create_augroup("remember_folds", { clear = true })
 
@@ -261,6 +263,7 @@ require('lazy').setup({
     version = "*",
     lazy = true,
     ft = "markdown",
+    ui = { enable = true },
 
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -272,6 +275,9 @@ require('lazy').setup({
           path = "~/Notes",
         },
       },
+      follow_url_func = function(url)
+        vim.fn.jobstart({"xdg-open", url})
+      end,
     },
   },
 
@@ -772,5 +778,13 @@ require("which-key").add {
 -- Open specific files
 wk.add{
   {"<leader>wn", "<cmd>edit ~/.config/nvim/init.lua<cr>", desc = "Open Neovim config"},
-  {"<leader>ww", "<cmd>edit ~/Notes/index.md<cr>", desc = "Open Notes"}
+  {"<leader>ww", "<cmd>edit ~/Notes/index.md<cr>", desc = "Open Notes"},
+  {"<leader>hc", "<cmd>edit ~/.config/hypr/hyprland.conf<cr>", desc = "Open Notes"},
+  {"<leader>hb", "<cmd>edit ~/.config/hypr/binds.conf<cr>", desc = "Open Notes"}
+}
+
+-- Obsidian keybindings
+wk.add{
+  {"<leader>os", ":ObsidianSearch<cr>", desc = "Obsidian Search"},
+  {"<leader>on", ":ObsidianNew<cr>", desc = "Obsidian new file"}
 }
