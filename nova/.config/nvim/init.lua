@@ -778,7 +778,7 @@ require("which-key").add {
 -- Open specific files
 wk.add{
   {"<leader>wn", "<cmd>edit ~/.config/nvim/init.lua<cr>", desc = "Open Neovim config"},
-  {"<leader>ww", "<cmd>edit ~/Notes/index.md<cr>", desc = "Open Notes"},
+  {"<leader>ww", "<cmd>edit ~/develop/Notes/index.md<cr>", desc = "Open Notes"},
   {"<leader>hc", "<cmd>edit ~/.config/hypr/hyprland.conf<cr>", desc = "Open Notes"},
   {"<leader>hb", "<cmd>edit ~/.config/hypr/binds.conf<cr>", desc = "Open Notes"}
 }
