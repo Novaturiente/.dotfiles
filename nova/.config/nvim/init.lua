@@ -272,7 +272,7 @@ require('lazy').setup({
       workspaces = {
         {
           name = "notes",
-          path = "~/Notes",
+          path = "~/develop/Notes/",
         },
       },
       follow_url_func = function(url)
