@@ -25,7 +25,7 @@ services:
     volumes:
       - data:/storage 
       - ${HOME}:/shared 
-      - ./oem:/oem 
+      # - ./oem:/oem 
     devices:
       - /dev/kvm # Enable KVM.
       - /dev/net/tun # Enable tuntap
