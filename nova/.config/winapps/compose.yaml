@@ -6,7 +6,7 @@ services:
     image: ghcr.io/dockur/windows:latest
     container_name: WinApps # Created Docker VM Name.
     environment:
-      VERSION: "Win11"
+      VERSION: "tiny11"
       RAM_SIZE: "10G" # RAM allocated to the Windows VM.
       CPU_CORES: "12" # CPU cores allocated to the Windows VM.
       DISK_SIZE: "64G" # Size of the primary hard disk.
