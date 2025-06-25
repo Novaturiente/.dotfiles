@@ -29,4 +29,4 @@ services:
     devices:
       - /dev/kvm # Enable KVM.
       - /dev/net/tun # Enable tuntap
-      - /dev/sdb:/dev/sdb
+      - /dev/sda:/dev/sda
