@@ -29,7 +29,3 @@ services:
     devices:
       - /dev/kvm # Enable KVM.
       - /dev/net/tun # Enable tuntap
-      # - /dev/nvidia0:/dev/nvidia0 # NVIDIA GPU device
-      # - /dev/nvidiactl:/dev/nvidiactl # NVIDIA control interface
-      # - /dev/nvidia-uvm:/dev/nvidia-uvm # NVIDIA Unified Memory
-      # - /dev/nvidia-modeset:/dev/nvidia-modeset # NVIDIA mode setting
