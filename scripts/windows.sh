@@ -8,12 +8,14 @@ if [ "$1" == "start" ]; then
     # Check if the container is running
     if podman ps --filter "name=^/${CONTAINER_NAME}$" --filter "status=running" --format '{{.Names}}' | grep -wq "$CONTAINER_NAME"; then
         echo "✅ Container '$CONTAINER_NAME' is already running."
-        com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound
+        # com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound
+        xfreerdp3 /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound
     else
         echo "⚠️ Container '$CONTAINER_NAME' is not running. Starting it..."
         podman-compose -f ~/.config/winapps/compose.yaml up -d
         sleep 2
-        com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound
+        # com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound
+        xfreerdp3 /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound
     fi
 
 elif [ "$1" == "stop" ]; then
