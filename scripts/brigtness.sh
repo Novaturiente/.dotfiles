@@ -12,7 +12,7 @@ current_percent=$(brightnessctl get | awk '{printf "%.0f", ($1/$2)*100}' brightn
 # Determine adjustment step
 if [ "$1" = "up" ]; then
     if [ "$current_percent" -gt 10 ]; then
-        swayosd-client --brightness +5
+        swayosd-client --brightness +20
     else
         swayosd-client --brightness +1
     fi
