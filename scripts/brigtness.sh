@@ -18,7 +18,7 @@ if [ "$1" = "up" ]; then
     fi
 elif [ "$1" = "down" ]; then
     if [ "$current_percent" -gt 1920 ]; then
-        swayosd-client --brightness -5
+        swayosd-client --brightness -20
     else
         swayosd-client --brightness -1
     fi
