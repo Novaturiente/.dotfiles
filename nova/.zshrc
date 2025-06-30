@@ -3,11 +3,6 @@ HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
 setopt extendedglob notify
-# End of lines configured by zsh-newuser-install
-# The following lines were added by compinstall
-zstyle :compinstall filename '/home/nova/.zshrc'
-autoload -Uz compinit
-compinit
 
 # Load .env.fish if it exists
 if [ -f ~/.env.zsh ]; then
@@ -91,5 +86,9 @@ alias winconnect="com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic
 alias ollama="podman exec -it ollama ollama"
 alias ollamaup="podman-compose -f ~/.dotfiles/podman/ollama.yml up -d"
 alias ollamadown="podman-compose -f ~/.dotfiles/podman/ollama.yml down"
+
+zstyle :compinstall filename '/home/nova/.zshrc'
+autoload -Uz compinit
+compinit
 
 source ~/.zsh/prompt.zsh
