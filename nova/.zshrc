@@ -11,7 +11,7 @@ compinit
 # End of lines added by compinstall
 
 source ~/.zsh/prompt.zsh
-source ~/.zsh/zsh-256color.plugin.zsh
+# source ~/.zsh/zsh-256color.plugin.zsh
 source ~/.zsh/zsh-sudo.zsh
 source ~/.zsh/autopair.zsh
 source ~/.zsh/auto-venv.zsh
