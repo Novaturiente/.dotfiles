@@ -29,8 +29,8 @@
             gparted
             gnome-boxes
 
-            zsh-autoenv
-            zsh-autopair
+            # zsh-autoenv
+            # zsh-autopair
             
             # fish
             # fishPlugins.fzf
