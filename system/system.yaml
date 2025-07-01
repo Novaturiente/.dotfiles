@@ -55,12 +55,6 @@ packages:
   # OPTIONAL - Appearance
   - bibata-cursor-theme            # Bibata cursor theme
   - fluent-icon-theme-git          # Fluent icon theme
-  # - kvantum                        # Qt theme engine
-  # - kvantum-qt5                    # Kvantum for Qt5
-  # - qt5-wayland                    # Qt5 Wayland support
-  # - qt5ct                          # Qt5 theme manager
-  # - qt6-wayland                    # Qt6 Wayland support
-  # - qt6ct                          # Qt6 theme manager
   - nwg-look                       # GTK theme manager
   - otf-font-awesome               # Font Awesome
   - ttf-jetbrains-mono-nerd        # JetBrains Mono Nerd Font
@@ -109,12 +103,10 @@ packages:
   - wine-staging                   # Wine for gaming
   
   # OPTIONAL - Development
-  - cargo                          # Rust package manager
   - cmake                          # Build system
   - cuda                           # NVIDIA CUDA toolkit
   - cuda-tools                     # CUDA development tools
   - gcc                            # GNU compiler
-  - go                             # Go language
   - lua                            # Lua language
   - luarocks                       # Lua package manager
   - meson                          # Build system
@@ -124,14 +116,8 @@ packages:
   - pyright                        # Python type checker
   - python-pip                     # Python package installer
   - python-pynvim                  # Neovim Python support
-  - rust-analyzer                  # Rust LSP server
-  - rustfmt                        # Rust code formatter
   - tree-sitter                    # Syntax parser
   - uv                             # Python package manager
-  
-  # OPTIONAL - File Management
-  - ncdu                           # Disk usage analizer
-  - pcmanfm-gtk3                   # File manager
   
   # OPTIONAL - Hyprland Extras
   - brightnessctl                  # Brightness control
@@ -144,20 +130,15 @@ packages:
   - swayosd                        # On-screen display
   - wpaperd
   - waybar                         # Wayland status bar
-  
-  # OPTIONAL - Media Players
-  - mpv                            # Media player
-  - qimgv                          # Image viewer
 
   # OPTIONAL - Multimedia
   - bluez-tools                    # Bluetooth tools
   - blueman                        # Bluetooth manager
   - bluez-utils                    # Bluetooth utilities
-  - kdeconnect                     # Phone integration
+  - valent-git
   
   # OPTIONAL - Network Tools
   - curl                           # Data transfer tool
-  - qbittorrent                    # BitTorrent client
   - sshfs                          # SSH filesystem
   - wget                           # File downloader
   
@@ -172,38 +153,28 @@ packages:
   - tlp                            # Power profile manager
   - tlp-rdw
   
-  # OPTIONAL - Shells
-  - fish                           # Friendly shell
-  
-  # OPTIONAL - System Monitoring
-  - fastfetch                      # System info fetcher
-  - htop                           # Process viewer
-  - nvtop                          # NVIDIA GPU monitor
-  - entr                           # Nofify when file changes
-  
-  # OPTIONAL - Terminal Emulators
+  # OPTIONAL - Terminal
   - ghostty                        # GPU-accelerated terminal
+  - zsh                            # Z-Shell
   
   # OPTIONAL - CLI tools
   - tmux                           # Terminal multiplexer
-  - bat                            # cat alternative 
+  - entr                           # Nofify when file changes
 
   # OPTIONAL - Text Editors
   - neovim                         # Vim fork
   
   # OPTIONAL - Utilities
   - clipman                        # Clipboard manager
-  - gparted                        # Partition editor
   - playerctl                      # Media player controller
   - slurp                          # Region selector
   - swappy                         # Screenshot annotator
-  - udiskie                        # USB automounter
   - zenity                         # GTK dialogs
   
   # OPTIONAL - Virtualization
   - podman
   - podman-compose
-  - gnome-boxes                    # Virtual machine manager
+  - distrobox
   
   # OPTIONAL - Web Browsers
   - python-adblock                 # Adblock for Python
@@ -215,17 +186,9 @@ packages:
   - unrar                          # RAR extractor
   - unzip                          # ZIP extractor
 
-  # - libayatana-appindicator
-  # - r-quick-share
-  # - gtk4                           # GTK 4 toolkit
-  # - mysql                          # MySQL Community edition
-  # - cudnn                          # CUDA deep learning lib
-  # - vulkan-intel                   # Intel Vulkan drivers
-  # - lib32-vulkan-intel             # 32-bit Intel Vulkan
+  - nix
 
 aur-packages:
-  - fish-done
-  - fish-fzf
 
 services:
   - systemd-resolved
@@ -234,6 +197,8 @@ services:
   - bluetooth
   - greetd
   - flatpak
+  - docker
+  - nix
 
 package-repos:
   - name: 'chaotic-aur'

@@ -14,20 +14,30 @@
           paths = with pkgs; [
             tree
             opencode
-            
+
             # cargo
             # go
             # rust-analyzer
             # rustfmt
-            #
             # android-studio
             # jdk
-            #
             # freerdp
             # netcat-gnu
 
             gparted
             gnome-boxes
+
+            ncdu
+            udiskie
+            bat
+            fastfetch
+
+            htop
+            mpv
+            qimgv
+            duf
+            pcmanfm
+
           ];
         };
       };

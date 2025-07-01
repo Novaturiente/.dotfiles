@@ -36,7 +36,7 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
 # Nix package manager
-alias nixupdate="sudo nix flake update && sudo nix profile install .#extras"
+alias nixupdate="sudo nix flake update && sudo nix profile upgrade --all"
 
 # Journalctl and Windows connection
 alias jctl="journalctl -p 3 -xb"
