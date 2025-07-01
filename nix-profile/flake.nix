@@ -40,7 +40,6 @@
             pcmanfm
             materia-theme-transparent
             fluent-icon-theme
-            bibata-cursors
           ];
         };
       };
