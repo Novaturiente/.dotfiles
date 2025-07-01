@@ -17,6 +17,9 @@ selection=$(
     --exclude .zen \
     --exclude go \
     --exclude .cargo \
+    --exclude Docker \
+    --exclude .themes \
+    --exclude .fonts \
     . | fzf
 )
 
