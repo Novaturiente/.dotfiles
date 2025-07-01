@@ -106,5 +106,12 @@ zstyle :compinstall filename '/home/nova/.zshrc'
 autoload -Uz compinit
 compinit
 
+# ---- Key Bindings for Special Keys ----
+bindkey "^[[3~" delete-char         # Delete
+bindkey "^[[1~" beginning-of-line   # Home
+bindkey "^[[4~" end-of-line         # End
+bindkey "^[[H" beginning-of-line    # Alternate Home
+bindkey "^[[F" end-of-line          # Alternate End
+
 # ---- Prompt Sourcing ----
 source ~/.zsh/prompt.zsh
