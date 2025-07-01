@@ -26,7 +26,6 @@
             # netcat-gnu
 
             gparted
-            gnome-boxes
             qemu_full
 
             ncdu
