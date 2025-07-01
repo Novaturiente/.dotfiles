@@ -15,8 +15,6 @@
         myProfile = pkgs.buildEnv {
           name = "extra-packages";
           paths = with pkgs; [
-            opencode
-            tree
           ];
           extraOutputsToInstall = ["man" "doc"];
         };
