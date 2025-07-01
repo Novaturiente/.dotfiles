@@ -15,6 +15,7 @@
             tree
             opencode
 
+            # DEVELOPMENT
             # cargo
             # go
             # rust-analyzer
@@ -37,7 +38,9 @@
             qimgv
             duf
             pcmanfm
-
+            materia-theme-transparent
+            fluent-icon-theme
+            bibata-cursors
           ];
         };
       };

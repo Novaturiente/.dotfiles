@@ -1,0 +1,127 @@
+# ESSENTIAL - Base System & Core Functionality
+cpio
+openssl
+xdg-user-dirs
+
+# Utilities
+grim
+wl-clipboard
+
+# RECOMMENDED - Command Line Tools
+eza
+ripgrep
+zoxide
+
+# OPTIONAL - Appearance
+nwg-look
+
+# OPTIONAL - Command Line Tools
+dialog
+fd
+jq
+stow
+
+# OPTIONAL - Compatibility (Gaming)
+alsa-lib
+alsa-plugins
+gamescope
+giflib
+gnutls
+gtk3
+lib32-alsa-lib
+lib32-alsa-plugins
+lib32-giflib
+lib32-gst-plugins-base-libs
+lib32-libgcrypt
+lib32-libgpg-error
+lib32-libpng
+lib32-libpulse
+lib32-libva
+lib32-mpg123
+lib32-ncurses
+lib32-openal
+lib32-sqlite
+lib32-vulkan-icd-loader
+libgcrypt
+libgpg-error
+libinput
+libpng
+libpulse
+libva
+libxkbcommon
+lutris
+mpg123
+ncurses
+openal
+sqlite
+vulkan-tools
+wine-staging
+
+# OPTIONAL - Development
+cmake
+gcc
+lua
+luarocks
+meson
+nodejs
+npm
+pkg-config
+pyright
+python-pip
+python-pynvim
+tree-sitter
+uv
+
+# OPTIONAL - Hyprland Extras
+brightnessctl
+hypridle
+hyprlock
+hyprpolkitagent
+hyprutils
+rofi-wayland
+swaync
+swayosd
+wpaperd
+waybar
+
+# OPTIONAL - Network Tools
+curl
+sshfs
+wget
+network-manager-applet
+
+# OPTIONAL - Terminal
+nvtop
+ghostty
+zsh
+tmux
+
+# OPTIONAL - CLI tools
+entr
+
+# OPTIONAL - Text Editors
+neovim
+
+# OPTIONAL - Utilities
+clipman
+playerctl
+slurp
+swappy
+zenity
+
+# OPTIONAL - Package & Application Management
+flatpak
+protonup
+
+# OPTIONAL - Web Browsers
+python-adblock
+qutebrowser
+zen-browser-bin
+
+# OPTIONAL - Archiving and Compression
+7zip
+unrar
+unzip
+
+# OPTIONAL - Virtualization
+distrobox

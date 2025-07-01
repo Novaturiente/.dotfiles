@@ -1,0 +1,53 @@
+# ESSENTIAL - Base System & Core Functionality
+linux
+linux-headers
+pacman-contrib
+
+# ESSENTIAL - Display & Graphics
+nvidia-dkms
+nvidia-utils
+vulkan-icd-loader
+intel-ucode
+
+# ESSENTIAL - Window Management & Compositors
+hyprland
+greetd
+greetd-tuigreet
+xdg-desktop-portal
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+
+# IMPORTANT - Networking
+networkmanager
+
+# IMPORTANT - Multimedia
+pipewire
+pipewire-pulse
+wireplumber
+
+# RECOMMENDED - NVIDIA Features
+lib32-nvidia-utils
+nvidia-container-toolkit
+
+# OPTIONAL - Appearance (Fonts)
+otf-font-awesome
+ttf-jetbrains-mono-nerd
+ttf-roboto-mono-nerd
+
+# OPTIONAL - Development (CUDA)
+cuda
+cuda-tools
+
+# OPTIONAL - Multimedia (Bluetooth)
+bluez-tools
+blueman
+bluez-utils
+valent-git
+
+# OPTIONAL - Power Management
+tlp
+tlp-rdw
+
+# OPTIONAL - Virtualization
+podman
+podman-compose
