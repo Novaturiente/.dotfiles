@@ -1,17 +1,21 @@
 {
-  description = "My declarative package list";
+  description = "My declarative package set";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-  outputs = { self, nixpkgs }: {
-    packages.x86_64-linux.extras = let
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
-    in pkgs.buildEnv {
-      name = "extra-packages";
-      paths = with pkgs; [
-          tree
-          btop
-      ];
+  outputs = { self, nixpkgs }:
+    let
+      system = "x86_64-linux";  # Change if needed (e.g., aarch64-darwin for M1 Mac)
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      packages.${system} = {
+        extras = pkgs.buildEnv {
+          name = "extra-packages";
+          paths = with pkgs; [
+            tree
+            opencode
+          ];
+        };
+      };
     };
-  };
 }
