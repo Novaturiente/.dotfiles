@@ -14,6 +14,7 @@
           paths = with pkgs; [
             tree
             opencode
+            nixfmt
 
             # DEVELOPMENT
             # cargo
@@ -40,6 +41,9 @@
             pcmanfm
             materia-theme-transparent
             fluent-icon-theme
+            nerd-fonts.roboto-mono
+            nerd-fonts.jetbrains-mono
+            nerd-fonts.symbols-only
           ];
         };
       };

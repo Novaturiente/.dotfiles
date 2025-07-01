@@ -58,12 +58,10 @@ packages:
   # NVIDIA Features
   - lib32-nvidia-utils
   - nvidia-container-toolkit
-  - nvtop
   
-  # Appearance (Fonts)
+  # Appearance
   - otf-font-awesome
-  - ttf-jetbrains-mono-nerd
-  - ttf-roboto-mono-nerd
+  - bibata-cursor-theme
   
   # Development (CUDA)
   - cuda
@@ -82,6 +80,10 @@ packages:
   # Virtualization
   - podman
   - podman-compose
+
+  # Browser
+  - qutebrowser
+  - zen-browser-bin
   
   # Nix package manager
   - nix
@@ -95,7 +97,6 @@ services:
   - bluetooth
   - greetd
   - flatpak
-  - docker
   - nix
 
 package-repos:
