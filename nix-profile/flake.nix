@@ -14,11 +14,27 @@
           paths = with pkgs; [
             tree
             opencode
-
-            materia-theme-transparent
             
-            fishPlugins.fzf
-            fishPlugins.done
+            # cargo
+            # go
+            # rust-analyzer
+            # rustfmt
+            #
+            # android-studio
+            # jdk
+            #
+            # freerdp
+            # netcat-gnu
+
+            gparted
+            gnome-boxes
+
+            zsh-autoenv
+            zsh-autopair
+            
+            # fish
+            # fishPlugins.fzf
+            # fishPlugins.done
           ];
         };
       };
