@@ -36,6 +36,7 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
 # Nix package manager
+alias nixupdate="nix flake update && nix profile upgrade --profile ~/.nix-profile --all"
 alias nixinstall="nix profile install"
 alias nixlist="nix profile list"
 alias nixuninstall="nix profile remove"

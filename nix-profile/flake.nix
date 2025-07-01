@@ -1,24 +1,17 @@
 {
-  description = "Declarative Nix user profile";
+  description = "My declarative package list";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-  outputs = { nixpkgs, ... }: {
-    packages.x86_64-linux.default = import nixpkgs {
-      system = "x86_64-linux";
-    };
-
-    apps.x86_64-linux.default = {
-      type = "app";
-      program = toString (
-        let pkgs = import nixpkgs { system = "x86_64-linux"; };
-        in pkgs.writeShellScript "install-packages" ''
-          nix profile install nixpkgs#{builtins.concatStringsSep " " [
-            "tree"
-          ]}
-        '';
-      );
+  outputs = { self, nixpkgs }: {
+    packages.x86_64-linux.extras = let
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+    in pkgs.buildEnv {
+      name = "extra-packages";
+      paths = with pkgs; [
+          tree
+          btop
+      ];
     };
   };
 }
-
