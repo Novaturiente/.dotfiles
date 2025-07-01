@@ -27,6 +27,7 @@
 
             gparted
             gnome-boxes
+            qemu_full
 
             ncdu
             udiskie
