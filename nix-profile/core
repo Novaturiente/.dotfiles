@@ -1,53 +1,74 @@
-# ESSENTIAL - Base System & Core Functionality
-linux
-linux-headers
-pacman-contrib
+# Base System & Core Functionality
+- linux
+- linux-headers
+- pacman-contrib
+- cpio
+- openssl
+- xdg-user-dirs
+ 
+# Display & Graphics
+- nvidia-dkms
+- nvidia-utils
+- vulkan-icd-loader
+- intel-ucode
+ 
+# Window Management & Compositors
+- greetd
+- greetd-tuigreet
+- xdg-desktop-portal
+- xdg-desktop-portal-hyprland
+- xdg-desktop-portal-gtk
+ 
+# Hyprland & Related
+- hyprland
+- grim
+- wl-clipboard
+- brightnessctl
+- hypridle
+- hyprlock
+- hyprpolkitagent
+- hyprutils
+- rofi-wayland
+- swaync
+- swayosd
+- wpaperd
+- waybar
 
-# ESSENTIAL - Display & Graphics
-nvidia-dkms
-nvidia-utils
-vulkan-icd-loader
-intel-ucode
+# Networking
+- networkmanager
 
-# ESSENTIAL - Window Management & Compositors
-hyprland
-greetd
-greetd-tuigreet
-xdg-desktop-portal
-xdg-desktop-portal-hyprland
-xdg-desktop-portal-gtk
+# Multimedia
+- pipewire
+- pipewire-pulse
+- wireplumber
 
-# IMPORTANT - Networking
-networkmanager
+# NVIDIA Features
+- lib32-nvidia-utils
+- nvidia-container-toolkit
+- nvtop
 
-# IMPORTANT - Multimedia
-pipewire
-pipewire-pulse
-wireplumber
+# Appearance (Fonts)
+- otf-font-awesome
+- ttf-jetbrains-mono-nerd
+- ttf-roboto-mono-nerd
 
-# RECOMMENDED - NVIDIA Features
-lib32-nvidia-utils
-nvidia-container-toolkit
+# Development (CUDA)
+- cuda
+- cuda-tools
 
-# OPTIONAL - Appearance (Fonts)
-otf-font-awesome
-ttf-jetbrains-mono-nerd
-ttf-roboto-mono-nerd
+# Multimedia (Bluetooth)
+- bluez-tools
+- blueman
+- bluez-utils
+- valent-git
 
-# OPTIONAL - Development (CUDA)
-cuda
-cuda-tools
+# Power Management
+- tlp
+- tlp-rdw
 
-# OPTIONAL - Multimedia (Bluetooth)
-bluez-tools
-blueman
-bluez-utils
-valent-git
+# Virtualization
+- podman
+- podman-compose
 
-# OPTIONAL - Power Management
-tlp
-tlp-rdw
-
-# OPTIONAL - Virtualization
-podman
-podman-compose
+# Nix package manager
+- nix

@@ -1,12 +1,3 @@
-# ESSENTIAL - Base System & Core Functionality
-cpio
-openssl
-xdg-user-dirs
-
-# Utilities
-grim
-wl-clipboard
-
 # RECOMMENDED - Command Line Tools
 eza
 ripgrep
@@ -72,26 +63,13 @@ python-pynvim
 tree-sitter
 uv
 
-# OPTIONAL - Hyprland Extras
-brightnessctl
-hypridle
-hyprlock
-hyprpolkitagent
-hyprutils
-rofi-wayland
-swaync
-swayosd
-wpaperd
-waybar
-
 # OPTIONAL - Network Tools
 curl
 sshfs
 wget
 network-manager-applet
 
-# OPTIONAL - Terminal
-nvtop
+#Terminal
 ghostty
 zsh
 tmux
@@ -109,7 +87,7 @@ slurp
 swappy
 zenity
 
-# OPTIONAL - Package & Application Management
+#Package & Application Management
 flatpak
 protonup
 

@@ -1,0 +1,97 @@
+impl: http://github.com/blend-os/tracks/raw/main
+arch-repo: https://geo.mirror.pkgbuild.com
+repo: https://pkg-repo.blendos.co
+
+track: blendos-base
+
+packages:
+  # Base System & Core Functionality
+  - linux
+  - linux-headers
+  - pacman-contrib
+  - cpio
+  - openssl
+  - xdg-user-dirs
+   
+  # Display & Graphics
+  - nvidia-dkms
+  - nvidia-utils
+  - vulkan-icd-loader
+  - intel-ucode
+   
+  # Window Management & Compositors
+  - greetd
+  - greetd-tuigreet
+  - xdg-desktop-portal
+  - xdg-desktop-portal-hyprland
+  - xdg-desktop-portal-gtk
+   
+  # Hyprland & Related
+  - hyprland
+  - grim
+  - wl-clipboard
+  - brightnessctl
+  - hypridle
+  - hyprlock
+  - hyprpolkitagent
+  - hyprutils
+  - rofi-wayland
+  - swaync
+  - swayosd
+  - wpaperd
+  - waybar
+  
+  # Networking
+  - networkmanager
+  
+  # Multimedia
+  - pipewire
+  - pipewire-pulse
+  - wireplumber
+  
+  # NVIDIA Features
+  - lib32-nvidia-utils
+  - nvidia-container-toolkit
+  - nvtop
+  
+  # Appearance (Fonts)
+  - otf-font-awesome
+  - ttf-jetbrains-mono-nerd
+  - ttf-roboto-mono-nerd
+  
+  # Development (CUDA)
+  - cuda
+  - cuda-tools
+  
+  # Multimedia (Bluetooth)
+  - bluez-tools
+  - blueman
+  - bluez-utils
+  - valent-git
+  
+  # Power Management
+  - tlp
+  - tlp-rdw
+  
+  # Virtualization
+  - podman
+  - podman-compose
+  
+  # Nix package manager
+  - nix
+
+aur-packages:
+
+services:
+  - systemd-resolved
+  - NetworkManager
+  - tlp
+  - bluetooth
+  - greetd
+  - flatpak
+  - docker
+  - nix
+
+package-repos:
+  - name: 'chaotic-aur'
+    repo-url: 'https://geo-mirror.chaotic.cx/$repo/$arch'
