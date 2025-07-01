@@ -42,6 +42,11 @@ packages:
   - waybar
   - stow
   
+  - zsh
+  - ghostty
+  - neovim
+  - tmux
+
   # Networking
   - networkmanager
   
