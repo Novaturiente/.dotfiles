@@ -30,7 +30,6 @@
             qemu_full
 
             ncdu
-            udiskie
             bat
             fastfetch
 

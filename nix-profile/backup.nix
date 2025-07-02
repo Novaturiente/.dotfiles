@@ -24,7 +24,6 @@
 
             # Disk tools
             gparted
-            udiskie
             
             # Performance & info
             fastfetch

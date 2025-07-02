@@ -35,6 +35,7 @@ packages:
   - hyprlock
   - hyprpolkitagent
   - hyprutils
+  - udiskie
   - rofi-wayland
   - swaync
   - swayosd
