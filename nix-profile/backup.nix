@@ -43,6 +43,7 @@
             nerd-fonts.roboto-mono
             nerd-fonts.jetbrains-mono
             nerd-fonts.symbols-only
+            nwg-look
             
             # CLI utilities
             eza
@@ -64,7 +65,6 @@
             luarocks
             meson
             nodejs
-            npm
             pkg-config
             pyright
             pipx
