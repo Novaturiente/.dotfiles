@@ -23,12 +23,12 @@
             bat
 
             # Disk tools
-            gparted
-            
+           gparted
+              
             # Performance & info
             fastfetch
             htop
-            nvtopPackages.full
+            #nvtopPackages.full
             
             # Media & image
             mpv
@@ -98,41 +98,28 @@
             # netcat-gnu
 
             # Compatibility (Gaming)
-            #alsa-lib
-            #alsa-plugins
-            #gamescope
-            #giflib
-            #gnutls
-            #gtk3
-            #lib32-alsa-lib
-            #lib32-alsa-plugins
-            #lib32-giflib
-            #lib32-gst-plugins-base-libs
-            #lib32-libgcrypt
-            #lib32-libgpg-error
-            #lib32-libpng
-            #lib32-libpulse
-            #lib32-libva
-            #lib32-mpg123
-            #lib32-ncurses
-            #lib32-openal
-            #lib32-sqlite
-            #lib32-vulkan-icd-loader
-            #libgcrypt
-            #libgpg-error
-            #libinput
-            #libpng
-            #libpulse
-            #libva
-            #libxkbcommon
-            #lutris
-            #mpg123
-            #ncurses
-            #openal
-            #sqlite
-            #vulkan-tools
-            #wine-staging
-
+            (lutris.override {
+               extraPkgs = pkgs: [
+                  wineWowPackages.staging
+                  alsa-lib
+                  alsa-plugins
+                  gamescope
+                  giflib
+                  gnutls
+                  gtk3
+                  libgcrypt
+                  libgpg-error
+                  libinput
+                  libpng
+                  libpulseaudio
+                  libva
+                  libxkbcommon
+                  mpg123
+                  ncurses
+                  openal
+                  sqlite
+               ];
+            })
           ];
         };
       };

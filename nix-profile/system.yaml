@@ -17,7 +17,9 @@ packages:
   - nvidia-dkms
   - nvidia-utils
   - vulkan-icd-loader
+  - lib32-vulkan-icd-loader
   - intel-ucode
+  - vulkan-tools
    
   # Window Management & Compositors
   - greetd
@@ -35,18 +37,21 @@ packages:
   - hyprlock
   - hyprpolkitagent
   - hyprutils
-  - udiskie
   - rofi-wayland
   - swaync
   - swayosd
   - wpaperd
   - waybar
   - stow
+  - udiskie
+  - otf-font-awesome
+  - bibata-cursor-theme
   
   - zsh
   - ghostty
   - neovim
   - tmux
+  - nvtop
 
   # Networking
   - networkmanager
@@ -59,12 +64,6 @@ packages:
   # NVIDIA Features
   - lib32-nvidia-utils
   - nvidia-container-toolkit
-  
-  # Appearance
-  - otf-font-awesome
-  - bibata-cursor-theme
-  
-  # Development (CUDA)
   - cuda
   - cuda-tools
   
