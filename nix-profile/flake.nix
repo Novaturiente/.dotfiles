@@ -1,48 +1,93 @@
 {
-  description = "My declarative package set";
+  description = "Flake to install extra packages via buildEnv";
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  };
 
   outputs = { self, nixpkgs }:
     let
-      system = "x86_64-linux";  # Change if needed (e.g., aarch64-darwin for M1 Mac)
-      pkgs = nixpkgs.legacyPackages.${system};
+      system = "x86_64-linux";  # Change if needed, e.g. "aarch64-darwin"
+      pkgs = import nixpkgs {
+        inherit system;
+        config = { allowUnfree = true; };
+      };
     in {
       packages.${system} = {
         extras = pkgs.buildEnv {
           name = "extra-packages";
           paths = with pkgs; [
-            tree
-            opencode
-            nixfmt
+            # Terminal UI
+            materia-theme-transparent
+            fluent-icon-theme
+            nerd-fonts.roboto-mono
+            nerd-fonts.jetbrains-mono
+            nerd-fonts.symbols-only
+            nwg-look
 
-            # DEVELOPMENT
+            # Disk tools
+            gparted
+            pcmanfm
+            
+            # Media & image
+            mpv
+            qimgv
+            
+            # CLI utilities
+            fastfetch
+            htop
+            eza
+            ripgrep
+            zoxide
+            dialog
+            fd
+            jq
+            entr
+            curl
+            wget
+            sshfs
+            networkmanagerapplet
+            tree
+            ncdu
+            bat
+            duf
+
+            # Archives
+            7zip
+            unrar
+            unzip
+            
+            # Dev tools
+            cmake
+            gcc
+            lua
+            luarocks
+            meson
+            nodejs
+            pkg-config
+            pyright
+            pipx
+            python313Packages.pynvim
+            tree-sitter
+            uv
             # cargo
             # go
             # rust-analyzer
             # rustfmt
             # android-studio
             # jdk
+            nixfmt-classic
+            
+            # Network & misc
+            clipman
+            playerctl
+            slurp
+            swappy
+            zenity
             # freerdp
             # netcat-gnu
-
-            gparted
-            qemu_full
-
-            ncdu
-            bat
-            fastfetch
-
-            htop
-            mpv
-            qimgv
-            duf
-            pcmanfm
-            materia-theme-transparent
-            fluent-icon-theme
-            nerd-fonts.roboto-mono
-            nerd-fonts.jetbrains-mono
-            nerd-fonts.symbols-only
+            
+            
           ];
         };
       };
