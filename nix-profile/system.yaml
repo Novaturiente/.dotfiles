@@ -147,9 +147,6 @@ packages:
   # - python-pynvim                  # Neovim Python support
   # - tree-sitter                    # Syntax parser
   # - uv                             # Python package manager
-  
-
-
 
 aur-packages:
 
