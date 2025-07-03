@@ -34,6 +34,7 @@
             qimgv
             
             # CLI utilities
+            opencode
             fastfetch
             htop
             eza
