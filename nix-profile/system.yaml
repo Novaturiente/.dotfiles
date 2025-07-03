@@ -64,8 +64,8 @@ packages:
   # NVIDIA Features
   - lib32-nvidia-utils
   - nvidia-container-toolkit
-  - cuda
-  - cuda-tools
+  # - cuda
+  # - cuda-tools
   
   # Multimedia (Bluetooth)
   - bluez-tools

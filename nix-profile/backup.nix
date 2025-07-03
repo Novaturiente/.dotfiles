@@ -23,12 +23,11 @@
             bat
 
             # Disk tools
-           gparted
+            gparted
               
             # Performance & info
             fastfetch
             htop
-            #nvtopPackages.full
             
             # Media & image
             mpv
@@ -74,6 +73,7 @@
             # go
             # rust-analyzer
             # rustfmt
+            #nvtopPackages.full
             # android-studio
             # jdk
             
