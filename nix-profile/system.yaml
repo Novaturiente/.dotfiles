@@ -58,6 +58,7 @@ packages:
   - waybar                         # Wayland status bar
   - stow                           # Dotfile manager
   - udiskie
+  - pcmanfm
   
   # Multimedia
   - bluez-tools                    # Bluetooth tools

@@ -27,7 +27,6 @@
 
             # Disk tools
             gparted
-            pcmanfm
             
             # Media & image
             mpv
