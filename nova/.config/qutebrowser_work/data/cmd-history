@@ -1,0 +1,12 @@
+:open google.com
+:q
+:open -t https://github.com/dracula/qutebrowser-dracula-theme
+:q
+:open -t https://draculatheme.com/qutebrowser
+:open outlook.live.com
+:open outlook
+:open -t myip
+:open https://outlook.live.com/mail/
+:adblock-update 
+:open google.com
+:open github.com

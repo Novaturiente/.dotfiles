@@ -1,0 +1,7 @@
+2025/07/05-11:25:29.403 11335 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_outlook.live.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/07/05-11:25:29.403 11335 Recovering log #4
+2025/07/05-11:25:29.404 11335 Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_outlook.live.com_0.indexeddb.leveldb/000004.log 
+2025/07/05-11:25:29.426 11335 Level-0 table #8: started
+2025/07/05-11:25:29.432 11335 Level-0 table #8: 548 bytes OK
+2025/07/05-11:25:29.440 11335 Delete type=0 #4
+2025/07/05-11:25:29.441 11335 Manual compaction at level-0 from '\x00\x02\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x03\x00\x00\x00' @ 0 : 0; will stop at (end)

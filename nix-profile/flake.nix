@@ -26,8 +26,6 @@
             nerd-fonts.fira-code
             nwg-look
 
-            pcmanfm
-
             # Disk tools
             gparted
             
