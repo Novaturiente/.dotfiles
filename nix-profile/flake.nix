@@ -32,6 +32,7 @@
             # Media & image
             mpv
             qimgv
+            zathura
             
             # CLI utilities
             opencode

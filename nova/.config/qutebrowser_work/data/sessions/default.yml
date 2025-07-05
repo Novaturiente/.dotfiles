@@ -1,17 +1,21 @@
 windows:
 - active: true
   geometry: !!binary |
-    AdnQywADAAAAAAAAAAAAAAAAB2cAAAP6AAAAAAAAAAAAAAdnAAAD+gAAAAACAAAAB4AAAAAAAAAA
-    AAAAB2cAAAP6
+    AdnQywADAAAAAAAAAAAAAAAABMwAAAQdAAAAAAAAAAAAAATMAAAEHQAAAAACAAAAB4AAAAAAAAAA
+    AAAABMwAAAQd
   tabs:
   - active: true
     history:
+    - last_visited: '2025-07-05T16:34:06'
+      pinned: false
+      title: DuckDuckGo - Protection. Privacy. Peace of mind.
+      url: https://start.duckduckgo.com/
     - active: true
-      last_visited: '2025-07-05T15:35:05'
+      last_visited: '2025-07-05T16:34:17'
       pinned: false
       scroll-pos:
         x: 0
         y: 0
-      title: DuckDuckGo - Protection. Privacy. Peace of mind.
-      url: https://start.duckduckgo.com/
+      title: Home - Google Drive
+      url: https://drive.google.com/drive/home
       zoom: 1.0
