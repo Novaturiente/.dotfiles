@@ -23,7 +23,10 @@
             nerd-fonts.roboto-mono
             nerd-fonts.jetbrains-mono
             nerd-fonts.symbols-only
+            nerd-fonts.fira-code
             nwg-look
+
+            pcmanfm
 
             # Disk tools
             gparted
