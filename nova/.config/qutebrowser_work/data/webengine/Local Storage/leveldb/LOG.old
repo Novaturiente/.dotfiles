@@ -1,3 +1,14 @@
-2025/07/05-11:24:11.590 11335 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/MANIFEST-000001
-2025/07/05-11:24:11.594 11335 Recovering log #6
-2025/07/05-11:24:11.594 11335 Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/000006.log 
+2025/07/05-12:05:16.104 362b Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/MANIFEST-000001
+2025/07/05-12:05:16.119 362b Recovering log #10
+2025/07/05-12:05:16.120 362b Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/000010.log 
+2025/07/05-12:07:24.855 362b Level-0 table #13: started
+2025/07/05-12:07:24.864 362b Level-0 table #13: 22896 bytes OK
+2025/07/05-12:07:24.874 362b Delete type=0 #10
+2025/07/05-12:07:24.874 362b Compacting 4@0 + 0@1 files
+2025/07/05-12:07:24.883 362b Generated table #14@0: 151 keys, 62820 bytes
+2025/07/05-12:07:24.883 362b Compacted 4@0 + 0@1 files => 62820 bytes
+2025/07/05-12:07:24.891 362b compacted to: files[ 0 1 0 0 0 0 0 ]
+2025/07/05-12:07:24.892 362b Delete type=2 #3
+2025/07/05-12:07:24.892 362b Delete type=2 #9
+2025/07/05-12:07:24.892 362b Delete type=2 #7
+2025/07/05-12:07:24.892 362b Delete type=2 #13

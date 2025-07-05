@@ -1,13 +1,13 @@
 windows:
 - active: true
   geometry: !!binary |
-    AdnQywADAAAAAAAAAAAAAAAAB2cAAAP8AAAAAAAAAAAAAAdnAAAD/AAAAAACAAAAB4AAAAAAAAAA
-    AAAAB2cAAAP8
+    AdnQywADAAAAAAAAAAAAAAAAB2cAAAP6AAAAAAAAAAAAAAdnAAAD+gAAAAACAAAAB4AAAAAAAAAA
+    AAAAB2cAAAP6
   tabs:
   - active: true
     history:
     - active: true
-      last_visited: '2025-07-05T11:28:52'
+      last_visited: '2025-07-05T15:35:05'
       pinned: false
       scroll-pos:
         x: 0
