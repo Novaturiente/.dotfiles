@@ -53,6 +53,8 @@
             ncdu
             bat
             duf
+            ranger
+            fzf
 
             # Archives
             7zip

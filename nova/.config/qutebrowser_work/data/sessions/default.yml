@@ -1,54 +1,34 @@
 windows:
 - active: true
   geometry: !!binary |
-    AdnQywADAAAAAAAAAAAAAAAAB2cAAAP6AAAAAAAAAAAAAAdnAAAD+gAAAAACAAAAB4AAAAAAAAAA
-    AAAAB2cAAAP6
+    AdnQywADAAAAAAAAAAAAAAAABMwAAAP6AAAAAAAAAAAAAAdnAAAD+gAAAAACAAAAB4AAAAAAAAAA
+    AAAABMwAAAP6
   tabs:
   - active: true
     history:
-    - last_visited: '2025-07-05T19:52:20'
-      original-url: https://outlook.live.com/mail/
-      pinned: false
-      title: Mail - Ajayan C - Outlook
-      url: https://outlook.live.com/mail/0/
-    - last_visited: '2025-07-05T19:52:57'
-      original-url: https://outlook.live.com/mail/0/
-      pinned: false
-      title: Mail - Ajayan C - Outlook
-      url: https://outlook.live.com/mail/0/junkemail
-    - last_visited: '2025-07-05T19:53:12'
-      original-url: https://outlook.live.com/mail/0/junkemail
-      pinned: false
-      title: Mail - Ajayan C - Outlook
-      url: https://outlook.live.com/mail/0/deleteditems
-    - last_visited: '2025-07-05T19:53:21'
-      original-url: https://outlook.live.com/mail/0/deleteditems
-      pinned: false
-      title: Mail - Ajayan C - Outlook
-      url: https://outlook.live.com/mail/0/AQMkADAwATM3ZmYAZS0xNGEwLTlmNDktMDACLTAwCgAuAAADxNAuth1XtkSTH4wAKurLxQEAodg014KQCU24HI2PKdimlAADCnBHJwAAAA%3D%3D
-    - last_visited: '2025-07-05T19:53:22'
-      original-url: https://outlook.live.com/mail/0/AQMkADAwATM3ZmYAZS0xNGEwLTlmNDktMDACLTAwCgAuAAADxNAuth1XtkSTH4wAKurLxQEAodg014KQCU24HI2PKdimlAADCnBHJwAAAA%3D%3D
-      pinned: false
-      title: Mail - Ajayan C - Outlook
-      url: https://outlook.live.com/mail/0/
-    - last_visited: '2025-07-05T19:53:49'
-      pinned: false
-      title: gemini - Google Search
-      url: https://www.google.com/search?q=gemini
-    - last_visited: '2025-07-05T19:53:55'
+    - last_visited: '2025-07-06T11:25:29'
       pinned: false
       title: Google Gemini
       url: https://gemini.google.com/app
-    - last_visited: '2025-07-05T19:54:50'
+    - last_visited: '2025-07-06T11:26:04'
       pinned: false
-      title: Saved info
-      url: https://gemini.google.com/saved-info
+      title: YouTube
+      url: https://www.youtube.com/
+    - last_visited: '2025-07-06T11:26:17'
+      pinned: false
+      title: YouTube
+      url: https://www.youtube.com/feed/history
+    - last_visited: '2025-07-06T11:26:25'
+      pinned: false
+      title: Watch later - YouTube
+      url: https://www.youtube.com/playlist?list=WL
     - active: true
-      last_visited: '2025-07-05T19:57:43'
+      last_visited: '2025-07-06T11:26:27'
+      original-url: https://www.youtube.com/playlist?list=WL
       pinned: false
       scroll-pos:
         x: 0
         y: 0
-      title: Google Gemini
-      url: https://gemini.google.com/app
+      title: Tmux Popups - The Most Underrated Feature in Tmux - YouTube
+      url: https://www.youtube.com/watch?v=7BP9iWiKx8Q&list=WL&index=1&t=372s
       zoom: 1.0
