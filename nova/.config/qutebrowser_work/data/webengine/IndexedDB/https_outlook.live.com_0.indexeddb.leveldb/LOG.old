@@ -1,6 +1,13 @@
-2025/07/05-11:25:26.859 11335 Creating DB /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_outlook.live.com_0.indexeddb.leveldb since it was missing.
-2025/07/05-11:25:26.877 11335 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_outlook.live.com_0.indexeddb.leveldb/MANIFEST-000001
-2025/07/05-11:25:26.892 1133d Level-0 table #5: started
-2025/07/05-11:25:26.903 1133d Level-0 table #5: 561 bytes OK
-2025/07/05-11:25:26.912 1133d Delete type=0 #3
-2025/07/05-11:25:26.912 11335 Manual compaction at level-0 from '\x00\x01\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x02\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/07/05-19:52:25.685 d70 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_outlook.live.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/07/05-19:52:25.686 d70 Recovering log #7
+2025/07/05-19:52:25.688 d70 Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_outlook.live.com_0.indexeddb.leveldb/000007.log 
+2025/07/05-19:52:25.712 d69 Level-0 table #11: started
+2025/07/05-19:52:25.719 d69 Level-0 table #11: 550 bytes OK
+2025/07/05-19:52:25.727 d69 Delete type=0 #7
+2025/07/05-19:52:25.728 d69 Manual compaction at level-0 from '\x00\x03\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x04\x00\x00\x00' @ 0 : 0; will stop at '\x00\x03\x00\x00\x05' @ 43 : 1
+2025/07/05-19:52:25.728 d69 Compacting 1@0 + 1@1 files
+2025/07/05-19:52:25.734 d69 Generated table #12@0: 8 keys, 546 bytes
+2025/07/05-19:52:25.734 d69 Compacted 1@0 + 1@1 files => 546 bytes
+2025/07/05-19:52:25.743 d69 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/07/05-19:52:25.743 d69 Delete type=2 #11
+2025/07/05-19:52:25.744 d69 Manual compaction at level-0 from '\x00\x03\x00\x00\x05' @ 43 : 1 .. '\x00\x04\x00\x00\x00' @ 0 : 0; will stop at (end)

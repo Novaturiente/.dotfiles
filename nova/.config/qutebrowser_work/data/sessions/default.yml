@@ -5,4 +5,50 @@ windows:
     AAAAB2cAAAP6
   tabs:
   - active: true
-    history: []
+    history:
+    - last_visited: '2025-07-05T19:52:20'
+      original-url: https://outlook.live.com/mail/
+      pinned: false
+      title: Mail - Ajayan C - Outlook
+      url: https://outlook.live.com/mail/0/
+    - last_visited: '2025-07-05T19:52:57'
+      original-url: https://outlook.live.com/mail/0/
+      pinned: false
+      title: Mail - Ajayan C - Outlook
+      url: https://outlook.live.com/mail/0/junkemail
+    - last_visited: '2025-07-05T19:53:12'
+      original-url: https://outlook.live.com/mail/0/junkemail
+      pinned: false
+      title: Mail - Ajayan C - Outlook
+      url: https://outlook.live.com/mail/0/deleteditems
+    - last_visited: '2025-07-05T19:53:21'
+      original-url: https://outlook.live.com/mail/0/deleteditems
+      pinned: false
+      title: Mail - Ajayan C - Outlook
+      url: https://outlook.live.com/mail/0/AQMkADAwATM3ZmYAZS0xNGEwLTlmNDktMDACLTAwCgAuAAADxNAuth1XtkSTH4wAKurLxQEAodg014KQCU24HI2PKdimlAADCnBHJwAAAA%3D%3D
+    - last_visited: '2025-07-05T19:53:22'
+      original-url: https://outlook.live.com/mail/0/AQMkADAwATM3ZmYAZS0xNGEwLTlmNDktMDACLTAwCgAuAAADxNAuth1XtkSTH4wAKurLxQEAodg014KQCU24HI2PKdimlAADCnBHJwAAAA%3D%3D
+      pinned: false
+      title: Mail - Ajayan C - Outlook
+      url: https://outlook.live.com/mail/0/
+    - last_visited: '2025-07-05T19:53:49'
+      pinned: false
+      title: gemini - Google Search
+      url: https://www.google.com/search?q=gemini
+    - last_visited: '2025-07-05T19:53:55'
+      pinned: false
+      title: Google Gemini
+      url: https://gemini.google.com/app
+    - last_visited: '2025-07-05T19:54:50'
+      pinned: false
+      title: Saved info
+      url: https://gemini.google.com/saved-info
+    - active: true
+      last_visited: '2025-07-05T19:57:43'
+      pinned: false
+      scroll-pos:
+        x: 0
+        y: 0
+      title: Google Gemini
+      url: https://gemini.google.com/app
+      zoom: 1.0
