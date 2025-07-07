@@ -20,6 +20,9 @@ eval "$(zoxide init zsh)"
 # ---- Aliases ----
 # Editor and system update aliases
 alias vi="nvim"
+# put in your shell rc (~/.bashrc, ~/.zshrc, etc.)
+alias fnvim='footclient --override=font="JetBrains Mono NF 12" -e nvim'
+
 alias systemupdate="sudo akshara update && reboot"
 
 # Common file operations
@@ -37,7 +40,6 @@ alias egrep='egrep --color=auto'
 
 # Nix package manager
 alias nixupdate="sudo nix flake update && sudo nix profile upgrade --all"
-
 # Journalctl and Windows connection
 alias jctl="journalctl -p 3 -xb"
 alias winconnect="com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound"

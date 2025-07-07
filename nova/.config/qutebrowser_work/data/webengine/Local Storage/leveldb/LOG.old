@@ -1,3 +1,6 @@
-2025/07/06-20:51:42.052 14d5c Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/MANIFEST-000001
-2025/07/06-20:51:42.057 14d5c Recovering log #12
-2025/07/06-20:51:42.057 14d5c Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/000012.log 
+2025/07/07-10:52:53.330 5fe5 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/MANIFEST-000001
+2025/07/07-10:52:53.335 5fe5 Recovering log #16
+2025/07/07-10:52:53.336 5fe5 Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/000016.log 
+2025/07/07-10:54:02.128 5fe6 Level-0 table #20: started
+2025/07/07-10:54:02.138 5fe6 Level-0 table #20: 45200 bytes OK
+2025/07/07-10:54:02.148 5fe6 Delete type=0 #16

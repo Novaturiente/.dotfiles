@@ -22,8 +22,8 @@
             fluent-icon-theme
             nerd-fonts.roboto-mono
             nerd-fonts.jetbrains-mono
-            nerd-fonts.symbols-only
             nerd-fonts.fira-code
+            noto-fonts-color-emoji
             nwg-look
 
             # Disk tools
@@ -31,6 +31,9 @@
             
             # Media & image
             mpv
+            libva1
+            libvdpau
+
             qimgv
             zathura
             

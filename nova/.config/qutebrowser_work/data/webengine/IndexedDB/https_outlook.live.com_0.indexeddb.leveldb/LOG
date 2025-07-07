@@ -1,14 +1,25 @@
-2025/07/05-19:52:28.022 d68 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_outlook.live.com_0.indexeddb.leveldb/MANIFEST-000001
-2025/07/05-19:52:28.023 d68 Recovering log #10
-2025/07/05-19:52:28.023 d68 Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_outlook.live.com_0.indexeddb.leveldb/000010.log 
-2025/07/05-19:52:28.024 d68 Delete type=2 #8
-2025/07/05-19:52:28.052 d68 Level-0 table #15: started
-2025/07/05-19:52:28.059 d68 Level-0 table #15: 539 bytes OK
-2025/07/05-19:52:28.069 d68 Delete type=0 #10
-2025/07/05-19:52:28.069 d68 Manual compaction at level-0 from '\x00\x04\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x05\x00\x00\x00' @ 0 : 0; will stop at '\x00\x04\x00\x00\x05' @ 61 : 1
-2025/07/05-19:52:28.070 d68 Compacting 1@0 + 1@1 files
-2025/07/05-19:52:28.077 d68 Generated table #16@0: 8 keys, 546 bytes
-2025/07/05-19:52:28.077 d68 Compacted 1@0 + 1@1 files => 546 bytes
-2025/07/05-19:52:28.087 d68 compacted to: files[ 0 1 1 0 0 0 0 ]
-2025/07/05-19:52:28.087 d68 Delete type=2 #15
-2025/07/05-19:52:28.088 d68 Manual compaction at level-0 from '\x00\x04\x00\x00\x05' @ 61 : 1 .. '\x00\x05\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/07/07-10:35:59.079 66d Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_outlook.live.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/07/07-10:35:59.080 66d Recovering log #14
+2025/07/07-10:35:59.081 66d Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_outlook.live.com_0.indexeddb.leveldb/000014.log 
+2025/07/07-10:35:59.081 66d Delete type=2 #12
+2025/07/07-10:35:59.104 66d Level-0 table #19: started
+2025/07/07-10:35:59.111 66d Level-0 table #19: 546 bytes OK
+2025/07/07-10:35:59.120 66d Delete type=0 #14
+2025/07/07-10:35:59.120 66d Manual compaction at level-0 from '\x00\x05\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x06\x00\x00\x00' @ 0 : 0; will stop at '\x00\x05\x00\x00\x05' @ 79 : 1
+2025/07/07-10:35:59.120 66d Compacting 1@0 + 1@1 files
+2025/07/07-10:35:59.127 66d Generated table #20@0: 8 keys, 546 bytes
+2025/07/07-10:35:59.127 66d Compacted 1@0 + 1@1 files => 546 bytes
+2025/07/07-10:35:59.136 66d compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/07/07-10:35:59.136 66d Delete type=2 #19
+2025/07/07-10:35:59.137 66d Manual compaction at level-0 from '\x00\x05\x00\x00\x05' @ 79 : 1 .. '\x00\x06\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/07/07-10:36:00.922 66e Level-0 table #22: started
+2025/07/07-10:36:00.928 66e Level-0 table #22: 547 bytes OK
+2025/07/07-10:36:00.938 66e Delete type=0 #18
+2025/07/07-10:36:00.938 66e Delete type=2 #16
+2025/07/07-10:36:00.939 66e Manual compaction at level-0 from '\x00\x06\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x07\x00\x00\x00' @ 0 : 0; will stop at '\x00\x06\x00\x00\x05' @ 97 : 1
+2025/07/07-10:36:00.940 66e Compacting 1@0 + 1@1 files
+2025/07/07-10:36:00.947 66e Generated table #23@0: 12 keys, 562 bytes
+2025/07/07-10:36:00.947 66e Compacted 1@0 + 1@1 files => 562 bytes
+2025/07/07-10:36:00.956 66e compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/07/07-10:36:00.957 66e Delete type=2 #22
+2025/07/07-10:36:00.957 66d Manual compaction at level-0 from '\x00\x06\x00\x00\x05' @ 97 : 1 .. '\x00\x07\x00\x00\x00' @ 0 : 0; will stop at (end)

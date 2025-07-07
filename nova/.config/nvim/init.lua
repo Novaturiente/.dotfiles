@@ -1,7 +1,6 @@
 -- ========================================================
 -- ✨ GENERAL SETTINGS
 -- ========================================================
-
 local vim = vim
 -- Enable line numbers
 vim.wo.number = true
@@ -19,7 +18,6 @@ vim.o.foldenable = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
-
 vim.loader.enable()
 vim.opt.updatetime = 300
 
