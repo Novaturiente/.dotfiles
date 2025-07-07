@@ -31,6 +31,8 @@
             
             # Media & image
             mpv
+            castnow
+            yt-dlp
             libva1
             libvdpau
 

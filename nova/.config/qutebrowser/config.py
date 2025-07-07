@@ -117,3 +117,8 @@ config.bind(",g", "spawn --userscript qute_search -g", mode="normal")
 
 # — Opening links in background via keyboard —
 config.bind("<Ctrl-Shift-Right>", "open -t {url}")
+
+# -- Cast current video
+config.bind(",c", "hint links spawn --userscript cast.sh {hint-url}")
+config.bind(",m", "hint links spawn mpv {hint-url}")
+config.bind(",d", "spawn --userscript open_download")
