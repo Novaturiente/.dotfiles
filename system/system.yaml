@@ -29,17 +29,11 @@ packages:
   - xdg-desktop-portal-hyprland    # Hyprland portal backend
   - xdg-desktop-portal-gtk
   
-  # IMPORTANT - Networking
+  # IMPORTANT 
   - networkmanager                 # Network manager
-  
-  # IMPORTANT - Multimedia
   - pipewire                       # Multimedia server
   - pipewire-pulse                 # PulseAudio compatibility
   - wireplumber                    # PipeWire session manager
-  
-  # IMPORTANT - Utilities
-  - grim                           # Screenshot tool
-  - wl-clipboard                   # Wayland clipboard tool
   
   # RECOMMENDED - NVIDIA Features
   - lib32-libglvnd                 # 32-bit OpenGL dispatch
@@ -47,29 +41,58 @@ packages:
   - nvidia-container-toolkit       # NVIDIA container tools
   - nvidia-settings                # NVIDIA settings tool
   
-  # RECOMMENDED - Command Line Tools
-  - eza                            # Modern ls alternative
-  - ripgrep                        # Fast grep alternative
-  - zoxide                         # Smarter cd command
-  
-  # OPTIONAL - Appearance
-  - bibata-cursor-theme            # Bibata cursor theme
-  - fluent-icon-theme-git          # Fluent icon theme
-  - nwg-look                       # GTK theme manager
+  # Hyprland Extras
   - otf-font-awesome               # Font Awesome
-  - ttf-jetbrains-mono-nerd        # JetBrains Mono Nerd Font
-  - ttf-roboto-mono-nerd           # Roboto Mono Nerd Font
-  
-  # OPTIONAL - Command Line Tools
-  - dialog                         # Terminal dialogs
-  - fd                             # Find alternative
-  - jq                             # JSON processor
+  - grim                           # Screenshot tool
+  - wl-clipboard                   # Wayland clipboard tool
+  - brightnessctl                  # Brightness control
+  - hypridle                       # Hyprland idle manager
+  - hyprlock                       # Hyprland lock screen
+  - hyprpolkitagent                # Hyprland polkit agent
+  - hyprutils                      # Hyprland utilities
+  - rofi-wayland                   # Wayland launcher
+  - wpaperd
+  - waybar                         # Wayland status bar
   - stow                           # Dotfile manager
+  - udiskie
+  - sleex-control-center
+  - pcmanfm-gtk3
   
-  # OPTIONAL - Compatibility (Gaming)
+  # Multimedia
+  - bluez-tools                    # Bluetooth tools
+  - blueman                        # Bluetooth manager
+  - bluez-utils                    # Bluetooth utilities
+  - valent-git
+  
+  # Package & Application Management
+  - nix
+  - flatpak                        # Universal package manager
+  - protonup                       # Proton version manager
+  - paru-bin
+  
+  # Tools
+  - curl                           # Data transfer tool
+  - sshfs                          # SSH filesystem
+  - wget                           # File downloader
+  - nvtop
+  - zsh                            # Z-Shell
+  - tmux                           # Terminal multiplexer
+  - neovim                         # Vim fork
+  
+  # Virtualization
+  - podman
+  - podman-compose
+  - distrobox
+  - gnome-boxes
+  
+  # Web Browsers
+  - python-adblock                 # Adblock for Python
+  - qutebrowser                    # Keyboard-focused browser
+  - zen-browser-bin                # Zen browser
+
+  # Compatibility (Gaming)
   - alsa-lib                       # ALSA library
   - alsa-plugins                   # ALSA plugins
-  - gamescope                      # Game compositor
   - giflib                         # GIF library
   - gnutls                         # TLS library
   - gtk3                           # GTK 3 toolkit
@@ -96,110 +119,42 @@ packages:
   - libxkbcommon                   # Keyboard handling lib
   - lutris                         # Game manager
   - mpg123                         # MP3 decoder
-  - ncurses                        # Terminal library
   - openal                         # OpenAL audio library
   - sqlite                         # SQLite database
   - vulkan-tools                   # Vulkan tools
   - wine-staging                   # Wine for gaming
   
-  # OPTIONAL - Development
-  - cmake                          # Build system
+  # Development
   - cuda                           # NVIDIA CUDA toolkit
   - cuda-tools                     # CUDA development tools
-  - gcc                            # GNU compiler
-  - lua                            # Lua language
-  - luarocks                       # Lua package manager
-  - meson                          # Build system
-  - nodejs                         # JavaScript runtime
-  - npm                            # Node.js package manager
-  - pkg-config                     # Build configuration
-  - pyright                        # Python type checker
-  - python-pip                     # Python package installer
-  - python-pynvim                  # Neovim Python support
-  - tree-sitter                    # Syntax parser
-  - uv                             # Python package manager
-  
-  # OPTIONAL - Hyprland Extras
-  - brightnessctl                  # Brightness control
-  - hypridle                       # Hyprland idle manager
-  - hyprlock                       # Hyprland lock screen
-  - hyprpolkitagent                # Hyprland polkit agent
-  - hyprutils                      # Hyprland utilities
-  - rofi-wayland                   # Wayland launcher
-  - swaync                         # Notification center
-  - swayosd                        # On-screen display
-  - wpaperd
-  - waybar                         # Wayland status bar
-
-  # OPTIONAL - Multimedia
-  - bluez-tools                    # Bluetooth tools
-  - blueman                        # Bluetooth manager
-  - bluez-utils                    # Bluetooth utilities
-  - valent-git
-  
-  # OPTIONAL - Network Tools
-  - curl                           # Data transfer tool
-  - sshfs                          # SSH filesystem
-  - wget                           # File downloader
-  
-  # OPTIONAL - Networking (GUI and extended functionality)
-  - network-manager-applet         # NetworkManager GUI
-  
-  # OPTIONAL - Package & Application Management
-  - flatpak                        # Universal package manager
-  - protonup                       # Proton version manager
-  
-  # OPTIONAL - Power Management
-  - tlp                            # Power profile manager
-  - tlp-rdw
-  
-  # OPTIONAL - Terminal
-  - ghostty                        # GPU-accelerated terminal
-  - zsh                            # Z-Shell
-  
-  # OPTIONAL - CLI tools
-  - tmux                           # Terminal multiplexer
-  - entr                           # Nofify when file changes
-
-  # OPTIONAL - Text Editors
-  - neovim                         # Vim fork
-  
-  # OPTIONAL - Utilities
-  - clipman                        # Clipboard manager
-  - playerctl                      # Media player controller
-  - slurp                          # Region selector
-  - swappy                         # Screenshot annotator
-  - zenity                         # GTK dialogs
-  
-  # OPTIONAL - Virtualization
-  - podman
-  - podman-compose
-  - distrobox
-  
-  # OPTIONAL - Web Browsers
-  - python-adblock                 # Adblock for Python
-  - qutebrowser                    # Keyboard-focused browser
-  - zen-browser-bin                # Zen browser
-  
-  # OPTIONAL - Archiving and Compression
-  - 7zip                           # Archive tool
-  - unrar                          # RAR extractor
-  - unzip                          # ZIP extractor
-
-  - nix
+  # - cmake                          # Build system
+  # - gcc                            # GNU compiler
+  # - lua                            # Lua language
+  # - luarocks                       # Lua package manager
+  # - meson                          # Build system
+  # - nodejs                         # JavaScript runtime
+  # - npm                            # Node.js package manager
+  # - pkg-config                     # Build configuration
+  # - pyright                        # Python type checker
+  # - python-pip                     # Python package installer
+  # - python-pynvim                  # Neovim Python support
+  # - tree-sitter                    # Syntax parser
+  # - uv                             # Python package manager
 
 aur-packages:
 
 services:
   - systemd-resolved
   - NetworkManager
-  - tlp
   - bluetooth
   - greetd
   - flatpak
-  - docker
   - nix
 
 package-repos:
   - name: 'chaotic-aur'
     repo-url: 'https://geo-mirror.chaotic.cx/$repo/$arch'
+
+  - name: 'axos'
+    repo-url: 'https://www.axos-project.com/AxMirrors/$arch'
+
