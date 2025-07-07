@@ -1,34 +1,17 @@
 windows:
 - active: true
   geometry: !!binary |
-    AdnQywADAAAAAAAAAAAAAAAABMwAAAP6AAAAAAAAAAAAAAdnAAAD+gAAAAACAAAAB4AAAAAAAAAA
-    AAAABMwAAAP6
+    AdnQywADAAAAAAAAAAAAAAAAAowAAAFIAAAAAAAAAAAAAATMAAAD+gAAAAACAAAAB4AAAAAAAAAA
+    AAAAAowAAAFI
   tabs:
   - active: true
     history:
-    - last_visited: '2025-07-06T11:25:29'
-      pinned: false
-      title: Google Gemini
-      url: https://gemini.google.com/app
-    - last_visited: '2025-07-06T11:26:04'
-      pinned: false
-      title: YouTube
-      url: https://www.youtube.com/
-    - last_visited: '2025-07-06T11:26:17'
-      pinned: false
-      title: YouTube
-      url: https://www.youtube.com/feed/history
-    - last_visited: '2025-07-06T11:26:25'
-      pinned: false
-      title: Watch later - YouTube
-      url: https://www.youtube.com/playlist?list=WL
     - active: true
-      last_visited: '2025-07-06T11:26:27'
-      original-url: https://www.youtube.com/playlist?list=WL
+      last_visited: '2025-07-06T20:53:28'
       pinned: false
       scroll-pos:
         x: 0
         y: 0
-      title: Tmux Popups - The Most Underrated Feature in Tmux - YouTube
-      url: https://www.youtube.com/watch?v=7BP9iWiKx8Q&list=WL&index=1&t=372s
+      title: DuckDuckGo - Protection. Privacy. Peace of mind.
+      url: https://start.duckduckgo.com/
       zoom: 1.0
