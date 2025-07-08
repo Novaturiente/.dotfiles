@@ -50,7 +50,7 @@ function get_git_status() {
     fi
 
     local branch=$(git branch --show-current 2>/dev/null)
-    local is_dirty=$(git status --porcelain=v1 2>/dev/null)
+    local is_dirty=$(git diff --quiet --ignore-submodules HEAD 2>/dev/null; echo $?)
 
     if [ -z "$branch" ]; then
         return 1
