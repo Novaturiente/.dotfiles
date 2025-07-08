@@ -12,6 +12,7 @@ setopt no_case_glob no_case_match
 setopt auto_menu menu_complete
 setopt prompt_sp
 setopt auto_pushd pushd_ignore_dups
+unsetopt inc_append_history
 
 # ---- Compinit ----
 autoload -Uz compinit
