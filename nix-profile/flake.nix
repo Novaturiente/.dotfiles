@@ -17,6 +17,7 @@
         extras = pkgs.buildEnv {
           name = "extra-packages";
           paths = with pkgs; [
+            xdg-ninja
             # Terminal UI
             materia-theme-transparent
             fluent-icon-theme
