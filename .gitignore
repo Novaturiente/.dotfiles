@@ -3,3 +3,5 @@ fishd.tmp*
 nova/.config/fish/fish_variables
 nova/.config/qutebrowser_work/cache/
 nova/.config/qutebrowser_work/data/
+.opencode/
+**/.opencode/
