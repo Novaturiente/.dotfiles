@@ -6,13 +6,12 @@ SAVEHIST=1000
 setopt extendedglob nonomatch
 setopt notify  
 setopt autocd
-setopt append_history inc_append_history_time share_history
+setopt append_history inc_append_history share_history
 setopt hist_ignore_dups hist_ignore_all_dups hist_reduce_blanks
 setopt no_case_glob no_case_match
 setopt auto_menu menu_complete
 setopt prompt_sp
 setopt auto_pushd pushd_ignore_dups
-unsetopt inc_append_history
 
 # ---- Compinit ----
 autoload -Uz compinit
