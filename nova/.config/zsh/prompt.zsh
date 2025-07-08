@@ -34,8 +34,7 @@ POWERLINE_COLOR_SEPARATOR_FG="%F{#666666}"
 function make_segment() {
     local content="$1"
     local fg_color="$2"
-    echo -n "%{$fg_color%}$content%{%f%}"
-    echo -n "%{$POWERLINE_COLOR_SEPARATOR_FG%}$POWERLINE_CHARS_SEPARATOR%{%f%}"
+    echo -n "%{$fg_color%}${content}%{$POWERLINE_COLOR_SEPARATOR_FG%}${POWERLINE_CHARS_SEPARATOR}%{%f%}"
 }
 
 # Function to get git status
@@ -50,51 +49,42 @@ function get_git_status() {
     fi
 
     local branch=$(git branch --show-current 2>/dev/null)
-    local is_dirty=$(git diff --quiet --ignore-submodules HEAD 2>/dev/null; echo $?)
-
     if [ -z "$branch" ]; then
         return 1
     fi
 
-    if [ -n "$is_dirty" ]; then
-        echo "$branch dirty"
+    git diff --quiet --ignore-submodules HEAD 2>/dev/null
+    local dirty_status=$?
+
+    if [ "$dirty_status" -eq 1 ]; then
+        echo "$branch|dirty"
     else
-        echo "$branch clean"
+        echo "$branch|clean"
     fi
 }
 
 # Function to get runtime/language indicators
 function get_runtime_indicator() {
     local indicators=()
-    if [ -f "pyproject.toml" ] || [ -f "requirements.txt" ] || [ -f ".python-version" ]; then
-        indicators+=("$POWERLINE_CHARS_PYTHON py")
-    fi
-    if [ -f "Cargo.toml" ]; then
-        indicators+=("$POWERLINE_CHARS_RUST rs")
-    fi
-    if [ -f "package.json" ]; then
-        indicators+=("$POWERLINE_CHARS_NODE js")
-    fi
-    if [ -f "Containerfile" ] || [ -f "podman-compose.yml" ] || [ -f "Dockerfile" ]; then
-        indicators+=("$POWERLINE_CHARS_DOCKER podman")
-    fi
-
-    if [ ${#indicators[@]} -gt 0 ]; then
-        echo "${indicators[@]}"
-    fi
+    [[ -f "pyproject.toml" || -f "requirements.txt" || -f ".python-version" ]] && indicators+=("$POWERLINE_CHARS_PYTHON py")
+    [[ -f "Cargo.toml" ]] && indicators+=("$POWERLINE_CHARS_RUST rs")
+    [[ -f "package.json" ]] && indicators+=("$POWERLINE_CHARS_NODE js")
+    [[ -f "Containerfile" || -f "podman-compose.yml" || -f "Dockerfile" ]] && indicators+=("$POWERLINE_CHARS_DOCKER podman")
+    echo "${indicators[@]}"
 }
 
 # --- Main Prompt Functions ---
 
-# Right-side prompt (Time)
+# Right-side prompt (Time and virtualenv)
 function right_prompt() {
+    local rprompt=""
     if [ -n "$VIRTUAL_ENV" ]; then
-        local venv_name=$(basename $(dirname $VIRTUAL_ENV))
+        local venv_name=$(basename "$(dirname "$VIRTUAL_ENV")")
         local py_version=$(python -c "import platform; print(platform.python_version())" 2>/dev/null)
-        echo -n "%{$POWERLINE_COLOR_STATUS_FG%}($venv_name; $py_version) %{%f%}"
+        rprompt+="$POWERLINE_COLOR_STATUS_FG($venv_name; $py_version) %{%f%} "
     fi
-
-    echo -n "%{$POWERLINE_COLOR_TIME_FG%}🕐 $(date '+%H:%M:%S')%{%f%}"
+    rprompt+="%{$POWERLINE_COLOR_TIME_FG%}🕐 $(date '+%H:%M:%S')%{%f%}"
+    echo -n "$rprompt"
 }
 
 # Main prompt function (Left-side)
@@ -106,46 +96,40 @@ function set_prompt() {
 
     # Path segment
     local path_display=$(print -P %~)
-    local path_icon=$POWERLINE_CHARS_FOLDER
-    if [[ $path_display == "~" ]]; then
-        path_icon=$POWERLINE_CHARS_HOME
-    elif [[ $path_display == "~/develop" ]]; then
-        path_icon=$POWERLINE_CHARS_DEV
-    elif [[ $path_display == "~/Downloads" ]]; then
-        path_icon=$POWERLINE_CHARS_DOWNLOADS
-    elif [[ $path_display == "~/temp" ]]; then
-        path_icon=$POWERLINE_CHARS_TEMP
-    elif [[ $path_display == "~/.dotfiles" || $path_display == "~/dotfiles" ]]; then
-        path_icon=$POWERLINE_CHARS_CONFIG
-    fi
+    local path_icon
+
+    case "$path_display" in
+        "~") path_icon=$POWERLINE_CHARS_HOME ;;
+        "~/develop"*) path_icon=$POWERLINE_CHARS_DEV ;;
+        "~/Downloads"*) path_icon=$POWERLINE_CHARS_DOWNLOADS ;;
+        "~/temp"*) path_icon=$POWERLINE_CHARS_TEMP ;;
+        "~/.dotfiles"|~/dotfiles) path_icon=$POWERLINE_CHARS_CONFIG ;;
+        *) path_icon=$POWERLINE_CHARS_FOLDER ;;
+    esac
+
     make_segment " $path_icon $path_display" "$POWERLINE_COLOR_PATH_FG"
 
     # Git segment
-    local git_status=($(get_git_status))
-    if [ -n "$git_status" ]; then
-        local branch=$git_status[1]
-        local state=$git_status[2]
+    local git_output=$(get_git_status)
+    if [ -n "$git_output" ]; then
+        IFS="|" read -r branch state <<< "$git_output"
         local git_color=$POWERLINE_COLOR_GIT_FG
-        local git_icon=$POWERLINE_CHARS_GIT
-        
-        if [ "$state" = "dirty" ]; then
-            git_color=$POWERLINE_COLOR_GIT_DIRTY_FG
-        fi
-
-        if [ -n "$git_icon" ]; then
-            make_segment " $git_icon $branch" "$git_color"
-        else
-            make_segment " $branch" "$git_color"
-        fi
+        [[ "$state" == "dirty" ]] && git_color=$POWERLINE_COLOR_GIT_DIRTY_FG
+        make_segment " $POWERLINE_CHARS_GIT $branch" "$git_color"
     fi
 
-    # Runtime/Language segment
-    local runtime=($(get_runtime_indicator))
-    if [ -n "$runtime" ]; then
-        make_segment " $runtime" "$POWERLINE_COLOR_STATUS_FG"
+    # Runtime/Language indicators
+    local runtime_indicators=($(get_runtime_indicator))
+    for indicator in "${runtime_indicators[@]}"; do
+        make_segment " $indicator" "$POWERLINE_COLOR_STATUS_FG"
+    done
+
+    # Exit code (if non-zero)
+    if [ $last_status -ne 0 ]; then
+        make_segment " ✖ $last_status" "$POWERLINE_COLOR_ERROR_FG"
     fi
 
-    # Newline for the second line of the prompt
+    # Newline for second line
     echo ""
 
     # Prompt indicator
@@ -156,7 +140,7 @@ function set_prompt() {
     fi
 }
 
-# Set the prompts
+# Prompt update hook
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd update_prompt
 
@@ -168,7 +152,7 @@ function update_prompt() {
 # Initialize prompt
 update_prompt
 
-# Vi mode indicator (requires proper key bindings setup)
+# Vi mode indicator (optional, updates prompt icon)
 function zle-line-init zle-keymap-select {
     case $KEYMAP in
         vicmd) PROMPT=${PROMPT//❯/❮} ;;
