@@ -1,6 +1,6 @@
 # ---- ZSH Configuration ----
 
-HISTFILE=$HOME/.config/zsh/.histfile
+HISTFILE=$XDG_CONFIG_HOME/zsh/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
 
@@ -13,7 +13,7 @@ setopt auto_menu menu_complete
 setopt prompt_sp
 
 # ---- Load Environment Variables ----
-source $HOME/.config/zsh/variables
+source $XDG_CONFIG_HOME/zsh/variables
 
 if [ -f ~/.env.zsh ]; then
   source ~/.env.zsh
@@ -25,7 +25,7 @@ eval "$(zoxide init zsh)"
 source <(fzf --zsh)
 
 # ---- Aliases ----
-source $HOME/.config/zsh/aliases
+source $XDG_CONFIG_HOME/zsh/aliases
 
 # ---- Compinit ----
 autoload -U compinit && compinit
@@ -45,7 +45,7 @@ bindkey "^[[H" beginning-of-line    # Alternate Home
 bindkey "^[[F" end-of-line          # Alternate End
 
 # ---- Prompt Sourcing ----
-source $HOME/.config/zsh/prompt.zsh 
+source $XDG_CONFIG_HOME/zsh/prompt.zsh 
 
 # ---- Plugin and Theme Sourcing ----
-source $HOME/.config/zsh/pluginload
+source $XDG_CONFIG_HOME/zsh/pluginload
