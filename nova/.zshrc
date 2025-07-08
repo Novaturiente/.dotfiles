@@ -1,108 +1,41 @@
 # ---- ZSH Configuration ----
 
-# Lines configured by zsh-newuser-install
-HISTFILE=~/.histfile
+HISTFILE=$HOME/.config/zsh/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
+
 setopt extendedglob notify
 setopt nonomatch
+setopt autocd
+setopt append_history inc_append_history share_history
+setopt no_case_glob no_case_match
+setopt auto_menu menu_complete
+setopt prompt_sp
 
 # ---- Load Environment Variables ----
-# Load .env.zsh if it exists
+source $HOME/.config/zsh/variables
+
 if [ -f ~/.env.zsh ]; then
   source ~/.env.zsh
 fi
 
 # ---- Initialize Zoxide ----
-# Initialize zoxide for zsh
 eval "$(zoxide init zsh)"
 
+source <(fzf --zsh)
+
 # ---- Aliases ----
-# Editor and system update aliases
-alias vi="nvim"
-# put in your shell rc (~/.bashrc, ~/.zshrc, etc.)
-alias fnvim='footclient --override=font="JetBrains Mono NF 12" -e nvim'
-
-alias systemupdate="sudo akshara update && reboot"
-
-# Common file operations
-alias grubup="sudo grub-mkconfig -o /boot/grub/grub.cfg"
-alias tarnow='tar -acf '
-alias untar='tar -zxvf '
-alias wget='wget -c '
-alias psmem='ps auxf | sort -nr -k 4'
-alias psmem10='ps auxf | sort -nr -k 4 | head -10'
-alias dir='dir --color=auto'
-alias vdir='vdir --color=auto'
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
-
-# Nix package manager
-alias nixupdate="sudo nix flake update && sudo nix profile upgrade --all"
-# Journalctl and Windows connection
-alias jctl="journalctl -p 3 -xb"
-alias winconnect="com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound"
-
-# Ollama (Podman) aliases
-alias ollama="podman exec -it ollama ollama"
-alias ollamaup="podman-compose -f ~/.dotfiles/podman/ollama.yml up -d"
-alias ollamadown="podman-compose -f ~/.dotfiles/podman/ollama.yml down"
-
-# ---- Editor Configuration ----
-export VISUAL="nvim"
-export EDITOR="nvim"
-export NVIM_LOG_FILE="$HOME/.cache/nvim/my_custom_log.txt"  # Custom Neovim log file
-
-# ---- Man Page Formatting ----
-export MANROFFOPT="-c"
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
-
-# ---- Custom PATH Configuration ----
-# Add ~/.local/bin to PATH if not already present
-if [ -d "$HOME/.local/bin" ] && [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-  export PATH="$HOME/.local/bin:$PATH"
-fi
-
-# Add depot_tools to PATH if not already present
-if [ -d "$HOME/Applications/depot_tools" ] && [[ ":$PATH:" != *":$HOME/Applications/depot_tools:"* ]]; then
-  export PATH="$HOME/Applications/depot_tools:$PATH"
-fi
-
-# ---- Nix Environment ----
-# Ensure nix environment is sourced in Zsh
-export NIX_PROFILES="$HOME/.nix-profile"
-if [ -n "$ZSH_VERSION" ]; then
-    if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
-        source "$HOME/.nix-profile/etc/profile.d/nix.sh"
-    fi
-fi
-
-# ---- Backup Function ----
-backup() {
-  cp "$1" "$1.bak"
-}
-
-# ---- Plugin and Theme Sourcing ----
-source ~/.zsh/zsh-256color.plugin.zsh
-source ~/.zsh/zsh-sudo.zsh
-source ~/.zsh/autopair.zsh
-source ~/.zsh/auto-venv.zsh
-source ~/.zsh/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
-source ~/.zsh/zsh-autosuggestions.zsh
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080"
-
-# ---- ls Aliases (with eza) ----
-alias ls='eza -a --color=always --group-directories-first --icons'
-alias la='eza -al --color=always --group-directories-first --icons'
-alias ll='eza -l --color=always --group-directories-first --icons'
-alias lt='eza -aT --color=always --group-directories-first --icons'
-alias l.="eza -a | grep -e '^\.'"  # Show only dotfiles
+source $HOME/.config/zsh/aliases
 
 # ---- Compinit ----
-zstyle :compinstall filename '/home/nova/.zshrc'
-autoload -Uz compinit
-compinit
+autoload -U compinit && compinit
+autoload -U colors && colors
+
+#cmp opts
+zstyle ':completion:*' menu select
+zstyle ':completion:*' special-dirs true
+zstyle ':completion:*' squeeze-slashes false 
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33 
 
 # ---- Key Bindings for Special Keys ----
 bindkey "^[[3~" delete-char         # Delete
@@ -112,4 +45,7 @@ bindkey "^[[H" beginning-of-line    # Alternate Home
 bindkey "^[[F" end-of-line          # Alternate End
 
 # ---- Prompt Sourcing ----
-source ~/.zsh/prompt.zsh
+source $HOME/.config/zsh/prompt.zsh 
+
+# ---- Plugin and Theme Sourcing ----
+source $HOME/.config/zsh/pluginload

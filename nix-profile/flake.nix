@@ -33,6 +33,7 @@
             mpv
             castnow
             yt-dlp
+            picard
             libva1
             libvdpau
 
