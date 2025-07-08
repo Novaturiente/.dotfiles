@@ -1,5 +1,4 @@
 # ---- ZSH Configuration ----
-
 HISTFILE=$XDG_CONFIG_HOME/zsh/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
@@ -22,6 +21,7 @@ fi
 # ---- Initialize Zoxide ----
 eval "$(zoxide init zsh)"
 
+# ---- FZF Configuration ----
 source <(fzf --zsh)
 
 # ---- Aliases ----
