@@ -1,0 +1,487 @@
+pacman -Q | rg "one"
+pacman -Q | rg "ui"
+htp
+htop
+nvtop
+duf
+ncdu
+ls .config/htop
+nvim .config/htop/htoprc
+sudo -E gparted
+clear
+ollamaup
+ollamadown
+ollama list
+flatpak list
+cd develop/agent
+nvim light_platinum.txt
+ls
+nvim .tmux.conf
+\:q
+cd
+cd .dotfiles/nix-profile
+nvim flake.nix
+sudo nix profile upgrade --all
+ranger
+tmux source ~/.tmux.conf
+which $SHELL
+fzf
+ping google.com
+cd ..
+ls scripts
+cd scripts
+nvim tmux_search.sh
+cp tmux_search.sh tmux_files.sh
+nvim tmux_files.sh
+cd .dotfiles/scripts
+nvim .config/ranger
+cd .config/ranger
+nvim .dotfiles/scripts/tmux_search.sh
+nvim .config/nvim/init.lua
+nvim .zshrc
+cd develop
+cd agent
+nvim main.py
+cd face_recognition
+vi main.py
+nvim .config/hypr/binds.conf
+uv run main.py
+nvim .config/foot/foot.ini
+vi .zshrc
+nvim .zsh/prompt.zsh
+fnvim
+foot --server
+nvim .config/fish/prompt.fish
+fish
+exit
+fc-cache -r
+fc-list | rg "not"
+foot
+sudo -e .config/foot/foot.ini[A]
+cd .dotfiles/podman
+cd nix-profile
+nvim flake.
+sudo nix flake update
+mpv https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1
+mpv "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1"
+mpv --ao=alsa "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1"
+reboot
+cd 
+cd .local/share/qutebrowser
+ls greasemonkey
+rm -rf greasemonkey/ytdb.js
+nvim .config/mpv/mpv.conf
+ls .config/mpv
+nvim .config/qutebrowser/greasemonkey/ytplay.js
+cd .config/qutebrowser
+cd greasemonkey
+rm -rf ytplay.js
+ls cache
+ls data
+ls qsettings
+castnow
+castnow ~/Videos/recording_2025-07-04_17.16.41.mp4
+castnow "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1"
+yt-dlp --version
+mpv "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1" -cache-secs=5 --demuxer-lavf-cache-time=1.0
+mpv "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1" -cache-secs=5
+mpv "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1" -cache-secs=5 --hwdec=auto
+mpv "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1" -cache-secs=5 --vo=cpu
+mpv "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1" -cache-secs=5 --ytdl-format=best
+mpv "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1" -cache-secs=5 --no-ytdl
+mpv "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1" --cache-secs=5
+mpv "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1" --cache-secs=5 --no-config --log-file=/dev/null
+ls .config/qutebrowser/greasemonkey
+cd .config/qutebrowser/greasemonkey
+mv cast cast.js
+mv cast.js cast
+mv cast.js cast.sh
+nvim cast.sh
+nvim ../config.py
+mkdir usercripts
+mv greasemonkey/cast.sh usercripts
+ls usercripts
+mv usercripts userscripts
+chmod +x userscripts/cast.sh
+nvim userscripts/cast.sh
+nvim config.py
+nvim bookmarks/urls
+cd userscripts
+chmod +x readability
+./readability
+rm -rf readability
+chmod +x open_download
+chmod +x qr
+cat qr
+rm -rf qr
+miraclecast
+$ systemctl --version
+systemctl --version
+sudo -e /system.yaml
+sudo pacman -Ss sleex
+systemupdate
+sudo akshara update
+nvim .config/hypr/hyprland.conf
+ls .dotfiles/scripts
+vi .dotfiles/scripts/bar.sh
+./.dotfiles/scripts/bar.sh
+ags -c /usr/share/sleex/config.js &
+killall ags
+ags run-js 'cycleMode();'
+nvim .dotfiles/scripts/bar.sh
+rebot
+sleex
+sleex-settings
+vi light_platinum.txt
+cd\\
+vi .tmux.conf
+git add .
+git commit -m "update"
+git push origin
+cd .dotfiles
+nvim README.md
+cd nova/.config/qutebrowser_work/
+nvim .gitignore
+rm -rf nova/.config/qutebrowser/cache
+ping github.com
+rm -rf nova/.config/qutebrowser/data
+rm -rf nova/.config/qutebrowser_work/data
+rm -rf nova/.config/qutebrowser_work/cache
+ls nova/.config/qutebrowser_work
+ls nix-profile
+ls system
+rm -rf system/mirrorlist
+cp /system.yaml system/system.yaml
+ls local_agent
+rm -rf local_agent\ 
+rm -rf local_agent
+rm -rf .deepface
+ls AndroidStudioProjects
+ls temp
+cd temp
+rm -rf Miniconda3-latest-Linux-x86_64.sh
+ls OmniGen2
+ls rag
+rm -rf rag 
+ls test
+rm -rf test
+ls winapps
+ls dotfiles
+ls .sleex
+nvim .sleex/settings.json
+vi .sleex/settings.json
+mpv
+pipx
+pipx install ollama
+pipx install pandas
+pipx --version
+pipx --packages
+pipx list
+pipx install google-genai
+pipx install google-genai --include-deps
+python main.py
+rm main.py
+pipx install langchain-google-genai --include-deps
+pipx uninstall-all
+cat main.py
+cp main.py pokemon.py
+pacman -Q | wl
+pacman -Q | wc
+pacman -Q | lc
+pacman -Q | wc -l
+ls Music
+picard --version
+ls ~/Music
+cd develop/a
+cat pyproject.toml
+cat .env.zsh
+ls .nix-profile/
+pipx install ollama --include-deps
+python run main.py
+python
+mkdir test
+cd test
+python -m venv .venv
+source .venv/bin/activate
+pip install ollama
+deactivate
+cd Music
+yt-dlp -x --audio-format flac "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1"
+rm -rf ./*
+yt-dlp -x --audio-format flac "https://www.youtube.com/watch?v=izbydia9jz4&list"
+yt-dlp -x --audio-format wav "https://www.youtube.com/watch?v=izbydia9jz4&list"
+yt-dlp -x --audio-format mp3 "https://www.youtube.com/watch?v=izbydia9jz4&list"
+yt-dlp -x --audio-format m4a "https://www.youtube.com/watch?v=izbydia9jz4&list"
+cd Downloads
+yt-dlp -x --audio-format wav --audio-quality 0 -p ~/Music "https://www.youtube.com/watch?v=izbydia9jz4&list"
+yt-dlp -x --audio-format wav --audio-quality 0 -P ~/Music "https://www.youtube.com/watch?v=izbydia9jz4&list"
+rm -rf Music/*
+yt-dlp -x --audio-format wav --audio-quality 0 -P ~/Music "https://www.youtube.com/watch?v=Y1UhSmNZcls&list=RDY1UhSmNZcls&start_radio=1"
+yt-dlp -x --audio-format wav --audio-quality 0 -P ~/Music "https://www.youtube.com/watch?v=YFYiTS46x-8&list=RDYFYiTS46x-8&start_radio=1"
+nvim music_download.sh
+chmod +x music_download.sh
+./music_download.sh "https://www.youtube.com/watch?v=YFYiTS46x-8&list=RDYFYiTS46x-8"
+nvim 
+./.dotfiles/scripts/music_download.sh "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1"
+nvim .dotfiles/scripts/music_download.sh
+ls Downloads
+./.dotfiles/scripts/music_download.sh "https://www.youtube.com/watch?v=izbydia9jz4"
+mkdir ytd
+cd ytd
+uv init
+uv venv
+uv add yt-dlp
+uv run main.py "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1"
+rm -rf ~/Music/*
+./.dotfiles/scripts/music_download.sh "https://www.youtube.com/watch?v=YykjpeuMNE"
+sudo ./.dotfiles/scripts/music_download.sh "https://www.youtube.com/watch?v=YykjpeuMNEk"
+./.dotfiles/scripts/music_download.sh "https://www.youtube.com/watch?v=YykjpeuMNEk"
+rm -rf ytd
+uv add shazamio
+cd develop/ytd
+mv main.py identify.py
+uv add yt-dlp ffmpeg-python
+uv add pyinstaller
+pyinstaller --onefile identify.py
+nvim identify.
+nvim identify.py
+uv run main.py ~/Music/Narivetta\ -\ Minnalvala\ Video\ Song\ ï½ƒ¼\ Tovino\ Thomas,\ Anuraj\ Manohar,\ Jakes\ Bejoy,\ Sid\ Sriram,\ Sithara.m4a
+uv run identify.py ~/Music/Narivetta\ -\ Minnalvala\ Video\ Song\ ï½ƒ¼\ Tovino\ Thomas,\ Anuraj\ Manohar,\ Jakes\ Bejoy,\ Sid\ Sriram,\ Sithara.m4a
+uv add aiohttp mutagen
+uv run identify.py ~/Music/Coldplay\ -\ Hymn\ For\ The\ Weekend\ \(Official\ Video\).m4a
+ls dist
+cp dist/identify ~/.dotfiles/scripts
+cp dist/identify ~/.dotfiles/scripts/
+./music_download.sh "https://www.youtube.com/watch?v=izbydia9jz4"
+rm -rf ~/Music
+mkdir ~/Music
+ls ~/
+./music_download.sh "https://www.youtube.com/watch?v=izbydia9jz4&list=RDizbydia9jz4&start_radio=1"
+./music_download.sh "https://www.youtube.com/watch?v=YykjpeuMNEk"
+cp dist/identify ~/.dotfiles/scripts/identify
+cd ../agent
+cd Games
+unzip RNGPLAT\ \ \(v1.3.0\).zip
+flatpak search melonds
+flatpak install melonds
+vi .config/nvim/init.lua
+uv run python -m debugpy.adapter
+uv add debugpy
+nvim pokemon.py
+rm -rf .venv .python-version main.py pyproject.toml uv.lock README.md
+source .zshrc
+develop
+echo "test"
+echo test
+zle -al
+mkdir .config/zsh
+cd .config/zsh
+nvim aliases
+echo $XDG_CONFIG_HOME
+alias
+nvim variables
+echo $VISUAL
+mv ~/.zsh/prompt.zsh ./
+mkdir plugins
+cd plugins
+mv ~/.zsh/* ./
+nvim pluginload
+mv ~/.histfile ./
+ls .zsh
+mv .zsh/.histfile .zsh/.histfile.back
+rm -rf .zsh
+mv .config/zsh .dotfiles/nova/.config
+ls .dotfiles/nova/.config
+stow -t ~ nova
+rm -rf ~/.config/mimeapps.list
+ls .config
+cat .config/mimeapps.list
+rm -rf .dotfiles/nova/.zsh
+ls .dotfiles/nova
+ls .dotfiles/nova/.local
+ls .dotfiles/nova/.local/share
+ls .dotfiles/nova/.local/share/fish
+rm -rf .dotfiles/nova/.local/share/fish/fish_history
+rm -rf .histfile
+ls .tmux
+cd .config/hypr
+ls hyprland
+rm -rf hyprland/*
+rm -rf hyprland
+ls mako
+nvim hyprlock.conf
+mv .profile ~/.dotfiles/nova
+rm -rf pain.png
+rm -rf *png
+ls ~/.dotfiles/scripts
+nvim hyprland.conf
+mkdir configs
+mv autostart.conf configs
+mv binds.conf configs
+ls configs
+mako
+: 1751992691:0;mako --help
+: 1751992796:0;nvim mako/config
+: 1751992814:0;ls mako
+: 1751992817:0;ls mako/styles
+: 1751992836:0;nvim hyprland.conf
+: 1751992857:0;mv mako mako.back
+: 1751992858:0;ls
+: 1751992863:0;ls
+: 1751992974:0;nvim hyprland.conf
+: 1751992983:0;nvim hyprland.conf
+: 1751993117:0;l
+: 1751993119:0;nvim hyprland.conf
+: 1751993121:0;ls
+: 1751993131:0;cd ..
+: 1751993132:0;ls
+: 1751993143:0;rm -rf kitty 
+: 1751993155:0;rm -rf ~/.dotfiles/nova/.config/kitty 
+: 1751993156:0;ls
+: 1751993175:0;ls yt-dlp
+: 1751993183:0;rm -rf yt-dlp
+: 1751993188:0;rm -rf ~/.dotfiles/nova/.config/yt-dlp
+: 1751993210:0;cd
+: 1751993211:0;cd .dotfiles
+: 1751993212:0;ls
+: 1751993224:0;git add .
+: 1751993227:0;git commit -m "update"
+: 1751993251:0;git add .
+: 1751993252:0;git commit -m "update"
+: 1751993260:0;git push origin
+: 1751993533:0;git push origin
+: 1751993674:0;nvim scripts/auto_commit.sh
+: 1751993756:0;reboot
+: 1751993796:0;cd .dotfiles
+: 1751993798:0;ls
+: 1751993801:0;cd
+: 1751993803:0;cd .dotfiles
+: 1751993807:0;ls
+: 1751993810:0;ls
+: 1751993811:0;cd
+: 1751993813:0;ls
+: 1751993815:0;cd .dotfiles
+: 1751993818:0;git add .
+: 1751993820:0;git commit -m "update"
+: 1751993851:0;git push origin
+: 1751993858:0;cd
+: 1751993860:0;cd .dotfiles
+: 1751993861:0;cd
+: 1751993870:0;cd develop
+: 1751993871:0;ls
+: 1751993877:0;git add .
+: 1751993882:0;ls
+: 1751993885:0;git commit -m "update"
+: 1751993889:0;git push origin
+: 1751993958:0;ls
+: 1751993962:0;cd ytd
+: 1751993963:0;ls
+: 1751993969:0;la
+: 1751993971:0;ls
+: 1751993974:0;cd ..
+: 1751993976:0;ls
+: 1751993985:0;mkdir temp
+: 1751993990:0;uv init 
+: 1751993991:0;ls
+: 1751994044:0;cd ytd
+: 1751994045:0;ls
+: 1751994050:0;rm -rf build dist
+: 1751994053:0;cd ..
+: 1751994054:0;ls
+: 1751994061:0;ls ai_assistants
+: 1751994080:0;ls
+: 1751994104:0;vi pyproject.toml
+: 1751994115:0;nvim ai_assistants/pyproject.toml
+: 1751994127:0;nvim face_recognition/pyproject.toml
+: 1751994148:0;nvim agent/pyproject.toml
+: 1751994158:0;nvim pyproject.toml
+: 1751994163:0;ls
+: 1751994166:0;nvim ai_assistants/pyproject.toml
+: 1751994216:0;nvim agent/pyproject.toml
+: 1751994231:0;nvim agent/pyproject.toml
+: 1751994239:0;ls
+: 1751994246:0;rm -rf temp
+: 1751994256:0;cd agent
+: 1751994257:0;ls
+: 1751994260:0;nvim pyproject.toml
+: 1751994294:0;nvim ai_assistants/pyproject.toml
+: 1751994314:0;ls
+: 1751994320:0;cd ai_assistants
+: 1751994320:0;ls
+: 1751994339:0;rm -rf *.spec
+: 1751994340:0;ls
+: 1751994359:0;rm -rf .python-version
+: 1751994365:0;rm -rf uv.lock
+: 1751994373:0;nvim ai_assistants/pyproject.toml
+: 1751994384:0;cd ai_assistants
+: 1751994388:0;nvim pyproject.toml
+: 1751994394:0;nvim ai_assistants/pyproject.toml
+: 1751994436:0;rm -rf develop
+: 1751994464:0;git clone git@github.com:Novaturiente/develop.git
+: 1751994476:0;cd develop
+: 1751994477:0;ls
+: 1751994482:0;ls ai_assistants
+: 1751994485:0;ls agent
+: 1751994490:0;ls ai_assistants
+: 1751994491:0;ls
+: 1751994497:0;rm -rf ai_assistants
+: 1751994498:0;ls
+: 1751994500:0;git add .
+: 1751994505:0;git commit -m "update"
+: 1751994508:0;git push origin
+: 1751994514:0;cd
+: 1751994517:0;cd .dotfiles
+: 1751994518:0;ls
+: 1751994528:0;cat test
+: 1751994531:0;echo test
+: 1751994535:0;nvim scripts/auto_commit.sh
+: 1751994558:0;cd
+: 1751994560:0;cd .dotfiles
+: 1751994561:0;ls
+: 1751994647:0;ls
+: 1751994654:0;htop
+: 1751994717:0;ls
+: 1751994783:0;rm -rf main.py .osh-update .opencode.json .zcompdump .wget-hsts .sdirs .python_history
+: 1751994784:0;s
+: 1751994785:0;ls
+: 1751994792:0;cat .emulator_console_auth_token
+: 1751994879:0;ls
+: 1751995201:0;ls
+: 1751995298:0;cd .dotfiles
+: 1751995303:0;cd nix-profile
+: 1751995305:0;nvim flake.nix
+: 1751995322:0;sudo nix profile upgrade --all
+: 1751995359:0;cd
+: 1751995467:0;ls
+: 1751995476:0;cd .dotfiles/nix-profile
+: 1751995479:0;sudo nix profile upgrade --all
+: 1751995496:0;nvim flake.nix
+: 1751995500:0;sudo nix profile upgrade --all
+: 1751995517:0;ls
+: 1751995523:0;..
+: 1751995525:0;ls
+: 1751995532:0;git add .
+: 1751995534:0;git commit -m "update"
+: 1751995597:0;git add .
+: 1751995598:0;git commit -a
+: 1751995603:0;git commit -m "update"
+: 1751995612:0;git commit -m "update"
+: 1751995628:0;git add .
+: 1751995630:0;git commit -m "update"
+: 1751995633:0;git push origin
+: 1751995654:0;cd
+: 1751995656:0;ls
+: 1751995787:0;ls backup
+: 1751995791:0;rm -rf backup
+: 1751995800:0;ls .pki
+: 1751995804:0;ls .pki/nssdb
+: 1751995852:0;cat .profile
+: 1751996010:0;ls
+: 1751996020:0;ls
+: 1751996239:0;cd .config/zsh
+: 1751996240:0;ls
+: 1751996258:0;cd
+: 1751996263:0;nvim .zshrc
+: 1751996352:0;nvim .config/zsh/.histfile
+: 1751996486:0;cd .config/zsh
+: 1751996519:0;awk '!seen[$0]++' .histfile > history
