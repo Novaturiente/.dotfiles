@@ -1,7 +1,3 @@
--- ========================================================
--- 🗝️ KEYBINDINGS
--- ========================================================
-
 -- Register keybindings with which-key
 local wk = require("which-key")
 

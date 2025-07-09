@@ -78,6 +78,7 @@
             pyright
             pipx
             python313Packages.pynvim
+            python313Packages.debugpy
             tree-sitter
             uv
             # cargo

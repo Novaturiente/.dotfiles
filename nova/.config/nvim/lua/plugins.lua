@@ -1,8 +1,4 @@
--- ========================================================
--- 📦 PLUGIN MANAGEMENT (Lazy.nvim)
--- ========================================================
-
-require('lazy').setup({
+return require('lazy').setup({
   -- == THEME ==
   {
     "folke/tokyonight.nvim",
@@ -242,6 +238,3 @@ require('lazy').setup({
     config = true,
   },
 })
-
--- Configure Undo history
-require('highlight-undo').setup({ duration = 600 })
