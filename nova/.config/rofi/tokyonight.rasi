@@ -42,7 +42,7 @@ window {
 }
 
 inputbar {
-  spacing  : 8px;
+  spacing  : 12px;
   padding  : 4px 8px;
   children : [ icon-search, entry ];
 
