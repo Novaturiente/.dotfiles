@@ -1,5 +1,4 @@
-
--- Additional diagnostic configuration
+-- Diagnostic Configuration
 vim.diagnostic.config({
   virtual_text = {
     prefix = '●',
@@ -19,12 +18,11 @@ vim.diagnostic.config({
   },
 })
 
+-- Load DAP and UI
+local dap = require("dap")
+local dapui = require("dapui")
 
-
-local dap = require('dap')
-local dapui = require('dapui')
-
--- Setup DAP UI
+-- UI Setup
 dapui.setup({
   icons = { expanded = "", collapsed = "", current_frame = "" },
   mappings = {
@@ -35,7 +33,7 @@ dapui.setup({
     repl = "r",
     toggle = "t",
   },
-  expand_lines = vim.fn.has("nvim-0.7") == 1,
+  expand_lines = true, -- `has("nvim-0.7") == 1` no longer needed
   layouts = {
     {
       elements = {
@@ -48,10 +46,7 @@ dapui.setup({
       position = "left",
     },
     {
-      elements = {
-        "repl",
-        "console",
-      },
+      elements = { "repl", "console" },
       size = 0.25,
       position = "bottom",
     },
@@ -60,14 +55,14 @@ dapui.setup({
     enabled = true,
     element = "repl",
     icons = {
-      pause = "",
-      play = "",
-      step_into = "",
-      step_over = "",
-      step_out = "",
-      step_back = "",
-      run_last = "",
-      terminate = "",
+      pause = "⏸",
+      play = "▶",
+      step_into = "↳",
+      step_over = "⤼",
+      step_out = "⇤",
+      step_back = "⏪",
+      run_last = "↻",
+      terminate = "⏹",
     },
   },
   floating = {
@@ -80,24 +75,20 @@ dapui.setup({
   },
 })
 
--- Setup virtual text
-require("nvim-dap-virtual-text").setup()
+-- Virtual Text
+require("nvim-dap-virtual-text").setup({
+  enabled = true,
+  commented = false,
+})
 
--- Configure breakpoint signs
-vim.fn.sign_define('DapBreakpoint', {text='🔴', texthl='', linehl='', numhl=''})
-vim.fn.sign_define('DapBreakpointCondition', {text='🟡', texthl='', linehl='', numhl=''})
-vim.fn.sign_define('DapLogPoint', {text='🔵', texthl='', linehl='', numhl=''})
-vim.fn.sign_define('DapStopped', {text='➡️', texthl='', linehl='', numhl=''})
-vim.fn.sign_define('DapBreakpointRejected', {text='❌', texthl='', linehl='', numhl=''})
+-- Sign Definitions
+vim.fn.sign_define('DapBreakpoint', { text = '🔴', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapBreakpointCondition', { text = '🟡', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapLogPoint', { text = '🔵', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapStopped', { text = '➡️', texthl = '', linehl = '', numhl = '' })
+vim.fn.sign_define('DapBreakpointRejected', { text = '❌', texthl = '', linehl = '', numhl = '' })
 
--- Auto open/close DAP UI
-dap.listeners.after.event_initialized["dapui_config"] = function()
-  dapui.open()
-end
-dap.listeners.before.event_terminated["dapui_config"] = function()
-  dapui.close()
-end
-dap.listeners.before.event_exited["dapui_config"] = function()
-  dapui.close()
-end
-
+-- DAP UI Auto Toggle
+dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
+dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
+dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end

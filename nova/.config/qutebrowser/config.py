@@ -13,6 +13,7 @@ config.source("onedark.py")
 
 # Tab settings
 c.tabs.padding = {"top": 3, "bottom": 3, "left": 5, "right": 5}
+c.tabs.title.alignment = "center"
 c.tabs.favicons.scale = 1.4
 
 # Font configuration
@@ -64,6 +65,7 @@ c.content.headers.custom = {
 c.content.canvas_reading = False
 c.content.webgl = False
 c.content.cookies.accept = "no-3rdparty"
+c.content.blocking.enabled = True
 c.content.blocking.method = "both"
 
 ## Key bindings

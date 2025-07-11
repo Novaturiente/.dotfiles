@@ -1,33 +1,73 @@
 local vim = vim
+
+-- =============================
+-- Line Numbers
+-- =============================
 -- Enable line numbers
 vim.wo.number = true
+vim.opt.relativenumber = true
+
+-- Auto switch line numbers on mode change
+vim.api.nvim_create_autocmd({ "InsertEnter" }, {
+  pattern = "*",
+  callback = function()
+    vim.opt.relativenumber = false
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "InsertLeave" }, {
+  pattern = "*",
+  callback = function()
+    vim.opt.relativenumber = true
+  end,
+})
+
+-- =============================
+-- General Settings
+-- =============================
 -- Set leader key to space
 vim.g.mapleader = ' '
+
 -- Use system clipboard
 vim.opt.clipboard = 'unnamedplus'
+
 -- Enable mouse support
 vim.o.mouse = 'a'
+
 -- Manual folding
 vim.o.foldmethod = "manual"
--- Enable folding
 vim.o.foldenable = true
--- Set tab to 4 spaces
+
+-- Set tab to 2 spaces
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
-vim.loader.enable()
+
+-- Faster update time
 vim.opt.updatetime = 300
 
 -- Enable persistent undo
 vim.o.undofile = true
--- Set undo directory
 vim.o.undodir = vim.fn.stdpath("data") .. "/undo"
 
+-- Conceal level (used in markdown and other filetypes)
 vim.opt.conceallevel = 1
--- Autocommands to save and load view (including folds)
+
+-- Enable faster startup (requires Neovim 0.9+)
+vim.loader.enable()
+
+-- Set LSP log level
+vim.lsp.set_log_level("error")
+
+-- Disable fsync on write
+vim.opt.fsync = false
+
+-- =============================
+-- Remember Fold Views
+-- =============================
 local remember_folds_group = vim.api.nvim_create_augroup("remember_folds", { clear = true })
 
-vim.api.nvim_create_autocmd({"BufWinLeave"}, {
+vim.api.nvim_create_autocmd({ "BufWinLeave" }, {
   pattern = "*",
   callback = function()
     if vim.fn.expand("%:p") ~= "" and vim.fn.buflisted(vim.api.nvim_get_current_buf()) == 1 then
@@ -37,17 +77,18 @@ vim.api.nvim_create_autocmd({"BufWinLeave"}, {
   group = remember_folds_group,
 })
 
-vim.api.nvim_create_autocmd({"BufWinEnter"}, {
+vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
   pattern = "*",
   command = "silent! loadview",
   group = remember_folds_group,
 })
 
+-- Include folds in session options
 vim.opt.sessionoptions:append("folds")
 
-vim.lsp.set_log_level("error")
-vim.opt.fsync = false
-
+-- =============================
+-- Treesitter Highlighting Fallback
+-- =============================
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "*",
   callback = function()
@@ -55,7 +96,9 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Prevent errors when plugins are not yet installed
+-- =============================
+-- Safe Require Function
+-- =============================
 local function safe_require(module)
   local success, result = pcall(require, module)
   if not success then
@@ -65,7 +108,9 @@ local function safe_require(module)
   return result
 end
 
--- Automatically install Lazy.nvim if not present
+-- =============================
+-- Lazy.nvim Bootstrap
+-- =============================
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({

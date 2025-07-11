@@ -1,49 +1,74 @@
--- Register keybindings with which-key
+-- Keybindings with Which-Key
 local wk = require("which-key")
 
 -- File Tree
-require("which-key").add {
+wk.add {
   { "<leader>o", ":NvimTreeToggle<CR>", desc = "Toggle file explorer" },
 }
 
 -- Tabs
-require("which-key").add {
-  { "<C-t", ":tabnew<CR>", desc = "New tab" },
+wk.add {
+  { "<C-t>", ":tabnew<CR>", desc = "New tab" },
 }
 
 -- Telescope
-local builtin = require('telescope.builtin')
-require("which-key").add {
-  { "<leader>fg", builtin.live_grep, desc = "Live grep" },
-  { "<leader>fb", builtin.buffers,   desc = "Find buffers" },
-  { "<leader>fh", builtin.help_tags, desc = "Help tags" },
-}
+local builtin = require("telescope.builtin")
+wk.add({
+  { "<leader><space>", function()
+      local ok = pcall(builtin.git_files, { show_untracked = true })
+      if not ok then builtin.find_files({ previewer = true }) end
+    end,
+    desc = "Smart Find Files"
+  },
+  
+  { "<leader>,", function() builtin.buffers() end, desc = "Switch Buffers" },
+  
+  { "<leader>ff", function()
+      builtin.find_files({
+        previewer = true,
+        cwd = vim.fn.expand("%:p:h"),
+        prompt_title = "Find Nearby Files"
+      })
+    end,
+    desc = "Find Files (relative)"
+  },
+
+  { "<leader>fc", function()
+      builtin.find_files({
+        cwd = vim.fn.stdpath("config"),
+        prompt_title = "Find Config Files",
+        previewer = true
+      })
+    end,
+    desc = "Find Config Files"
+  },
+
+  { "<leader>fr", function() builtin.oldfiles() end, desc = "Recent Files" },
+})
 
 -- Terminal
-require("which-key").add {
-  { "<M-v>", ":ToggleTerm direction=vertical size=50<CR>",  desc = "Vertical terminal" },
-  { "<M-d>", ":ToggleTerm direction=vertical size=50<CR>",  desc = "Vertical terminal" },
-  { "<M-h>", ":ToggleTerm direction=horizontal size=10<CR>",desc = "Horizontal terminal" },
-  { "<C-d>", ":ToggleTerm direction=float<CR>",            desc = "Floating terminal" },
+wk.add {
+  { "<M-v>", ":ToggleTerm direction=vertical size=50<CR>", desc = "Vertical terminal" },
+  { "<M-d>", ":ToggleTerm direction=vertical size=50<CR>", desc = "Vertical terminal" },
+  { "<M-h>", ":ToggleTerm direction=horizontal size=10<CR>", desc = "Horizontal terminal" },
+  { "<C-d>", ":ToggleTerm direction=float<CR>", desc = "Floating terminal" },
 }
 
--- Buffer navigation
-require("which-key").add {
-  { "<M-Right>", ":bnext<CR>",     desc = "Next buffer" },
-  { "<M-Left>",  ":bprev<CR>",     desc = "Previous buffer" },
-  { "<leader>q", ":bd<CR>",        desc = "Close buffer" },
+-- Buffer Navigation
+wk.add {
+  { "<M-Right>", ":bnext<CR>", desc = "Next buffer" },
+  { "<M-Left>", ":bprev<CR>", desc = "Previous buffer" },
+  { "<leader>q", ":bd<CR>", desc = "Close buffer" },
 }
 
--- Run file
-require("which-key").add {
+-- Run File
+wk.add {
   { "<leader>r", RunFile, desc = "Run current file" },
 }
 
 -- Diagnostics
-require("which-key").add {
-  {
-    "<leader>cc",
-    function()
+wk.add {
+  { "<leader>cc", function()
       -- Copy all diagnostics on the current line to the clipboard
       local diagnostics = vim.diagnostic.get(0, {
         lnum = vim.api.nvim_win_get_cursor(0)[1] - 1,
@@ -60,12 +85,11 @@ require("which-key").add {
       vim.fn.setreg("+", text)
       vim.notify("Copied diagnostic to clipboard", vim.log.levels.INFO)
     end,
-    desc = "Copy diagnostic to clipboard",
+    desc = "Copy diagnostic to clipboard"
   },
-  {
-    "<leader>cx",
-    function()
-      -- Append "# type: ignore" to suppress a Pyright warning on this line
+
+  { "<leader>cx", function()
+      -- Append "# type: ignore" to suppress a Pyright warning
       local line = vim.api.nvim_get_current_line()
       if not line:find("# type: ignore") then
         vim.api.nvim_set_current_line(line .. "  # type: ignore")
@@ -74,37 +98,39 @@ require("which-key").add {
         vim.notify("'# type: ignore' already present", vim.log.levels.WARN)
       end
     end,
-    desc = "Suppress Pyright error",
+    desc = "Suppress Pyright error"
   },
 }
 
--- Open specific files
+-- Open Specific Files
 wk.add{
-  {"<leader>wn", "<cmd>edit ~/.config/nvim/init.lua<cr>", desc = "Open Neovim config"},
-  {"<leader>ww", "<cmd>edit ~/develop/Notes/index.md<cr>", desc = "Open Notes"},
-  {"<leader>hc", "<cmd>edit ~/.config/hypr/hyprland.conf<cr>", desc = "Open Notes"},
-  {"<leader>hb", "<cmd>edit ~/.config/hypr/binds.conf<cr>", desc = "Open Notes"}
+  { "<leader>wn", "<cmd>edit ~/.config/nvim/init.lua<cr>", desc = "Open Neovim config" },
+  { "<leader>ww", "<cmd>edit ~/develop/Notes/index.md<cr>", desc = "Open Notes" },
+  { "<leader>hc", "<cmd>edit ~/.config/hypr/hyprland.conf<cr>", desc = "Open Hyprland Config" },
+  { "<leader>hb", "<cmd>edit ~/.config/hypr/binds.conf<cr>", desc = "Open Binds Config" },
 }
 
--- Obsidian keybindings
+-- Obsidian Keybindings
 wk.add{
-  {"<leader>os", ":ObsidianSearch<cr>", desc = "Obsidian Search"},
-  {"<leader>on", ":ObsidianNew<cr>", desc = "Obsidian new file"}
+  { "<leader>os", ":ObsidianSearch<cr>", desc = "Obsidian Search" },
+  { "<leader>on", ":ObsidianNew<cr>", desc = "Obsidian New File" }
 }
 
 -- Navigation
 vim.keymap.set({'n', 'v', 'i'}, '<C-h>', '^', { noremap = true })
 vim.keymap.set({'n', 'v', 'i'}, '<C-l>', '$', { noremap = true })
 
--- Debug keybindings (REPLACE the existing debug section)
+-- Debug Keybindings
 wk.add{
   { "<leader>d", group = "Debug" },
+
   -- MAIN DEBUG FUNCTIONS
   { "<leader>dd", SmartDebugPython, desc = "🧠 Smart Debug (Auto UV/Python)" },
   { "<leader>dv", DebugPythonUV, desc = "🚀 Force UV Debug" },
   { "<leader>dp", DebugPython, desc = "🐍 Force Regular Python Debug" },
   { "<leader>da", "<cmd>lua require('dap').run(require('dap').configurations.python[2])<CR>", desc = "Debug with Args" },
 
+  -- Debug Actions
   { "<leader>ds", "<cmd>lua require('dap').continue()<CR>", desc = "Start/Continue" },
   { "<leader>db", "<cmd>lua require('dap').toggle_breakpoint()<CR>", desc = "Toggle Breakpoint" },
   { "<leader>dB", "<cmd>lua require('dap').set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>", desc = "Conditional Breakpoint" },

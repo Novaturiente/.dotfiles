@@ -1,102 +1,96 @@
--- mason setup
+-- Mason Setup
 require("mason").setup({
-    ui = {
-        icons = {
-            package_installed = "",
-            package_pending = "",
-            package_uninstalled = "",
-        },
-    }
+  ui = {
+    icons = {
+      package_installed = "",
+      package_pending = "",
+      package_uninstalled = "",
+    },
+  },
 })
 
 require("mason-lspconfig").setup({
-  ensure_installed = { "pyright", "ruff", "clangd" },
+  ensure_installed = { "clangd", "pyright", "ruff", "rust_analyzer", "lua_ls", "nil_ls", },
 })
 
+-- Vim Options
+vim.opt.completeopt = { "menuone", "noselect", "noinsert" }
+vim.opt.shortmess:append("c")
+vim.opt.updatetime = 300
+vim.opt.signcolumn = "yes"
 
--- LSP settings
+-- Auto open diagnostic float on idle
+vim.api.nvim_create_autocmd("CursorHold", {
+  callback = function()
+    vim.diagnostic.open_float(nil, { focusable = false })
+  end,
+})
+
+-- LSP Setup
 local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
-vim.opt.completeopt = {'menuone', 'noselect', 'noinsert'}
-vim.opt.shortmess = vim.opt.shortmess + { c = true}
-vim.api.nvim_set_option('updatetime', 300) 
 
-vim.cmd([[
-set signcolumn=yes
-autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })
-]])
-
--- Common on_attach function for all LSP servers
+-- Common on_attach function
 local function on_attach(client, bufnr)
-  -- Set up buffer-local keymaps with which-key descriptions
   client.server_capabilities.offsetEncoding = "utf-8"
-  
-  -- This single block now handles both creating the keymap AND registering it with which-key
-  require("which-key").add({
-    mode = "n", -- Set the mode for all keys in this table
-    { "gd", vim.lsp.buf.definition, desc = "Go to definition" },
-    { "gD", vim.lsp.buf.declaration, desc = "Go to declaration" },
-    { "gi", vim.lsp.buf.implementation, desc = "Go to implementation" },
-    { "gr", vim.lsp.buf.references, desc = "Go to references" },
-    { "gt", vim.lsp.buf.type_definition, desc = "Go to type definition" },
-    { "K",  vim.lsp.buf.hover, desc = "Hover documentation" },
-    { "<C-k>", vim.lsp.buf.signature_help, desc = "Signature help" },
-    { "<leader>ca", vim.lsp.buf.code_action, desc = "Code action" },
-    { "<leader>rn", vim.lsp.buf.rename, desc = "Rename symbol" },
-    { "<leader>f", function() vim.lsp.buf.format({ async = true }) end, desc = "Format buffer" },
-    
-    -- You can also add your diagnostic keybindings here for consistency
-    { "[d", vim.diagnostic.goto_prev, desc = "Previous diagnostic" },
-    { "]d", vim.diagnostic.goto_next, desc = "Next diagnostic" },
-    { "<leader>e", vim.diagnostic.open_float, desc = "Line diagnostics" },
-    { "<leader>ql", vim.diagnostic.setloclist, desc = "List diagnostics" },
 
-  }, { buffer = bufnr })
+  -- Normal mode mappings
+  require("which-key").register({
+    ["gd"] = { vim.lsp.buf.definition, "Go to definition" },
+    ["gD"] = { vim.lsp.buf.declaration, "Go to declaration" },
+    ["gi"] = { vim.lsp.buf.implementation, "Go to implementation" },
+    ["gr"] = { vim.lsp.buf.references, "Go to references" },
+    ["gt"] = { vim.lsp.buf.type_definition, "Go to type definition" },
+    ["K"] = { vim.lsp.buf.hover, "Hover documentation" },
+    ["<C-k>"] = { vim.lsp.buf.signature_help, "Signature help" },
+    ["<leader>ca"] = { vim.lsp.buf.code_action, "Code action" },
+    ["<leader>rn"] = { vim.lsp.buf.rename, "Rename symbol" },
+    ["<leader>f"] = {
+      function() vim.lsp.buf.format({ async = true }) end,
+      "Format buffer",
+    },
+    ["[d"] = { vim.diagnostic.goto_prev, "Previous diagnostic" },
+    ["]d"] = { vim.diagnostic.goto_next, "Next diagnostic" },
+    ["<leader>e"] = { vim.diagnostic.open_float, "Line diagnostics" },
+    ["<leader>ql"] = { vim.diagnostic.setloclist, "List diagnostics" },
+  }, { mode = "n", buffer = bufnr })
 
-  -- If you have mappings for other modes (e.g., visual mode), you can add another block
-  require("which-key").add({
-    mode = "v",
-    { "<leader>ca", vim.lsp.buf.code_action, desc = "Code action" },
-  }, { buffer = bufnr })
+  -- Visual mode mappings
+  require("which-key").register({
+    ["<leader>ca"] = { vim.lsp.buf.code_action, "Code action" },
+  }, { mode = "v", buffer = bufnr })
 end
 
 -- Auto format on save
 vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = { "*.lua", "*.py", "*.c", "*.cpp", "*.h", "*.hpp", "*.rs" }, -- Added C/C++ file types
+  pattern = { "*.lua", "*.py", "*.c", "*.cpp", "*.h", "*.hpp", "*.rs", "*.nix", "*.conf" },
   callback = function()
     vim.lsp.buf.format({ async = false })
   end,
 })
 
--- Completion Plugin Setup
-local cmp = require'cmp'
-local luasnip = require('luasnip')
-
--- Load friendly-snippets
-require('luasnip.loaders.from_vscode').lazy_load()
+-- CMP Setup
+local cmp = require("cmp")
+local luasnip = require("luasnip")
+require("luasnip.loaders.from_vscode").lazy_load()
 
 cmp.setup({
   snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
+    expand = function(args) luasnip.lsp_expand(args.body) end,
   },
   mapping = cmp.mapping.preset.insert({
-    ['<Up>'] = cmp.mapping.select_prev_item(),
-    ['<Down>'] = cmp.mapping.select_next_item(),
-    ['<C-j>'] = cmp.mapping.select_next_item(),
-    ['<C-k>'] = cmp.mapping.select_prev_item(),
-    ['<C-p>'] = cmp.mapping.select_prev_item(),
-    ['<C-n>'] = cmp.mapping.select_next_item(),
-    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-d>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm({
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = false,
-    }),
-    ['<Tab>'] = cmp.mapping(function(fallback)
+    ["<Up>"] = cmp.mapping.select_prev_item(),
+    ["<Down>"] = cmp.mapping.select_next_item(),
+    ["<C-j>"] = cmp.mapping.select_next_item(),
+    ["<C-k>"] = cmp.mapping.select_prev_item(),
+    ["<C-p>"] = cmp.mapping.select_prev_item(),
+    ["<C-n>"] = cmp.mapping.select_next_item(),
+    ["<C-u>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-d>"] = cmp.mapping.scroll_docs(4),
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<C-e>"] = cmp.mapping.abort(),
+    ["<CR>"] = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false }),
+    ["<Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         local entry = cmp.get_selected_entry()
         if not entry then
@@ -109,7 +103,7 @@ cmp.setup({
         fallback()
       end
     end, { "i", "s" }),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
       elseif luasnip.jumpable(-1) then
@@ -120,14 +114,14 @@ cmp.setup({
     end, { "i", "s" }),
   }),
   sources = cmp.config.sources({
-    { name = 'nvim_lsp', priority = 1000 },
-    { name = 'luasnip', priority = 750 },
-    { name = 'nvim_lsp_signature_help', priority = 700 },
+    { name = "nvim_lsp",                priority = 1000 },
+    { name = "luasnip",                 priority = 750 },
+    { name = "nvim_lsp_signature_help", priority = 700 },
   }, {
-    { name = 'path', priority = 250 },
-    { name = 'buffer', keyword_length = 3, priority = 50 },
-    { name = 'nvim_lua', priority = 300 },
-    { name = 'calc', priority = 150 },
+    { name = "path",     priority = 250 },
+    { name = "buffer",   keyword_length = 3, priority = 50 },
+    { name = "nvim_lua", priority = 300 },
+    { name = "calc",     priority = 150 },
   }),
   window = {
     completion = cmp.config.window.bordered({
@@ -138,7 +132,7 @@ cmp.setup({
     }),
   },
   formatting = {
-    fields = {'kind', 'abbr', 'menu'},
+    fields = { "kind", "abbr", "menu" },
     format = function(entry, item)
       local kind_icons = {
         Text = "",
@@ -148,38 +142,25 @@ cmp.setup({
         Field = "󰇽",
         Variable = "󰂡",
         Class = "󰠱",
-        Interface = "",
-        Module = "",
         Property = "󰜢",
-        Unit = "",
         Value = "󰎠",
-        Enum = "",
         Keyword = "󰌋",
-        Snippet = "",
-        Color = "󰏘",
         File = "󰈙",
-        Reference = "",
         Folder = "󰉋",
-        EnumMember = "",
         Constant = "󰏿",
-        Struct = "",
-        Event = "",
         Operator = "󰆕",
         TypeParameter = "󰅲",
       }
-      
       local menu_icon = {
-        nvim_lsp = '[LSP]',
-        luasnip = '[Snippet]',
-        buffer = '[Buffer]',
-        path = '[Path]',
-        nvim_lua = '[Lua]',
-        calc = '[Calc]',
+        nvim_lsp = "[LSP]",
+        luasnip = "[Snippet]",
+        buffer = "[Buffer]",
+        path = "[Path]",
+        nvim_lua = "[Lua]",
+        calc = "[Calc]",
       }
-      
-      item.kind = string.format('%s %s', kind_icons[item.kind] or "", item.kind)
-      item.menu = menu_icon[entry.source.name] or string.format('[%s]', entry.source.name)
-      
+      item.kind = string.format("%s %s", kind_icons[item.kind] or "", item.kind)
+      item.menu = menu_icon[entry.source.name] or string.format("[%s]", entry.source.name)
       return item
     end,
   },
@@ -188,36 +169,37 @@ cmp.setup({
   },
 })
 
--- PYTHON LSP CONFIG (Kept)
+-- LSP Configurations
+
+-- Python (Pyright)
 lspconfig.pyright.setup({
   capabilities = capabilities,
   on_attach = on_attach,
   settings = {
     pyright = {
+      disableLanguageServices = true,
       disableOrganizeImports = true,
     },
     python = {
       analysis = {
-        ignore = { '*' },
-        typeCheckingMode = "basic",
-        autoSearchPaths = true,
-        useLibraryCodeForTypes = true,
+        typeCheckingMode = "off",
       },
     },
   },
 })
 
+-- Python (Ruff)
 lspconfig.ruff.setup({
   capabilities = capabilities,
   on_attach = on_attach,
   init_options = {
     settings = {
       args = {},
-    }
-  }
+    },
+  },
 })
 
--- C/C++ LSP CONFIG (Added)
+-- C/C++ (clangd)
 lspconfig.clangd.setup({
   capabilities = capabilities,
   on_attach = on_attach,
@@ -231,7 +213,7 @@ lspconfig.clangd.setup({
   },
 })
 
--- Rust LSP CONFIG
+-- Rust (rust-analyzer)
 lspconfig.rust_analyzer.setup({
   capabilities = capabilities,
   on_attach = on_attach,
@@ -239,8 +221,28 @@ lspconfig.rust_analyzer.setup({
     ["rust-analyzer"] = {
       cargo = { allFeatures = true },
       checkOnSave = {
-        command = "clippy"
+        command = "clippy",
       },
-    }
-  }
+    },
+  },
+})
+
+-- Nix (nil language server)
+lspconfig.nil_ls.setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+  settings = {
+    ['nil'] = {
+      formatting = {
+        command = { "nixpkgs-fmt" }, -- Optional: requires nixpkgs-fmt installed
+      },
+    },
+  },
+})
+
+-- shell-like config
+lspconfig.bashls.setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+  filetypes = { "sh", "bash", "zsh" },
 })

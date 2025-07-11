@@ -1,0 +1,13 @@
+/* minimal.css */
+body {
+    background: #fff !important;
+    color: #111 !important;
+    font-family: sans-serif !important;
+    line-height: 1.6 !important;
+    max-width: 700px;
+    margin: auto;
+}
+img, video, iframe {
+    display: none !important;
+}
+

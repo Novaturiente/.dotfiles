@@ -1,3 +1,5 @@
+local vim = vim
+
 return require('lazy').setup({
   -- == THEME ==
   {
@@ -5,11 +7,14 @@ return require('lazy').setup({
     name = 'tokyonight',
     lazy = false,
     priority = 1000,
-   config = function()
-      require('tokyonight').setup({})
-      vim.cmd('colorscheme tokyonight-night')
-    end,
   },
+  {
+    "rose-pine/neovim",
+    name = "rose-pine",
+    lazy = false,
+    priority = 1000
+  },
+  { 'projekt0n/github-nvim-theme', name = 'github-theme' },
 
   -- == UI Enhancements ==
   { "RRethy/vim-illuminate" },
@@ -26,28 +31,14 @@ return require('lazy').setup({
     end,
     opts = {}
   },
+  { 'rcarriga/nvim-notify' },
   {
-    "folke/snacks.nvim",
-    priority = 1000,
-    lazy = false,
-    opts = {
-      dashboard = { enabled = true, example = "files"},
-      explorer = { enabled = true },
-      indent = { enabled = true },
-      picker = { enabled = true },
-      quickfile = { enabled = true },
-      scroll = { enabled = true },
-      words = { enabled = true },
-      terminal = { enabled = true, interactive = true, },
-    },
-    keys = {
-      { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },
-      { "<leader>,", function() Snacks.picker.buffers() end, desc = "Buffers" },
-      { "<leader>ff", function() Snacks.picker.files() end, desc = "Find Files" },
-      { "<leader>fc", function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
-      { "<leader>fr", function() Snacks.picker.recent() end, desc = "Recent" },
-      { "]]",         function() Snacks.words.jump(vim.v.count1) end, desc = "Next Reference", mode = { "n", "t" } },
-      { "[[",         function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {},
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+      "rcarriga/nvim-notify",
     }
   },
 
@@ -61,8 +52,8 @@ return require('lazy').setup({
   },
 
   -- === Terminal ===
-  {'akinsho/toggleterm.nvim', version = "*", config = true},
-  {'liangxianzhe/floating-input.nvim'},
+  { 'akinsho/toggleterm.nvim',         version = "*", config = true },
+  { 'liangxianzhe/floating-input.nvim' },
 
   -- === Syntax Highlighting & Text Objects ===
   {
@@ -70,7 +61,7 @@ return require('lazy').setup({
     run = ':TSUpdate',
     config = function()
       require('nvim-treesitter.configs').setup {
-        ensure_installed = { "lua", "vim", "vimdoc", "query", "jsonc", "python", "c", "cpp", "rust" }, -- Added C/C++
+        ensure_installed = { "lua", "vim", "vimdoc", "query", "jsonc", "python", "c", "cpp", "rust" },
         auto_install = true,
         highlight = {
           enable = true,
@@ -90,12 +81,18 @@ return require('lazy').setup({
     opts = {
       hlgroup = "HighlightUndo",
       duration = 300,
-      -- Optional: ignore specific file types
-      ignored_filetypes = { "neo-tree", "TelescopePrompt", ... },
     },
   },
-
   -- === Utility Plugins ===
+  {
+    'nvim-telescope/telescope.nvim',
+    tag = '0.1.8',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope-fzf-native.nvim',
+      build = 'make'
+    }
+  },
   {
     'windwp/nvim-autopairs',
     event = "InsertEnter",
@@ -103,12 +100,10 @@ return require('lazy').setup({
   },
   {
     "kylechui/nvim-surround",
-    version = "^3.0.0", -- Use for stability; omit to use `main` branch for the latest features
+    version = "^3.0.0",
     event = "VeryLazy",
     config = function()
-        require("nvim-surround").setup({
-            -- Configuration here, or leave empty to use defaults
-        })
+      require("nvim-surround").setup({})
     end
   },
   {
@@ -122,102 +117,57 @@ return require('lazy').setup({
           component_separators = { left = '|', right = '|' },
         },
         sections = {
-          lualine_b = {'branch', 'diff', 'diagnostics'},
-          lualine_c = {{'filename', path = 1}},
+          lualine_b = { 'branch', 'diff', 'diagnostics' },
+          lualine_c = { { 'filename', path = 1 } },
         }
       }
     end
   },
-  {'rcarriga/nvim-notify'},
-  {
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    opts = {},
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-      "rcarriga/nvim-notify",
-    }
-  },
-  {
-    'nvim-telescope/telescope.nvim',
-    tag = '0.1.8',
-    dependencies = { 'nvim-lua/plenary.nvim' }
-  },
+
   {
     "folke/trouble.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {},
     cmd = "Trouble",
     keys = {
-      {
-        "<leader>xx",
-        "<cmd>Trouble diagnostics toggle<cr>",
-        desc = "Diagnostics (Trouble)",
-      },
-      {
-        "<leader>xX",
-        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-        desc = "Buffer Diagnostics (Trouble)",
-      },
-      {
-        "<leader>cs",
-        "<cmd>Trouble symbols toggle focus=false<cr>",
-        desc = "Symbols (Trouble)",
-      },
-      {
-        "<leader>cl",
-        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
-        desc = "LSP Definitions / references / ... (Trouble)",
-      },
-      {
-        "<leader>xL",
-        "<cmd>Trouble loclist toggle<cr>",
-        desc = "Location List (Trouble)",
-      },
-      {
-        "<leader>xQ",
-        "<cmd>Trouble qflist toggle<cr>",
-        desc = "Quickfix List (Trouble)",
-      },
+      { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>",                        desc = "Diagnostics (Trouble)" },
+      { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",           desc = "Buffer Diagnostics (Trouble)" },
+      { "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>",                desc = "Symbols (Trouble)" },
+      { "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", desc = "LSP Definitions / references / ..." },
+      { "<leader>xL", "<cmd>Trouble loclist toggle<cr>",                            desc = "Location List (Trouble)" },
+      { "<leader>xQ", "<cmd>Trouble qflist toggle<cr>",                             desc = "Quickfix List (Trouble)" },
     },
   },
+
   {
     "epwalsh/obsidian.nvim",
     version = "*",
     lazy = true,
     ft = "markdown",
     ui = { enable = true },
-
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
+    dependencies = { "nvim-lua/plenary.nvim" },
     opts = {
       workspaces = {
-        {
-          name = "notes",
-          path = "~/develop/Notes/",
-        },
+        { name = "notes", path = "~/develop/Notes/" },
       },
       follow_url_func = function(url)
-        vim.fn.jobstart({"xdg-open", url})
+        vim.fn.jobstart({ "xdg-open", url })
       end,
     },
   },
 
   -- === Development Plugins ===
-  -- LSP
   { "neovim/nvim-lspconfig" },
-  { "williamboman/mason.nvim", build = ":MasonUpdate", config = true },
+  { "williamboman/mason.nvim",            build = ":MasonUpdate",                                             config = true },
   { "williamboman/mason-lspconfig.nvim" },
-  {"mfussenegger/nvim-dap"},
 
-  -- DEBUG PLUGINS (ADD THESE)
-  {"mfussenegger/nvim-dap"},
-  {"rcarriga/nvim-dap-ui", dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"}},
-  {"theHamsta/nvim-dap-virtual-text"},
-  {"mfussenegger/nvim-dap-python"},
-  
-  -- Autocompletion
+  -- DAP
+  { "mfussenegger/nvim-dap" },
+  { "rcarriga/nvim-dap-ui",               dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } },
+  { "theHamsta/nvim-dap-virtual-text" },
+  { "mfussenegger/nvim-dap-python" },
+
+  -- Completion
   { "hrsh7th/nvim-cmp" },
   { "hrsh7th/cmp-nvim-lsp" },
   { "hrsh7th/cmp-buffer" },
@@ -225,10 +175,9 @@ return require('lazy').setup({
   { "hrsh7th/cmp-nvim-lua" },
   { "hrsh7th/cmp-nvim-lsp-signature-help" },
   { "L3MON4D3/LuaSnip" },
-  { "saadparwaiz1/cmp_luasnip",
-     dependencies = {
-      "rafamadriz/friendly-snippets",
-    },
+  {
+    "saadparwaiz1/cmp_luasnip",
+    dependencies = { "rafamadriz/friendly-snippets" },
   },
 
   -- LSP UI

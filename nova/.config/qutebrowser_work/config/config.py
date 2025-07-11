@@ -30,6 +30,7 @@ c.auto_save.session = True
 
 # last tab close action
 c.tabs.last_close = "startpage"
+c.tabs.title.alignment = "center"
 
 # Enable dark mode for webpages
 c.colors.webpage.bg = "#282828"  # or any dark color of your choice

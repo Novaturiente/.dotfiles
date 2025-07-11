@@ -51,6 +51,8 @@ source <(fzf --zsh)
 # ---- Aliases ----
 source $XDG_CONFIG_HOME/zsh/aliases
 
+source $XDG_CONFIG_HOME/zsh/tmuxtoggle
+
 # ---- Prompt Sourcing ----
 source $XDG_CONFIG_HOME/zsh/prompt.zsh 
 
