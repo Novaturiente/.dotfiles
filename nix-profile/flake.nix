@@ -86,6 +86,7 @@
             rust-analyzer
             rustfmt
             nixfmt-classic
+            freetype
 
             # Network & misc
             clipman
