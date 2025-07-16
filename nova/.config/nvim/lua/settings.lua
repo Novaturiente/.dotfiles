@@ -62,6 +62,9 @@ vim.lsp.set_log_level("error")
 -- Disable fsync on write
 vim.opt.fsync = false
 
+-- Disable copy while pasting
+vim.keymap.set("x", "p", [["_dP]], { noremap = true, silent = true })
+
 -- =============================
 -- Remember Fold Views
 -- =============================

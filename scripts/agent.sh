@@ -1,10 +1,12 @@
-#! /usr/bin/zsh
+#!/usr/bin/env zsh
 
+# pull in the user’s interactive environment once
+source ~/.zshrc
+
+# now proceed exactly as before
 question=$(rofi -show -dmenu -theme spotlight -p "Question")
-exit_code=$?
+(( $? == 0 )) || exit
 
-if [ $exit_code -eq 0 ]; then
-  foot --title "aiassistant" --working-directory "$HOME/develop/agent" zsh -c "source $HOME/.zshrc && uv run agent.py '$question'" 
-else
-  echo "$exit_code"
-fi
+ghostty --title="aiassistant" \
+        --working-directory="$HOME/develop/kimi" \
+        -e "uv run main.py '$question'"

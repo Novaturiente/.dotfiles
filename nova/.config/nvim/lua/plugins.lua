@@ -41,6 +41,11 @@ return require('lazy').setup({
       "rcarriga/nvim-notify",
     }
   },
+  {
+    'nvimdev/dashboard-nvim',
+    event = 'VimEnter',
+    dependencies = { { 'nvim-tree/nvim-web-devicons' } }
+  },
 
   -- === File Explorer ===
   {
@@ -59,29 +64,14 @@ return require('lazy').setup({
   {
     'nvim-treesitter/nvim-treesitter',
     run = ':TSUpdate',
-    config = function()
-      require('nvim-treesitter.configs').setup {
-        ensure_installed = { "lua", "vim", "vimdoc", "query", "jsonc", "python", "c", "cpp", "rust" },
-        auto_install = true,
-        highlight = {
-          enable = true,
-          additional_vim_regex_highlighting = false,
-        },
-        indent = { enable = true },
-        rainbow = {
-          enable = true,
-          extended_mode = true,
-          max_file_lines = nil,
-        }
-      }
-    end
   },
   {
     'tzachar/highlight-undo.nvim',
-    opts = {
-      hlgroup = "HighlightUndo",
-      duration = 300,
-    },
+  },
+  {
+    "lukas-reineke/headlines.nvim",
+    dependencies = "nvim-treesitter/nvim-treesitter",
+    config = true, -- or `opts = {}`
   },
   -- === Utility Plugins ===
   {
@@ -110,17 +100,6 @@ return require('lazy').setup({
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
-      require('lualine').setup {
-        options = {
-          theme = 'tokyonight-moon',
-          section_separators = { left = '', right = '' },
-          component_separators = { left = '|', right = '|' },
-        },
-        sections = {
-          lualine_b = { 'branch', 'diff', 'diagnostics' },
-          lualine_c = { { 'filename', path = 1 } },
-        }
-      }
     end
   },
 
@@ -146,14 +125,6 @@ return require('lazy').setup({
     ft = "markdown",
     ui = { enable = true },
     dependencies = { "nvim-lua/plenary.nvim" },
-    opts = {
-      workspaces = {
-        { name = "notes", path = "~/develop/Notes/" },
-      },
-      follow_url_func = function(url)
-        vim.fn.jobstart({ "xdg-open", url })
-      end,
-    },
   },
 
   -- === Development Plugins ===

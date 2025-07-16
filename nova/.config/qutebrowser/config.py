@@ -16,13 +16,6 @@ c.tabs.padding = {"top": 3, "bottom": 3, "left": 5, "right": 5}
 c.tabs.title.alignment = "center"
 c.tabs.favicons.scale = 1.4
 
-# Font configuration
-c.fonts.default_family = ["Fira Code Nerd Font"]
-c.fonts.web.family.fixed = "Fira Code Nerd Font"
-c.fonts.web.family.sans_serif = "Fira Code Nerd Font"
-c.fonts.web.family.standard = "Fira Code Nerd Font"
-c.fonts.web.family.serif = "Fira Code Nerd Font"
-
 # save session
 c.auto_save.session = True
 
@@ -30,7 +23,7 @@ c.auto_save.session = True
 c.tabs.last_close = "startpage"
 
 # Enable dark mode for webpages
-c.colors.webpage.bg = "#282828"  # or any dark color of your choice
+c.colors.webpage.bg = "#282828"
 c.colors.webpage.darkmode.enabled = True
 c.colors.webpage.preferred_color_scheme = "dark"
 c.colors.webpage.darkmode.policy.images = "never"

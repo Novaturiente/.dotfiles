@@ -1,8 +1,28 @@
 local vim = vim
 
--- Configure Undo history
-require('highlight-undo').setup({ duration = 600 })
+-- Treesitter config
+require('nvim-treesitter.configs').setup {
+  ensure_installed = { "lua", "vim", "vimdoc", "query", "jsonc", "python", "c", "cpp", "rust" },
+  auto_install = true,
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = false,
+  },
+  indent = { enable = true },
+  rainbow = {
+    enable = true,
+    extended_mode = true,
+    max_file_lines = nil,
+  }
+}
 
+-- Configure Undo history
+require('highlight-undo').setup({
+  duration = 600,
+  ignored_filetypes = { "neo-tree", "fugitive", "TelescopePrompt", "mason", "lazy", "dashboard" },
+})
+
+-- Noice configuration
 require("noice").setup({
   lsp = {
     override = {
@@ -20,6 +40,7 @@ require("noice").setup({
   },
 })
 
+-- Debug config
 vim.diagnostic.config({
   virtual_text = { prefix = '●', source = "always" },
   signs = {
@@ -43,6 +64,7 @@ vim.diagnostic.config({
   },
 })
 
+-- Notify config
 require("notify").setup({
   timeout = 300,
   top_down = false,
@@ -74,7 +96,6 @@ require("which-key").setup({
     padding = { 2, 2, 2, 2 },
   },
 })
-
 
 -- Telescope configuration
 require('telescope').setup({
@@ -168,3 +189,21 @@ if f then
   end
 end
 vim.keymap.set("n", "<leader>ct", pick_colorscheme, { desc = "Pick Colorscheme" })
+
+-- Dashboard configuration
+require('dashboard').setup {
+  theme = 'hyper'
+}
+
+-- Lualine configuration
+require('lualine').setup {
+  options = {
+    theme = 'tokyonight-moon',
+    section_separators = { left = '', right = '' },
+    component_separators = { left = '|', right = '|' },
+  },
+  sections = {
+    lualine_b = { 'branch', 'diff', 'diagnostics' },
+    lualine_c = { { 'filename', path = 1 } },
+  }
+}

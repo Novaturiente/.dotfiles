@@ -7,14 +7,14 @@ function RunFile()
   local cmd = nil
 
   if ext == "py" then
-    cmd = 'fish -c "uv run ' .. file .. '; fish"'
-  -- Added C/C++ run commands
+    cmd = 'zsh -c "uv run ' .. file .. '; zsh"'
+    -- Added C/C++ run commands
   elseif ext == "c" then
-    cmd = string.format('fish -c "gcc -g %s -o %s && ./%s; fish"', file, vim.fn.expand('%:r'), vim.fn.expand('%:r'))
+    cmd = string.format('zsh -c "gcc -g %s -o %s && ./%s; zsh"', file, vim.fn.expand('%:r'), vim.fn.expand('%:r'))
   elseif ext == "cpp" then
-    cmd = string.format('fish -c "g++ -g %s -o %s && ./%s; fish"', file, vim.fn.expand('%:r'), vim.fn.expand('%:r'))
+    cmd = string.format('zsh -c "g++ -g %s -o %s && ./%s; zsh"', file, vim.fn.expand('%:r'), vim.fn.expand('%:r'))
   elseif ext == "rs" then
-  cmd = 'fish -c "cargo run; fish"'
+    cmd = 'zsh -c "cargo run; zsh"'
   else
     print("No run command for extension: " .. ext)
     return
@@ -28,3 +28,23 @@ function RunFile()
   })
   term:toggle()
 end
+
+-- obsidian configurations
+require('obsidian').setup({
+  workspaces = {
+    {
+      name = "notes",
+      path = "~/develop/Notes/",
+    },
+  },
+
+  note_id_func = function(title)
+    return title and title:gsub(" ", "_"):lower() or "untitled"
+  end,
+
+  follow_url_func = function(url)
+    vim.fn.jobstart({ "xdg-open", url })
+  end,
+
+  ui = { enable = true },
+})

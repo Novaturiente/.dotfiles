@@ -5,7 +5,7 @@
 
   outputs = { self, nixpkgs }:
     let
-      system = "x86_64-linux"; # Change if needed, e.g. "aarch64-darwin"
+      system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
         config = { allowUnfree = true; };
@@ -15,7 +15,31 @@
         extras = pkgs.buildEnv {
           name = "extra-packages";
           paths = with pkgs; [
-            # Terminal UI
+
+            # --- Terminal Tools ---
+            ranger
+            networkmanagerapplet
+            nwg-look
+            dialog
+            htop
+            fastfetch
+            eza
+            zoxide
+            ripgrep
+            fd
+            jq
+            entr
+            curl
+            wget
+            sshfs
+            tree
+            ncdu
+            bat
+            duf
+            fzf
+            lsof
+
+            # --- Themes, Fonts, Appearance ---
             materia-theme-transparent
             fluent-icon-theme
             nerd-fonts.roboto-mono
@@ -23,51 +47,32 @@
             nerd-fonts.fira-code
             noto-fonts-color-emoji
             lohit-fonts.malayalam
-            nwg-look
 
-            # Disk tools
-            gparted
-
-            # Media & image
+            # --- Media, Image & Viewing Tools ---
+            pamixer
             mpv
             castnow
             yt-dlp
-            libva1
-            libvdpau
-
             qimgv
             zathura
+            remmina
 
-            # CLI utilities
-            opencode
-            fastfetch
-            htop
-            eza
-            ripgrep
-            zoxide
-            dialog
-            fd
-            jq
-            entr
-            curl
-            wget
-            sshfs
-            networkmanagerapplet
-            tree
-            ncdu
-            bat
-            duf
-            ranger
-            fzf
-            lsof
+            # --- Clipboard, Audio & Screen Tools ---
+            clipman
+            playerctl
+            slurp
+            swappy
+            zenity
+            wf-recorder
 
-            # Archives
+            # --- Archive Utilities ---
             7
             zip
             unrar
             unzip
 
-            # Dev tools
+            # --- Development Tools ---
+            opencode
             cmake
             gcc
             lua
@@ -87,15 +92,6 @@
             rustfmt
             nixfmt-classic
             freetype
-
-            # Network & misc
-            clipman
-            playerctl
-            slurp
-            swappy
-            zenity
-            wf-recorder
-            pamixer
           ];
         };
       };

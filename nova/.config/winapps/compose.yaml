@@ -25,7 +25,9 @@ services:
     volumes:
       - data:/storage 
       - ${HOME}:/shared 
-      # - ./oem:/oem 
+      - ./oem:/oem 
+    sysctls:
+       - net.ipv4.ip_forward=1
     devices:
       - /dev/kvm # Enable KVM.
       - /dev/net/tun # Enable tuntap
