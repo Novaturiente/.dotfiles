@@ -14,16 +14,20 @@ wk.add {
 -- Telescope
 local builtin = require("telescope.builtin")
 wk.add({
-  { "<leader><space>", function()
+  {
+    "<leader><space>",
+    function()
       local ok = pcall(builtin.git_files, { show_untracked = true })
       if not ok then builtin.find_files({ previewer = true }) end
     end,
     desc = "Smart Find Files"
   },
-  
-  { "<leader>,", function() builtin.buffers() end, desc = "Switch Buffers" },
-  
-  { "<leader>ff", function()
+
+  { "<leader>,",  function() builtin.buffers() end,  desc = "Switch Buffers" },
+
+  {
+    "<leader>ff",
+    function()
       builtin.find_files({
         previewer = true,
         cwd = vim.fn.expand("%:p:h"),
@@ -33,7 +37,9 @@ wk.add({
     desc = "Find Files (relative)"
   },
 
-  { "<leader>fc", function()
+  {
+    "<leader>fc",
+    function()
       builtin.find_files({
         cwd = vim.fn.stdpath("config"),
         prompt_title = "Find Config Files",
@@ -48,17 +54,17 @@ wk.add({
 
 -- Terminal
 wk.add {
-  { "<M-v>", ":ToggleTerm direction=vertical size=50<CR>", desc = "Vertical terminal" },
-  { "<M-d>", ":ToggleTerm direction=vertical size=50<CR>", desc = "Vertical terminal" },
+  { "<M-v>", ":ToggleTerm direction=vertical size=50<CR>",   desc = "Vertical terminal" },
+  { "<M-d>", ":ToggleTerm direction=vertical size=50<CR>",   desc = "Vertical terminal" },
   { "<M-h>", ":ToggleTerm direction=horizontal size=10<CR>", desc = "Horizontal terminal" },
-  { "<C-d>", ":ToggleTerm direction=float<CR>", desc = "Floating terminal" },
+  { "<C-d>", ":ToggleTerm direction=float<CR>",              desc = "Floating terminal" },
 }
 
 -- Buffer Navigation
 wk.add {
   { "<M-Right>", ":bnext<CR>", desc = "Next buffer" },
-  { "<M-Left>", ":bprev<CR>", desc = "Previous buffer" },
-  { "<leader>q", ":bd<CR>", desc = "Close buffer" },
+  { "<M-Left>",  ":bprev<CR>", desc = "Previous buffer" },
+  { "<leader>q", ":bd<CR>",    desc = "Close buffer" },
 }
 
 -- Run File
@@ -69,59 +75,59 @@ wk.add {
 -- Diagnostics
 wk.add {
   { "<leader>cc", function()
-      -- Copy all diagnostics on the current line to the clipboard
-      local diagnostics = vim.diagnostic.get(0, {
-        lnum = vim.api.nvim_win_get_cursor(0)[1] - 1,
-      })
-      if vim.tbl_isempty(diagnostics) then
-        print("No diagnostics to copy")
-        return
-      end
-      local lines = {}
-      for _, d in ipairs(diagnostics) do
-        table.insert(lines, d.message)
-      end
-      local text = table.concat(lines, "\n")
-      vim.fn.setreg("+", text)
-      vim.notify("Copied diagnostic to clipboard", vim.log.levels.INFO)
-    end,
+    -- Copy all diagnostics on the current line to the clipboard
+    local diagnostics = vim.diagnostic.get(0, {
+      lnum = vim.api.nvim_win_get_cursor(0)[1] - 1,
+    })
+    if vim.tbl_isempty(diagnostics) then
+      print("No diagnostics to copy")
+      return
+    end
+    local lines = {}
+    for _, d in ipairs(diagnostics) do
+      table.insert(lines, d.message)
+    end
+    local text = table.concat(lines, "\n")
+    vim.fn.setreg("+", text)
+    vim.notify("Copied diagnostic to clipboard", vim.log.levels.INFO)
+  end,
     desc = "Copy diagnostic to clipboard"
   },
 
   { "<leader>cx", function()
-      -- Append "# type: ignore" to suppress a Pyright warning
-      local line = vim.api.nvim_get_current_line()
-      if not line:find("# type: ignore") then
-        vim.api.nvim_set_current_line(line .. "  # type: ignore")
-        vim.notify("Added '# type: ignore' to suppress Pyright warning", vim.log.levels.INFO)
-      else
-        vim.notify("'# type: ignore' already present", vim.log.levels.WARN)
-      end
-    end,
+    -- Append "# type: ignore" to suppress a Pyright warning
+    local line = vim.api.nvim_get_current_line()
+    if not line:find("# type: ignore") then
+      vim.api.nvim_set_current_line(line .. "  # type: ignore")
+      vim.notify("Added '# type: ignore' to suppress Pyright warning", vim.log.levels.INFO)
+    else
+      vim.notify("'# type: ignore' already present", vim.log.levels.WARN)
+    end
+  end,
     desc = "Suppress Pyright error"
   },
 }
 
 -- Open Specific Files
-wk.add{
-  { "<leader>wn", "<cmd>edit ~/.config/nvim/init.lua<cr>", desc = "Open Neovim config" },
-  { "<leader>ww", "<cmd>edit ~/develop/Notes/index.md<cr>", desc = "Open Notes" },
+wk.add {
+  { "<leader>wn", "<cmd>edit ~/.config/nvim/init.lua<cr>",      desc = "Open Neovim config" },
+  { "<leader>ww", "<cmd>edit ~/Notes/index.md<cr>",             desc = "Open Notes" },
   { "<leader>hc", "<cmd>edit ~/.config/hypr/hyprland.conf<cr>", desc = "Open Hyprland Config" },
-  { "<leader>hb", "<cmd>edit ~/.config/hypr/binds.conf<cr>", desc = "Open Binds Config" },
+  { "<leader>hb", "<cmd>edit ~/.config/hypr/binds.conf<cr>",    desc = "Open Binds Config" },
 }
 
 -- Obsidian Keybindings
-wk.add{
+wk.add {
   { "<leader>os", ":ObsidianSearch<cr>", desc = "Obsidian Search" },
-  { "<leader>on", ":ObsidianNew<cr>", desc = "Obsidian New File" }
+  { "<leader>on", ":ObsidianNew<cr>",    desc = "Obsidian New File" }
 }
 
 -- Navigation
-vim.keymap.set({'n', 'v', 'i'}, '<C-h>', '^', { noremap = true })
-vim.keymap.set({'n', 'v', 'i'}, '<C-l>', '$', { noremap = true })
+vim.keymap.set({ 'n', 'v', 'i' }, '<C-h>', '^', { noremap = true })
+vim.keymap.set({ 'n', 'v', 'i' }, '<C-l>', '$', { noremap = true })
 
 -- Debug Keybindings
-wk.add{
+wk.add {
   { "<leader>d", group = "Debug" },
 
   -- MAIN DEBUG FUNCTIONS

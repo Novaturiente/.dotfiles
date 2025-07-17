@@ -34,7 +34,7 @@ require('obsidian').setup({
   workspaces = {
     {
       name = "notes",
-      path = "~/develop/Notes/",
+      path = "~/Notes/",
     },
   },
 
