@@ -1,89 +1,129 @@
-impl: http://github.com/blend-os/tracks/raw/main
+# impl: http://github.com/blend-os/tracks/raw/main
 arch-repo: https://geo.mirror.pkgbuild.com
 repo: https://pkg-repo.blendos.co
 
-track: blendos-base
+track: custom
 
 packages:
   # ESSENTIAL - Base System & Core Functionality
-  - cpio                           # Archive file copier
-  - linux                          # Linux kernel
-  - linux-headers                  # Kernel headers
-  - openssl                        # SSL/TLS toolkit
-  - pacman-contrib                 # Pacman helper tools
-  - xdg-user-dirs                  # Manage user directories
+  - cpio                           
+  - linux      
+  - linux-firmware
+  - linux-headers                  
+  - openssl                        
+  - pacman-contrib                 
+  - xdg-user-dirs                  
+  - networkmanager
+
+  # From blendos-base
+  - archlinux-keyring
+  - bash
+  - coreutils
+  - file
+  - findutils
+  - gettext
+  - glibc
+  - grep
+  - gzip
+  - iproute2
+  - iputils
+  - pacman
+  - pciutils
+  - procps-ng
+  - psmisc
+  - sed
+  - shadow
+  - systemd
+  - tar
+  - util-linux
+  - intel-ucode
+  - wpa_supplicant
+  - openssh
+  - rsync
+  - mkinitcpio
+  - e2fsprogs
+  - grub
+  - sudo
+  - usbutils
+  - base-devel
+  - git
+  - gcc-libs
+  - libusb-compat
+  - gawk
+  - sof-firmware
+  - usb_modeswitch
+  - dnsmasq
+  - btrfs-progs
+  - f2fs-tools
+  - exfatprogs
+  - iptables
+  - iptables-nft
   
   # ESSENTIAL - Display & Graphics (Critical for GUI)
-  - nvidia-dkms                    # NVIDIA DKMS driver
-  - nvidia-utils                   # NVIDIA driver utilities
-  - vulkan-icd-loader              # Vulkan loader
-  - wayland-protocols              # Wayland protocol specs
-  - xorg-xwayland                  # XWayland for X apps
-  - intel-ucode                    # Microcode update files for Intel CPUs
+  - nvidia-dkms                    
+  - nvidia-utils                   
+  - vulkan-icd-loader              
+  - wayland-protocols              
+  - xorg-xwayland                  
   
   # ESSENTIAL - Window Management & Compositors
-  - hyprland                       # Wayland compositor
+  - hyprland                       
   - greetd
   - greetd-tuigreet
-  - xdg-desktop-portal             # Desktop integration portal
-  - xdg-desktop-portal-hyprland    # Hyprland portal backend
+  - xdg-desktop-portal             
+  - xdg-desktop-portal-hyprland    
   - xdg-desktop-portal-gtk
   
   # IMPORTANT 
-  - networkmanager                 # Network manager
-  - pipewire                       # Multimedia server
-  - pipewire-pulse                 # PulseAudio compatibility
-  - wireplumber                    # PipeWire session manager
+  - pipewire                       
+  - pipewire-pulse                 
+  - wireplumber                    
+  - tlp
   
   # RECOMMENDED - NVIDIA Features
-  - lib32-libglvnd                 # 32-bit OpenGL dispatch
-  - lib32-nvidia-utils             # 32-bit NVIDIA utilities
-  - nvidia-container-toolkit       # NVIDIA container tools
-  - nvidia-settings                # NVIDIA settings tool
+  - lib32-libglvnd                 
+  - lib32-nvidia-utils             
+  - nvidia-container-toolkit       
+  - nvidia-settings                
   
   # Hyprland Extras
   - bibata-cursor-theme
-  - otf-font-awesome               # Font Awesome
-  - grim                           # Screenshot tool
-  - wl-clipboard                   # Wayland clipboard tool
-  - brightnessctl                  # Brightness control
-  - hypridle                       # Hyprland idle manager
-  - hyprlock                       # Hyprland lock screen
-  - hyprpolkitagent                # Hyprland polkit agent
-  - hyprutils                      # Hyprland utilities
-  - rofi-wayland                   # Wayland launcher
-  - swaync                         # Notification center
-  - swayosd                        # On-screen display
+  - otf-font-awesome               
+  - grim                           
+  - wl-clipboard                   
+  - brightnessctl                  
+  - hypridle                       
+  - hyprlock                       
+  - hyprpolkitagent                
+  - hyprutils                      
+  - rofi-wayland                   
   - wpaperd
-  - waybar                         # Wayland status bar
-  - stow                           # Dotfile manager
+  - waybar                         
+  - stow                           
   - udiskie
-  - pcmanfm
+  - swaync
+  - pcmanfm-gtk3
   
   # Multimedia
-  - bluez-tools                    # Bluetooth tools
-  - blueman                        # Bluetooth manager
-  - bluez-utils                    # Bluetooth utilities
+  - blueman                        
+  - bluez-utils                    
   - valent-git
   
   # Package & Application Management
   - nix
-  - flatpak                        # Universal package manager
-  - protonup                       # Proton version manager
-  
-  # Power Management
-  - tlp                            # Power profile manager
-  - tlp-rdw
+  - flatpak                        
+  - protonup                       
+  - paru-bin
   
   # Tools
-  - curl                           # Data transfer tool
-  - sshfs                          # SSH filesystem
-  - wget                           # File downloader
+  - curl                           
+  - sshfs                          
+  - wget                           
   - nvtop
-  - ghostty                        # GPU-accelerated terminal
-  - zsh                            # Z-Shell
-  - tmux                           # Terminal multiplexer
-  - neovim                         # Vim fork
+  - zsh                            
+  - ghostty
+  - tmux                           
+  - neovim                         
   
   # Virtualization
   - podman
@@ -92,73 +132,44 @@ packages:
   - gnome-boxes
   
   # Web Browsers
-  - python-adblock                 # Adblock for Python
-  - qutebrowser                    # Keyboard-focused browser
-  - zen-browser-bin                # Zen browser
+  - python-adblock                 
+  - qutebrowser                    
+  - zen-browser-bin                
 
   # Compatibility (Gaming)
-  - alsa-lib                       # ALSA library
-  - alsa-plugins                   # ALSA plugins
-  - gamescope                      # Game compositor
-  - giflib                         # GIF library
-  - gnutls                         # TLS library
-  - gtk3                           # GTK 3 toolkit
-  - lib32-alsa-lib                 # 32-bit ALSA library
-  - lib32-alsa-plugins             # 32-bit ALSA plugins
-  - lib32-giflib                   # 32-bit GIF library
-  - lib32-gst-plugins-base-libs    # 32-bit GStreamer base
-  - lib32-libgcrypt                # 32-bit crypto library
-  - lib32-libgpg-error             # 32-bit GPG error lib
-  - lib32-libpng                   # 32-bit PNG library
-  - lib32-libpulse                 # 32-bit PulseAudio
-  - lib32-libva                    # 32-bit VA-API
-  - lib32-mpg123                   # 32-bit MP3 decoder
-  - lib32-ncurses                  # 32-bit terminal library
-  - lib32-openal                   # 32-bit OpenAL
-  - lib32-sqlite                   # 32-bit SQLite
-  - lib32-vulkan-icd-loader        # 32-bit Vulkan loader
-  - libgcrypt                      # Crypto library
-  - libgpg-error                   # GPG error library
-  - libinput                       # Input library
-  - libpng                         # PNG library
-  - libpulse                       # PulseAudio library
-  - libva                          # VA-API library
-  - libxkbcommon                   # Keyboard handling lib
-  - lutris                         # Game manager
-  - mpg123                         # MP3 decoder
-  - ncurses                        # Terminal library
-  - openal                         # OpenAL audio library
-  - sqlite                         # SQLite database
-  - vulkan-tools                   # Vulkan tools
-  - wine-staging                   # Wine for gaming
-  
-  # Development
-  - cuda                           # NVIDIA CUDA toolkit
-  - cuda-tools                     # CUDA development tools
-  # - cmake                          # Build system
-  # - gcc                            # GNU compiler
-  # - lua                            # Lua language
-  # - luarocks                       # Lua package manager
-  # - meson                          # Build system
-  # - nodejs                         # JavaScript runtime
-  # - npm                            # Node.js package manager
-  # - pkg-config                     # Build configuration
-  # - pyright                        # Python type checker
-  # - python-pip                     # Python package installer
-  # - python-pynvim                  # Neovim Python support
-  # - tree-sitter                    # Syntax parser
-  # - uv                             # Python package manager
+  - gnutls                         
+  - gtk3                           
+  - lib32-gst-plugins-base-libs    
+  - lib32-libgcrypt                
+  - lib32-libgpg-error             
+  - lib32-libpng                   
+  - lib32-libpulse                 
+  - lib32-libva                    
+  - lib32-openal                   
+  - lib32-sqlite                   
+  - lib32-vulkan-icd-loader        
+  - libgcrypt                      
+  - libgpg-error                   
+  - libinput                       
+  - libpng                         
+  - libpulse                       
+  - libva                          
+  - libxkbcommon                   
+  - lutris                         
+  - openal                         
+  - sqlite                         
+  - vulkan-tools                   
+  - wine-staging                   
 
 aur-packages:
 
 services:
   - systemd-resolved
   - NetworkManager
-  - tlp
   - bluetooth
   - greetd
   - flatpak
-  - docker
+  - tlp
   - nix
 
 package-repos:

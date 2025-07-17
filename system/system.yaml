@@ -56,6 +56,8 @@ packages:
   - btrfs-progs
   - f2fs-tools
   - exfatprogs
+  - iptables
+  - iptables-nft
   
   # ESSENTIAL - Display & Graphics (Critical for GUI)
   - nvidia-dkms                    
@@ -119,7 +121,7 @@ packages:
   - wget                           
   - nvtop
   - zsh                            
-  - foot
+  - ghostty
   - tmux                           
   - neovim                         
   
