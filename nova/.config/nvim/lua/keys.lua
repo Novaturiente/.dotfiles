@@ -1,9 +1,10 @@
 -- Keybindings with Which-Key
+local vim = vim
 local wk = require("which-key")
 
 -- File Tree
 wk.add {
-  { "<leader>o", ":NvimTreeToggle<CR>", desc = "Toggle file explorer" },
+  { "<leader>O", ":NvimTreeToggle<CR>", desc = "Toggle file explorer" },
 }
 
 -- Tabs
@@ -72,42 +73,6 @@ wk.add {
   { "<leader>r", RunFile, desc = "Run current file" },
 }
 
--- Diagnostics
-wk.add {
-  { "<leader>cc", function()
-    -- Copy all diagnostics on the current line to the clipboard
-    local diagnostics = vim.diagnostic.get(0, {
-      lnum = vim.api.nvim_win_get_cursor(0)[1] - 1,
-    })
-    if vim.tbl_isempty(diagnostics) then
-      print("No diagnostics to copy")
-      return
-    end
-    local lines = {}
-    for _, d in ipairs(diagnostics) do
-      table.insert(lines, d.message)
-    end
-    local text = table.concat(lines, "\n")
-    vim.fn.setreg("+", text)
-    vim.notify("Copied diagnostic to clipboard", vim.log.levels.INFO)
-  end,
-    desc = "Copy diagnostic to clipboard"
-  },
-
-  { "<leader>cx", function()
-    -- Append "# type: ignore" to suppress a Pyright warning
-    local line = vim.api.nvim_get_current_line()
-    if not line:find("# type: ignore") then
-      vim.api.nvim_set_current_line(line .. "  # type: ignore")
-      vim.notify("Added '# type: ignore' to suppress Pyright warning", vim.log.levels.INFO)
-    else
-      vim.notify("'# type: ignore' already present", vim.log.levels.WARN)
-    end
-  end,
-    desc = "Suppress Pyright error"
-  },
-}
-
 -- Open Specific Files
 wk.add {
   { "<leader>wn", "<cmd>edit ~/.config/nvim/init.lua<cr>",      desc = "Open Neovim config" },
@@ -155,3 +120,26 @@ wk.add {
   { "<leader>dR", "<cmd>lua require('dap').run_to_cursor()<CR>", desc = "Run to Cursor" },
   { "<leader>dd", DebugPython, desc = "Debug Python Method" },
 }
+
+-- Diagnostics
+wk.register({
+  x = {
+    name = "Trouble",
+    x = { "<cmd>Trouble diagnostics toggle<cr>", "Diagnostics" },
+    X = { "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", "Buffer Diagnostics" },
+    L = { "<cmd>Trouble loclist toggle<cr>", "Location List" },
+    Q = { "<cmd>Trouble qflist toggle<cr>", "Quickfix List" },
+    c = { Copy_diagnosics, "Copy current line diagnostics" },
+    s = { Toggle_pyright_ignore, "Toggle # pyright: ignore on current line" }
+
+  },
+
+  c = {
+    name = "Custom",
+    s = { "<cmd>Trouble symbols toggle focus=false<cr>", "Symbols" },
+    l = { "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", "LSP List" },
+  },
+}, {
+  prefix = "<leader>",
+  mode = "n", -- 💡 This is the crucial fix
+})

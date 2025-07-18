@@ -1,3 +1,5 @@
+local vim = vim
+
 -- Mason Setup
 require("mason").setup({
   ui = {
@@ -31,43 +33,60 @@ local lspconfig = require("lspconfig")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 -- Common on_attach function
-local function on_attach(client, bufnr)
-  client.server_capabilities.offsetEncoding = "utf-8"
+-- local function on_attach(client, bufnr)
+--   client.server_capabilities.offsetEncoding = "utf-8"
+--
+--   -- Normal mode mappings
+--   require("which-key").register({
+--     ["gd"] = { vim.lsp.buf.definition, "Go to definition" },
+--     ["gD"] = { vim.lsp.buf.declaration, "Go to declaration" },
+--     ["gi"] = { vim.lsp.buf.implementation, "Go to implementation" },
+--     ["gr"] = { vim.lsp.buf.references, "Go to references" },
+--     ["gt"] = { vim.lsp.buf.type_definition, "Go to type definition" },
+--     ["K"] = { vim.lsp.buf.hover, "Hover documentation" },
+--     ["<C-k>"] = { vim.lsp.buf.signature_help, "Signature help" },
+--     ["<leader>ca"] = { vim.lsp.buf.code_action, "Code action" },
+--     ["<leader>rn"] = { vim.lsp.buf.rename, "Rename symbol" },
+--     ["<leader>f"] = {
+--       function() vim.lsp.buf.format({ async = true }) end,
+--       "Format buffer",
+--     },
+--     ["[d"] = { vim.diagnostic.goto_prev, "Previous diagnostic" },
+--     ["]d"] = { vim.diagnostic.goto_next, "Next diagnostic" },
+--     ["<leader>e"] = { vim.diagnostic.open_float, "Line diagnostics" },
+--     ["<leader>ql"] = { vim.diagnostic.setloclist, "List diagnostics" },
+--   }, { mode = "n", buffer = bufnr })
+--
+--   -- Visual mode mappings
+--   require("which-key").register({
+--     ["<leader>ca"] = { vim.lsp.buf.code_action, "Code action" },
+--   }, { mode = "v", buffer = bufnr })
+-- end
+local on_attach = function(client, bufnr)
+  local buf = bufnr
+  local opts = { buffer = buf, silent = true }
 
-  -- Normal mode mappings
-  require("which-key").register({
-    ["gd"] = { vim.lsp.buf.definition, "Go to definition" },
-    ["gD"] = { vim.lsp.buf.declaration, "Go to declaration" },
-    ["gi"] = { vim.lsp.buf.implementation, "Go to implementation" },
-    ["gr"] = { vim.lsp.buf.references, "Go to references" },
-    ["gt"] = { vim.lsp.buf.type_definition, "Go to type definition" },
-    ["K"] = { vim.lsp.buf.hover, "Hover documentation" },
-    ["<C-k>"] = { vim.lsp.buf.signature_help, "Signature help" },
-    ["<leader>ca"] = { vim.lsp.buf.code_action, "Code action" },
-    ["<leader>rn"] = { vim.lsp.buf.rename, "Rename symbol" },
-    ["<leader>f"] = {
-      function() vim.lsp.buf.format({ async = true }) end,
-      "Format buffer",
-    },
-    ["[d"] = { vim.diagnostic.goto_prev, "Previous diagnostic" },
-    ["]d"] = { vim.diagnostic.goto_next, "Next diagnostic" },
-    ["<leader>e"] = { vim.diagnostic.open_float, "Line diagnostics" },
-    ["<leader>ql"] = { vim.diagnostic.setloclist, "List diagnostics" },
-  }, { mode = "n", buffer = bufnr })
+  local map = vim.keymap.set
 
-  -- Visual mode mappings
-  require("which-key").register({
-    ["<leader>ca"] = { vim.lsp.buf.code_action, "Code action" },
-  }, { mode = "v", buffer = bufnr })
+  -- Go to definitions, references, implementations
+  map("n", "gd", vim.lsp.buf.definition, opts)
+  map("n", "gD", vim.lsp.buf.declaration, opts)
+  map("n", "gr", vim.lsp.buf.references, opts)
+  map("n", "gi", vim.lsp.buf.implementation, opts)
+  map("n", "gt", vim.lsp.buf.type_definition, opts)
+
+  -- Hover, signature help
+  map("n", "K", vim.lsp.buf.hover, opts)
+  map("n", "gk", vim.lsp.buf.signature_help, opts)
+
+  -- Code actions & renaming
+  map("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+  map("n", "<leader>rn", vim.lsp.buf.rename, opts)
+
+  -- Formatting
+  map("n", "<leader>f", function() vim.lsp.buf.format { async = true } end, opts)
 end
 
--- Auto format on save
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = { "*.lua", "*.py", "*.c", "*.cpp", "*.h", "*.hpp", "*.rs", "*.nix", "*.conf" },
-  callback = function()
-    vim.lsp.buf.format({ async = false })
-  end,
-})
 
 -- CMP Setup
 local cmp = require("cmp")
@@ -169,6 +188,18 @@ cmp.setup({
   },
 })
 
+-- Auto format on save
+require("conform").setup({
+  formatters_by_ft = {
+    python = { "ruff_fix" }, -- or {"ruff_fix"} if you want lint fixes too
+    lua = { "stylua" },      -- example for other filetypes
+  },
+  format_on_save = {
+    timeout_ms = 500,
+    lsp_fallback = true, -- falls back to LSP formatting if no formatter is defined
+  },
+})
+
 -- LSP Configurations
 
 -- Python (Pyright)
@@ -189,15 +220,15 @@ lspconfig.pyright.setup({
 })
 
 -- Python (Ruff)
-lspconfig.ruff.setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-  init_options = {
-    settings = {
-      args = {},
-    },
-  },
-})
+-- lspconfig.ruff.setup({
+--   capabilities = capabilities,
+--   on_attach = on_attach,
+--   init_options = {
+--     settings = {
+--       args = {},
+--     },
+--   },
+-- })
 
 -- C/C++ (clangd)
 lspconfig.clangd.setup({

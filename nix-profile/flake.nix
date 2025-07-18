@@ -15,6 +15,7 @@
         extras = pkgs.buildEnv {
           name = "extra-packages";
           paths = with pkgs; [
+            chromium
 
             # --- Terminal Tools ---
             ranger

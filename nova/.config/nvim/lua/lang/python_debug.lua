@@ -1,3 +1,4 @@
+local vim = vim
 local dap = require('dap')
 local dapui = require('dapui')
 local dap_python = require('dap-python')
@@ -6,7 +7,7 @@ local dap_python = require('dap-python')
 local function setup_python_debugger()
   -- Try to find debugpy in the uv environment
   local uv_python = vim.fn.system("uv run python -c 'import sys; print(sys.executable)'"):gsub("\n", "")
-  
+
   if vim.v.shell_error == 0 and uv_python ~= "" then
     -- Use uv's Python interpreter
     dap_python.setup(uv_python)
@@ -14,7 +15,7 @@ local function setup_python_debugger()
     -- Fallback to system Python
     dap_python.setup('python')
   end
-  
+
   -- Configure Python adapter to use uv run
   dap.adapters.python = {
     type = 'executable',
@@ -24,7 +25,7 @@ local function setup_python_debugger()
       source_filetype = 'python',
     }
   }
-  
+
   -- Configure Python configurations
   dap.configurations.python = {
     {
@@ -93,7 +94,7 @@ function SmartDebugPython()
     print("Not a Python file")
     return
   end
-  
+
   if is_uv_project() then
     -- We're in a uv project, use uv debugging
     print("🐍 Debugging with UV...")
