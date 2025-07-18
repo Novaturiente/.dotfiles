@@ -34,6 +34,7 @@ bindkey "^[[1~" beginning-of-line   # Home
 bindkey "^[[4~" end-of-line         # End
 bindkey "^[[H" beginning-of-line    # Alternate Home
 bindkey "^[[F" end-of-line          # Alternate End
+bindkey "^l" clear-screen
 
 # ---- Load Environment Variables ----
 source $XDG_CONFIG_HOME/zsh/variables

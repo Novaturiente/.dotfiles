@@ -38,4 +38,3 @@ alias egrep='egrep --color=auto'
 alias gadd='git add . && git commit -m "Update"'
 
 alias hotspot='nmcli dev wifi hotspot ifname wlp0s20f3 ssid Novapc password "Novarch123"'
-

@@ -16,6 +16,23 @@
           name = "extra-packages";
           paths = with pkgs; [
             chromium
+            brave
+            mullvad-browser
+
+            # --- Hyprland related Tools ---
+            hyprpanel
+            stow
+            rofi-wayland
+            brightnessctl
+            font-awesome
+            grim
+            wl-clipboard
+            clipman
+            playerctl
+            slurp
+            swappy
+            zenity
+            wf-recorder
 
             # --- Terminal Tools ---
             ranger
@@ -57,14 +74,9 @@
             qimgv
             zathura
             remmina
-
-            # --- Clipboard, Audio & Screen Tools ---
-            clipman
-            playerctl
-            slurp
-            swappy
-            zenity
-            wf-recorder
+            mpd
+            mpc
+            ncmpcpp
 
             # --- Archive Utilities ---
             7

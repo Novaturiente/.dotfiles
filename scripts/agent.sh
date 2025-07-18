@@ -8,5 +8,5 @@ question=$(rofi -show -dmenu -theme spotlight -p "Question")
 (( $? == 0 )) || exit
 
 ghostty --title="aiassistant" \
-        --working-directory="$HOME/develop/kimi" \
+        --working-directory="$HOME/Code/develop/kimi" \
         -e "uv run main.py '$question'"
