@@ -56,6 +56,7 @@
             duf
             fzf
             lsof
+            lazygit
 
             # --- Themes, Fonts, Appearance ---
             materia-theme-transparent
