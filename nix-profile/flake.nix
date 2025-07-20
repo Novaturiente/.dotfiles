@@ -9,12 +9,20 @@
         inherit system;
         config = { allowUnfree = true; };
       };
+
+      # Import setup services
+      setupServices = import ./services/setup-services.nix { inherit pkgs; };
+
     in {
       packages.${system} = {
         extras = pkgs.buildEnv {
           name = "extra-packages";
-          paths = import ./packages.nix { inherit pkgs; };
+          paths = (import ./packages.nix { inherit pkgs; })
+            ++ [ setupServices ];
         };
+
+        # Optional: Individual service installers
+        setup-services = setupServices;
       };
     };
 }

@@ -4,6 +4,7 @@ with pkgs; [
   chromium
   brave
   mullvad-browser
+  tailscale
 
   # Hyprland Tools
   hyprpanel
