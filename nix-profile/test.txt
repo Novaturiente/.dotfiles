@@ -1,0 +1,782 @@
+Jul 20 11:49:43 novarch systemd[1]: Starting Tailscale node agent...
+░░ Subject: A start job for unit tailscaled.service has begun execution
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has begun execution.
+░░ 
+░░ The job identifier is 1161.
+Jul 20 11:49:43 novarch tailscaled[14419]: logtail started
+Jul 20 11:49:43 novarch tailscaled[14419]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:49:43 novarch tailscaled[14419]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:49:43 novarch tailscaled[14419]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:49:43 novarch tailscaled[14419]: logpolicy.ConfigFromFile /var/lib/tailscale/tailscaled.log.conf: open /var/lib/tailscale/tailscaled.log.conf: no such file or directory
+Jul 20 11:49:43 novarch tailscaled[14419]: logpolicy.Config.Validate for /var/lib/tailscale/tailscaled.log.conf: config is nil
+Jul 20 11:49:43 novarch tailscaled[14419]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:49:43 novarch tailscaled[14419]: dns: using "direct" mode
+Jul 20 11:49:43 novarch tailscaled[14419]: dns: using *dns.directManager
+Jul 20 11:49:43 novarch tailscaled[14419]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:49:43 novarch tailscaled[14419]: flushing log.
+Jul 20 11:49:43 novarch tailscaled[14419]: logger closing down
+Jul 20 11:49:44 novarch tailscaled[14452]: invalid value "${PORT:-41641}" for flag -port: expecting just a port number, without a colon
+Jul 20 11:49:44 novarch tailscaled[14452]: Usage of /nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled:
+Jul 20 11:49:44 novarch tailscaled[14452]:   -bird-socket string
+Jul 20 11:49:44 novarch tailscaled[14452]:             path of the bird unix socket
+Jul 20 11:49:44 novarch tailscaled[14452]:   -cleanup
+Jul 20 11:49:44 novarch tailscaled[14452]:             clean up system state and exit
+Jul 20 11:49:44 novarch tailscaled[14452]:   -config string
+Jul 20 11:49:44 novarch tailscaled[14452]:             path to config file, or 'vm:user-data' to use the VM's user-data (EC2)
+Jul 20 11:49:44 novarch tailscaled[14452]:   -debug string
+Jul 20 11:49:44 novarch tailscaled[14452]:             listen address ([ip]:port) of optional debug server
+Jul 20 11:49:44 novarch tailscaled[14452]:   -no-logs-no-support
+Jul 20 11:49:44 novarch tailscaled[14452]:             disable log uploads; this also disables any technical support
+Jul 20 11:49:44 novarch tailscaled[14452]:   -outbound-http-proxy-listen string
+Jul 20 11:49:44 novarch tailscaled[14452]:             optional [ip]:port to run an outbound HTTP proxy (e.g. "localhost:8080")
+Jul 20 11:49:44 novarch tailscaled[14452]:   -port value
+Jul 20 11:49:44 novarch tailscaled[14452]:             UDP port to listen on for WireGuard and peer-to-peer traffic; 0 means automatically select (default 0)
+Jul 20 11:49:44 novarch tailscaled[14452]:   -socket string
+Jul 20 11:49:44 novarch tailscaled[14452]:             path of the service unix socket (default "/var/run/tailscale/tailscaled.sock")
+Jul 20 11:49:44 novarch tailscaled[14452]:   -socks5-server string
+Jul 20 11:49:44 novarch tailscaled[14452]:             optional [ip]:port to run a SOCK5 server (e.g. "localhost:1080")
+Jul 20 11:49:44 novarch tailscaled[14452]:   -state string
+Jul 20 11:49:44 novarch tailscaled[14452]:             absolute path of state file; use 'kube:<secret-name>' to use Kubernetes secrets or 'arn:aws:ssm:...' to store in AWS SSM; use 'mem:' to not store state and register as an ephemeral node. If empty and --statedir is provided, the default is <statedir>/tailscaled.state. Default: /var/lib/tailscale/tailscaled.state
+Jul 20 11:49:44 novarch tailscaled[14452]:   -statedir string
+Jul 20 11:49:44 novarch tailscaled[14452]:             path to directory for storage of config state, TLS certs, temporary incoming Taildrop files, etc. If empty, it's derived from --state when possible.
+Jul 20 11:49:44 novarch tailscaled[14452]:   -tun string
+Jul 20 11:49:44 novarch tailscaled[14452]:             tunnel interface name; use "userspace-networking" (beta) to not use TUN (default "tailscale0")
+Jul 20 11:49:44 novarch tailscaled[14452]:   -verbose int
+Jul 20 11:49:44 novarch tailscaled[14452]:             log verbosity level; 0 is default, 1 or higher are increasingly verbose
+Jul 20 11:49:44 novarch tailscaled[14452]:   -version
+Jul 20 11:49:44 novarch tailscaled[14452]:             print version information and exit
+Jul 20 11:49:44 novarch systemd[1]: tailscaled.service: Main process exited, code=exited, status=2/INVALIDARGUMENT
+░░ Subject: Unit process exited
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ An ExecStart= process belonging to unit tailscaled.service has exited.
+░░ 
+░░ The process' exit code is 'exited' and its exit status is 2.
+Jul 20 11:49:44 novarch tailscaled[14457]: logtail started
+Jul 20 11:49:44 novarch tailscaled[14457]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:49:44 novarch tailscaled[14457]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:49:44 novarch tailscaled[14457]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:49:44 novarch tailscaled[14457]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:49:44 novarch tailscaled[14457]: dns: using "direct" mode
+Jul 20 11:49:44 novarch tailscaled[14457]: dns: using *dns.directManager
+Jul 20 11:49:44 novarch tailscaled[14457]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:49:44 novarch tailscaled[14457]: flushing log.
+Jul 20 11:49:44 novarch tailscaled[14457]: logger closing down
+Jul 20 11:49:45 novarch systemd[1]: tailscaled.service: Failed with result 'exit-code'.
+░░ Subject: Unit failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ The unit tailscaled.service has entered the 'failed' state with result 'exit-code'.
+Jul 20 11:49:45 novarch systemd[1]: Failed to start Tailscale node agent.
+░░ Subject: A start job for unit tailscaled.service has failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has finished with a failure.
+░░ 
+░░ The job identifier is 1161 and the job result is failed.
+Jul 20 11:49:50 novarch systemd[1]: tailscaled.service: Scheduled restart job, restart counter is at 1.
+░░ Subject: Automatic restarting of a unit has been scheduled
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ Automatic restarting of the unit tailscaled.service has been scheduled, as the result for
+░░ the configured Restart= setting for the unit.
+Jul 20 11:49:50 novarch systemd[1]: Starting Tailscale node agent...
+░░ Subject: A start job for unit tailscaled.service has begun execution
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has begun execution.
+░░ 
+░░ The job identifier is 1249.
+Jul 20 11:49:50 novarch tailscaled[14644]: logtail started
+Jul 20 11:49:50 novarch tailscaled[14644]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:49:50 novarch tailscaled[14644]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:49:50 novarch tailscaled[14644]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:49:50 novarch tailscaled[14644]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:49:50 novarch tailscaled[14644]: dns: using "direct" mode
+Jul 20 11:49:50 novarch tailscaled[14644]: dns: using *dns.directManager
+Jul 20 11:49:50 novarch tailscaled[14644]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:49:50 novarch tailscaled[14644]: flushing log.
+Jul 20 11:49:50 novarch tailscaled[14644]: logger closing down
+Jul 20 11:49:51 novarch tailscaled[14677]: invalid value "${PORT:-41641}" for flag -port: expecting just a port number, without a colon
+Jul 20 11:49:51 novarch tailscaled[14677]: Usage of /nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled:
+Jul 20 11:49:51 novarch tailscaled[14677]:   -bird-socket string
+Jul 20 11:49:51 novarch tailscaled[14677]:             path of the bird unix socket
+Jul 20 11:49:51 novarch tailscaled[14677]:   -cleanup
+Jul 20 11:49:51 novarch tailscaled[14677]:             clean up system state and exit
+Jul 20 11:49:51 novarch tailscaled[14677]:   -config string
+Jul 20 11:49:51 novarch tailscaled[14677]:             path to config file, or 'vm:user-data' to use the VM's user-data (EC2)
+Jul 20 11:49:51 novarch tailscaled[14677]:   -debug string
+Jul 20 11:49:51 novarch tailscaled[14677]:             listen address ([ip]:port) of optional debug server
+Jul 20 11:49:51 novarch tailscaled[14677]:   -no-logs-no-support
+Jul 20 11:49:51 novarch tailscaled[14677]:             disable log uploads; this also disables any technical support
+Jul 20 11:49:51 novarch tailscaled[14677]:   -outbound-http-proxy-listen string
+Jul 20 11:49:51 novarch tailscaled[14677]:             optional [ip]:port to run an outbound HTTP proxy (e.g. "localhost:8080")
+Jul 20 11:49:51 novarch tailscaled[14677]:   -port value
+Jul 20 11:49:51 novarch tailscaled[14677]:             UDP port to listen on for WireGuard and peer-to-peer traffic; 0 means automatically select (default 0)
+Jul 20 11:49:51 novarch tailscaled[14677]:   -socket string
+Jul 20 11:49:51 novarch tailscaled[14677]:             path of the service unix socket (default "/var/run/tailscale/tailscaled.sock")
+Jul 20 11:49:51 novarch tailscaled[14677]:   -socks5-server string
+Jul 20 11:49:51 novarch tailscaled[14677]:             optional [ip]:port to run a SOCK5 server (e.g. "localhost:1080")
+Jul 20 11:49:51 novarch tailscaled[14677]:   -state string
+Jul 20 11:49:51 novarch tailscaled[14677]:             absolute path of state file; use 'kube:<secret-name>' to use Kubernetes secrets or 'arn:aws:ssm:...' to store in AWS SSM; use 'mem:' to not store state and register as an ephemeral node. If empty and --statedir is provided, the default is <statedir>/tailscaled.state. Default: /var/lib/tailscale/tailscaled.state
+Jul 20 11:49:51 novarch tailscaled[14677]:   -statedir string
+Jul 20 11:49:51 novarch tailscaled[14677]:             path to directory for storage of config state, TLS certs, temporary incoming Taildrop files, etc. If empty, it's derived from --state when possible.
+Jul 20 11:49:51 novarch tailscaled[14677]:   -tun string
+Jul 20 11:49:51 novarch tailscaled[14677]:             tunnel interface name; use "userspace-networking" (beta) to not use TUN (default "tailscale0")
+Jul 20 11:49:51 novarch tailscaled[14677]:   -verbose int
+Jul 20 11:49:51 novarch tailscaled[14677]:             log verbosity level; 0 is default, 1 or higher are increasingly verbose
+Jul 20 11:49:51 novarch tailscaled[14677]:   -version
+Jul 20 11:49:51 novarch tailscaled[14677]:             print version information and exit
+Jul 20 11:49:51 novarch systemd[1]: tailscaled.service: Main process exited, code=exited, status=2/INVALIDARGUMENT
+░░ Subject: Unit process exited
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ An ExecStart= process belonging to unit tailscaled.service has exited.
+░░ 
+░░ The process' exit code is 'exited' and its exit status is 2.
+Jul 20 11:49:51 novarch tailscaled[14682]: logtail started
+Jul 20 11:49:51 novarch tailscaled[14682]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:49:51 novarch tailscaled[14682]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:49:51 novarch tailscaled[14682]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:49:51 novarch tailscaled[14682]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:49:51 novarch tailscaled[14682]: dns: using "direct" mode
+Jul 20 11:49:51 novarch tailscaled[14682]: dns: using *dns.directManager
+Jul 20 11:49:51 novarch tailscaled[14682]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:49:51 novarch tailscaled[14682]: flushing log.
+Jul 20 11:49:51 novarch tailscaled[14682]: logger closing down
+Jul 20 11:49:52 novarch systemd[1]: tailscaled.service: Failed with result 'exit-code'.
+░░ Subject: Unit failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ The unit tailscaled.service has entered the 'failed' state with result 'exit-code'.
+Jul 20 11:49:52 novarch systemd[1]: Failed to start Tailscale node agent.
+░░ Subject: A start job for unit tailscaled.service has failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has finished with a failure.
+░░ 
+░░ The job identifier is 1249 and the job result is failed.
+Jul 20 11:49:57 novarch systemd[1]: tailscaled.service: Scheduled restart job, restart counter is at 2.
+░░ Subject: Automatic restarting of a unit has been scheduled
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ Automatic restarting of the unit tailscaled.service has been scheduled, as the result for
+░░ the configured Restart= setting for the unit.
+Jul 20 11:49:57 novarch systemd[1]: Starting Tailscale node agent...
+░░ Subject: A start job for unit tailscaled.service has begun execution
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has begun execution.
+░░ 
+░░ The job identifier is 1337.
+Jul 20 11:49:57 novarch tailscaled[15034]: logtail started
+Jul 20 11:49:57 novarch tailscaled[15034]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:49:57 novarch tailscaled[15034]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:49:57 novarch tailscaled[15034]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:49:57 novarch tailscaled[15034]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:49:57 novarch tailscaled[15034]: dns: using "direct" mode
+Jul 20 11:49:57 novarch tailscaled[15034]: dns: using *dns.directManager
+Jul 20 11:49:57 novarch tailscaled[15034]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:49:57 novarch tailscaled[15034]: flushing log.
+Jul 20 11:49:57 novarch tailscaled[15034]: logger closing down
+Jul 20 11:49:58 novarch tailscaled[15034]: logtail: upload: log upload of 561 bytes compressed failed: Post "https://log.tailscale.com/c/tailnode.log.tailscale.io/b082b8b38f3e9f0ab0e868ea109ccf1a05fb698d01e7c6fa641e1e3736ecd05b": context canceled
+Jul 20 11:49:58 novarch tailscaled[15063]: invalid value "${PORT:-41641}" for flag -port: expecting just a port number, without a colon
+Jul 20 11:49:58 novarch tailscaled[15063]: Usage of /nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled:
+Jul 20 11:49:58 novarch tailscaled[15063]:   -bird-socket string
+Jul 20 11:49:58 novarch tailscaled[15063]:             path of the bird unix socket
+Jul 20 11:49:58 novarch tailscaled[15063]:   -cleanup
+Jul 20 11:49:58 novarch tailscaled[15063]:             clean up system state and exit
+Jul 20 11:49:58 novarch tailscaled[15063]:   -config string
+Jul 20 11:49:58 novarch tailscaled[15063]:             path to config file, or 'vm:user-data' to use the VM's user-data (EC2)
+Jul 20 11:49:58 novarch tailscaled[15063]:   -debug string
+Jul 20 11:49:58 novarch tailscaled[15063]:             listen address ([ip]:port) of optional debug server
+Jul 20 11:49:58 novarch tailscaled[15063]:   -no-logs-no-support
+Jul 20 11:49:58 novarch tailscaled[15063]:             disable log uploads; this also disables any technical support
+Jul 20 11:49:58 novarch tailscaled[15063]:   -outbound-http-proxy-listen string
+Jul 20 11:49:58 novarch tailscaled[15063]:             optional [ip]:port to run an outbound HTTP proxy (e.g. "localhost:8080")
+Jul 20 11:49:58 novarch tailscaled[15063]:   -port value
+Jul 20 11:49:58 novarch tailscaled[15063]:             UDP port to listen on for WireGuard and peer-to-peer traffic; 0 means automatically select (default 0)
+Jul 20 11:49:58 novarch tailscaled[15063]:   -socket string
+Jul 20 11:49:58 novarch tailscaled[15063]:             path of the service unix socket (default "/var/run/tailscale/tailscaled.sock")
+Jul 20 11:49:58 novarch tailscaled[15063]:   -socks5-server string
+Jul 20 11:49:58 novarch tailscaled[15063]:             optional [ip]:port to run a SOCK5 server (e.g. "localhost:1080")
+Jul 20 11:49:58 novarch tailscaled[15063]:   -state string
+Jul 20 11:49:58 novarch tailscaled[15063]:             absolute path of state file; use 'kube:<secret-name>' to use Kubernetes secrets or 'arn:aws:ssm:...' to store in AWS SSM; use 'mem:' to not store state and register as an ephemeral node. If empty and --statedir is provided, the default is <statedir>/tailscaled.state. Default: /var/lib/tailscale/tailscaled.state
+Jul 20 11:49:58 novarch tailscaled[15063]:   -statedir string
+Jul 20 11:49:58 novarch tailscaled[15063]:             path to directory for storage of config state, TLS certs, temporary incoming Taildrop files, etc. If empty, it's derived from --state when possible.
+Jul 20 11:49:58 novarch tailscaled[15063]:   -tun string
+Jul 20 11:49:58 novarch tailscaled[15063]:             tunnel interface name; use "userspace-networking" (beta) to not use TUN (default "tailscale0")
+Jul 20 11:49:58 novarch tailscaled[15063]:   -verbose int
+Jul 20 11:49:58 novarch tailscaled[15063]:             log verbosity level; 0 is default, 1 or higher are increasingly verbose
+Jul 20 11:49:58 novarch tailscaled[15063]:   -version
+Jul 20 11:49:58 novarch tailscaled[15063]:             print version information and exit
+Jul 20 11:49:58 novarch systemd[1]: tailscaled.service: Main process exited, code=exited, status=2/INVALIDARGUMENT
+░░ Subject: Unit process exited
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ An ExecStart= process belonging to unit tailscaled.service has exited.
+░░ 
+░░ The process' exit code is 'exited' and its exit status is 2.
+Jul 20 11:49:58 novarch tailscaled[15070]: logtail started
+Jul 20 11:49:58 novarch tailscaled[15070]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:49:58 novarch tailscaled[15070]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:49:58 novarch tailscaled[15070]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:49:58 novarch tailscaled[15070]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:49:58 novarch tailscaled[15070]: dns: using "direct" mode
+Jul 20 11:49:58 novarch tailscaled[15070]: dns: using *dns.directManager
+Jul 20 11:49:58 novarch tailscaled[15070]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:49:58 novarch tailscaled[15070]: flushing log.
+Jul 20 11:49:58 novarch tailscaled[15070]: logger closing down
+Jul 20 11:49:59 novarch systemd[1]: tailscaled.service: Failed with result 'exit-code'.
+░░ Subject: Unit failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ The unit tailscaled.service has entered the 'failed' state with result 'exit-code'.
+Jul 20 11:49:59 novarch systemd[1]: Failed to start Tailscale node agent.
+░░ Subject: A start job for unit tailscaled.service has failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has finished with a failure.
+░░ 
+░░ The job identifier is 1337 and the job result is failed.
+Jul 20 11:50:04 novarch systemd[1]: tailscaled.service: Scheduled restart job, restart counter is at 3.
+░░ Subject: Automatic restarting of a unit has been scheduled
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ Automatic restarting of the unit tailscaled.service has been scheduled, as the result for
+░░ the configured Restart= setting for the unit.
+Jul 20 11:50:04 novarch systemd[1]: Starting Tailscale node agent...
+░░ Subject: A start job for unit tailscaled.service has begun execution
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has begun execution.
+░░ 
+░░ The job identifier is 1425.
+Jul 20 11:50:04 novarch tailscaled[15347]: logtail started
+Jul 20 11:50:04 novarch tailscaled[15347]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:04 novarch tailscaled[15347]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:04 novarch tailscaled[15347]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:04 novarch tailscaled[15347]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:04 novarch tailscaled[15347]: dns: using "direct" mode
+Jul 20 11:50:04 novarch tailscaled[15347]: dns: using *dns.directManager
+Jul 20 11:50:04 novarch tailscaled[15347]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:05 novarch tailscaled[15347]: flushing log.
+Jul 20 11:50:05 novarch tailscaled[15347]: logger closing down
+Jul 20 11:50:05 novarch tailscaled[15448]: invalid value "${PORT:-41641}" for flag -port: expecting just a port number, without a colon
+Jul 20 11:50:05 novarch tailscaled[15448]: Usage of /nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled:
+Jul 20 11:50:05 novarch tailscaled[15448]:   -bird-socket string
+Jul 20 11:50:05 novarch tailscaled[15448]:             path of the bird unix socket
+Jul 20 11:50:05 novarch tailscaled[15448]:   -cleanup
+Jul 20 11:50:05 novarch tailscaled[15448]:             clean up system state and exit
+Jul 20 11:50:05 novarch tailscaled[15448]:   -config string
+Jul 20 11:50:05 novarch tailscaled[15448]:             path to config file, or 'vm:user-data' to use the VM's user-data (EC2)
+Jul 20 11:50:05 novarch tailscaled[15448]:   -debug string
+Jul 20 11:50:05 novarch tailscaled[15448]:             listen address ([ip]:port) of optional debug server
+Jul 20 11:50:05 novarch tailscaled[15448]:   -no-logs-no-support
+Jul 20 11:50:05 novarch tailscaled[15448]:             disable log uploads; this also disables any technical support
+Jul 20 11:50:05 novarch tailscaled[15448]:   -outbound-http-proxy-listen string
+Jul 20 11:50:05 novarch tailscaled[15448]:             optional [ip]:port to run an outbound HTTP proxy (e.g. "localhost:8080")
+Jul 20 11:50:05 novarch tailscaled[15448]:   -port value
+Jul 20 11:50:05 novarch tailscaled[15448]:             UDP port to listen on for WireGuard and peer-to-peer traffic; 0 means automatically select (default 0)
+Jul 20 11:50:05 novarch tailscaled[15448]:   -socket string
+Jul 20 11:50:05 novarch tailscaled[15448]:             path of the service unix socket (default "/var/run/tailscale/tailscaled.sock")
+Jul 20 11:50:05 novarch tailscaled[15448]:   -socks5-server string
+Jul 20 11:50:05 novarch tailscaled[15448]:             optional [ip]:port to run a SOCK5 server (e.g. "localhost:1080")
+Jul 20 11:50:05 novarch tailscaled[15448]:   -state string
+Jul 20 11:50:05 novarch tailscaled[15448]:             absolute path of state file; use 'kube:<secret-name>' to use Kubernetes secrets or 'arn:aws:ssm:...' to store in AWS SSM; use 'mem:' to not store state and register as an ephemeral node. If empty and --statedir is provided, the default is <statedir>/tailscaled.state. Default: /var/lib/tailscale/tailscaled.state
+Jul 20 11:50:05 novarch tailscaled[15448]:   -statedir string
+Jul 20 11:50:05 novarch tailscaled[15448]:             path to directory for storage of config state, TLS certs, temporary incoming Taildrop files, etc. If empty, it's derived from --state when possible.
+Jul 20 11:50:05 novarch tailscaled[15448]:   -tun string
+Jul 20 11:50:05 novarch tailscaled[15448]:             tunnel interface name; use "userspace-networking" (beta) to not use TUN (default "tailscale0")
+Jul 20 11:50:05 novarch tailscaled[15448]:   -verbose int
+Jul 20 11:50:05 novarch tailscaled[15448]:             log verbosity level; 0 is default, 1 or higher are increasingly verbose
+Jul 20 11:50:05 novarch tailscaled[15448]:   -version
+Jul 20 11:50:05 novarch tailscaled[15448]:             print version information and exit
+Jul 20 11:50:05 novarch systemd[1]: tailscaled.service: Main process exited, code=exited, status=2/INVALIDARGUMENT
+░░ Subject: Unit process exited
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ An ExecStart= process belonging to unit tailscaled.service has exited.
+░░ 
+░░ The process' exit code is 'exited' and its exit status is 2.
+Jul 20 11:50:06 novarch tailscaled[15452]: logtail started
+Jul 20 11:50:06 novarch tailscaled[15452]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:06 novarch tailscaled[15452]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:06 novarch tailscaled[15452]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:06 novarch tailscaled[15452]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:06 novarch tailscaled[15452]: dns: using "direct" mode
+Jul 20 11:50:06 novarch tailscaled[15452]: dns: using *dns.directManager
+Jul 20 11:50:06 novarch tailscaled[15452]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:06 novarch tailscaled[15452]: flushing log.
+Jul 20 11:50:06 novarch tailscaled[15452]: logger closing down
+Jul 20 11:50:07 novarch tailscaled[15452]: logtail: upload: log upload of 556 bytes compressed failed: Post "https://log.tailscale.com/c/tailnode.log.tailscale.io/b082b8b38f3e9f0ab0e868ea109ccf1a05fb698d01e7c6fa641e1e3736ecd05b": context canceled
+Jul 20 11:50:07 novarch systemd[1]: tailscaled.service: Failed with result 'exit-code'.
+░░ Subject: Unit failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ The unit tailscaled.service has entered the 'failed' state with result 'exit-code'.
+Jul 20 11:50:07 novarch systemd[1]: Failed to start Tailscale node agent.
+░░ Subject: A start job for unit tailscaled.service has failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has finished with a failure.
+░░ 
+░░ The job identifier is 1425 and the job result is failed.
+Jul 20 11:50:12 novarch systemd[1]: tailscaled.service: Scheduled restart job, restart counter is at 4.
+░░ Subject: Automatic restarting of a unit has been scheduled
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ Automatic restarting of the unit tailscaled.service has been scheduled, as the result for
+░░ the configured Restart= setting for the unit.
+Jul 20 11:50:12 novarch systemd[1]: Starting Tailscale node agent...
+░░ Subject: A start job for unit tailscaled.service has begun execution
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has begun execution.
+░░ 
+░░ The job identifier is 1513.
+Jul 20 11:50:12 novarch tailscaled[15629]: logtail started
+Jul 20 11:50:12 novarch tailscaled[15629]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:12 novarch tailscaled[15629]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:12 novarch tailscaled[15629]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:12 novarch tailscaled[15629]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:12 novarch tailscaled[15629]: dns: using "direct" mode
+Jul 20 11:50:12 novarch tailscaled[15629]: dns: using *dns.directManager
+Jul 20 11:50:12 novarch tailscaled[15629]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:12 novarch tailscaled[15629]: flushing log.
+Jul 20 11:50:12 novarch tailscaled[15629]: logger closing down
+Jul 20 11:50:13 novarch tailscaled[15661]: invalid value "${PORT:-41641}" for flag -port: expecting just a port number, without a colon
+Jul 20 11:50:13 novarch tailscaled[15661]: Usage of /nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled:
+Jul 20 11:50:13 novarch tailscaled[15661]:   -bird-socket string
+Jul 20 11:50:13 novarch tailscaled[15661]:             path of the bird unix socket
+Jul 20 11:50:13 novarch tailscaled[15661]:   -cleanup
+Jul 20 11:50:13 novarch tailscaled[15661]:             clean up system state and exit
+Jul 20 11:50:13 novarch tailscaled[15661]:   -config string
+Jul 20 11:50:13 novarch tailscaled[15661]:             path to config file, or 'vm:user-data' to use the VM's user-data (EC2)
+Jul 20 11:50:13 novarch tailscaled[15661]:   -debug string
+Jul 20 11:50:13 novarch tailscaled[15661]:             listen address ([ip]:port) of optional debug server
+Jul 20 11:50:13 novarch tailscaled[15661]:   -no-logs-no-support
+Jul 20 11:50:13 novarch tailscaled[15661]:             disable log uploads; this also disables any technical support
+Jul 20 11:50:13 novarch tailscaled[15661]:   -outbound-http-proxy-listen string
+Jul 20 11:50:13 novarch tailscaled[15661]:             optional [ip]:port to run an outbound HTTP proxy (e.g. "localhost:8080")
+Jul 20 11:50:13 novarch tailscaled[15661]:   -port value
+Jul 20 11:50:13 novarch tailscaled[15661]:             UDP port to listen on for WireGuard and peer-to-peer traffic; 0 means automatically select (default 0)
+Jul 20 11:50:13 novarch tailscaled[15661]:   -socket string
+Jul 20 11:50:13 novarch tailscaled[15661]:             path of the service unix socket (default "/var/run/tailscale/tailscaled.sock")
+Jul 20 11:50:13 novarch tailscaled[15661]:   -socks5-server string
+Jul 20 11:50:13 novarch tailscaled[15661]:             optional [ip]:port to run a SOCK5 server (e.g. "localhost:1080")
+Jul 20 11:50:13 novarch tailscaled[15661]:   -state string
+Jul 20 11:50:13 novarch tailscaled[15661]:             absolute path of state file; use 'kube:<secret-name>' to use Kubernetes secrets or 'arn:aws:ssm:...' to store in AWS SSM; use 'mem:' to not store state and register as an ephemeral node. If empty and --statedir is provided, the default is <statedir>/tailscaled.state. Default: /var/lib/tailscale/tailscaled.state
+Jul 20 11:50:13 novarch tailscaled[15661]:   -statedir string
+Jul 20 11:50:13 novarch tailscaled[15661]:             path to directory for storage of config state, TLS certs, temporary incoming Taildrop files, etc. If empty, it's derived from --state when possible.
+Jul 20 11:50:13 novarch tailscaled[15661]:   -tun string
+Jul 20 11:50:13 novarch tailscaled[15661]:             tunnel interface name; use "userspace-networking" (beta) to not use TUN (default "tailscale0")
+Jul 20 11:50:13 novarch tailscaled[15661]:   -verbose int
+Jul 20 11:50:13 novarch tailscaled[15661]:             log verbosity level; 0 is default, 1 or higher are increasingly verbose
+Jul 20 11:50:13 novarch tailscaled[15661]:   -version
+Jul 20 11:50:13 novarch tailscaled[15661]:             print version information and exit
+Jul 20 11:50:13 novarch systemd[1]: tailscaled.service: Main process exited, code=exited, status=2/INVALIDARGUMENT
+░░ Subject: Unit process exited
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ An ExecStart= process belonging to unit tailscaled.service has exited.
+░░ 
+░░ The process' exit code is 'exited' and its exit status is 2.
+Jul 20 11:50:13 novarch tailscaled[15667]: logtail started
+Jul 20 11:50:13 novarch tailscaled[15667]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:13 novarch tailscaled[15667]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:13 novarch tailscaled[15667]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:13 novarch tailscaled[15667]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:13 novarch tailscaled[15667]: dns: using "direct" mode
+Jul 20 11:50:13 novarch tailscaled[15667]: dns: using *dns.directManager
+Jul 20 11:50:13 novarch tailscaled[15667]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:13 novarch tailscaled[15667]: flushing log.
+Jul 20 11:50:13 novarch tailscaled[15667]: logger closing down
+Jul 20 11:50:14 novarch systemd[1]: tailscaled.service: Failed with result 'exit-code'.
+░░ Subject: Unit failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ The unit tailscaled.service has entered the 'failed' state with result 'exit-code'.
+Jul 20 11:50:14 novarch systemd[1]: Failed to start Tailscale node agent.
+░░ Subject: A start job for unit tailscaled.service has failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has finished with a failure.
+░░ 
+░░ The job identifier is 1513 and the job result is failed.
+Jul 20 11:50:19 novarch systemd[1]: tailscaled.service: Scheduled restart job, restart counter is at 5.
+░░ Subject: Automatic restarting of a unit has been scheduled
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ Automatic restarting of the unit tailscaled.service has been scheduled, as the result for
+░░ the configured Restart= setting for the unit.
+Jul 20 11:50:19 novarch systemd[1]: Starting Tailscale node agent...
+░░ Subject: A start job for unit tailscaled.service has begun execution
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has begun execution.
+░░ 
+░░ The job identifier is 1601.
+Jul 20 11:50:19 novarch tailscaled[15842]: logtail started
+Jul 20 11:50:19 novarch tailscaled[15842]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:19 novarch tailscaled[15842]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:19 novarch tailscaled[15842]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:19 novarch tailscaled[15842]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:19 novarch tailscaled[15842]: dns: using "direct" mode
+Jul 20 11:50:19 novarch tailscaled[15842]: dns: using *dns.directManager
+Jul 20 11:50:19 novarch tailscaled[15842]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:19 novarch tailscaled[15842]: flushing log.
+Jul 20 11:50:19 novarch tailscaled[15842]: logger closing down
+Jul 20 11:50:20 novarch tailscaled[15872]: invalid value "${PORT:-41641}" for flag -port: expecting just a port number, without a colon
+Jul 20 11:50:20 novarch tailscaled[15872]: Usage of /nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled:
+Jul 20 11:50:20 novarch tailscaled[15872]:   -bird-socket string
+Jul 20 11:50:20 novarch tailscaled[15872]:             path of the bird unix socket
+Jul 20 11:50:20 novarch tailscaled[15872]:   -cleanup
+Jul 20 11:50:20 novarch tailscaled[15872]:             clean up system state and exit
+Jul 20 11:50:20 novarch tailscaled[15872]:   -config string
+Jul 20 11:50:20 novarch tailscaled[15872]:             path to config file, or 'vm:user-data' to use the VM's user-data (EC2)
+Jul 20 11:50:20 novarch tailscaled[15872]:   -debug string
+Jul 20 11:50:20 novarch tailscaled[15872]:             listen address ([ip]:port) of optional debug server
+Jul 20 11:50:20 novarch tailscaled[15872]:   -no-logs-no-support
+Jul 20 11:50:20 novarch tailscaled[15872]:             disable log uploads; this also disables any technical support
+Jul 20 11:50:20 novarch tailscaled[15872]:   -outbound-http-proxy-listen string
+Jul 20 11:50:20 novarch tailscaled[15872]:             optional [ip]:port to run an outbound HTTP proxy (e.g. "localhost:8080")
+Jul 20 11:50:20 novarch tailscaled[15872]:   -port value
+Jul 20 11:50:20 novarch tailscaled[15872]:             UDP port to listen on for WireGuard and peer-to-peer traffic; 0 means automatically select (default 0)
+Jul 20 11:50:20 novarch tailscaled[15872]:   -socket string
+Jul 20 11:50:20 novarch tailscaled[15872]:             path of the service unix socket (default "/var/run/tailscale/tailscaled.sock")
+Jul 20 11:50:20 novarch tailscaled[15872]:   -socks5-server string
+Jul 20 11:50:20 novarch tailscaled[15872]:             optional [ip]:port to run a SOCK5 server (e.g. "localhost:1080")
+Jul 20 11:50:20 novarch tailscaled[15872]:   -state string
+Jul 20 11:50:20 novarch tailscaled[15872]:             absolute path of state file; use 'kube:<secret-name>' to use Kubernetes secrets or 'arn:aws:ssm:...' to store in AWS SSM; use 'mem:' to not store state and register as an ephemeral node. If empty and --statedir is provided, the default is <statedir>/tailscaled.state. Default: /var/lib/tailscale/tailscaled.state
+Jul 20 11:50:20 novarch tailscaled[15872]:   -statedir string
+Jul 20 11:50:20 novarch tailscaled[15872]:             path to directory for storage of config state, TLS certs, temporary incoming Taildrop files, etc. If empty, it's derived from --state when possible.
+Jul 20 11:50:20 novarch tailscaled[15872]:   -tun string
+Jul 20 11:50:20 novarch tailscaled[15872]:             tunnel interface name; use "userspace-networking" (beta) to not use TUN (default "tailscale0")
+Jul 20 11:50:20 novarch tailscaled[15872]:   -verbose int
+Jul 20 11:50:20 novarch tailscaled[15872]:             log verbosity level; 0 is default, 1 or higher are increasingly verbose
+Jul 20 11:50:20 novarch tailscaled[15872]:   -version
+Jul 20 11:50:20 novarch tailscaled[15872]:             print version information and exit
+Jul 20 11:50:20 novarch systemd[1]: tailscaled.service: Main process exited, code=exited, status=2/INVALIDARGUMENT
+░░ Subject: Unit process exited
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ An ExecStart= process belonging to unit tailscaled.service has exited.
+░░ 
+░░ The process' exit code is 'exited' and its exit status is 2.
+Jul 20 11:50:20 novarch tailscaled[15878]: logtail started
+Jul 20 11:50:20 novarch tailscaled[15878]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:20 novarch tailscaled[15878]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:20 novarch tailscaled[15878]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:20 novarch tailscaled[15878]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:20 novarch tailscaled[15878]: dns: using "direct" mode
+Jul 20 11:50:20 novarch tailscaled[15878]: dns: using *dns.directManager
+Jul 20 11:50:20 novarch tailscaled[15878]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:20 novarch tailscaled[15878]: flushing log.
+Jul 20 11:50:20 novarch tailscaled[15878]: logger closing down
+Jul 20 11:50:21 novarch tailscaled[15878]: logtail: upload: log upload of 560 bytes compressed failed: Post "https://log.tailscale.com/c/tailnode.log.tailscale.io/b082b8b38f3e9f0ab0e868ea109ccf1a05fb698d01e7c6fa641e1e3736ecd05b": context canceled
+Jul 20 11:50:21 novarch systemd[1]: tailscaled.service: Failed with result 'exit-code'.
+░░ Subject: Unit failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ The unit tailscaled.service has entered the 'failed' state with result 'exit-code'.
+Jul 20 11:50:21 novarch systemd[1]: Failed to start Tailscale node agent.
+░░ Subject: A start job for unit tailscaled.service has failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has finished with a failure.
+░░ 
+░░ The job identifier is 1601 and the job result is failed.
+Jul 20 11:50:26 novarch systemd[1]: tailscaled.service: Scheduled restart job, restart counter is at 6.
+░░ Subject: Automatic restarting of a unit has been scheduled
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ Automatic restarting of the unit tailscaled.service has been scheduled, as the result for
+░░ the configured Restart= setting for the unit.
+Jul 20 11:50:26 novarch systemd[1]: Starting Tailscale node agent...
+░░ Subject: A start job for unit tailscaled.service has begun execution
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has begun execution.
+░░ 
+░░ The job identifier is 1689.
+Jul 20 11:50:26 novarch tailscaled[15938]: logtail started
+Jul 20 11:50:26 novarch tailscaled[15938]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:26 novarch tailscaled[15938]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:26 novarch tailscaled[15938]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:26 novarch tailscaled[15938]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:26 novarch tailscaled[15938]: dns: using "direct" mode
+Jul 20 11:50:26 novarch tailscaled[15938]: dns: using *dns.directManager
+Jul 20 11:50:26 novarch tailscaled[15938]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:26 novarch tailscaled[15938]: flushing log.
+Jul 20 11:50:26 novarch tailscaled[15938]: logger closing down
+Jul 20 11:50:27 novarch tailscaled[15969]: invalid value "${PORT:-41641}" for flag -port: expecting just a port number, without a colon
+Jul 20 11:50:27 novarch tailscaled[15969]: Usage of /nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled:
+Jul 20 11:50:27 novarch tailscaled[15969]:   -bird-socket string
+Jul 20 11:50:27 novarch tailscaled[15969]:             path of the bird unix socket
+Jul 20 11:50:27 novarch tailscaled[15969]:   -cleanup
+Jul 20 11:50:27 novarch tailscaled[15969]:             clean up system state and exit
+Jul 20 11:50:27 novarch tailscaled[15969]:   -config string
+Jul 20 11:50:27 novarch tailscaled[15969]:             path to config file, or 'vm:user-data' to use the VM's user-data (EC2)
+Jul 20 11:50:27 novarch tailscaled[15969]:   -debug string
+Jul 20 11:50:27 novarch tailscaled[15969]:             listen address ([ip]:port) of optional debug server
+Jul 20 11:50:27 novarch tailscaled[15969]:   -no-logs-no-support
+Jul 20 11:50:27 novarch tailscaled[15969]:             disable log uploads; this also disables any technical support
+Jul 20 11:50:27 novarch tailscaled[15969]:   -outbound-http-proxy-listen string
+Jul 20 11:50:27 novarch tailscaled[15969]:             optional [ip]:port to run an outbound HTTP proxy (e.g. "localhost:8080")
+Jul 20 11:50:27 novarch tailscaled[15969]:   -port value
+Jul 20 11:50:27 novarch tailscaled[15969]:             UDP port to listen on for WireGuard and peer-to-peer traffic; 0 means automatically select (default 0)
+Jul 20 11:50:27 novarch tailscaled[15969]:   -socket string
+Jul 20 11:50:27 novarch tailscaled[15969]:             path of the service unix socket (default "/var/run/tailscale/tailscaled.sock")
+Jul 20 11:50:27 novarch tailscaled[15969]:   -socks5-server string
+Jul 20 11:50:27 novarch tailscaled[15969]:             optional [ip]:port to run a SOCK5 server (e.g. "localhost:1080")
+Jul 20 11:50:27 novarch tailscaled[15969]:   -state string
+Jul 20 11:50:27 novarch tailscaled[15969]:             absolute path of state file; use 'kube:<secret-name>' to use Kubernetes secrets or 'arn:aws:ssm:...' to store in AWS SSM; use 'mem:' to not store state and register as an ephemeral node. If empty and --statedir is provided, the default is <statedir>/tailscaled.state. Default: /var/lib/tailscale/tailscaled.state
+Jul 20 11:50:27 novarch tailscaled[15969]:   -statedir string
+Jul 20 11:50:27 novarch tailscaled[15969]:             path to directory for storage of config state, TLS certs, temporary incoming Taildrop files, etc. If empty, it's derived from --state when possible.
+Jul 20 11:50:27 novarch tailscaled[15969]:   -tun string
+Jul 20 11:50:27 novarch tailscaled[15969]:             tunnel interface name; use "userspace-networking" (beta) to not use TUN (default "tailscale0")
+Jul 20 11:50:27 novarch tailscaled[15969]:   -verbose int
+Jul 20 11:50:27 novarch tailscaled[15969]:             log verbosity level; 0 is default, 1 or higher are increasingly verbose
+Jul 20 11:50:27 novarch tailscaled[15969]:   -version
+Jul 20 11:50:27 novarch tailscaled[15969]:             print version information and exit
+Jul 20 11:50:27 novarch systemd[1]: tailscaled.service: Main process exited, code=exited, status=2/INVALIDARGUMENT
+░░ Subject: Unit process exited
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ An ExecStart= process belonging to unit tailscaled.service has exited.
+░░ 
+░░ The process' exit code is 'exited' and its exit status is 2.
+Jul 20 11:50:27 novarch tailscaled[15974]: logtail started
+Jul 20 11:50:27 novarch tailscaled[15974]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:27 novarch tailscaled[15974]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:27 novarch tailscaled[15974]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:27 novarch tailscaled[15974]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:27 novarch tailscaled[15974]: dns: using "direct" mode
+Jul 20 11:50:27 novarch tailscaled[15974]: dns: using *dns.directManager
+Jul 20 11:50:27 novarch tailscaled[15974]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:27 novarch tailscaled[15974]: flushing log.
+Jul 20 11:50:27 novarch tailscaled[15974]: logger closing down
+Jul 20 11:50:28 novarch systemd[1]: tailscaled.service: Failed with result 'exit-code'.
+░░ Subject: Unit failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ The unit tailscaled.service has entered the 'failed' state with result 'exit-code'.
+Jul 20 11:50:28 novarch systemd[1]: Failed to start Tailscale node agent.
+░░ Subject: A start job for unit tailscaled.service has failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has finished with a failure.
+░░ 
+░░ The job identifier is 1689 and the job result is failed.
+Jul 20 11:50:33 novarch systemd[1]: tailscaled.service: Scheduled restart job, restart counter is at 7.
+░░ Subject: Automatic restarting of a unit has been scheduled
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ Automatic restarting of the unit tailscaled.service has been scheduled, as the result for
+░░ the configured Restart= setting for the unit.
+Jul 20 11:50:33 novarch systemd[1]: Starting Tailscale node agent...
+░░ Subject: A start job for unit tailscaled.service has begun execution
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has begun execution.
+░░ 
+░░ The job identifier is 1777.
+Jul 20 11:50:33 novarch tailscaled[16082]: logtail started
+Jul 20 11:50:33 novarch tailscaled[16082]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:33 novarch tailscaled[16082]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:33 novarch tailscaled[16082]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:34 novarch tailscaled[16082]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:34 novarch tailscaled[16082]: dns: using "direct" mode
+Jul 20 11:50:34 novarch tailscaled[16082]: dns: using *dns.directManager
+Jul 20 11:50:34 novarch tailscaled[16082]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:34 novarch tailscaled[16082]: flushing log.
+Jul 20 11:50:34 novarch tailscaled[16082]: logger closing down
+Jul 20 11:50:35 novarch tailscaled[16082]: logtail: upload: log upload of 561 bytes compressed failed: Post "https://log.tailscale.com/c/tailnode.log.tailscale.io/b082b8b38f3e9f0ab0e868ea109ccf1a05fb698d01e7c6fa641e1e3736ecd05b": context canceled
+Jul 20 11:50:35 novarch tailscaled[16244]: invalid value "${PORT:-41641}" for flag -port: expecting just a port number, without a colon
+Jul 20 11:50:35 novarch tailscaled[16244]: Usage of /nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled:
+Jul 20 11:50:35 novarch tailscaled[16244]:   -bird-socket string
+Jul 20 11:50:35 novarch tailscaled[16244]:             path of the bird unix socket
+Jul 20 11:50:35 novarch tailscaled[16244]:   -cleanup
+Jul 20 11:50:35 novarch tailscaled[16244]:             clean up system state and exit
+Jul 20 11:50:35 novarch tailscaled[16244]:   -config string
+Jul 20 11:50:35 novarch tailscaled[16244]:             path to config file, or 'vm:user-data' to use the VM's user-data (EC2)
+Jul 20 11:50:35 novarch tailscaled[16244]:   -debug string
+Jul 20 11:50:35 novarch tailscaled[16244]:             listen address ([ip]:port) of optional debug server
+Jul 20 11:50:35 novarch tailscaled[16244]:   -no-logs-no-support
+Jul 20 11:50:35 novarch tailscaled[16244]:             disable log uploads; this also disables any technical support
+Jul 20 11:50:35 novarch tailscaled[16244]:   -outbound-http-proxy-listen string
+Jul 20 11:50:35 novarch tailscaled[16244]:             optional [ip]:port to run an outbound HTTP proxy (e.g. "localhost:8080")
+Jul 20 11:50:35 novarch tailscaled[16244]:   -port value
+Jul 20 11:50:35 novarch tailscaled[16244]:             UDP port to listen on for WireGuard and peer-to-peer traffic; 0 means automatically select (default 0)
+Jul 20 11:50:35 novarch tailscaled[16244]:   -socket string
+Jul 20 11:50:35 novarch tailscaled[16244]:             path of the service unix socket (default "/var/run/tailscale/tailscaled.sock")
+Jul 20 11:50:35 novarch tailscaled[16244]:   -socks5-server string
+Jul 20 11:50:35 novarch tailscaled[16244]:             optional [ip]:port to run a SOCK5 server (e.g. "localhost:1080")
+Jul 20 11:50:35 novarch tailscaled[16244]:   -state string
+Jul 20 11:50:35 novarch tailscaled[16244]:             absolute path of state file; use 'kube:<secret-name>' to use Kubernetes secrets or 'arn:aws:ssm:...' to store in AWS SSM; use 'mem:' to not store state and register as an ephemeral node. If empty and --statedir is provided, the default is <statedir>/tailscaled.state. Default: /var/lib/tailscale/tailscaled.state
+Jul 20 11:50:35 novarch tailscaled[16244]:   -statedir string
+Jul 20 11:50:35 novarch tailscaled[16244]:             path to directory for storage of config state, TLS certs, temporary incoming Taildrop files, etc. If empty, it's derived from --state when possible.
+Jul 20 11:50:35 novarch tailscaled[16244]:   -tun string
+Jul 20 11:50:35 novarch tailscaled[16244]:             tunnel interface name; use "userspace-networking" (beta) to not use TUN (default "tailscale0")
+Jul 20 11:50:35 novarch tailscaled[16244]:   -verbose int
+Jul 20 11:50:35 novarch tailscaled[16244]:             log verbosity level; 0 is default, 1 or higher are increasingly verbose
+Jul 20 11:50:35 novarch tailscaled[16244]:   -version
+Jul 20 11:50:35 novarch tailscaled[16244]:             print version information and exit
+Jul 20 11:50:35 novarch systemd[1]: tailscaled.service: Main process exited, code=exited, status=2/INVALIDARGUMENT
+░░ Subject: Unit process exited
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ An ExecStart= process belonging to unit tailscaled.service has exited.
+░░ 
+░░ The process' exit code is 'exited' and its exit status is 2.
+Jul 20 11:50:35 novarch tailscaled[16250]: logtail started
+Jul 20 11:50:35 novarch tailscaled[16250]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:35 novarch tailscaled[16250]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:35 novarch tailscaled[16250]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:35 novarch tailscaled[16250]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:35 novarch tailscaled[16250]: dns: using "direct" mode
+Jul 20 11:50:35 novarch tailscaled[16250]: dns: using *dns.directManager
+Jul 20 11:50:35 novarch tailscaled[16250]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:35 novarch tailscaled[16250]: flushing log.
+Jul 20 11:50:35 novarch tailscaled[16250]: logger closing down
+Jul 20 11:50:36 novarch systemd[1]: tailscaled.service: Failed with result 'exit-code'.
+░░ Subject: Unit failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ The unit tailscaled.service has entered the 'failed' state with result 'exit-code'.
+Jul 20 11:50:36 novarch systemd[1]: Failed to start Tailscale node agent.
+░░ Subject: A start job for unit tailscaled.service has failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has finished with a failure.
+░░ 
+░░ The job identifier is 1777 and the job result is failed.
+Jul 20 11:50:41 novarch systemd[1]: tailscaled.service: Scheduled restart job, restart counter is at 8.
+░░ Subject: Automatic restarting of a unit has been scheduled
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ Automatic restarting of the unit tailscaled.service has been scheduled, as the result for
+░░ the configured Restart= setting for the unit.
+Jul 20 11:50:41 novarch systemd[1]: Starting Tailscale node agent...
+░░ Subject: A start job for unit tailscaled.service has begun execution
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has begun execution.
+░░ 
+░░ The job identifier is 1865.
+Jul 20 11:50:41 novarch tailscaled[16302]: logtail started
+Jul 20 11:50:41 novarch tailscaled[16302]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:41 novarch tailscaled[16302]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:41 novarch tailscaled[16302]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:41 novarch tailscaled[16302]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:41 novarch tailscaled[16302]: dns: using "direct" mode
+Jul 20 11:50:41 novarch tailscaled[16302]: dns: using *dns.directManager
+Jul 20 11:50:41 novarch tailscaled[16302]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:41 novarch tailscaled[16302]: flushing log.
+Jul 20 11:50:41 novarch tailscaled[16302]: logger closing down
+Jul 20 11:50:42 novarch tailscaled[16332]: invalid value "${PORT:-41641}" for flag -port: expecting just a port number, without a colon
+Jul 20 11:50:42 novarch tailscaled[16332]: Usage of /nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled:
+Jul 20 11:50:42 novarch tailscaled[16332]:   -bird-socket string
+Jul 20 11:50:42 novarch tailscaled[16332]:             path of the bird unix socket
+Jul 20 11:50:42 novarch tailscaled[16332]:   -cleanup
+Jul 20 11:50:42 novarch tailscaled[16332]:             clean up system state and exit
+Jul 20 11:50:42 novarch tailscaled[16332]:   -config string
+Jul 20 11:50:42 novarch tailscaled[16332]:             path to config file, or 'vm:user-data' to use the VM's user-data (EC2)
+Jul 20 11:50:42 novarch tailscaled[16332]:   -debug string
+Jul 20 11:50:42 novarch tailscaled[16332]:             listen address ([ip]:port) of optional debug server
+Jul 20 11:50:42 novarch tailscaled[16332]:   -no-logs-no-support
+Jul 20 11:50:42 novarch tailscaled[16332]:             disable log uploads; this also disables any technical support
+Jul 20 11:50:42 novarch tailscaled[16332]:   -outbound-http-proxy-listen string
+Jul 20 11:50:42 novarch tailscaled[16332]:             optional [ip]:port to run an outbound HTTP proxy (e.g. "localhost:8080")
+Jul 20 11:50:42 novarch tailscaled[16332]:   -port value
+Jul 20 11:50:42 novarch tailscaled[16332]:             UDP port to listen on for WireGuard and peer-to-peer traffic; 0 means automatically select (default 0)
+Jul 20 11:50:42 novarch tailscaled[16332]:   -socket string
+Jul 20 11:50:42 novarch tailscaled[16332]:             path of the service unix socket (default "/var/run/tailscale/tailscaled.sock")
+Jul 20 11:50:42 novarch tailscaled[16332]:   -socks5-server string
+Jul 20 11:50:42 novarch tailscaled[16332]:             optional [ip]:port to run a SOCK5 server (e.g. "localhost:1080")
+Jul 20 11:50:42 novarch tailscaled[16332]:   -state string
+Jul 20 11:50:42 novarch tailscaled[16332]:             absolute path of state file; use 'kube:<secret-name>' to use Kubernetes secrets or 'arn:aws:ssm:...' to store in AWS SSM; use 'mem:' to not store state and register as an ephemeral node. If empty and --statedir is provided, the default is <statedir>/tailscaled.state. Default: /var/lib/tailscale/tailscaled.state
+Jul 20 11:50:42 novarch tailscaled[16332]:   -statedir string
+Jul 20 11:50:42 novarch tailscaled[16332]:             path to directory for storage of config state, TLS certs, temporary incoming Taildrop files, etc. If empty, it's derived from --state when possible.
+Jul 20 11:50:42 novarch tailscaled[16332]:   -tun string
+Jul 20 11:50:42 novarch tailscaled[16332]:             tunnel interface name; use "userspace-networking" (beta) to not use TUN (default "tailscale0")
+Jul 20 11:50:42 novarch tailscaled[16332]:   -verbose int
+Jul 20 11:50:42 novarch tailscaled[16332]:             log verbosity level; 0 is default, 1 or higher are increasingly verbose
+Jul 20 11:50:42 novarch tailscaled[16332]:   -version
+Jul 20 11:50:42 novarch tailscaled[16332]:             print version information and exit
+Jul 20 11:50:42 novarch systemd[1]: tailscaled.service: Main process exited, code=exited, status=2/INVALIDARGUMENT
+░░ Subject: Unit process exited
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ An ExecStart= process belonging to unit tailscaled.service has exited.
+░░ 
+░░ The process' exit code is 'exited' and its exit status is 2.
+Jul 20 11:50:42 novarch tailscaled[16338]: logtail started
+Jul 20 11:50:42 novarch tailscaled[16338]: Program starting: v1.84.3, Go 1.24.4: []string{"/nix/store/bvgpj8jrv82176rrjfcm3nh34r9kz59f-tailscale-1.84.3/bin/tailscaled", "--cleanup"}
+Jul 20 11:50:42 novarch tailscaled[16338]: LogID: e897052c900bf147a48ad9298ff833ba1dd35104fb6571f8a195095517dd5aec
+Jul 20 11:50:42 novarch tailscaled[16338]: logpolicy: using system state directory "/var/lib/tailscale"
+Jul 20 11:50:42 novarch tailscaled[16338]: dns: [resolved-ping=yes rc=nm resolved=nss nm-resolved=yes nm-resolved=no ret=direct]
+Jul 20 11:50:42 novarch tailscaled[16338]: dns: using "direct" mode
+Jul 20 11:50:42 novarch tailscaled[16338]: dns: using *dns.directManager
+Jul 20 11:50:42 novarch tailscaled[16338]: dns: inotify: NewDirWatcher: context canceled
+Jul 20 11:50:42 novarch tailscaled[16338]: flushing log.
+Jul 20 11:50:42 novarch tailscaled[16338]: logger closing down
+Jul 20 11:50:43 novarch systemd[1]: tailscaled.service: Failed with result 'exit-code'.
+░░ Subject: Unit failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ The unit tailscaled.service has entered the 'failed' state with result 'exit-code'.
+Jul 20 11:50:43 novarch systemd[1]: Failed to start Tailscale node agent.
+░░ Subject: A start job for unit tailscaled.service has failed
+░░ Defined-By: systemd
+░░ Support: https://lists.freedesktop.org/mailman/listinfo/systemd-devel
+░░ 
+░░ A start job for unit tailscaled.service has finished with a failure.
+░░ 
+░░ The job identifier is 1865 and the job result is failed.
