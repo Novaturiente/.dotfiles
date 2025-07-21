@@ -4,10 +4,16 @@
 setup_chaotic_aur() {
     if ! grep -q "^\[chaotic-aur\]" /etc/pacman.conf; then
         echo -e "\n[+] Adding Chaotic-AUR repository..."
-        sudo pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com
-        sudo pacman-key --lsign-key FBA220DFC880C036
-        sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+        sudo pacman-key --init
+        sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+        sudo pacman-key --lsign-key 3056513887B78AEB
+
+        sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+        sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
         echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
+
+        sudo pacman -Sy
+
         echo -e "\n[✓] Chaotic-AUR enabled!"
     else
         echo -e "\n[✓] Chaotic-AUR already configured."
@@ -17,6 +23,13 @@ setup_chaotic_aur() {
 # Function to update mirrors using reflector
 update_mirrors() {
     echo -e "\n[+] Updating mirrorlist for optimal speeds..."
+    if ! command -v reflector &>/dev/null; then
+        info "Installing reflector..."
+        sudo pacman -S --noconfirm reflector
+    fi
+    
+    # Backup current mirrorlist
+    sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup.$(date +%Y%m%d)
     sudo reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
     echo -e "[✓] Mirrors updated!"
 }
