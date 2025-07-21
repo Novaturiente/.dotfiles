@@ -95,17 +95,11 @@ setup_chaotic_aur() {
         info "Adding Chaotic-AUR repository..."
         
         # Import keys with better error handling
-        if ! sudo pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com; then
-            warning "Primary keyserver failed, trying alternative..."
-            sudo pacman-key --recv-key FBA220DFC880C036 --keyserver hkps://keys.openpgp.org
-        fi
-        
-        sudo pacman-key --lsign-key FBA220DFC880C036
-        
-        # Install keyring and mirrorlist
-        sudo pacman -U --noconfirm \
-            'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
-            'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+        sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+        sudo pacman-key --lsign-key 3056513887B78AEB
+
+        sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+        sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
         
         # Add repository to pone acman.conf
         echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
