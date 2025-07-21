@@ -104,6 +104,8 @@ setup_chaotic_aur() {
         # Add repository to pone acman.conf
         echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
         
+        sudo pacman -Sy
+        
         success "Chaotic-AUR repository added!"
     else
         success "Chaotic-AUR already configured."
