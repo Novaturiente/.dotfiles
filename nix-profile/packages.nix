@@ -5,6 +5,8 @@ with pkgs; [
   brave
   mullvad-browser
   tailscale
+  protonup-qt
+  kdePackages.kdeconnect-kde
 
   # Hyprland Tools
   hyprpanel

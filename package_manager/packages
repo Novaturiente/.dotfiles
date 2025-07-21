@@ -1,0 +1,74 @@
+# ESSENTIAL - Base System & Core Functionality
+- cpio                           
+- linux      
+- linux-firmware
+- linux-headers                  
+- openssl                        
+- pacman-contrib                 
+- xdg-user-dirs                  
+- networkmanager
+
+# ESSENTIAL - Display & Graphics (Critical for GUI)
+- nvidia-dkms                    
+- nvidia-utils                   
+- vulkan-icd-loader              
+- wayland-protocols              
+- xorg-xwayland                  
+
+# ESSENTIAL - Window Management & Compositors
+- hyprland                       
+- greetd
+- greetd-tuigreet
+- xdg-desktop-portal             
+- xdg-desktop-portal-hyprland    
+- xdg-desktop-portal-gtk
+
+# IMPORTANT 
+- pipewire                       
+- pipewire-pulse                 
+- wireplumber                    
+- tlp
+
+# RECOMMENDED - NVIDIA Features
+- lib32-libglvnd                 
+- lib32-nvidia-utils             
+- nvidia-container-toolkit       
+- nvidia-settings                
+
+# Hyprland Extras
+- bibata-cursor-theme
+- hypridle                       
+- hyprlock                       
+- hyprpolkitagent                
+- hyprutils                      
+- upower
+- udiskie
+- pcmanfm-gtk3
+- wpaperd
+
+# Multimedia
+- blueman                        
+- bluez-utils                    
+- valent-git
+
+# Package & Application Management
+- nix
+- flatpak                        
+- paru-bin
+
+# Tools
+- nvtop
+- zsh                            
+- ghostty
+- tmux                           
+- neovim                         
+
+# Virtualization
+- podman
+- podman-compose
+- distrobox
+
+# Web Browsers
+- python-adblock                 
+- qutebrowser                    
+

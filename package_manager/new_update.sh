@@ -1,0 +1,421 @@
+#!/bin/bash
+
+# Enhanced Arch Linux Package Manager Script
+# Safely manages packages while preserving dependency relationships
+
+set -euo pipefail  # Exit on error, undefined vars, pipe failures
+
+# Global variables
+readonly SCRIPT_NAME="$(basename "$0")"
+readonly PACKAGES_FILE="${1:-packages}"
+readonly SYSTEM_FILE="${2:-system}"
+readonly LOG_FILE="/tmp/${SCRIPT_NAME}_$(date +%Y%m%d_%H%M%S).log"
+readonly BACKUP_DIR="$HOME/.local/share/package-manager-backups"
+
+# Colors for output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly NC='\033[0m' # No Color
+
+# Create backup directory
+mkdir -p "$BACKUP_DIR"
+
+# Logging function
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $*" | tee -a "$LOG_FILE"
+}
+
+# Colored output functions
+info() { echo -e "${BLUE}[+]${NC} $*"; }
+success() { echo -e "${GREEN}[✓]${NC} $*"; }
+warning() { echo -e "${YELLOW}[!]${NC} $*"; }
+error() { echo -e "${RED}[✗]${NC} $*"; }
+
+# Error handling
+cleanup() {
+    if [[ $? -ne 0 ]]; then
+        error "Script failed. Check log: $LOG_FILE"
+        error "System state backups available in: $BACKUP_DIR"
+    fi
+}
+trap cleanup EXIT
+
+# Check if running as root
+check_root() {
+    if [[ $EUID -eq 0 ]]; then
+        error "This script should not be run as root directly."
+        error "It will use sudo when needed."
+        exit 1
+    fi
+}
+
+# Check required files and create backups
+check_files() {
+    if [[ ! -f "$PACKAGES_FILE" ]]; then
+        error "Package file '$PACKAGES_FILE' not found!"
+        error "Create a file with desired packages (one per line, optionally prefixed with '-')"
+        exit 1
+    fi
+    
+    # Backup current system state
+    local backup_timestamp
+    backup_timestamp=$(date +%Y%m%d_%H%M%S)
+    
+    # Backup system file if it exists
+    if [[ -f "$SYSTEM_FILE" ]]; then
+        cp "$SYSTEM_FILE" "$BACKUP_DIR/system_$backup_timestamp.bak"
+        info "Backed up system file to: $BACKUP_DIR/system_$backup_timestamp.bak"
+    else
+        warning "System file '$SYSTEM_FILE' not found."
+        warning "This is normal for first run - will be created after package operations."
+        touch "$SYSTEM_FILE"
+    fi
+    
+    # Backup current package state
+    pacman -Qqe > "$BACKUP_DIR/current_explicit_$backup_timestamp.bak"
+    pacman -Qq > "$BACKUP_DIR/current_all_$backup_timestamp.bak"
+    info "Backed up current package state to: $BACKUP_DIR/"
+}
+
+# Check internet connectivity
+check_internet() {
+    if ! ping -c 1 archlinux.org &>/dev/null; then
+        error "No internet connection. Please check your network."
+        exit 1
+    fi
+}
+
+# Function to check and add Chaotic-AUR repo
+setup_chaotic_aur() {
+    info "Checking Chaotic-AUR repository..."
+    
+    if ! grep -q "^\[chaotic-aur\]" /etc/pacman.conf; then
+        info "Adding Chaotic-AUR repository..."
+        
+        # Import keys with better error handling
+        if ! sudo pacman-key --recv-key FBA220DFC880C036 --keyserver keyserver.ubuntu.com; then
+            warning "Primary keyserver failed, trying alternative..."
+            sudo pacman-key --recv-key FBA220DFC880C036 --keyserver hkps://keys.openpgp.org
+        fi
+        
+        sudo pacman-key --lsign-key FBA220DFC880C036
+        
+        # Install keyring and mirrorlist
+        sudo pacman -U --noconfirm \
+            'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
+            'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+        
+        # Add repository to pone acman.conf
+        echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | sudo tee -a /etc/pacman.conf
+        
+        success "Chaotic-AUR repository added!"
+    else
+        success "Chaotic-AUR already configured."
+    fi
+}
+
+# Function to update mirrors using reflector
+update_mirrors() {
+    info "Updating mirrorlist for optimal speeds..."
+    
+    # Check if reflector is installed
+    if ! command -v reflector &>/dev/null; then
+        info "Installing reflector..."
+        sudo pacman -S --noconfirm reflector
+    fi
+    
+    # Backup current mirrorlist
+    sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup.$(date +%Y%m%d)
+    
+    # Update mirrors with more comprehensive options
+    sudo reflector \
+        --country 'United States,Germany,France,Netherlands,Sweden' \
+        --latest 20 \
+        --protocol https \
+        --sort rate \
+        --save /etc/pacman.d/mirrorlist
+    
+    success "Mirrors updated!"
+}
+
+# Function to process a file: extract package names, clean them up
+process_file() {
+    local filename=$1
+    
+    if [[ ! -f "$filename" ]]; then
+        return 1
+    fi
+    
+    # More robust processing: handle comments, empty lines, various prefixes
+    grep -v '^\s*#\|^\s*$' "$filename" | \
+    sed 's/^[[:space:]]*-[[:space:]]*//' | \
+    sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
+    sed 's/[[:space:]].*//' | \
+    sort -u
+}
+
+# Function to get explicitly installed packages (not dependencies)
+get_explicit_packages() {
+    pacman -Qqe | sort
+}
+
+# Function to check if packages are safe to remove (not dependencies of desired packages)
+check_removal_safety() {
+    local packages_to_check="$1"
+    local desired_packages="$2"
+    local unsafe_packages=""
+    
+    info "Performing dependency safety check..."
+    
+    # For each package to remove, check if it's needed by desired packages
+    for pkg in $packages_to_check; do
+        # Skip empty entries
+        [[ -z "$pkg" ]] && continue
+        
+        # Check if any desired package depends on this package
+        local is_needed=false
+        for desired_pkg in $desired_packages; do
+            if pactree -r "$pkg" 2>/dev/null | grep -q "^$desired_pkg$"; then
+                warning "Package '$pkg' is needed by desired package '$desired_pkg'"
+                unsafe_packages="$unsafe_packages $pkg"
+                is_needed=true
+                break
+            fi
+        done
+        
+        # Additional check: is this package a dependency of currently installed explicit packages?
+        if [[ "$is_needed" == false ]]; then
+            local explicit_dependents
+            explicit_dependents=$(pactree -r "$pkg" 2>/dev/null | pacman -T - 2>/dev/null | wc -l)
+            if [[ $explicit_dependents -gt 0 ]]; then
+                warning "Package '$pkg' is a dependency of other explicitly installed packages"
+                unsafe_packages="$unsafe_packages $pkg"
+            fi
+        fi
+    done
+    
+    # Remove unsafe packages from removal list
+    if [[ -n "$unsafe_packages" ]]; then
+        warning "Excluding dependency packages from removal: $unsafe_packages"
+        for unsafe in $unsafe_packages; do
+            packages_to_check=$(echo "$packages_to_check" | sed "s/\b$unsafe\b//g")
+        done
+        packages_to_check=$(echo "$packages_to_check" | tr -s ' ' | sed 's/^ *//;s/ *$//')
+    fi
+    
+    echo "$packages_to_check"
+}
+
+# Enhanced package comparison with dependency awareness
+compare_packages() {
+    local desired_packages previous_packages current_packages
+    
+    info "Processing package lists with dependency safety..."
+    
+    # Get desired packages from packages file
+    if ! desired_packages=$(process_file "$PACKAGES_FILE"); then
+        error "Failed to process $PACKAGES_FILE"
+        exit 1
+    fi
+    
+    # Get previous system state (baseline)
+    if [[ -s "$SYSTEM_FILE" ]]; then
+        previous_packages=$(process_file "$SYSTEM_FILE")
+    else
+        previous_packages=""
+    fi
+    
+    # Get currently installed explicit packages
+    current_packages=$(get_explicit_packages)
+    
+    info "Desired packages count: $(echo "$desired_packages" | wc -w)"
+    info "Previous packages count: $(echo "$previous_packages" | wc -w)"
+    info "Current explicit packages count: $(echo "$current_packages" | wc -w)"
+    
+    # Find packages to install (in desired but not in current)
+    packages_to_install=$(comm -23 <(echo "$desired_packages") <(echo "$current_packages") | tr '\n' ' ')
+    
+    # Find packages to remove (in previous/system but not in desired)
+    # This preserves the original logic: only remove packages that were previously tracked
+    # but are no longer desired
+    if [[ -n "$previous_packages" ]]; then
+        packages_to_remove_candidates=$(comm -23 <(echo "$previous_packages") <(echo "$desired_packages") | tr '\n' ' ')
+        
+        # Apply safety check for dependency removal
+        if [[ -n "$packages_to_remove_candidates" ]]; then
+            packages_to_remove=$(check_removal_safety "$packages_to_remove_candidates" "$desired_packages")
+        else
+            packages_to_remove=""
+        fi
+    else
+        packages_to_remove=""
+        info "No previous system state - skipping package removal for safety"
+    fi
+    
+    # Trim whitespace
+    packages_to_install=${packages_to_install% }
+    packages_to_remove=${packages_to_remove% }
+}
+
+# Function to install packages
+install_packages() {
+    if [[ -n "$packages_to_install" ]]; then
+        local count
+        count=$(echo "$packages_to_install" | wc -w)
+        info "$count package(s) to INSTALL:"
+        echo "$packages_to_install" | tr ' ' '\n' | sed 's/^/  - /'
+        
+        # Show what dependencies will be installed
+        info "Checking dependencies..."
+        for pkg in $packages_to_install; do
+            local deps
+            deps=$(pactree -s "$pkg" 2>/dev/null | tail -n +2 | wc -l)
+            if [[ $deps -gt 0 ]]; then
+                info "  $pkg will install $deps dependencies"
+            fi
+        done
+        
+        echo
+        read -p "Proceed with installation? [y/N] " -n 1 -r
+        echo
+        
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            info "Installing packages..."
+            if sudo pacman -Syu --needed --noconfirm $packages_to_install; then
+                success "Packages installed successfully!"
+                log "Installed packages: $packages_to_install"
+            else
+                error "Package installation failed!"
+                exit 1
+            fi
+        else
+            warning "Package installation cancelled."
+        fi
+    else
+        success "No packages to install."
+    fi
+}
+
+# Function to remove packages with enhanced safety
+remove_packages() {
+    if [[ -n "$packages_to_remove" ]]; then
+        local count
+        count=$(echo "$packages_to_remove" | wc -w)
+        warning "$count package(s) to REMOVE:"
+        echo "$packages_to_remove" | tr ' ' '\n' | sed 's/^/  - /'
+        
+        # Show what will be removed (including dependencies)
+        info "Checking what will be removed..."
+        for pkg in $packages_to_remove; do
+            local deps
+            deps=$(pactree "$pkg" 2>/dev/null | tail -n +2 | wc -l)
+            if [[ $deps -gt 0 ]]; then
+                warning "  $pkg removal may affect $deps dependent packages"
+            fi
+        done
+        
+        echo
+        warning "This will use 'pacman -Rns' which removes packages and their unused dependencies."
+        read -p "Proceed with removal? [y/N] " -n 1 -r
+        echo
+        
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            info "Removing packages..."
+            if sudo pacman -Rns --noconfirm $packages_to_remove; then
+                success "Packages removed successfully!"
+                log "Removed packages: $packages_to_remove"
+            else
+                error "Package removal failed!"
+                exit 1
+            fi
+        else
+            warning "Package removal cancelled."
+        fi
+    else
+        success "No packages to remove."
+    fi
+}
+
+# Function to update system file (this is the key to dependency safety)
+update_system_file() {
+    info "Updating system package list (baseline for next run)..."
+    
+    # Store the desired packages as the new system baseline
+    # This ensures that dependencies installed during this run are preserved
+    process_file "$PACKAGES_FILE" > "$SYSTEM_FILE"
+    
+    success "System file updated: $SYSTEM_FILE"
+    info "This file now represents the baseline for future comparisons"
+}
+
+# Function to show summary and cleanup info
+show_summary() {
+    echo
+    info "=== OPERATION SUMMARY ==="
+    echo "Packages file: $PACKAGES_FILE"
+    echo "System file: $SYSTEM_FILE"
+    echo "Log file: $LOG_FILE"
+    echo "Backups: $BACKUP_DIR"
+    echo
+    
+    if [[ -n "$packages_to_install" ]]; then
+        echo "Packages installed: $(echo "$packages_to_install" | wc -w)"
+    fi
+    
+    if [[ -n "$packages_to_remove" ]]; then
+        echo "Packages removed: $(echo "$packages_to_remove" | wc -w)"
+    fi
+    
+    info "Orphaned packages check:"
+    local orphans
+    orphans=$(pacman -Qtdq 2>/dev/null || true)
+    if [[ -n "$orphans" ]]; then
+        warning "Found orphaned packages (dependencies no longer needed):"
+        echo "$orphans" | sed 's/^/  - /'
+        echo "Run 'sudo pacman -Rns \$(pacman -Qtdq)' to remove them"
+    else
+        success "No orphaned packages found"
+    fi
+    
+    success "Script completed successfully!"
+}
+
+# Main execution function
+main() {
+    echo "=== Enhanced Arch Linux Package Manager ==="
+    echo "Package file: $PACKAGES_FILE"
+    echo "System file: $SYSTEM_FILE"
+    echo
+    info "This script safely manages packages while preserving dependency relationships"
+    echo
+    
+    # Preliminary checks
+    check_root
+    check_files
+    check_internet
+    
+    # Setup and updates
+    setup_chaotic_aur
+    update_mirrors
+    
+    # Sync repositories (critical after adding new repos)
+    info "Syncing package databases..."
+    sudo pacman -Sy
+    success "Package databases synced!"
+    
+    # Package management with dependency safety
+    compare_packages
+    install_packages
+    remove_packages
+    update_system_file
+    
+    # Show summary
+    show_summary
+}
+
+# Script entry point
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi
