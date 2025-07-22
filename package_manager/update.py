@@ -190,6 +190,7 @@ def main():
     configure_chotic_aur()
     install_packages()
     os.system("rm existing")
+    os.system("cp packages system")
 
 if __name__ == '__main__':
     main()
