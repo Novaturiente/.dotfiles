@@ -16,38 +16,48 @@ for line in content:
     installed_packages.append(package)
 
 
-def run_command(command):
+
+def run_command_realtime(command):
     """
-    Runs a shell command on Linux and returns the output or error.
+    Run a Linux command and stream output in real time.
     
     Args:
-        command (str or list): The command to execute.
+        command (str or list): The shell command to execute.
         
     Returns:
-        dict: Contains 'stdout', 'stderr', 'exit_code'
+        dict: Contains full 'stdout', 'stderr', and 'exit_code'
     """
-    try:
-        result = subprocess.run(
-            command,
-            shell=isinstance(command, str),  # If it's a string, use shell=True
-            check=False,  # Avoid raising exception on non-zero exit
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-        
-        return {
-            'stdout': result.stdout.strip(),
-            'stderr': result.stderr.strip(),
-            'exit_code': result.returncode
-        }
+    process = subprocess.Popen(
+        command,
+        shell=isinstance(command, str),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+        universal_newlines=True
+    )
 
-    except Exception as e:
-        return {
-            'stdout': '',
-            'stderr': str(e),
-            'exit_code': -1
-        }
+    stdout_lines = []
+    stderr_lines = []
+
+    # Read stdout line by line
+    for line in process.stdout:
+        print(line, end='')  # Print to console in real time
+        stdout_lines.append(line)
+
+    # Read stderr after process completes
+    stderr_output = process.stderr.read()
+    if stderr_output:
+        print("ERROR:", stderr_output.strip())
+        stderr_lines.append(stderr_output)
+
+    process.wait()
+
+    return {
+        'stdout': ''.join(stdout_lines).strip(),
+        'stderr': ''.join(stderr_lines).strip(),
+        'exit_code': process.returncode
+    }
 
 
 def processFiles (packages_file, system_file):
@@ -97,8 +107,11 @@ def reflector_check():
     if "reflectord" in installed_packages:
         print("Reflector installed")
     else:
-        os.system('sudo pacman -Sy')
-        os.system('sudo pacman -S reflector')
+        run_command_realtime("sudo pacman -Sy")
+        output = run_command_realtime("sudo pacman -S --noconfirm reflector")
+        if output['exit_code'] != 0:
+            print(output)
+            exit(1)
             
 reflector_check()
 processFiles(packages_file,system_file)
