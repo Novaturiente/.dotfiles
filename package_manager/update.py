@@ -70,7 +70,6 @@ def processFiles (packages_file, system_file):
     packages = []
     system = []
     if os.path.isfile(packages_file):
-        print("Reading packages list")
         with open(packages_file, 'r') as f:
             content = f.read().split('\n')
     
@@ -79,10 +78,9 @@ def processFiles (packages_file, system_file):
                 package = line[1:].strip()
                 packages.append(package)
     else:
-        print("Packages file not found")
+        print(f"{ERROR} Packages file not found")
     
     if os.path.isfile(system_file):
-        print("Reading system")
         with open(system_file, 'r') as f:
             content = f.read().split('\n')
     
@@ -91,7 +89,7 @@ def processFiles (packages_file, system_file):
                 package = line[1:].strip()
                 system.append(package)
     else:
-        print("No existing system starting fresh")
+        print("[*] No existing system starting fresh")
 
     packages_to_install = []
     for i in packages:
@@ -103,9 +101,6 @@ def processFiles (packages_file, system_file):
         if i not in packages and i in installed_packages:
             packages_to_remove.append(i)
 
-    print(f"Install : {packages_to_install}")
-    print(f"Remove : {packages_to_remove}")
-
     return packages_to_install, packages_to_remove
 
 
@@ -116,10 +111,75 @@ def reflector_check():
         run_command_realtime("sudo pacman -Sy")
         output = run_command_realtime("sudo pacman -S --noconfirm reflector")
         if output['exit_code'] != 0:
-            print(f"{ERROR} Error : {output}")
+            print(f"{ERROR} Error : {output['stderr']}")
             exit(1)
         else:
             print(f"{SUCESS} Reflecort installed")
-            
-reflector_check()
-processFiles(packages_file,system_file)
+
+
+def configure_chotic_aur():
+    found = False
+    with open('/etc/pacman.conf', 'r', encoding='utf-8') as f:
+        for line in f:
+            if '[chaotic-aur]' in line:
+                found = True
+                break
+    if found:
+        print(f"{SUCESS} chaotic-aur already configured")
+    else:
+        output = run_command_realtime('sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com && sudo pacman-key --lsign-key 3056513887B78AEB')
+        if output['exit_code'] != 0:
+            print(f"{ERROR} Error : {output['stderr']}")
+            exit(1)
+        
+        output = run_command_realtime("sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' && sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'")
+        if output['exit_code'] != 0:
+            print(f"{ERROR} Error : {output['stderr']}")
+            exit(1)
+        
+        output = run_command_realtime("echo -e '\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist' | sudo tee -a /etc/pacman.conf")
+
+        run_command_realtime("sudo pacman -Sy")
+
+        print(f"{SUCESS} Configured chaotic-aur")
+
+def install_packages():
+    packages_to_install, packages_to_remove = processFiles(packages_file,system_file)
+    
+
+    if len(packages_to_install) > 0:
+        print(f"Installing : {packages_to_install}")
+        install_list = " ".join(packages_to_install)
+        install_command = f"sudo pacman -Syu {install_list}"
+        output = run_command_realtime(install_command)
+        if output['exit_code'] != 0:
+            print(f"{ERROR} Error : {output['stderr']}")
+            exit(1)
+        else:
+            print(f"{SUCESS} Packages installation completed")
+    else:
+        print(f"{SUCESS} No packages to install")
+
+    if len(packages_to_remove) > 0:
+        print(f"Removing : {packages_to_remove}")
+        remove_list = " ".join(packages_to_remove)
+        remove_command = f"sudo pacman -Rns {remove_list}"
+        output = run_command_realtime(remove_command)
+        if output['exit_code'] != 0:
+            print(f"{ERROR} Error : {output['stderr']}")
+            exit(1)
+        else:
+            print(f"{SUCESS} Package removeal completed")
+
+    else:
+        print(f"{SUCESS} No packages to remove")
+
+
+def main():
+    reflector_check()
+    configure_chotic_aur()
+    install_packages()
+    os.system("rm existing")
+
+if __name__ == '__main__':
+    main()
