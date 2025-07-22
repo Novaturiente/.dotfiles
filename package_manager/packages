@@ -30,7 +30,7 @@
 - tlp
 
 # RECOMMENDED - NVIDIA Features
-- lib32-nvidia-utils             
+# - lib32-nvidia-utils             
 - nvidia-container-toolkit       
 - nvidia-settings                
 
