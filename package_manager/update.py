@@ -97,11 +97,8 @@ def reflector_check():
     if "reflectord" in installed_packages:
         print("Reflector installed")
     else:
-        output = run_command('sudo pacman -Sy')
-        print(output)
-
-        output = run_command('sudo pacman -S reflector')
-        print(output)
+        os.system('sudo pacman -Sy')
+        os.system('sudo pacman -S reflector')
             
 reflector_check()
 processFiles(packages_file,system_file)
