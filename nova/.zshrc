@@ -43,6 +43,7 @@ if [ -f ~/.env.zsh ]; then
   source ~/.env.zsh
 fi
 
+
 # ---- Initialize Zoxide ----
 eval "$(zoxide init zsh)"
 
@@ -57,3 +58,5 @@ source $XDG_CONFIG_HOME/zsh/prompt.zsh
 
 # ---- Plugin and Theme Sourcing ----
 source $XDG_CONFIG_HOME/zsh/pluginload
+
+if [ -e /home/nova/.nix-profile/etc/profile.d/nix.sh ]; then . /home/nova/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
