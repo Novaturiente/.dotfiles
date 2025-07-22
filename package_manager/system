@@ -62,7 +62,8 @@
 - tmux                           
 - neovim                         
 
-# Web Browsers
-- python-adblock                 
-- qutebrowser                    
-- deluge
+# Virtualization
+- podman
+- podman-compose
+- distrobox
+
