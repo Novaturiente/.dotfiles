@@ -1,6 +1,12 @@
 import os
 import subprocess
 
+NC = "\033[0m"
+RED = "\033[31m"
+GREEN = "\033[32m"
+SUCESS = f"{GREEN}[✓]{NC}"
+ERROR = f"{RED}[✗]{NC}" 
+
 script_folder = os.path.dirname(os.path.abspath(__file__))
 
 packages_file = os.path.join(script_folder, 'packages')
@@ -105,13 +111,15 @@ def processFiles (packages_file, system_file):
 
 def reflector_check():
     if "reflectord" in installed_packages:
-        print("Reflector installed")
+        print(f"{SUCESS} Reflector already installed")
     else:
         run_command_realtime("sudo pacman -Sy")
         output = run_command_realtime("sudo pacman -S --noconfirm reflector")
         if output['exit_code'] != 0:
-            print(output)
+            print(f"{ERROR} Error : {output}")
             exit(1)
+        else:
+            print(f"{SUCESS} Reflecort installed")
             
 reflector_check()
 processFiles(packages_file,system_file)
