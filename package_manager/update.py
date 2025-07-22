@@ -186,8 +186,8 @@ def install_packages():
 
 
 def main():
-    reflector_check()
     configure_chotic_aur()
+    reflector_check()
     install_packages()
     os.system("rm existing")
     os.system("cp packages system")
