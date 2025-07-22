@@ -110,7 +110,7 @@ def processFiles (packages_file, system_file):
 
 
 def reflector_check():
-    if "reflectord" in installed_packages:
+    if "reflector" in installed_packages:
         print(f"{SUCESS} Reflector already installed")
     else:
         run_command_realtime("sudo pacman -Sy")
