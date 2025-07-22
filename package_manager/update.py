@@ -151,12 +151,13 @@ def install_packages():
         print(f"Installing : {packages_to_install}")
         install_list = " ".join(packages_to_install)
         install_command = f"sudo pacman -Syu --noconfirm {install_list}"
-        output = run_command_realtime(install_command)
-        if output['exit_code'] != 0:
-            print(f"{ERROR} Error : {output['stderr']}")
-            exit(1)
-        else:
-            print(f"{SUCESS} Packages installation completed")
+        os.system(install_command)
+        # output = run_command_realtime(install_command)
+        # if output['exit_code'] != 0:
+        #     print(f"{ERROR} Error : {output['stderr']}")
+        #     exit(1)
+        # else:
+        #     print(f"{SUCESS} Packages installation completed")
     else:
         print(f"{SUCESS} No packages to install")
 
@@ -164,12 +165,13 @@ def install_packages():
         print(f"Removing : {packages_to_remove}")
         remove_list = " ".join(packages_to_remove)
         remove_command = f"sudo pacman -Rns {remove_list}"
-        output = run_command_realtime(remove_command)
-        if output['exit_code'] != 0:
-            print(f"{ERROR} Error : {output['stderr']}")
-            exit(1)
-        else:
-            print(f"{SUCESS} Package removeal completed")
+        os.system(remove_command)
+        # output = run_command_realtime(remove_command)
+        # if output['exit_code'] != 0:
+        #     print(f"{ERROR} Error : {output['stderr']}")
+        #     exit(1)
+        # else:
+        #     print(f"{SUCESS} Package removeal completed")
 
     else:
         print(f"{SUCESS} No packages to remove")
