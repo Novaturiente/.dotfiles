@@ -76,7 +76,7 @@ def processFiles (packages_file, system_file):
     
         for line in content:
             if line.startswith('-'):
-                package = line.replace('-','').strip()
+                package = line[1:].strip()
                 packages.append(package)
     else:
         print("Packages file not found")
@@ -88,7 +88,7 @@ def processFiles (packages_file, system_file):
     
         for line in content:
             if line.startswith('-'):
-                package = line.replace('-','').strip()
+                package = line[1:].strip()
                 system.append(package)
     else:
         print("No existing system starting fresh")
