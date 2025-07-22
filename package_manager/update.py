@@ -150,7 +150,7 @@ def install_packages():
     if len(packages_to_install) > 0:
         print(f"Installing : {packages_to_install}")
         install_list = " ".join(packages_to_install)
-        install_command = f"sudo pacman -Syu {install_list}"
+        install_command = f"sudo pacman -Syu --noconfirm {install_list}"
         output = run_command_realtime(install_command)
         if output['exit_code'] != 0:
             print(f"{ERROR} Error : {output['stderr']}")
