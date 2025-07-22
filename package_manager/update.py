@@ -116,14 +116,14 @@ def reflector_check():
         else:
             print(f"{SUCESS} Reflecort installed")
         
-        os.system("sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup.$(date +%Y%m%d)")
-        update_mirrors = "sudo reflector --country 'India,Germany,France,Netherlands,Sweden' --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist"
-        output = run_command_realtime(update_mirrors)
-        if output['exit_code'] != 0:
-            print(f"{ERROR} Error : {output['stderr']}")
-            exit(1)
-        else:
-            print(f"{SUCESS} Mirrorlist updated")
+    os.system("sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup.$(date +%Y%m%d)")
+    update_mirrors = "sudo reflector --country 'India,Germany,France,Netherlands,Sweden' --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist"
+    output = run_command_realtime(update_mirrors)
+    if output['exit_code'] != 0:
+       print(f"{ERROR} Error : {output['stderr']}")
+       exit(1)
+    else:
+       print(f"{SUCESS} Mirrorlist updated")
 
 def configure_chotic_aur():
     found = False
