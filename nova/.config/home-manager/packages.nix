@@ -74,6 +74,7 @@ with pkgs; [
   unzip
 
   # Development Tools
+  lazygit
   cmake
   gcc
   lua
