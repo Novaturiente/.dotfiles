@@ -1,7 +1,7 @@
 # ---- ZSH Configuration ----
 HISTFILE=$XDG_CONFIG_HOME/zsh/.histfile
-HISTSIZE=1000
-SAVEHIST=1000
+HISTSIZE=10000
+SAVEHIST=10000
 
 setopt extendedglob nonomatch
 setopt notify  
