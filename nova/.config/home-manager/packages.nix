@@ -74,7 +74,6 @@ with pkgs; [
   unzip
 
   # Development Tools
-  opencode
   cmake
   gcc
   lua
