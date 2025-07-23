@@ -2,21 +2,25 @@
 { config, lib, pkgs, ... }:
 
 {
+  nixpkgs.hostPlatform = "x86_64-linux";
+  system-manager.allowAnyDistro = true;
+
   environment.systemPackages = [
-    pkgs.docker
+    pkgs.tailscale
   ];
 
   systemd.services = {
-    docker = {
+    tailscaled = {
       enable = true;
-      description = "Docker Daemon";
+      description = "Tailscale Daemon";
       serviceConfig = {
-        ExecStart = "${pkgs.docker}/bin/dockerd";
-        Restart = "always";
-        WantedBy = [ "multi-user.target" ];
+        ExecStart = "${pkgs.tailscale}/bin/tailscaled";
+        Restart = "on-failure";
       };
+      wantedBy = [ "multi-user.target" ];
     };
   };
 }
+
 
 

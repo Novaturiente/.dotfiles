@@ -10,9 +10,6 @@ alias l.="eza -a | grep -e '^\.'"  # Show only dotfiles
 
 alias systemupdate="sudo akshara update && reboot"
 
-# Nix package manager
-alias nixupdate="sudo nix flake update && sudo nix profile upgrade --all"
-
 # Journalctl and Windows connection
 alias jctl="journalctl -p 3 -xb"
 alias winconnect="com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound"
@@ -38,3 +35,5 @@ alias egrep='egrep --color=auto'
 alias gadd='git add . && git commit -m "Update"'
 
 alias hotspot='nmcli dev wifi hotspot ifname wlp0s20f3 ssid Novapc password "Novarch123"'
+
+alias servicesup="sudo system-manager switch --flake ~/.config/home-manager"

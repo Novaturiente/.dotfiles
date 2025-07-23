@@ -74,6 +74,7 @@ with pkgs; [
   unzip
 
   # Development Tools
+  opencode
   cmake
   gcc
   lua
@@ -83,8 +84,9 @@ with pkgs; [
   pkg-config
   pyright
   pipx
-  python313Packages.pynvim
-  python313Packages.debugpy
+  python312
+  python312Packages.pip
+  python312Packages.pynvim
   tree-sitter
   uv
   cargo
@@ -92,5 +94,4 @@ with pkgs; [
   rust-analyzer
   rustfmt
   nixfmt-classic
-  freetype
 ]
