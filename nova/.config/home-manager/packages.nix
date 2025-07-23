@@ -1,10 +1,9 @@
 { pkgs }:
 with pkgs; [
-  # Browsers
-  chromium
+
+  # Network & Browsers
   brave
   mullvad-browser
-  tailscale
   protonup-qt
 
   # Hyprland Tools
@@ -47,12 +46,14 @@ with pkgs; [
 
   # Themes & Fonts
   materia-theme-transparent
+  materia-kde-theme
   fluent-icon-theme
   nerd-fonts.roboto-mono
   nerd-fonts.jetbrains-mono
   nerd-fonts.fira-code
   noto-fonts-color-emoji
   lohit-fonts.malayalam
+  kdePackages.qtstyleplugin-kvantum
 
   # Media Tools
   pamixer
@@ -62,9 +63,9 @@ with pkgs; [
   qimgv
   zathura
   remmina
-  mpd
   mpc
   ncmpcpp
+  kdePackages.dolphin
 
   # Archive Utilities
   p7zip

@@ -1,0 +1,9 @@
+[General]
+TerminalApplication=ghostty
+TerminalService=com.mitchellh.ghostty.desktop
+ColorScheme=MateriaDark
+widgetStyle=kvantum
+
+[Icons]
+Theme=Fluent-dark
+

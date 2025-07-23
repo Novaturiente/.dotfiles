@@ -1,38 +1,24 @@
 [Default Applications]
-# Web & URLs
 x-scheme-handler/http=org.qutebrowser.qutebrowser.desktop
 x-scheme-handler/https=org.qutebrowser.qutebrowser.desktop
 text/html=org.qutebrowser.qutebrowser.desktop
-
-# PDFs (use qutebrowser or a dedicated reader like zathura)
-application/pdf=org.pwmt.zathura.desktop  # or org.qutebrowser.qutebrowser.desktop
-
-# Images
+application/pdf=org.pwmt.zathura.desktop  
 image/png=qimgv.desktop
 image/jpeg=qimgv.desktop
 image/webp=qimgv.desktop
 image/gif=qimgv.desktop
 image/svg+xml=qimgv.desktop
-
-# Videos (mpv as default)
 video/mp4=mpv.desktop
 video/webm=mpv.desktop
 video/x-matroska=mpv.desktop
-
-# Audio
 audio/mpeg=mpv.desktop
 audio/x-wav=mpv.desktop
-
-# Archives
 application/zip=ark.desktop
 application/x-tar=ark.desktop
 application/x-7z-compressed=ark.desktop
-
-# Text files
 text/plain=neovim.desktop  # or gedit.desktop, code.desktop, etc.
 
 [Added Associations]
-# Optional: Explicitly associate apps with MIME types (for right-click "Open With")
 image/png=qimgv.desktop;feh.desktop;
-image/jpeg=qimgv.desktop;feh.desktop;
+image/jpeg=org.kde.kdeconnect.app.desktop;qimgv.desktop;qimgv.desktop;
 application/pdf=org.pwmt.zathura.desktop;org.qutebrowser.qutebrowser.desktop;

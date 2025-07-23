@@ -23,6 +23,10 @@
   };
 
   services.kdeconnect.enable = true;
+  services.mpd = {
+    enable = true;
+    musicDirectory = "/home/nova/Music";
+  };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
