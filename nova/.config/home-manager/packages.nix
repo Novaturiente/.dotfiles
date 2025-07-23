@@ -43,6 +43,7 @@ with pkgs; [
   duf
   fzf
   lsof
+  less
 
   # Themes & Fonts
   materia-theme-transparent
@@ -84,8 +85,6 @@ with pkgs; [
   pkg-config
   pyright
   pipx
-  python312
-  python312Packages.pip
   python312Packages.pynvim
   tree-sitter
   uv
