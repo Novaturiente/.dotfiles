@@ -16,26 +16,27 @@ packages:
   - networkmanager
 
   # From blendos-base
-  #- archlinux-keyring
-  #- bash
-  #- coreutils
-  #- file
-  #- findutils
-  #- gettext
-  #- glibc
-  #- grep
-  #- gzip
-  #- iproute2
-  #- iputils
-  #- pacman
-  #- pciutils
-  #- procps-ng
-  #- psmisc
-  #- sed
-  #- shadow
-  #- systemd
-  #- tar
+  - archlinux-keyring
+  - bash
+  - coreutils
+  - file
+  - findutils
+  - gettext
+  - glibc
+  - grep
+  - gzip
+  - iproute2
+  - iputils
+  - pacman
+  - pciutils
+  - procps-ng
+  - psmisc
+  - sed
+  - shadow
+  - systemd
+  - tar
   - util-linux
+  - gawk
   - intel-ucode
   - wpa_supplicant
   - openssh
@@ -49,7 +50,6 @@ packages:
   - git
   - gcc-libs
   - libusb-compat
-  - gawk
   - sof-firmware
   - usb_modeswitch
   - dnsmasq
@@ -79,6 +79,7 @@ packages:
   - pipewire-pulse                 
   - wireplumber                    
   - tlp
+  - upower
   
   # RECOMMENDED - NVIDIA Features
   - lib32-libglvnd                 
@@ -89,24 +90,18 @@ packages:
   # Hyprland Extras
   - bibata-cursor-theme
   - otf-font-awesome               
-  - grim                           
-  - wl-clipboard                   
-  - brightnessctl                  
   - hypridle                       
   - hyprlock                       
   - hyprpolkitagent                
   - hyprutils                      
   - rofi-wayland                   
   - wpaperd
-  - waybar                         
   - stow                           
   - udiskie
-  #- swaync
   
   # Multimedia
   - blueman                        
   - bluez-utils                    
-  - valent-git
   
   # Package & Application Management
   - nix
@@ -115,9 +110,6 @@ packages:
   - paru-bin
   
   # Tools
-  - curl                           
-  - sshfs                          
-  - wget                           
   - nvtop
   - zsh                            
   - ghostty
@@ -125,15 +117,11 @@ packages:
   - neovim                         
   
   # Virtualization
-  - podman
-  - podman-compose
-  - distrobox
   - gnome-boxes
   
   # Web Browsers
   - python-adblock                 
-  - qutebrowser                    
-  - zen-browser-bin                
+  - qutebrowser                                   
 
   # Compatibility (Gaming)
   - gnutls                         
