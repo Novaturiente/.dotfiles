@@ -1,6 +1,5 @@
 { pkgs }:
 with pkgs; [
-
   # Network & Browsers
   brave
   mullvad-browser
@@ -55,6 +54,8 @@ with pkgs; [
   noto-fonts-color-emoji
   lohit-fonts.malayalam
   kdePackages.qtstyleplugin-kvantum
+  libsForQt5.qt5ct
+  catppuccin-qt5ct
 
   # Media Tools
   pamixer
