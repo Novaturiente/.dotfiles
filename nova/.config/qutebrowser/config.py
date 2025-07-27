@@ -117,3 +117,6 @@ config.bind("<Ctrl-Shift-Right>", "open -t {url}")
 config.bind(",c", "hint links spawn --userscript cast.sh {hint-url}")
 config.bind(",m", "hint links spawn mpv {hint-url}")
 config.bind(",d", "spawn --userscript open_download")
+
+
+c.url.start_pages = ["https://duckduckgo.com/?q=DuckDuckGo+AI+Chat&ia=chat&duckai=1"]
