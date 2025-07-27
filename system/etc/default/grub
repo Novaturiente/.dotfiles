@@ -62,8 +62,8 @@ GRUB_DISABLE_SUBMENU=y
 # operating systems.
 #GRUB_DISABLE_OS_PROBER=false
 
-GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} nvidia_drm.modeset=1 splash i915.enable_psr=1 nvidia.NVreg_PreserveVideoMemoryAllocations=1 nvidia.NVreg_EnableMSI=1"
+GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} nvidia_drm.modeset=1 splash i915.enable_psr=1 nvidia.NVreg_PreserveVideoMemoryAllocations=1 nvidia.NVreg_EnableMSI=1"y
 
-GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} cryptdevice=UUID=1859494d-221d-41d5-883d-880fb1067716:root root=/dev/mapper/root"
+GRUB_CMDLINE_LINUX_DEFAULT="${GRUB_CMDLINE_LINUX_DEFAULT} cryptdevice=UUID=f9692f7a-a0fa-4d9c-b565-5cde379b15d1:root root=/dev/mapper/root"
 
 GRUB_TIMEOUT=3

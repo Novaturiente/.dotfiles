@@ -101,7 +101,7 @@ packages:
   - waybar                         
   - stow                           
   - udiskie
-  - swaync
+  #- swaync
   
   # Multimedia
   - blueman                        

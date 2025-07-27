@@ -66,6 +66,7 @@ with pkgs; [
   remmina
   mpc
   ncmpcpp
+  deluge
   kdePackages.dolphin
 
   # Archive Utilities
