@@ -16,25 +16,25 @@ packages:
   - networkmanager
 
   # From blendos-base
-  - archlinux-keyring
-  - bash
-  - coreutils
-  - file
-  - findutils
-  - gettext
-  - glibc
-  - grep
-  - gzip
-  - iproute2
-  - iputils
-  - pacman
-  - pciutils
-  - procps-ng
-  - psmisc
-  - sed
-  - shadow
-  - systemd
-  - tar
+  #- archlinux-keyring
+  #- bash
+  #- coreutils
+  #- file
+  #- findutils
+  #- gettext
+  #- glibc
+  #- grep
+  #- gzip
+  #- iproute2
+  #- iputils
+  #- pacman
+  #- pciutils
+  #- procps-ng
+  #- psmisc
+  #- sed
+  #- shadow
+  #- systemd
+  #- tar
   - util-linux
   - intel-ucode
   - wpa_supplicant
@@ -102,7 +102,6 @@ packages:
   - stow                           
   - udiskie
   - swaync
-  - pcmanfm-gtk3
   
   # Multimedia
   - blueman                        
@@ -160,6 +159,7 @@ packages:
   - sqlite                         
   - vulkan-tools                   
   - wine-staging                   
+  - gamescope
 
 aur-packages:
 
