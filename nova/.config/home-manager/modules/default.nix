@@ -1,13 +1,11 @@
-
 { config, lib, pkgs, ... }:
 
 {
   nixpkgs.hostPlatform = "x86_64-linux";
   system-manager.allowAnyDistro = true;
 
-  environment.systemPackages = [
-    pkgs.tailscale
-  ];
+  environment.systemPackages =
+    [ pkgs.tailscale pkgs.kdePackages.kdeconnect-kde ];
 
   systemd.services = {
     tailscaled = {
@@ -21,6 +19,4 @@
     };
   };
 }
-
-
 

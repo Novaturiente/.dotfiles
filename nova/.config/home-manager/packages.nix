@@ -8,7 +8,6 @@ with pkgs; [
   # Hyprland Tools
   hyprpanel
   stow
-  rofi-wayland
   brightnessctl
   font-awesome
   grim
@@ -21,7 +20,6 @@ with pkgs; [
   wf-recorder
 
   # Terminal Tools
-  ranger
   networkmanagerapplet
   nwg-look
   dialog
@@ -68,7 +66,9 @@ with pkgs; [
   ncmpcpp
   deluge
   kdePackages.dolphin
-  kdePackages.kdeconnect-kde
+  kdePackages.ffmpegthumbs
+  kdePackages.kdegraphics-thumbnailers
+  kdePackages.kio-extras
 
   # Archive Utilities
   p7zip
