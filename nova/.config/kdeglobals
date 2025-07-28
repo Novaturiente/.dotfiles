@@ -4,6 +4,10 @@ TerminalService=com.mitchellh.ghostty.desktop
 ColorScheme=MateriaDark
 widgetStyle=kvantum
 
+[UiSettings]
+ColorScheme=MateriaDark
+
+
 [Icons]
 Theme=Fluent-dark
 

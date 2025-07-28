@@ -54,8 +54,7 @@ with pkgs; [
   noto-fonts-color-emoji
   lohit-fonts.malayalam
   kdePackages.qtstyleplugin-kvantum
-  libsForQt5.qt5ct
-  catppuccin-qt5ct
+  kdePackages.qt6ct
 
   # Media Tools
   pamixer
@@ -69,6 +68,7 @@ with pkgs; [
   ncmpcpp
   deluge
   kdePackages.dolphin
+  kdePackages.kdeconnect-kde
 
   # Archive Utilities
   p7zip
