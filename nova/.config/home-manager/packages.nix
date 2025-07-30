@@ -41,6 +41,7 @@ with pkgs; [
   fzf
   lsof
   less
+  speedtest-cli
 
   # Themes & Fonts
   materia-theme-transparent
@@ -61,7 +62,6 @@ with pkgs; [
   yt-dlp
   qimgv
   zathura
-  remmina
   mpc
   ncmpcpp
   deluge
@@ -78,8 +78,6 @@ with pkgs; [
 
   # Development Tools
   lazygit
-  cmake
-  gcc
   lua
   luarocks
   meson

@@ -7,3 +7,4 @@ nova/.config/qutebrowser_work/data/
 .opencode/
 **/.opencode/
 podman/database/
+nova/.config/qutebrowser_work/config/__pycache__

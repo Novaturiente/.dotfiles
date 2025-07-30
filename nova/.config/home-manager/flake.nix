@@ -1,5 +1,6 @@
 {
-  description = "Home Manager configuration of nova";
+  description =
+    "Nix configuration to install packages in archlinux using Home-manager and flakes";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -29,7 +30,6 @@
 
       homeConfigurations."nova" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-
         modules = [ ./home.nix ];
       };
       systemConfigs.default =

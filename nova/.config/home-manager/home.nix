@@ -7,8 +7,7 @@
 
   nixpkgs.config.allowUnfree = true;
   #
-  home.packages = import ./packages.nix { inherit pkgs; };
-
+  home.packages = (import ./packages.nix { inherit pkgs; });
   # home.packages = 
   #   (import ./packages.nix { inherit pkgs; }) ++
   #   (import ./dev-packages.nix { inherit pkgs; }) ++
