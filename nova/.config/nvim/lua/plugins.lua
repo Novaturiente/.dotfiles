@@ -163,13 +163,7 @@ return require('lazy').setup({
   -- AVANTE AI
   {
     "yetone/avante.nvim",
-    build = function()
-      if vim.fn.has("win32") == 1 then
-        return "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
-      else
-        return "make BUILD_FROM_SOURCE=true"
-      end
-    end,
+    build = "make BUILD_FROM_SOURCE=true",
     event = "VeryLazy",
     version = false,
     ---@module 'avante'
@@ -178,7 +172,7 @@ return require('lazy').setup({
       provider = "gemini",
       providers = {
         gemini = {
-          model = "gemini-2.5-flash",
+          model = "gemini-2.0-flash",
         },
       },
     },
