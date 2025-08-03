@@ -70,12 +70,7 @@ with pkgs; [
   mpc
   ncmpcpp
   deluge
-  kdePackages.dolphin
-  kdePackages.ffmpegthumbs
-  kdePackages.kdegraphics-thumbnailers
-  kdePackages.kdesdk-thumbnailers
-  kdePackages.plasma-desktop
-  kdePackages.kio-extras
+  ranger
 
   scrcpy
 

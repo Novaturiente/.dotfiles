@@ -115,7 +115,8 @@ packages:
   - ghostty
   - tmux                           
   - neovim                         
-  
+  - ranger
+
   # Virtualization
   - gnome-boxes
   
