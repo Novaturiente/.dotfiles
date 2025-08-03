@@ -57,8 +57,9 @@ with pkgs; [
   nerd-fonts.fira-code
   noto-fonts-color-emoji
   lohit-fonts.malayalam
+  adwaita-fonts
+
   kdePackages.qtstyleplugin-kvantum
-  kdePackages.qt6ct
 
   # Media Tools
   pamixer
