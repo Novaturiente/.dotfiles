@@ -1,5 +1,9 @@
 { pkgs }:
 with pkgs; [
+  #Tools
+  gparted
+  podman-compose
+
   # Network & Browsers
   brave
   mullvad-browser
@@ -42,6 +46,7 @@ with pkgs; [
   lsof
   less
   speedtest-cli
+  hostname
 
   # Themes & Fonts
   materia-theme-transparent
@@ -68,7 +73,11 @@ with pkgs; [
   kdePackages.dolphin
   kdePackages.ffmpegthumbs
   kdePackages.kdegraphics-thumbnailers
+  kdePackages.kdesdk-thumbnailers
+  kdePackages.plasma-desktop
   kdePackages.kio-extras
+
+  scrcpy
 
   # Archive Utilities
   p7zip

@@ -4,7 +4,7 @@ services:
       - /home/nova/Docker/docker_data/ollama:/root/.ollama
     container_name: ollama
     tty: true
-    image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+    image: docker.io/ollama/ollama 
     ports:
       - "11434:11434"
     deploy:

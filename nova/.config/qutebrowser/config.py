@@ -34,7 +34,7 @@ c.input.insert_mode.auto_load = True
 c.input.insert_mode.leave_on_load = False
 
 # Smooth scrolling
-c.scrolling.smooth = False
+c.scrolling.smooth = True 
 
 # Video auto play and location
 c.content.autoplay = False

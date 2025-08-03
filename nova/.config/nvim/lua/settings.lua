@@ -100,18 +100,6 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- =============================
--- Safe Require Function
--- =============================
-local function safe_require(module)
-  local success, result = pcall(require, module)
-  if not success then
-    vim.notify("Module " .. module .. " not found. Run :Lazy sync to install missing plugins.", vim.log.levels.WARN)
-    return nil
-  end
-  return result
-end
-
--- =============================
 -- Lazy.nvim Bootstrap
 -- =============================
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
