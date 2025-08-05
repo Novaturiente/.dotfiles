@@ -35,7 +35,7 @@ bindkey "^[[F" end-of-line          # Alternate End
 bindkey "^l" clear-screen
 
 # ---- Load Environment Variables ----
-source $XDG_CONFIG_HOME/zsh/variables
+source $XDG_CONFIG_HOME/zsh/variables.zsh
 if [ -f ~/.env.zsh ]; then
   source ~/.env.zsh
 fi
@@ -45,12 +45,12 @@ eval "$(zoxide init zsh)"
 # ---- FZF Configuration ----
 source <(fzf --zsh)
 # ---- Aliases ----
-source $XDG_CONFIG_HOME/zsh/aliases
+source $XDG_CONFIG_HOME/zsh/aliases.zsh
 # ---- Prompt Sourcing ----
 source $XDG_CONFIG_HOME/zsh/prompt.zsh 
 # ---- Plugin and Theme Sourcing ----
-source $XDG_CONFIG_HOME/zsh/pluginload
+source $XDG_CONFIG_HOME/zsh/pluginload.zsh
 # ---- Functions ----
-source $XDG_CONFIG_HOME/zsh/functions
+source $XDG_CONFIG_HOME/zsh/functions.zsh
 
 if [ -e /home/nova/.nix-profile/etc/profile.d/nix.sh ]; then . /home/nova/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer

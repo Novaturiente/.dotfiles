@@ -5,7 +5,6 @@ source $HOME/.config/zsh/plugins/autopair.zsh
 source $HOME/.config/zsh/plugins/auto-venv.zsh
 source $HOME/.config/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 source $HOME/.config/zsh/plugins/zsh-autosuggestions.zsh
-# source $HOME/.config/zsh/plugins/per-directory-history.zsh
 source $HOME/.config/zsh/plugins/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
 HISTDB_TABULATE_CMD=(sed -e $'s/\x1f/\t/g')
