@@ -98,4 +98,5 @@ with pkgs; [
   rust-analyzer
   rustfmt
   nixfmt-classic
+  sqlite
 ]

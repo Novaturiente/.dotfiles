@@ -10,7 +10,6 @@ setopt append_history inc_append_history share_history
 setopt hist_ignore_dups hist_ignore_all_dups hist_reduce_blanks
 setopt no_case_glob no_case_match
 setopt auto_menu menu_complete
-
 setopt auto_pushd pushd_ignore_dups
 
 # ---- Compinit ----
@@ -24,7 +23,6 @@ autoload -U colors && colors
 #cmp opts
 zstyle ':completion:*' menu select
 zstyle ':completion:*' special-dirs true
-
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33 
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=*'
 
@@ -38,25 +36,21 @@ bindkey "^l" clear-screen
 
 # ---- Load Environment Variables ----
 source $XDG_CONFIG_HOME/zsh/variables
-
 if [ -f ~/.env.zsh ]; then
   source ~/.env.zsh
 fi
 
-
 # ---- Initialize Zoxide ----
 eval "$(zoxide init zsh)"
-
 # ---- FZF Configuration ----
 source <(fzf --zsh)
-
 # ---- Aliases ----
 source $XDG_CONFIG_HOME/zsh/aliases
-
 # ---- Prompt Sourcing ----
 source $XDG_CONFIG_HOME/zsh/prompt.zsh 
-
 # ---- Plugin and Theme Sourcing ----
 source $XDG_CONFIG_HOME/zsh/pluginload
+# ---- Functions ----
+source $XDG_CONFIG_HOME/zsh/functions
 
 if [ -e /home/nova/.nix-profile/etc/profile.d/nix.sh ]; then . /home/nova/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
