@@ -20,12 +20,6 @@ if [[ ! -s $zcompdump || $zcompdump -ot ~/.zshrc ]]; then
 fi
 autoload -U colors && colors
 
-#cmp opts
-zstyle ':completion:*' menu select
-zstyle ':completion:*' special-dirs true
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33 
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=*'
-
 # ---- Key Bindings for Special Keys ----
 bindkey "^[[3~" delete-char         # Delete
 bindkey "^[[1~" beginning-of-line   # Home
@@ -52,5 +46,15 @@ source $XDG_CONFIG_HOME/zsh/prompt.zsh
 source $XDG_CONFIG_HOME/zsh/pluginload.zsh
 # ---- Functions ----
 source $XDG_CONFIG_HOME/zsh/functions.zsh
+
+#cmp opts
+zstyle ':completion:*' menu select
+zstyle ':completion:*' special-dirs true
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33 
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=*'
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format '%B%d%b'
+zstyle ':completion:*' group-name ''
+
 
 if [ -e /home/nova/.nix-profile/etc/profile.d/nix.sh ]; then . /home/nova/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer

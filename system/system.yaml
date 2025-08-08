@@ -58,10 +58,12 @@ packages:
   - exfatprogs
   - iptables
   - iptables-nft
+  - cmake
   
   # ESSENTIAL - Display & Graphics (Critical for GUI)
   - nvidia-dkms                    
   - nvidia-utils                   
+  - nvidia-prime
   - vulkan-icd-loader              
   - wayland-protocols              
   - xorg-xwayland                  
@@ -69,6 +71,7 @@ packages:
   # ESSENTIAL - Window Management & Compositors
   - hyprland                       
   - greetd
+  - greetd-gtkgreet
   - greetd-tuigreet
   - xdg-desktop-portal             
   - xdg-desktop-portal-hyprland    
@@ -106,7 +109,6 @@ packages:
   # Package & Application Management
   - nix
   - flatpak                        
-  - protonup                       
   - paru-bin
   
   # Tools
@@ -125,30 +127,33 @@ packages:
   - qutebrowser                                   
 
   # Compatibility (Gaming)
-  - gnutls                         
-  - gtk3                           
-  - lib32-gst-plugins-base-libs    
-  - lib32-libgcrypt                
-  - lib32-libgpg-error             
-  - lib32-libpng                   
-  - lib32-libpulse                 
-  - lib32-libva                    
-  - lib32-openal                   
-  - lib32-sqlite                   
-  - lib32-vulkan-icd-loader        
-  - libgcrypt                      
-  - libgpg-error                   
-  - libinput                       
-  - libpng                         
-  - libpulse                       
-  - libva                          
-  - libxkbcommon                   
-  - lutris                         
-  - openal                         
-  - sqlite                         
-  - vulkan-tools                   
-  - wine-staging                   
-  - gamescope
+  # - lutris
+  # - wine-staging                   
+  # - gamemode
+  # - gamescope
+  # - gnutls
+  # - lib32-vulkan-icd-loader
+  # - lib32-gnutls
+  # - vulkan-tools
+  #
+  # - libpulse
+  # - lib32-libpulse
+  # - lib32-mpg123
+  # - lib32-openal
+  #
+  # - libpng
+  # - lib32-libpng
+  # - libjpeg6-turbo
+  # - lib32-libjpeg6-turbo
+  # - libva
+  # - lib32-libva
+  # - libvdpau
+  # - lib32-libvdpau
+  #
+  # - openbox
+  # - xorg-server
+  # - xorg-xinit
+  # - xorg-xauth
 
 aur-packages:
 
