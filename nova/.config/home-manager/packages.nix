@@ -7,7 +7,6 @@ with pkgs; [
   # Network & Browsers
   brave
   mullvad-browser
-  protonup-qt
 
   # Hyprland Tools
   hyprpanel
@@ -25,9 +24,9 @@ with pkgs; [
 
   # Terminal Tools
   networkmanagerapplet
-  nwg-look
   dialog
   htop
+  btop
   fastfetch
   eza
   zoxide
@@ -38,7 +37,6 @@ with pkgs; [
   curl
   wget
   sshfs
-  tree
   ncdu
   bat
   duf
@@ -58,21 +56,16 @@ with pkgs; [
   noto-fonts-color-emoji
   lohit-fonts.malayalam
   adwaita-fonts
-
-  kdePackages.qtstyleplugin-kvantum
+  nwg-look
 
   # Media Tools
   pamixer
   mpv
   castnow
-  yt-dlp
   qimgv
   zathura
-  mpc
-  ncmpcpp
   deluge
   ranger
-
   scrcpy
 
   # Archive Utilities
