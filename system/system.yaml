@@ -61,7 +61,7 @@ packages:
   - cmake
   
   # ESSENTIAL - Display & Graphics (Critical for GUI)
-  - nvidia-dkms                    
+  - nvidia                    
   - nvidia-utils                   
   - nvidia-prime
   - vulkan-icd-loader              
@@ -156,6 +156,7 @@ packages:
   # - xorg-xauth
 
 aur-packages:
+  - python-fake-useragent
 
 services:
   - systemd-resolved
