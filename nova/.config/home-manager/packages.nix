@@ -3,6 +3,7 @@ with pkgs; [
   #Tools
   gparted
   podman-compose
+  protonup-qt
 
   # Network & Browsers
   brave
