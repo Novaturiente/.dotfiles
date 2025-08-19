@@ -37,3 +37,4 @@ alias hotspot='nmcli dev wifi hotspot ifname wlp0s20f3 ssid Novapc password "Nov
 alias nixup="sudo systemctl enable --now nix-daemon"
 alias homeup="nix run github:nix-community/home-manager -- init --switch"
 alias serviceup="cd ~/.config/home-manager/ && sudo nix run 'github:numtide/system-manager' -- switch --flake '.'"
+alias editpackages="nvim ~/.config/home-manager/packages.nix"

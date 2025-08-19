@@ -33,14 +33,13 @@ c.colors.webpage.darkmode.policy.images = "never"
 # Defauly to input mode
 c.input.insert_mode.auto_enter = True
 c.input.insert_mode.auto_load = True
-c.input.insert_mode.leave_on_load = False
+c.input.insert_mode.leave_on_load = True
 
 # Smooth scrolling
-c.scrolling.smooth = True 
+c.scrolling.smooth = False 
 
 # GPU accelearation
 c.qt.args = [
-    "ignore-gpu-blocklist",
     "enable-gpu-rasterization",
     "enable-accelerated-video-decode",
 ]
@@ -50,29 +49,23 @@ c.content.headers.user_agent = (ua.random)
 c.content.headers.accept_language = "en-US,en;q=0.5"
 c.content.headers.referer = "same-domain"
 c.content.headers.custom = {"Permissions-Policy": "geolocation=(), microphone=(), camera=(), interest-cohort=()"}
-c.content.canvas_reading = False
-c.content.webgl = False
+# c.content.canvas_reading = False
+# c.content.webgl = False
 c.content.cookies.accept = "no-3rdparty"
 c.content.cache.appcache = False
 c.content.headers.do_not_track = True
 c.content.hyperlink_auditing = False
-c.content.javascript.enabled = False
+# c.content.javascript.enabled = False
 c.content.blocking.enabled = True
 c.content.blocking.method = "both"
-c.content.blocking.adblock.lists = []
+c.content.blocking.adblock.lists = [
+    "https://easylist.to/easylist/easylist.txt",
+    "https://easylist.to/easylist/easyprivacy.txt",
+]
 # Video auto play and location
 c.content.autoplay = False
 c.content.geolocation = False
 
-## Key bindings
-# Map Alt+Right to next tab
-config.bind("<Alt-Right>", "tab-next")
-# Map Alt+Left to previous tab
-config.bind("<Alt-Left>", "tab-prev")
-# Open archive of broken pages
-config.bind(",w", "open http://web.archive.org/{url}")
-# Open page in zen-browser
-config.bind("<Ctrl+Alt+t>", "spawn -d zen-browser {url} ;; tab-close")
 
 # — Hint selection improvements —
 # Add more elements to hinting for clickable areas (e.g. dropdowns/forms)
@@ -109,17 +102,6 @@ c.url.searchengines = {
 # Always search if input isn't a URL
 c.url.auto_search = "naive"
 
-# — Keybinding: search selected text —
-config.bind(",g", "spawn --userscript qute_search -g", mode="normal")
-
-# — Opening links in background via keyboard —
-config.bind("<Ctrl-Shift-Right>", "open -t {url}")
-
-# -- Cast current video
-config.bind(",c", "hint links spawn --userscript cast.sh {hint-url}")
-config.bind(",m", "hint links spawn mpv {hint-url}")
-config.bind(",d", "spawn --userscript open_download")
-
 c.url.start_pages = ["https://www.perplexity.ai/"]
 
 trusted = [
@@ -131,3 +113,32 @@ for pat in trusted:
     config.set("content.javascript.enabled", True, pat)
     config.set("content.cookies.accept", "all", pat)
     config.set("content.webgl", True, pat)
+
+
+## Key bindings
+# Bind Escape in insert mode to blur the active element, then leave insert mode
+c.bindings.key_mappings['<Ctrl-x>'] = '<Escape>'
+config.bind('<Escape>', 'mode-leave ;; jseval -q document.activeElement.blur()', mode='insert')
+
+config.bind('I', 'hint inputs')
+config.bind('h', 'hint all hover')
+
+# Map Alt+Right to next tab
+config.bind("<Alt-Right>", "tab-next")
+# Map Alt+Left to previous tab
+config.bind("<Alt-Left>", "tab-prev")
+# Open archive of broken pages
+config.bind(",w", "open http://web.archive.org/{url}")
+# Open page in zen-browser
+config.bind("<Ctrl+Alt+t>", "spawn -d zen-browser {url} ;; tab-close")
+
+# -- Cast current video
+config.bind(",c", "hint links spawn --userscript cast.sh {hint-url}")
+config.bind(",m", "hint links spawn mpv {hint-url}")
+config.bind(",d", "spawn --userscript open_download")
+
+# — Keybinding: search selected text —
+config.bind(",g", "spawn --userscript qute_search -g", mode="normal")
+# — Opening links in background via keyboard —
+config.bind("<Ctrl-Shift-Right>", "open -t {url}")
+

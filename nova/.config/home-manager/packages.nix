@@ -5,9 +5,13 @@ with pkgs; [
   podman-compose
   protonup-qt
 
+  cmatrix
+  tty-clock
+  calcurse
   # Network & Browsers
   brave
   mullvad-browser
+  yt-dlp
 
   # Hyprland Tools
   hyprpanel
@@ -88,9 +92,11 @@ with pkgs; [
   tree-sitter
   uv
   cargo
+  python310
   go
   rust-analyzer
   rustfmt
   nixfmt-classic
   sqlite
+  jdk
 ]
