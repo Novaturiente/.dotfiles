@@ -4,10 +4,8 @@ with pkgs; [
   gparted
   podman-compose
   protonup-qt
+  sbctl
 
-  cmatrix
-  tty-clock
-  calcurse
   # Network & Browsers
   brave
   mullvad-browser
@@ -99,4 +97,8 @@ with pkgs; [
   nixfmt-classic
   sqlite
   jdk
+
+  dialog
+  freerdp
+  netcat-openbsd
 ]

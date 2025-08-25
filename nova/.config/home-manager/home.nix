@@ -19,11 +19,7 @@
     # EDITOR = "emacs";
   };
 
-  services.kdeconnect.enable = true;
-  # services.mpd = {
-  #   enable = true;
-  #   musicDirectory = "/home/nova/Music";
-  # };
+  # services.kdeconnect.enable = true;
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;

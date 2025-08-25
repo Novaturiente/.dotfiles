@@ -38,3 +38,11 @@ alias nixup="sudo systemctl enable --now nix-daemon"
 alias homeup="nix run github:nix-community/home-manager -- init --switch"
 alias serviceup="cd ~/.config/home-manager/ && sudo nix run 'github:numtide/system-manager' -- switch --flake '.'"
 alias editpackages="nvim ~/.config/home-manager/packages.nix"
+
+
+alias winstart="podman-compose -f ~/.config/winapps/compose.yaml start && sleep 5 && xfreerdp /u:Docker /p:novarch /v:127.0.0.1 /cert:ignore /sound /microphone /dynamic-resolution /sec:tls /f"
+alias winrestart="podman-compose -f ~/.config/winapps/compose.yaml restart && sleep 5 && xfreerdp /u:Docker /p:novarch /v:127.0.0.1 /cert:ignore /sound /microphone /dynamic-resolution /sec:tls /f"
+alias winstop="podman-compose -f ~/.config/winapps/compose.yaml stop"
+
+
+alias fileserver="python3 -m http.server 8080 --directory ~/Share"

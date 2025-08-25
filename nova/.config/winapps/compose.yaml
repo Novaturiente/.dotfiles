@@ -6,10 +6,10 @@ services:
     image: ghcr.io/dockur/windows:latest
     container_name: WinApps # Created Docker VM Name.
     environment:
-      VERSION: "tiny11"
+      VERSION: "11"
       RAM_SIZE: "10G" # RAM allocated to the Windows VM.
       CPU_CORES: "12" # CPU cores allocated to the Windows VM.
-      DISK_SIZE: "64G" # Size of the primary hard disk.
+      DISK_SIZE: "100G" # Size of the primary hard disk.
       USERNAME: "Docker" # Edit here to set a custom Windows username. The default is 'MyWindowsUser'.
       PASSWORD: "novarch" # Edit here to set a password for the Windows user. The default is 'MyWindowsPassword'.
       HOME: "${HOME}" # Set path to Linux user home folder.
@@ -23,7 +23,8 @@ services:
     stop_grace_period: 120s 
     restart: "no" 
     volumes:
-      - data:/storage 
+      # - data:/storage 
+      - /run/media/data/Windows:/storage 
       - ${HOME}:/shared 
       - ./oem:/oem 
     sysctls:
@@ -31,3 +32,5 @@ services:
     devices:
       - /dev/kvm # Enable KVM.
       - /dev/net/tun # Enable tuntap
+    group_add:
+      - keep-groups
