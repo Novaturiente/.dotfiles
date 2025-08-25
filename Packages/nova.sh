@@ -177,21 +177,32 @@ if [[ -n "$packages_to_add" || -n "$packages_to_remove" ]]; then
     if [[ "$confirmation" == "y" || "$confirmation" == "Y" ]]; then
         echo -e "\n${GREEN}${GEAR} Executing commands...${NC}"
         
+        status=0
+        
         # Execute install command if there are packages to add
         if [[ -n "$packages_to_add" ]]; then
             echo -e "${GREEN}${INSTALL} Installing packages...${NC}"
             sudo pacman -S $(echo "$packages_to_add" | tr '\n' ' ')
+            if [[ $? -ne 0 ]]; then
+                status=1
+            fi
         fi
         
         # Execute remove command if there are packages to remove
         if [[ -n "$packages_to_remove" ]]; then
             echo -e "${RED}${REMOVE} Removing packages...${NC}"
             sudo pacman -Rs $(echo "$packages_to_remove" | tr '\n' ' ')
+            if [[ $? -ne 0 ]]; then
+                status=1
+            fi
         fi
         
-        echo -e "\n${GREEN}${CHECK} Package operations completed!${NC}"
-
-        cp $UPDATE_FILE $SYSTEM_FILE
+        if [[ $status -eq 0 ]]; then
+            echo -e "\n${GREEN}${CHECK} Package operations completed!${NC}"
+            cp $UPDATE_FILE $SYSTEM_FILE
+        else
+            echo -e "\n${RED}${CROSS} Package operations failed. Not copying the file.${NC}"
+        fi
     else
         echo -e "${YELLOW}${CROSS} Operation cancelled by user${NC}"
     fi
