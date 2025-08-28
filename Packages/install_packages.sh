@@ -41,22 +41,6 @@ system_exists=false
 [[ -f "$UPDATE_FILE" ]] && update_exists=true
 [[ -f "$SYSTEM_FILE" ]] && system_exists=true
 
-# Handle missing files
-if [[ "$update_exists" == false && "$system_exists" == false ]]; then
-    echo -e "${RED}${CROSS} Error: Both files '$UPDATE_FILE' and '$SYSTEM_FILE' are missing!${NC}"
-    exit 1
-elif [[ "$update_exists" == false ]]; then
-    echo -e "${YELLOW}${WARNING} File '$UPDATE_FILE' not found. Copying '$SYSTEM_FILE' to '$UPDATE_FILE'${NC}"
-    cp "$SYSTEM_FILE" "$UPDATE_FILE"
-    echo -e "${GREEN}${CHECK} File copied successfully${NC}"
-    exit 0
-elif [[ "$system_exists" == false ]]; then
-    echo -e "${YELLOW}${WARNING} File '$SYSTEM_FILE' not found. Creating '$SYSTEM_FILE'${NC}"
-    touch $SYSTEM_FILE
-    echo -e "${GREEN}${CHECK} File created successfully${NC}"
-    exit 0
-fi
-
 echo -e "${GREEN}${CHECK} Both files found. Comparing package lists...${NC}"
 
 # Extract package names from both files
@@ -155,14 +139,14 @@ echo -e "${WHITE}━━━━━━━━━━━━━━━━━━━━━
 if [[ -n "$packages_to_add" ]]; then
     add_command="sudo pacman -S $(echo "$packages_to_add" | tr '\n' ' ')"
     echo -e "${GREEN}${INSTALL} To install packages:${NC}"
-    echo -e "${WHITE}$add_command${NC}"
+    # echo -e "${WHITE}$add_command${NC}"
 fi
 
 if [[ -n "$packages_to_remove" ]]; then
     remove_command="sudo pacman -Rns $(echo "$packages_to_remove" | tr '\n' ' ')"
     echo
     echo -e "${RED}${REMOVE} To remove packages:${NC}"
-    echo -e "${WHITE}$remove_command${NC}"
+    # echo -e "${WHITE}$remove_command${NC}"
 fi
 
 # Ask for confirmation and execute commands if confirmed
@@ -171,7 +155,7 @@ if [[ -n "$packages_to_add" || -n "$packages_to_remove" ]]; then
     echo -e "${WHITE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${YELLOW}${WARNING} CONFIRMATION REQUIRED${NC}"
     echo -e "${WHITE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e -n "${CYAN}${ARROW} Do you want to execute the above pacman commands? ${WHITE}(y/Y to confirm):${NC} "
+    echo -e -n "${CYAN}${ARROW} Do you want to execute the above pacman commands? ${WHITE}(Y to confirm):${NC} "
     read confirmation
     
     if [[ "$confirmation" == "y" || "$confirmation" == "Y" ]]; then
@@ -182,9 +166,24 @@ if [[ -n "$packages_to_add" || -n "$packages_to_remove" ]]; then
         # Execute install command if there are packages to add
         if [[ -n "$packages_to_add" ]]; then
             echo -e "${GREEN}${INSTALL} Installing packages...${NC}"
-            sudo pacman -S $(echo "$packages_to_add" | tr '\n' ' ')
-            if [[ $? -ne 0 ]]; then
+            install_success=false
+            for attempt in {1..3}; do
+                echo -e "${CYAN}${ARROW} Install attempt $attempt of 3${NC}"
+                if sudo pacman -S $(echo "$packages_to_add" | tr '\n' ' '); then
+                    install_success=true
+                    echo -e "${GREEN}${CHECK} Package installation succeeded${NC}"
+                    break
+                else
+                    if [[ $attempt -lt 3 ]]; then
+                        echo -e "${YELLOW}${WARNING} Install failed, retrying in 3 seconds...${NC}"
+                        sleep 3
+                    fi
+                fi
+            done
+            
+            if [[ "$install_success" != "true" ]]; then
                 status=1
+                echo -e "${RED}${CROSS} Package installation failed after 3 attempts${NC}"
             fi
         fi
         
