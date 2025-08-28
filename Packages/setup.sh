@@ -28,17 +28,14 @@ system_exists=false
 # Handle missing files
 if [[ "$update_exists" == false && "$system_exists" == false ]]; then
     echo -e "${RED}${CROSS} Error: Both files '$UPDATE_FILE' and '$SYSTEM_FILE' are missing!${NC}"
-    exit 1
 elif [[ "$update_exists" == false ]]; then
     echo -e "${YELLOW}${WARNING} File '$UPDATE_FILE' not found. Copying '$SYSTEM_FILE' to '$UPDATE_FILE'${NC}"
     cp "$SYSTEM_FILE" "$UPDATE_FILE"
     echo -e "${GREEN}${CHECK} File copied successfully${NC}"
-    exit 0
 elif [[ "$system_exists" == false ]]; then
     echo -e "${YELLOW}${WARNING} File '$SYSTEM_FILE' not found. Creating '$SYSTEM_FILE'${NC}"
     touch $SYSTEM_FILE
     echo -e "${GREEN}${CHECK} File created successfully${NC}"
-    exit 0
 fi
 
 echo -e "${YELLOW}${INFO} Updating keyring ${NC}"
