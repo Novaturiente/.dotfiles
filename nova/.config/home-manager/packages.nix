@@ -2,7 +2,6 @@
 with pkgs; [
   #Tools
   gparted
-  podman-compose
   protonup-qt
   sbctl
 
@@ -13,6 +12,7 @@ with pkgs; [
 
   # Hyprland Tools
   hyprpanel
+  hyprshade
   stow
   brightnessctl
   font-awesome
@@ -97,8 +97,4 @@ with pkgs; [
   nixfmt-classic
   sqlite
   jdk
-
-  dialog
-  freerdp
-  netcat-openbsd
 ]

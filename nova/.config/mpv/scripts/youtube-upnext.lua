@@ -1,1 +1,0 @@
-../../../.dotfiles/nova/.config/mpv/scripts/youtube-upnext.lua

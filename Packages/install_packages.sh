@@ -200,6 +200,8 @@ if [[ -n "$packages_to_add" || -n "$packages_to_remove" ]]; then
         if [[ $status -eq 0 ]]; then
             echo -e "\n${GREEN}${CHECK} Package operations completed!${NC}"
             cp $UPDATE_FILE $SYSTEM_FILE
+            echo "Copying configurations"
+            ./configure.sh
         else
             echo -e "\n${RED}${CROSS} Package operations failed. Not copying the file.${NC}"
         fi

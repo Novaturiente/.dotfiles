@@ -23,14 +23,15 @@ services:
     stop_grace_period: 120s 
     restart: "no" 
     volumes:
+      # - /home/nova/Documents/tiny11.iso:/boot.iso
       # - data:/storage 
       - /run/media/data/Windows:/storage 
       - ${HOME}:/shared 
-      - ./oem:/oem 
+      # - ./oem:/oem 
     sysctls:
        - net.ipv4.ip_forward=1
     devices:
       - /dev/kvm # Enable KVM.
       - /dev/net/tun # Enable tuntap
-    group_add:
-      - keep-groups
+    # group_add:
+      # - keep-groups
