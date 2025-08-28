@@ -9,39 +9,14 @@ xdg-user-dirs
 networkmanager
 
 #From blendos-base
-archlinux-keyring
-bash
-coreutils
-file
-findutils
-gettext
-glibc
-grep
-gzip
-iproute2
-iputils
-pacman
-pciutils
-procps-ng
-psmisc
-sed
-shadow
-systemd
-tar
-util-linux
-gawk
 intel-ucode
 wpa_supplicant
 openssh
 rsync
-mkinitcpio
 e2fsprogs
-grub
-sudo
 usbutils
 base-devel
 git
-gcc-libs
 libusb-compat
 sof-firmware
 usb_modeswitch
@@ -58,6 +33,7 @@ nvidia-utils
 lib32-nvidia-utils             
 nvidia-container-toolkit       
 nvidia-settings                
+lib32-libglvnd                 
 vulkan-icd-loader              
 wayland-protocols              
 xorg-xwayland                  
@@ -78,9 +54,6 @@ wireplumber
 tlp
 upower
 
-#RECOMMENDED - NVIDIA Features
-lib32-libglvnd                 
-
 #Hyprland Extras
 bibata-cursor-theme
 otf-font-awesome               
@@ -92,6 +65,7 @@ rofi-wayland
 wpaperd
 stow                           
 udiskie
+kdeconnect
 
 #Multimedia
 blueman                        
@@ -112,6 +86,8 @@ ranger
 
 #Virtualization
 gnome-boxes
+docker
+docker-compose
 
 #Web Browsers
 python-adblock                 
@@ -147,7 +123,8 @@ lib32-libvdpau
 # fuse-overlayfs
 # ttf-liberation
 # ttf-dejavu
-#
+
+# EDITING SETUP
 # libva-nvidia-driver
 # movit
 # mlt
@@ -159,5 +136,4 @@ lib32-libvdpau
 # libexif
 # kdenlive
 
-plasma-desktop
-kdeconnect
+# plasma-desktop
