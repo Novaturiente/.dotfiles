@@ -7,7 +7,7 @@ out vec4 fragcolor;
 // from https://github.com/hyprwm/hyprland/issues/1140#issuecomment-1614863627
 
 const vec3 vib_rgb_balance = vec3(1.0, 1.0, 1.0);
-const float vib_vibrance = 0.25;
+const float vib_vibrance = 0.15;
 const vec3 vib_coeffvibrance = vib_rgb_balance * -vib_vibrance;
 
 // Contrast adjustment constant
