@@ -40,7 +40,6 @@ fi
 
 echo -e "${YELLOW}${INFO} Updating keyring ${NC}"
 sudo pacman-key --init
-sudo pacman-key --refresh-keys
 sudo pacman -Sy --noconfirm reflector
 sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 sudo pacman -Sy --noconfirm archlinux-keyring
