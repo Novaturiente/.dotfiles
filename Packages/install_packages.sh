@@ -137,7 +137,7 @@ echo -e "${BLUE}${GEAR} GENERATED PACMAN COMMANDS${NC}"
 echo -e "${WHITE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 if [[ -n "$packages_to_add" ]]; then
-    add_command="sudo pacman -S $(echo "$packages_to_add" | tr '\n' ' ')"
+    add_command="sudo pacman -S --noconfirm $(echo "$packages_to_add" | tr '\n' ' ')"
     echo -e "${GREEN}${INSTALL} To install packages:${NC}"
     # echo -e "${WHITE}$add_command${NC}"
 fi
