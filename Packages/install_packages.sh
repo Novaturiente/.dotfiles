@@ -169,7 +169,7 @@ if [[ -n "$packages_to_add" || -n "$packages_to_remove" ]]; then
             install_success=false
             for attempt in {1..3}; do
                 echo -e "${CYAN}${ARROW} Install attempt $attempt of 3${NC}"
-                if sudo pacman -S $(echo "$packages_to_add" | tr '\n' ' '); then
+                if sudo pacman -S --noconfirm $(echo "$packages_to_add" | tr '\n' ' '); then
                     install_success=true
                     echo -e "${GREEN}${CHECK} Package installation succeeded${NC}"
                     break
