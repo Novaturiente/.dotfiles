@@ -141,26 +141,23 @@ lib32-libva
 libvdpau
 lib32-libvdpau
 
-freetype2
-lib32-freetype2
-dwarfs
-fuse-overlayfs
-ttf-liberation
-ttf-dejavu
+# freetype2
+# lib32-freetype2
+# dwarfs
+# fuse-overlayfs
+# ttf-liberation
+# ttf-dejavu
+#
+# libva-nvidia-driver
+# movit
+# mlt
+# intel-media-driver
+# sdl
+# sox
+# opencv
+# rtaudio
+# libexif
+# kdenlive
 
-libva-nvidia-driver
-movit
-mlt
-intel-media-driver
-sdl
-sox
-opencv
-rtaudio
-libexif
-kdenlive
-
-xorg-server
-xorg-xauth
-xorg-xinit
 plasma-desktop
 kdeconnect
