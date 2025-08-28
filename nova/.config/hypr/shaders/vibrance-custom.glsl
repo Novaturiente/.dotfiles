@@ -11,7 +11,7 @@ const float vib_vibrance = 0.15;
 const vec3 vib_coeffvibrance = vib_rgb_balance * -vib_vibrance;
 
 // Contrast adjustment constant
-const float contrast = 1.2; // Adjust between 0.5 and 2.0
+const float contrast = 1.1; // Adjust between 0.5 and 2.0
 
 void main() {
     vec4 pixcolor = texture(tex, v_texcoord);

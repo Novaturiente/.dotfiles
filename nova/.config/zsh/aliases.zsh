@@ -26,9 +26,9 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-alias ollama="podman exec -it ollama ollama"
-alias ollamaup="podman-compose -f ~/.dotfiles/podman/ollama.yml up -d"
-alias ollamadown="podman-compose -f ~/.dotfiles/podman/ollama.yml down"
+alias ollama="docker exec -it ollama ollama"
+alias ollamaup="docker-compose -f ~/.dotfiles/podman/ollama.yml up -d"
+alias ollamadown="docker-compose -f ~/.dotfiles/podman/ollama.yml down"
 
 alias gadd='git add . && git commit -m "Update"'
 
