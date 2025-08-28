@@ -60,4 +60,5 @@ sudo pacman -Syyu
 
 ./install_packages.sh
 
+
 echo -e "${GREEN}${CHECK} ALL DOME REBOOT NOW ${NC}"

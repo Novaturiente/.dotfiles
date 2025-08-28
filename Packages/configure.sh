@@ -7,3 +7,13 @@ sudo systemctl enable greetd
 
 cd ..
 stow -t ~ nova
+
+chsh -s $(which zsh)
+
+cd
+
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+sudo systemctl enable --now nix-daemon
+
+nix run github:nix-community/home-manager -- init --switch
