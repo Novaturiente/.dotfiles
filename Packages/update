@@ -136,4 +136,9 @@ lib32-libvdpau
 # libexif
 # kdenlive
 
+openbsd-netcat
+freerdp
+libnotify
+dialog
+
 # plasma-desktop
