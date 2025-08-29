@@ -13,7 +13,6 @@ with pkgs; [
   # Hyprland Tools
   hyprpanel
   hyprshade
-  stow
   brightnessctl
   font-awesome
   grim
@@ -65,7 +64,6 @@ with pkgs; [
   qimgv
   zathura
   deluge
-  ranger
   scrcpy
 
   # Archive Utilities
@@ -92,6 +90,5 @@ with pkgs; [
   rust-analyzer
   rustfmt
   nixfmt-classic
-  sqlite
   jdk
 ]

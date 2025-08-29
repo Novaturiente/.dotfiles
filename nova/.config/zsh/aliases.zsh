@@ -1,7 +1,7 @@
 # Editor and system update aliases
 alias vi="nvim"
 
-alias systemupdate="sudo akshara update && reboot"
+alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && paru -Syu"
 
 # ---- ls Aliases (with eza) ----
 alias la='eza -a --color=always --group-directories-first --icons'

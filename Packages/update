@@ -42,17 +42,6 @@ xorg-xwayland
 hyprland                       
 greetd
 greetd-gtkgreet
-greetd-tuigreet
-xdg-desktop-portal             
-xdg-desktop-portal-hyprland    
-xdg-desktop-portal-gtk
-
-#IMPORTANT 
-pipewire                       
-pipewire-pulse                 
-wireplumber                    
-tlp
-upower
 
 #Hyprland Extras
 bibata-cursor-theme
@@ -117,13 +106,6 @@ lib32-libva
 libvdpau
 lib32-libvdpau
 
-# freetype2
-# lib32-freetype2
-# dwarfs
-# fuse-overlayfs
-# ttf-liberation
-# ttf-dejavu
-
 # EDITING SETUP
 # libva-nvidia-driver
 # movit
@@ -140,5 +122,3 @@ openbsd-netcat
 freerdp
 libnotify
 dialog
-
-# plasma-desktop
