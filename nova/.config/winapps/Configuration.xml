@@ -1,0 +1,18 @@
+<Configuration ID="ad5b7f3f-bf86-487d-acdf-6d3b457d1e17">
+  <Add OfficeClientEdition="64" Channel="Current">
+    <Product ID="O365ProPlusEEANoTeamsRetail">
+      <Language ID="en-us" />
+      <ExcludeApp ID="Access" />
+      <ExcludeApp ID="Groove" />
+      <ExcludeApp ID="Lync" />
+      <ExcludeApp ID="OneDrive" />
+      <ExcludeApp ID="OneNote" />
+      <ExcludeApp ID="Outlook" />
+      <ExcludeApp ID="OutlookForWindows" />
+      <ExcludeApp ID="Publisher" />
+    </Product>
+  </Add>
+  <Updates Enabled="TRUE" />
+  <RemoveMSI />
+  <Display Level="Full" AcceptEULA="TRUE" />
+</Configuration>

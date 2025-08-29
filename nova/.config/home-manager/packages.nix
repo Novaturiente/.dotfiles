@@ -27,8 +27,6 @@ with pkgs; [
 
   # Terminal Tools
   networkmanagerapplet
-  dialog
-  htop
   btop
   fastfetch
   eza
@@ -37,7 +35,6 @@ with pkgs; [
   fd
   jq
   entr
-  curl
   wget
   sshfs
   ncdu

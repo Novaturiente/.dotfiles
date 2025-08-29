@@ -1,14 +1,11 @@
-version: "3.9"
-
 services:
   ollama:
-    image: ollama/ollama:latest
+    image: docker.io/ollama/ollama
     container_name: ollama
-    restart: unless-stopped
     ports:
-      - "11434:11434"   # Ollama API port
+      - "11434:11434"
     volumes:
-      - ollama_data:/root/.ollama  # Persistent model storage
+      - /home/nova/Docker/docker_data/ollama:/root/.ollama
     deploy:
       resources:
         reservations:
@@ -16,7 +13,9 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+    restart: unless-stopped
 
 volumes:
-  ollama_data:
+  ollama: {}
+
 
