@@ -12,8 +12,12 @@ chsh -s $(which zsh)
 
 cd
 
+sudo cp ../nova/.config/nix/nix.conf /etc/nix/nix.conf
+
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 sudo systemctl enable --now nix-daemon
 
-nix run github:nix-community/home-manager -- init --switch
+sudo nix run github:nix-community/home-manager -- init --switch
+
+home-manager switch
