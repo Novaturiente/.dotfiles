@@ -31,9 +31,8 @@ script_dir = os.path.abspath(os.path.dirname(__file__))
 
 def run_command (command, check=True):
     i = 1
-    command_list = command.split(" ")
     while True:
-        result = subprocess.run(command_list)
+        result = subprocess.run(command, shell=True)
 
         if result.returncode != 0:
             print(f"{red_cross} Error running '{command}'")
@@ -67,8 +66,8 @@ def chaotic_aur_setup():
         run_command("sudo pacman -Sy --noconfirm archlinux-keyring")
         run_command("sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com")
         run_command("sudo pacman-key --lsign-key 3056513887B78AEB")
-        os.system("sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'")
-        os.system("sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'")
+        run_command("sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'")
+        run_command("sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'")
 
         pacmanconf = os.path.join(script_dir,"pacman.conf")
         run_command(f"sudo cp {pacmanconf} /etc/pacman.conf")
