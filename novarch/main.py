@@ -201,6 +201,10 @@ def copy_configurations():
 
     run_command("git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm", False)
 
+    run_command("sudo systemctl enable greetd")
+
+    run_command("chsh -s $(which zsh)")
+
 def main():
     if len(sys.argv) != 2:
         print(f"""
