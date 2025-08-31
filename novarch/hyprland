@@ -1,7 +1,7 @@
 
 hyprland                       
 greetd
-greetd-gtkgreet
+greetd-tuigreet
 wayland-protocols              
 xorg-xwayland                  
 
