@@ -195,7 +195,7 @@ def copy_configurations():
     file = os.path.join(script_dir, "system/etc/tlp.conf")
     run_command(f"sudo cp {file} /etc/tlp.conf", False)
 
-    subprocess.run(['stow', '-t', '~', 'nova'], cwd=os.path.dirname(script_dir))
+    subprocess.run("stow -t ~ nova", cwd=os.path.dirname(script_dir), shell=True)
 
     run_command("git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm", False)
 
