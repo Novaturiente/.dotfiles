@@ -205,6 +205,10 @@ def copy_configurations():
 
     run_command("chsh -s $(which zsh)")
 
+    reboot = input("Configuration completed reboot now [Y/n] :")
+    if reboot.lower == "y":
+        os.system("reboot")
+
 def main():
     if len(sys.argv) != 2:
         print(f"""
