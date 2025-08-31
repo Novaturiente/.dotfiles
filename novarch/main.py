@@ -194,6 +194,8 @@ def copy_configurations():
 
     file = os.path.join(script_dir, "system/etc/tlp.conf")
     run_command(f"sudo cp {file} /etc/tlp.conf", False)
+    
+    subprocess.run("mkdir ~/.config", shell=True)
 
     subprocess.run("stow -t ~ nova", cwd=os.path.dirname(script_dir), shell=True)
 
