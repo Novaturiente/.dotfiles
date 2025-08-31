@@ -91,7 +91,7 @@ def install_packages():
         print(f"{green_check} paru already installed")
     else:
         print(f"{yellow_warning} paru not installed")
-        run_command("sudo pacman -S paru")
+        run_command("sudo pacman -S --noconfirm paru")
 
     
     existing_packages = []
@@ -137,13 +137,13 @@ def install_packages():
             if len(dependancy_list) == 2:
                 tobe_removed.append(existing)
 
-    install_command = ['sudo', 'paru', '-S', '--noconfirm']
+    install_command = ['paru', '-S', '--noconfirm']
     install_confirmation = "N"
     if len(tobe_installed) > 0:
         install_command.extend(tobe_installed)
         install_confirmation = input(f"\n{tobe_installed}\n Do you want to proceed with installing above packages? [Y/n] ⬇ :")
 
-    remove_command = ['sudo', 'paru', '-Rns', '--noconfirm']
+    remove_command = ['paru', '-Rns', '--noconfirm']
     remove_confirmation = "N"
     if len(tobe_removed) > 0: 
         remove_command.extend(tobe_removed)
