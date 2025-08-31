@@ -71,7 +71,7 @@ def chaotic_aur_setup():
 
         pacmanconf = os.path.join(script_dir,"pacman.conf")
         run_command(f"sudo cp {pacmanconf} /etc/pacman.conf")
-        run_command("sudo pacman -Syu")
+        run_command("sudo pacman -Syu --noconfirm")
         run_command("sudo pacman -Sy --noconfirm reflector")
         run_command("sudo pacman -Sy --noconfirm archlinux-keyring")
     else:
@@ -80,7 +80,7 @@ def chaotic_aur_setup():
 
 def upadte_system():
     run_command("sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist")
-    run_command("sudo pacman -Syu")
+    run_command("sudo pacman -Syu --noconfirm")
 
 
 def install_packages():
