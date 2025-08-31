@@ -33,7 +33,7 @@ def run_command (command, check=True):
     i = 1
     command_list = command.split(" ")
     while True:
-        result = subprocess.run(command_list, text=True)
+        result = subprocess.run(command_list)
 
         if result.returncode != 0:
             print(f"{red_cross} Error running '{command}'")
