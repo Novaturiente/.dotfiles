@@ -9,3 +9,4 @@ nova/.config/qutebrowser_work/data/
 podman/database/
 nova/.config/qutebrowser_work/config/__pycache__
 Packages/.system
+novarch/system.json

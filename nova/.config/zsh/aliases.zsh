@@ -47,3 +47,5 @@ alias winstart="docker-compose -f ~/.config/winapps/compose.yaml start"
 
 
 alias fileserver="python3 -m http.server 8080 --directory ~/Share"
+
+alias novarch="~/.dotfiles/novarch/main.py"

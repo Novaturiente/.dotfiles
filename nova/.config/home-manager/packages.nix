@@ -1,12 +1,9 @@
 { pkgs }:
 with pkgs; [
   #Tools
-  gparted
-  protonup-qt
   sbctl
 
   # Network & Browsers
-  brave
   mullvad-browser
   yt-dlp
 
@@ -28,9 +25,6 @@ with pkgs; [
   networkmanagerapplet
   btop
   fastfetch
-  eza
-  zoxide
-  ripgrep
   fd
   jq
   entr
@@ -39,7 +33,6 @@ with pkgs; [
   ncdu
   bat
   duf
-  fzf
   lsof
   less
   speedtest-cli
