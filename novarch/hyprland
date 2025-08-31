@@ -1,0 +1,24 @@
+
+hyprland                       
+greetd
+greetd-gtkgreet
+wayland-protocols              
+xorg-xwayland                  
+
+#Hyprland Extras
+bibata-cursor-theme
+otf-font-awesome               
+hypridle                       
+hyprlock                       
+hyprpolkitagent                
+hyprutils                      
+rofi-wayland                   
+wpaperd
+stow                           
+udiskie
+kdeconnect
+pipewire
+pipewire-pulse
+wireplumber
+xdg-desktop-portal
+xdg-desktop-portal-hyprland

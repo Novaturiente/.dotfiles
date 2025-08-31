@@ -1,0 +1,11 @@
+#Package & Application Management
+nix
+flatpak                        
+paru
+
+#Virtualization
+gnome-boxes
+docker
+docker-compose
+openbsd-netcat
+freerdp

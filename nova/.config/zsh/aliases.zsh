@@ -4,11 +4,11 @@ alias vi="nvim"
 alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && paru -Syu"
 
 # ---- ls Aliases (with eza) ----
-alias la='eza -a --color=always --group-directories-first --icons'
-alias ls='eza -al --color=always --group-directories-first --icons'
-alias ll='eza -l --color=always --group-directories-first --icons'
-alias lt='eza -aT --color=always --group-directories-first --icons'
-alias l.="eza -a | grep -e '^\.'"  # Show only dotfiles
+alias la='eza -a --color=always --group-directories-first --icons=always "$@"'
+alias ls='eza -al --color=always --group-directories-first --icons=always "$@"'
+alias ll='eza -l --color=always --group-directories-first --icons=always "$@"'
+alias lt='eza -aT --color=always --group-directories-first --icons=always "$@"'
+alias l.="eza -a | grep -e '^\.'"
 
 alias jctl="journalctl -p 3 -xb"
 alias winconnect="com.freerdp.FreeRDP /v:127.0.0.1 /u:Docker /p:novarch /dynamic-resolution /sound"

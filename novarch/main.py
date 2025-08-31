@@ -18,7 +18,11 @@ blue_gear = f"{BLUE}⚙{RESET}"
 green_check = f"{GREEN}✓{RESET}"
 
 package_list = [
-    'packages',
+    'base_system',
+    'hyprland',
+    'internet',
+    'terminal_tools',
+    'virtual_management',
 ]
 
 script_dir = os.path.abspath(os.path.dirname(__file__))
