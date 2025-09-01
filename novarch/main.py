@@ -23,6 +23,8 @@ package_list = [
     'internet',
     'terminal_tools',
     'virtual_management',
+    'development',
+    'media',
 ]
 
 script_dir = os.path.abspath(os.path.dirname(__file__))

@@ -31,4 +31,13 @@ vulkan-icd-loader
 
 blueman                        
 bluez-utils                    
+pipewire
+pipewire-pulse
+wireplumber
 
+p7zip
+zip
+unrar
+unzip
+
+sbctl

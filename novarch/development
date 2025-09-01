@@ -1,0 +1,17 @@
+
+lazygit
+lua
+luarocks
+meson
+nodejs
+pkg-config
+pyright
+python-pynvim
+tree-sitter
+uv
+cargo
+python310
+go
+rust-analyzer
+rustfmt
+jdk
