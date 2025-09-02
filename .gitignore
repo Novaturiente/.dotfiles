@@ -6,7 +6,6 @@ nova/.config/qutebrowser_work/cache/
 nova/.config/qutebrowser_work/data/
 .opencode/
 **/.opencode/
-podman/database/
+docker/database/
 nova/.config/qutebrowser_work/config/__pycache__
-Packages/.system
 novarch/system.json
