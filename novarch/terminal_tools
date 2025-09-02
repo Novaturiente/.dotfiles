@@ -11,6 +11,7 @@ fzf
 eza
 zoxide
 dialog
+ripgrep
 
 btop
 fastfetch
