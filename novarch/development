@@ -10,7 +10,6 @@ python-pynvim
 tree-sitter
 uv
 cargo
-python310
 go
 rust-analyzer
 rustfmt
