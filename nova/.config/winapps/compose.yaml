@@ -23,7 +23,7 @@ services:
     stop_grace_period: 120s 
     restart: "no" 
     volumes:
-      - /home/nova/Documents/tiny11.iso:/boot.iso
+      # - /home/nova/Documents/tiny11.iso:/boot.iso
       - data:/storage 
       - ${HOME}:/shared 
       # - ./oem:/oem 
