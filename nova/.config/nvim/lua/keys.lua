@@ -4,8 +4,11 @@ local wk = require("which-key")
 
 -- File Tree
 wk.add {
-  { "<leader>O", ":NvimTreeToggle<CR>", desc = "Toggle file explorer" },
+  { "<leader>.", "<cmd>lua require('telescope').extensions.file_browser.file_browser({ path = vim.fn.expand('%:p:h'), select_buffer = true, hidden = true, follow_symlinks = true })<CR>", desc = "Toggle file explorer" },
 }
+-- wk.add {
+--   { "<leader>O", ":NvimTreeToggle<CR>", desc = "Toggle file explorer" },
+-- }
 
 -- Tabs
 wk.add {
@@ -143,3 +146,16 @@ wk.register({
   prefix = "<leader>",
   mode = "n", -- 💡 This is the crucial fix
 })
+
+
+function Toggle_nvimtree()
+  if vim.fn.bufname():match 'NvimTree_' then
+    vim.cmd.wincmd 'p'          -- Switch to previous window (editor)
+  else
+    vim.cmd('NvimTreeFindFile') -- Open and focus on current file
+  end
+end
+
+-- Set the keybinding
+vim.keymap.set('n', '<leader>e', '<cmd>lua Toggle_nvimtree()<CR>',
+  { desc = 'Toggle focus between editor and explorer' })

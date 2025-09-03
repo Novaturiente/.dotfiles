@@ -6,7 +6,6 @@ meson
 nodejs
 pkg-config
 pyright
-python-pynvim
 tree-sitter
 uv
 cargo
@@ -14,3 +13,8 @@ go
 rust-analyzer
 rustfmt
 jdk
+
+python-pynvim
+python-black
+python-pytest
+python-lsp-server

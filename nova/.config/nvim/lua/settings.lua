@@ -63,7 +63,21 @@ vim.lsp.set_log_level("error")
 vim.opt.fsync = false
 
 -- Disable copy while pasting
-vim.keymap.set("x", "p", [["_dP]], { noremap = true, silent = true })
+-- vim.keymap.set("x", "gp", [["_dP]], { noremap = true, silent = true })
+vim.keymap.set("x", "p", function()
+  -- Save current unnamed register and its type
+  local saved_reg = vim.fn.getreg('"')
+  local saved_regtype = vim.fn.getregtype('"')
+
+  -- Delete selection into black hole register (no clipboard overwrite)
+  vim.cmd('normal! "_d')
+
+  -- Restore unnamed register contents
+  vim.fn.setreg('"', saved_reg, saved_regtype)
+
+  -- Paste after the cursor with 'p'
+  vim.cmd('normal! p')
+end, { noremap = true, silent = true })
 
 -- =============================
 -- Remember Fold Views
@@ -110,3 +124,56 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.runtimepath:prepend(lazypath)
+
+-- Function to confirm closing without saving
+local function confirm_quit()
+  if vim.bo.modified then
+    vim.ui.select({ "Yes", "No" }, {
+      prompt = "Buffer has unsaved changes. Close without saving?",
+    }, function(choice)
+      if choice == "Yes" then
+        vim.cmd("q!")
+      end
+      -- if No, do nothing
+    end)
+  else
+    vim.cmd("q")
+  end
+end
+vim.api.nvim_create_user_command("Q", confirm_quit, {})
+vim.cmd([[
+  cabbrev q Q
+]])
+
+-- Open Dashboard when last buffer closed
+vim.api.nvim_create_autocmd("BufDelete", {
+  callback = function()
+    -- Small delay to let Neovim finish buffer operations
+    vim.defer_fn(function()
+      local buffers = vim.fn.getbufinfo({ buflisted = 1 })
+      local normal_buffers = 0
+      local empty_buffers = 0
+
+      for _, buf in ipairs(buffers) do
+        local ft = vim.api.nvim_buf_get_option(buf.bufnr, "filetype")
+        local bt = vim.api.nvim_buf_get_option(buf.bufnr, "buftype")
+        local name = vim.api.nvim_buf_get_name(buf.bufnr)
+
+        -- Check if buffer is empty (no name, no filetype, no content)
+        if name == "" and ft == "" and bt == "" then
+          local lines = vim.api.nvim_buf_get_lines(buf.bufnr, 0, -1, false)
+          if #lines == 1 and lines[1] == "" then
+            empty_buffers = empty_buffers + 1
+          end
+        elseif ft ~= "" and bt == "" then
+          normal_buffers = normal_buffers + 1
+        end
+      end
+
+      -- If only empty buffers remain, open dashboard
+      if normal_buffers == 0 and empty_buffers > 0 then
+        vim.cmd("Dashboard")
+      end
+    end, 10) -- 10ms delay
+  end,
+})

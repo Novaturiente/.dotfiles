@@ -18,20 +18,22 @@ blue_gear = f"{BLUE}⚙{RESET}"
 green_check = f"{GREEN}✓{RESET}"
 
 package_list = [
-    'base_system',
-    'hyprland',
-    'internet',
-    'terminal_tools',
-    'virtual_management',
-    'development',
-    'media',
+    "base_system",
+    "hyprland",
+    "internet",
+    "terminal_tools",
+    "virtual_management",
+    "development",
+    "media",
+    "gaming",
 ]
 
 script_dir = os.path.abspath(os.path.dirname(__file__))
 
-# os.system("sudo echo '\n##### STARTING SCRIPT #####\n'")
+# Os.system("sudo echo '\n##### STARTING SCRIPT #####\n'")
 
-def run_command (command, check=True):
+
+def run_command(command, check=True):
     i = 1
     while True:
         result = subprocess.run(command, shell=True)
@@ -52,7 +54,7 @@ def run_command (command, check=True):
 
 def chaotic_aur_setup():
     chaotic_installed = False
-    with open('/etc/pacman.conf', 'r') as f:
+    with open("/etc/pacman.conf", "r") as f:
         lines = f.readlines()
 
     for line in lines:
@@ -66,12 +68,18 @@ def chaotic_aur_setup():
 
         run_command("sudo pacman-key --init")
         run_command("sudo pacman -Sy --noconfirm archlinux-keyring")
-        run_command("sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com")
+        run_command(
+            "sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com"
+        )
         run_command("sudo pacman-key --lsign-key 3056513887B78AEB")
-        run_command("sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'")
-        run_command("sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'")
+        run_command(
+            "sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'"
+        )
+        run_command(
+            "sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'"
+        )
 
-        pacmanconf = os.path.join(script_dir,"pacman.conf")
+        pacmanconf = os.path.join(script_dir, "pacman.conf")
         run_command(f"sudo cp {pacmanconf} /etc/pacman.conf")
         run_command("sudo pacman -Syu --noconfirm")
         run_command("sudo pacman -Sy --noconfirm reflector")
@@ -81,7 +89,9 @@ def chaotic_aur_setup():
 
 
 def upadte_system():
-    run_command("sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist")
+    run_command(
+        "sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist"
+    )
     run_command("sudo pacman -Syu --noconfirm")
 
 
@@ -95,11 +105,10 @@ def install_packages():
         print(f"{yellow_warning} paru not installed")
         run_command("sudo pacman -S --noconfirm paru")
 
-    
     existing_packages = []
-    systemfile = os.path.join(script_dir, 'system.json')
+    systemfile = os.path.join(script_dir, "system.json")
     if os.path.exists(systemfile):
-        with open(systemfile, 'r') as f:
+        with open(systemfile, "r") as f:
             existing_packages = json.load(f)
     else:
         print(f"{yellow_warning} Cuttent system does not exist starting fresh")
@@ -108,7 +117,7 @@ def install_packages():
     for package in package_list:
         path = os.path.join(script_dir, package)
         if os.path.exists(path):
-            with open(path, 'r') as f:
+            with open(path, "r") as f:
                 lines = f.readlines()
             for line in lines:
                 if line.strip() and not line.strip().startswith("#"):
@@ -116,15 +125,15 @@ def install_packages():
         else:
             print(f"{red_cross} {package} not available")
             exit(1)
-        
+
     installed_packages = []
-    result = subprocess.run(['pacman', '-Q'], stdout=subprocess.PIPE, text=True)
+    result = subprocess.run(["pacman", "-Q"], stdout=subprocess.PIPE, text=True)
     pkgs = result.stdout.split("\n")
     for pkg in pkgs:
         package = pkg.split(" ")[0]
         if package != "":
             installed_packages.append(package)
-    
+
     tobe_installed = []
     tobe_removed = []
 
@@ -134,22 +143,28 @@ def install_packages():
 
     for existing in existing_packages:
         if existing not in selected_packages and existing in installed_packages:
-            result = subprocess.run(['pactree', '-rlo', existing], stdout=subprocess.PIPE, text=True)
+            result = subprocess.run(
+                ["pactree", "-rlo", existing], stdout=subprocess.PIPE, text=True
+            )
             dependancy_list = result.stdout.split("\n")
             if len(dependancy_list) == 2:
                 tobe_removed.append(existing)
 
-    install_command = ['paru', '-S', '--noconfirm']
+    install_command = ["paru", "-S", "--noconfirm"]
     install_confirmation = "N"
     if len(tobe_installed) > 0:
         install_command.extend(tobe_installed)
-        install_confirmation = input(f"\n{tobe_installed}\n Do you want to proceed with installing above packages? [Y/n] ⬇ :")
+        install_confirmation = input(
+            f"\n{tobe_installed}\n Do you want to proceed with installing above packages? [Y/n] ⬇ :"
+        )
 
-    remove_command = ['paru', '-Rns', '--noconfirm']
+    remove_command = ["paru", "-Rns", "--noconfirm"]
     remove_confirmation = "N"
-    if len(tobe_removed) > 0: 
+    if len(tobe_removed) > 0:
         remove_command.extend(tobe_removed)
-        remove_confirmation = input(f"\n{tobe_removed}\n Do you want to proceed with removing above packages? [Y/n] ⬆ :")
+        remove_confirmation = input(
+            f"\n{tobe_removed}\n Do you want to proceed with removing above packages? [Y/n] ⬆ :"
+        )
 
     if install_confirmation.lower == "y" or install_confirmation == "":
 
@@ -168,7 +183,9 @@ def install_packages():
         for i in range(3):
             result = subprocess.run(remove_command, text=True)
             if result.returncode != 0:
-                ask = input(f"{red_cross} Error removing packages do you want to retry ? : ")
+                ask = input(
+                    f"{red_cross} Error removing packages do you want to retry ? : "
+                )
                 if ask.lower == "y":
                     time.sleep(3)
                 else:
@@ -179,7 +196,7 @@ def install_packages():
     if len(tobe_installed) == 0 and len(tobe_removed) == 0:
         print(f"{green_check} Package list uptodate no packages to install or remove")
 
-    with open(systemfile, 'w') as f:
+    with open(systemfile, "w") as f:
         json.dump(selected_packages, f)
 
 
@@ -188,7 +205,9 @@ def copy_configurations():
     file = os.path.join(script_dir, "system/etc/greetd/config.toml")
     run_command(f"sudo cp {file} /etc/greetd/config.toml", False)
 
-    file = os.path.join(script_dir, "system/etc/modprobe.d/nvidia-power-management.conf")
+    file = os.path.join(
+        script_dir, "system/etc/modprobe.d/nvidia-power-management.conf"
+    )
     run_command(f"sudo cp {file} /etc/modprobe.d/nvidia-power-management.conf", False)
 
     file = os.path.join(script_dir, "system/etc/modules-load/ntsync.conf")
@@ -196,12 +215,14 @@ def copy_configurations():
 
     file = os.path.join(script_dir, "system/etc/tlp.conf")
     run_command(f"sudo cp {file} /etc/tlp.conf", False)
-    
+
     subprocess.run("mkdir ~/.config", shell=True)
 
     subprocess.run("stow -t ~ nova", cwd=os.path.dirname(script_dir), shell=True)
 
-    run_command("git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm", False)
+    run_command(
+        "git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm", False
+    )
 
     run_command("sudo systemctl enable greetd")
 
@@ -211,15 +232,18 @@ def copy_configurations():
     if reboot.lower == "y":
         os.system("reboot")
 
+
 def main():
     if len(sys.argv) != 2:
-        print(f"""
+        print(
+            f"""
 {yellow_warning} Provide one of the argument
 
 init      : setup entire system from scratch
 update    : update packages
 install   : Install/Remove packages
-        """)
+        """
+        )
         exit(1)
 
     if sys.argv[1] == "init":
@@ -235,15 +259,17 @@ install   : Install/Remove packages
         print(f"\n{blue_gear} Installing updated package list")
         install_packages()
     else:
-        print(f"""
+        print(
+            f"""
 {yellow_warning} Invalid argument provided
 
 init      : setup entire system from scratch
 update    : update packages
 install   : Install/Remove packages
-        """)
+        """
+        )
         exit(1)
-    
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

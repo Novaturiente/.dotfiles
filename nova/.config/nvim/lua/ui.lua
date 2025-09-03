@@ -191,9 +191,19 @@ end
 vim.keymap.set("n", "<leader>ct", pick_colorscheme, { desc = "Pick Colorscheme" })
 
 -- Dashboard configuration
-require('dashboard').setup {
-  theme = 'hyper'
-}
+local arts = require('ascii_arts')
+math.randomseed(vim.loop.hrtime())
+local header = arts[math.random(#arts)]
+require('dashboard').setup({
+  header = header,
+  date_format = '%Y-%m-%d %H:%M:%S',
+  directories = {
+    '~/.dotfiles/novarch',
+    '~/.config',
+    '~/Notes',
+    '~/develop',
+  },
+})
 
 -- Lualine configuration
 require('lualine').setup {

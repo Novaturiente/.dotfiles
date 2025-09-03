@@ -1,8 +1,8 @@
-# pyright: ignore[all]
-# ruff: noqa
-# type: ignore
-from fake_useragent import UserAgent
-ua = UserAgent(browsers=['Edge', 'Chrome','Firefox'],os=["Windows"])
+# from fake_useragent import UserAgent
+c = c # pyright: ignore
+config = config # pyright: ignore
+
+# ua = UserAgent(browsers=['Edge', 'Chrome','Firefox'],os=["Windows"])
 
 # Load settings made via the :set command from autoconfig.yml.
 config.load_autoconfig(False)  # Set to True if you want to keep using autoconfig.yml
@@ -45,17 +45,17 @@ c.qt.args = [
 ]
 
 # Privacy and blocking
-c.content.headers.user_agent = (ua.random)
+# c.content.headers.user_agent = (ua.random)
+# c.content.javascript.enabled = False
+# c.content.canvas_reading = False
+# c.content.webgl = False
 c.content.headers.accept_language = "en-US,en;q=0.5"
 c.content.headers.referer = "same-domain"
 c.content.headers.custom = {"Permissions-Policy": "geolocation=(), microphone=(), camera=(), interest-cohort=()"}
-# c.content.canvas_reading = False
-# c.content.webgl = False
 c.content.cookies.accept = "no-3rdparty"
 c.content.cache.appcache = False
 c.content.headers.do_not_track = True
 c.content.hyperlink_auditing = False
-# c.content.javascript.enabled = False
 c.content.blocking.enabled = True
 c.content.blocking.method = "both"
 c.content.blocking.adblock.lists = [

@@ -42,9 +42,8 @@ return require('lazy').setup({
     }
   },
   {
-    'nvimdev/dashboard-nvim',
+    'MeanderingProgrammer/dashboard.nvim',
     event = 'VimEnter',
-    dependencies = { { 'nvim-tree/nvim-web-devicons' } }
   },
 
   -- === File Explorer ===
@@ -80,6 +79,7 @@ return require('lazy').setup({
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-telescope/telescope-fzf-native.nvim',
+      'nvim-telescope/telescope-file-browser.nvim',
       build = 'make'
     }
   },
@@ -161,37 +161,36 @@ return require('lazy').setup({
   { "stevearc/conform.nvim" },
 
   -- AVANTE AI
-  {
-    "yetone/avante.nvim",
-    build = "make BUILD_FROM_SOURCE=true",
-    event = "VeryLazy",
-    version = false,
-    opts = {
-      provider = "gemini",
-      providers = {
-        gemini = {
-          model = "gemini-2.5-flash",
-        },
-      },
-    },
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      "echasnovski/mini.pick",
-      "nvim-telescope/telescope.nvim",
-      "hrsh7th/nvim-cmp",
-      "ibhagwan/fzf-lua",
-      "stevearc/dressing.nvim",
-      "folke/snacks.nvim",
-      "nvim-tree/nvim-web-devicons",
-      "zbirenbaum/copilot.lua",
-      {
-        'MeanderingProgrammer/render-markdown.nvim',
-        opts = {
-          file_types = { "markdown", "Avante" },
-        },
-        ft = { "markdown", "Avante" },
-      },
-    },
-  }
+  -- {
+  --   "yetone/avante.nvim",
+  --   build = "make BUILD_FROM_SOURCE=true",
+  --   event = "VeryLazy",
+  --   version = false,
+  --   opts = {
+  --     provider = "gemini",
+  --     providers = {
+  --       gemini = {
+  --         model = "gemini-2.5-flash",
+  --       },
+  --     },
+  --   },
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "MunifTanjim/nui.nvim",
+  --     "echasnovski/mini.pick",
+  --     "hrsh7th/nvim-cmp",
+  --     "ibhagwan/fzf-lua",
+  --     "stevearc/dressing.nvim",
+  --     "folke/snacks.nvim",
+  --     "nvim-tree/nvim-web-devicons",
+  --     "zbirenbaum/copilot.lua",
+  --     {
+  --       'MeanderingProgrammer/render-markdown.nvim',
+  --       opts = {
+  --         file_types = { "markdown", "Avante" },
+  --       },
+  --       ft = { "markdown", "Avante" },
+  --     },
+  --   },
+  -- }
 })
