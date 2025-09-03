@@ -135,3 +135,48 @@ function DebugPython()
     print("Not a Python file")
   end
 end
+
+-- Activate virtual environment
+local function find_project_root(path)
+  local root_patterns = {
+    'pyproject.toml', 'setup.py', 'uv.lock', 'requirements.txt', '.python-version'
+  }
+
+  path = path or vim.fn.expand('%:p:h')
+
+  for _, pattern in ipairs(root_patterns) do
+    local found = vim.fn.findfile(pattern, path .. ';')
+    if found ~= '' then
+      return vim.fn.fnamemodify(found, ':h')
+    end
+
+    local found_dir = vim.fn.finddir(pattern, path .. ';')
+    if found_dir ~= '' then
+      return vim.fn.fnamemodify(found_dir, ':h')
+    end
+  end
+
+  return nil
+end
+
+require('venv-selector').setup({
+  -- Automatically search for virtual environments
+  auto_refresh = true,
+  search_venv_managers = true,
+  search_workspace = true,
+
+  -- Auto-activate venv when opening Python files
+  stay_on_this_version = false,
+})
+-- Add this autocommand alongside the venv-selector setup
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  pattern = '*.py',
+  callback = function()
+    local project_root = find_project_root() -- Use the function from above
+    if project_root then
+      vim.cmd('cd ' .. project_root)
+      print('Changed working directory to: ' .. project_root)
+    end
+  end,
+  desc = 'Change to Python project root directory'
+})

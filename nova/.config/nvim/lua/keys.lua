@@ -58,10 +58,10 @@ wk.add({
 
 -- Terminal
 wk.add {
-  { "<M-v>", ":ToggleTerm direction=vertical size=50<CR>",   desc = "Vertical terminal" },
-  { "<M-d>", ":ToggleTerm direction=vertical size=50<CR>",   desc = "Vertical terminal" },
-  { "<M-h>", ":ToggleTerm direction=horizontal size=10<CR>", desc = "Horizontal terminal" },
-  { "<C-d>", ":ToggleTerm direction=float<CR>",              desc = "Floating terminal" },
+  { "<M-v>", ":ToggleTerm dir=%:p:h direction=vertical size=50<CR>",   desc = "Vertical terminal" },
+  { "<M-d>", ":ToggleTerm dir=%:p:h direction=vertical size=50<CR>",   desc = "Vertical terminal" },
+  { "<M-h>", ":ToggleTerm dir=%:p:h direction=horizontal size=10<CR>", desc = "Horizontal terminal" },
+  { "<C-d>", ":ToggleTerm dir=%:p:h direction=float<CR>",              desc = "Floating terminal" },
 }
 
 -- Buffer Navigation

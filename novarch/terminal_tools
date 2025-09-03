@@ -1,4 +1,3 @@
-
 #Tools
 nvtop
 zsh                            
@@ -6,15 +5,12 @@ ghostty
 tmux                           
 neovim                         
 ranger
-upower
+
 fzf
 eza
 zoxide
 dialog
 ripgrep
-
-btop
-fastfetch
 fd
 jq
 entr
@@ -25,4 +21,5 @@ bat
 duf
 lsof
 less
-speedtest-cli
+btop
+fastfetch

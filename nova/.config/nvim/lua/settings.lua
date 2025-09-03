@@ -128,10 +128,10 @@ vim.opt.runtimepath:prepend(lazypath)
 -- Function to confirm closing without saving
 local function confirm_quit()
   if vim.bo.modified then
-    vim.ui.select({ "Yes", "No" }, {
+    vim.ui.select({ "Yes", "No\n" }, {
       prompt = "Buffer has unsaved changes. Close without saving?",
     }, function(choice)
-      if choice == "Yes" then
+      if choice == "Yes" or "" then
         vim.cmd("q!")
       end
       -- if No, do nothing

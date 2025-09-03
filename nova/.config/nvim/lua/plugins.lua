@@ -136,6 +136,14 @@ return require('lazy').setup({
   },
   { "theHamsta/nvim-dap-virtual-text" },
   { "mfussenegger/nvim-dap-python" },
+  {
+    "linux-cultist/venv-selector.nvim",
+    config = function()
+      require("venv-selector").setup {
+        auto_refresh = true,
+      }
+    end,
+  },
 
   -- Completion
   { "hrsh7th/nvim-cmp" },
