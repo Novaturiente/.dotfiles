@@ -39,3 +39,6 @@ p7zip
 zip
 unrar
 unzip
+
+sbctl
+systemd-ukify

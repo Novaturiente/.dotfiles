@@ -33,7 +33,7 @@ alias winrestart="docker-compose -f ~/.config/winapps/compose.yaml restart && sl
 alias winstop="docker-compose -f ~/.config/winapps/compose.yaml stop"
 alias winstart="docker-compose -f ~/.config/winapps/compose.yaml start"
 
-alias novarch="~/.dotfiles/novarch/main.py"
+alias novarch="uv run --project ~/.dotfiles/novarch ~/.dotfiles/novarch/run.py"
 alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && paru -Syu"
 
 # alias nixup="sudo systemctl enable --now nix-daemon"
