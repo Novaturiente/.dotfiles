@@ -216,6 +216,10 @@ def copy_configurations():
     file = os.path.join(script_dir, "system/etc/tlp.conf")
     run_command(f"sudo cp {file} /etc/tlp.conf", False)
 
+    file = os.path.join(script_dir, "system/etc/docker/daemon.json")
+    run_command("sudo mkdir /etc/docker")
+    run_command(f"sudo cp {file} /etc/docker/daemon.json", False)
+
     subprocess.run("mkdir ~/.config", shell=True)
 
     subprocess.run("stow -t ~ nova", cwd=os.path.dirname(script_dir), shell=True)
@@ -225,12 +229,13 @@ def copy_configurations():
     )
 
     run_command("sudo systemctl enable greetd")
+    run_command("sudo systemctl enable docker")
 
     run_command("chsh -s $(which zsh)")
 
     reboot = input("Configuration completed reboot now [Y/n] :")
     if reboot.lower == "y":
-        os.system("reboot")
+        subprocess.run(["sudo","reboot"])
 
 
 def main():
