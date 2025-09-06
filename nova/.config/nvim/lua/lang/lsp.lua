@@ -12,7 +12,7 @@ require("mason").setup({
 })
 
 require("mason-lspconfig").setup({
-  ensure_installed = { "clangd", "pyright", "ruff", "rust_analyzer", "lua_ls", "nil_ls", },
+  ensure_installed = { "clangd", "pyright", "ruff", "rust_analyzer", "lua_ls", "bashls", },
 })
 
 -- Vim Options

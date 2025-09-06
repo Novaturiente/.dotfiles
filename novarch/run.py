@@ -298,6 +298,7 @@ def install():
 def update():
     update_system()
     manage_packages()
+    subprocess.run("sudo pacman -Rns $(pacman -Qdtq)", shell=True)
 
 if __name__ == "__main__":
     app()

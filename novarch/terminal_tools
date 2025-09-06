@@ -5,6 +5,7 @@ ghostty
 tmux                           
 neovim                         
 ranger
+kitty
 
 fzf
 eza

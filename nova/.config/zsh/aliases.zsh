@@ -15,7 +15,7 @@ alias untar='tar -zxvf '
 alias wget='wget -c '
 alias dir='dir --color=auto'
 alias vdir='vdir --color=auto'
-alias grep='rg --color=auto'
+# alias grep='rg --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 alias cat='bat --paging=never'
@@ -34,6 +34,7 @@ alias winstop="docker-compose -f ~/.config/winapps/compose.yaml stop"
 alias winstart="docker-compose -f ~/.config/winapps/compose.yaml start"
 
 alias novarch="uv run --project ~/.dotfiles/novarch ~/.dotfiles/novarch/run.py"
+alias editsystem="nvim ~/.dotfiles/novarch"
 alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && paru -Syu"
 
 # alias nixup="sudo systemctl enable --now nix-daemon"
