@@ -88,6 +88,7 @@ def chaotic_aur_setup():
 
 
 def update_system():
+    print(f"{blue_gear} Updating system")
     run_command(
         "sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist"
     )
@@ -132,8 +133,8 @@ def get_existing():
         for package in selected_packages:
             if package in installed_packages:
                 update_list.append(package)
-        
-        with open(systemfile, 'w') as f:
+
+        with open(systemfile, "w") as f:
             json.dump(update_list, f)
 
     return existing_packages, installed_packages
@@ -156,7 +157,7 @@ def update_existing(package_list: list, action: int):
         print(f"{red_cross}{yellow_warning}option {action} not found ")
 
     existing_packages.sort()
-    with open(systemfile, 'w') as f:
+    with open(systemfile, "w") as f:
         json.dump(existing_packages, f)
 
 
@@ -208,7 +209,6 @@ def remove_packages():
             if len(dependancy_list) == 2:
                 tobe_removed.append(existing)
 
-
     remove_command = ["paru", "-Rns", "--noconfirm"]
     remove_confirmation = "N"
     if len(tobe_removed) > 0:
@@ -243,9 +243,10 @@ def manage_packages():
     if len(paru_check) == 0:
         print(f"{yellow_warning} paru not installed installing now")
         run_command("sudo pacman -S --noconfirm paru")
-    
+
     install_packages()
     remove_packages()
+
 
 def copy_configurations():
 
@@ -283,6 +284,7 @@ def copy_configurations():
     if reboot.lower == "y":
         os.system("reboot")
 
+
 @app.command(short_help="Configure system from scratch")
 def init():
     chaotic_aur_setup()
@@ -290,15 +292,18 @@ def init():
     manage_packages()
     copy_configurations()
 
+
 @app.command(short_help="Install/Remove packages based on updated package list")
 def install():
-   manage_packages() 
+    manage_packages()
+
 
 @app.command(short_help="Update entire system")
 def update():
     update_system()
     manage_packages()
     subprocess.run("sudo pacman -Rns $(pacman -Qdtq)", shell=True)
+
 
 if __name__ == "__main__":
     app()

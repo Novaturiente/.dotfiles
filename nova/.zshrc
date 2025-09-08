@@ -6,6 +6,7 @@ SAVEHIST=10000
 setopt extendedglob nonomatch
 setopt notify  
 setopt autocd
+setopt CORRECT
 setopt append_history inc_append_history share_history
 setopt hist_ignore_dups hist_ignore_all_dups hist_reduce_blanks
 setopt no_case_glob no_case_match

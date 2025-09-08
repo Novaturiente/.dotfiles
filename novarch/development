@@ -19,3 +19,4 @@ python-pynvim
 python-black
 python-pytest
 python-lsp-server
+python-debugpy

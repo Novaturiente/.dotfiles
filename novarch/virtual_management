@@ -4,7 +4,12 @@ paru
 
 #Virtualization
 gnome-boxes
-docker
-docker-compose
+# docker
+# docker-compose
+podman
+podman-compose
+crun
 openbsd-netcat
 freerdp
+nomachine
+ollama-cuda
