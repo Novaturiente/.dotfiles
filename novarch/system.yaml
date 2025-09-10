@@ -118,6 +118,7 @@
 - stow
 - swappy
 - systemd-ukify
+- terminus-font
 - tmux
 - tree-sitter
 - ttf-firacode-nerd
@@ -142,6 +143,8 @@
 - xdg-desktop-portal
 - xdg-desktop-portal-hyprland
 - xdg-user-dirs
+- xorg-server
+- xorg-xinit
 - xorg-xwayland
 - yt-dlp
 - zathura

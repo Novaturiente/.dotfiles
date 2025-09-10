@@ -320,5 +320,4 @@ def update():
 
 
 if __name__ == "__main__":
-    # app()
-    manage_packages()
+    app()

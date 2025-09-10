@@ -9,3 +9,4 @@ nova/.config/qutebrowser_work/data/
 docker/database/
 nova/.config/qutebrowser_work/config/__pycache__
 novarch/system.json
+novarch/system.yaml
