@@ -1,6 +1,11 @@
+(require 'hideshow)
 (setq doom-font (font-spec :family "JetBrains Mono NL Nerd Font" :size 15))
+(when (display-graphic-p)
+  (set-face-attribute 'default nil :weight 'semibold))
 
-(setq doom-theme 'doom-tokyo-night)
+(add-to-list 'custom-theme-load-path "~/.doom.d/themes")
+(load-theme 'doom-rose-pine t)
+;; (setq doom-theme 'doom-rose-pine)
 
 (setq display-line-numbers-type t)
 
@@ -40,12 +45,8 @@
 ;; Force TAB to insert two spaces in programming modes
 (after! prog-mode
   (map! :map prog-mode-map
-        :i [tab] (lambda () (interactive) (insert "    ")))); Insert two spaces instead of indent
-
-;; Force TAB to insert two spaces in all modes
-(global-set-key (kbd "TAB") (lambda () (interactive) (insert "    ")))  ;; Insert two spaces
-
-(setq lsp-ui-doc-enable nil lsp-ui-doc-show-with-cursor nil lsp-ui-doc-show-with-mouse nil lsp-eldoc-enable-hover nil lsp-signature-auto-activate nil)
+        :i [tab] (lambda () (interactive) (insert "    "))))
+(global-set-key (kbd "TAB") (lambda () (interactive) (insert "    ")))
 
 ;; Commands
 (defun my/uv-run-current-file ()
@@ -90,3 +91,6 @@
   ;; Allow navigation with up/down arrows (usually works by default)
   (define-key company-active-map (kbd "C-j") #'company-select-next)
   (define-key company-active-map (kbd "C-k") #'company-select-previous))
+
+;; Disable lsp documentation
+(setq lsp-ui-doc-enable nil lsp-ui-doc-show-with-cursor nil lsp-ui-doc-show-with-mouse nil lsp-eldoc-enable-hover nil lsp-signature-auto-activate nil)

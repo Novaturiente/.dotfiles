@@ -1,0 +1,13 @@
+# Package & Application Management
+- flatpak
+- paru
+
+# Virtualization
+- gnome-boxes
+- podman
+- podman-compose
+- crun
+- openbsd-netcat
+- freerdp
+- nomachine
+- ollama-cuda

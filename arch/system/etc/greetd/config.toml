@@ -1,0 +1,13 @@
+[terminal]
+vt = 1
+
+[default_session]
+# command = "agreety --cmd /bin/sh"
+command = "tuigreet"
+# command = "Hyprland -c /etc/greetd/hyprland.conf"
+
+user = "greeter"
+
+# [initial_session]
+# command = "/sbin/Hyprland"
+# user = "nova"
