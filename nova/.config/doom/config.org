@@ -60,7 +60,6 @@
   (map! :map prog-mode-map
         :i [tab] (lambda () (interactive) (insert "    "))))
 (global-set-key (kbd "TAB") (lambda () (interactive) (insert "    ")))
-
 #+end_src
 
 
