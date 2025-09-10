@@ -302,7 +302,14 @@ def install():
 def update():
     update_system()
     manage_packages()
-    subprocess.run("sudo pacman -Rns $(pacman -Qdtq)", shell=True)
+    result = subprocess.run(["pacman", "-Qdtq"], stdout=subprocess.PIPE, text=True)
+    pkgs = result.stdout.split("\n")
+    if len(pkgs) < 2:
+        print(f"{green_check} No orphaned packages to remove")
+    else:
+        print(f"Removing orphaned packages : {pkgs}")
+        subprocess.run("sudo pacman -Rns $(pacman -Qdtq)", shell=True)
+    print(f"{green_check} SYSTEM UPDATE COMPLETED")
 
 
 if __name__ == "__main__":

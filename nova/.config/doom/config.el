@@ -1,5 +1,6 @@
-(setq doom-font (font-spec :family "Fira Code Nerd Font" :size 13))
-(setq doom-theme 'doom-one)
+(setq doom-font (font-spec :family "JetBrains Mono NL Nerd Font" :size 15))
+
+(setq doom-theme 'doom-tokyo-night)
 
 (setq display-line-numbers-type t)
 
@@ -22,7 +23,29 @@
 (setq org-modern-table-vertical t)
 (setq org-modern-table t)
 
+(map! :leader
+      :desc "Open todo.org"
+      "o o" (lambda () (interactive) (find-file "~/Notes/Org/index.org")))
 
+(map! :leader
+      :desc "Kill buffer" "q w" #'kill-current-buffer)
+
+;; Unset existing bindings
+(global-unset-key (kbd "M-<left>"))
+(global-unset-key (kbd "M-<right>"))
+;; Set M-<left> and M-<right> to switch buffers
+(global-set-key (kbd "M-<left>") #'previous-buffer)
+(global-set-key (kbd "M-<right>") #'next-buffer)
+
+;; Force TAB to insert two spaces in programming modes
+(after! prog-mode
+  (map! :map prog-mode-map
+        :i [tab] (lambda () (interactive) (insert "    ")))); Insert two spaces instead of indent
+
+;; Force TAB to insert two spaces in all modes
+(global-set-key (kbd "TAB") (lambda () (interactive) (insert "    ")))  ;; Insert two spaces
+
+(setq lsp-ui-doc-enable nil lsp-ui-doc-show-with-cursor nil lsp-ui-doc-show-with-mouse nil lsp-eldoc-enable-hover nil lsp-signature-auto-activate nil)
 
 ;; Commands
 (defun my/uv-run-current-file ()
@@ -49,3 +72,21 @@
         (:prefix ("r" . "run")
          :desc "uv run current file" "r" #'my/uv-run-current-file
          :desc "uv run current file with arg" "a" #'my/uv-run-current-file-with-arg)))
+
+(after! company
+  (setq company-idle-delay 0.1)      ;; Show completions instantly as you type
+  (setq company-minimum-prefix-length 1)
+  (setq company-backends '((company-capf company-files))))
+
+(after! company
+  ;; Make TAB confirm selection
+  (define-key company-active-map (kbd "TAB") #'company-complete-selection)
+  (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
+
+  ;; Make RET insert newline (not accept selection)
+  (define-key company-active-map (kbd "RET") nil)
+  (define-key company-active-map (kbd "<return>") nil)
+
+  ;; Allow navigation with up/down arrows (usually works by default)
+  (define-key company-active-map (kbd "C-j") #'company-select-next)
+  (define-key company-active-map (kbd "C-k") #'company-select-previous))
