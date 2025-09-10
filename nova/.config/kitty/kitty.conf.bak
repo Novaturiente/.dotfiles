@@ -1,11 +1,12 @@
 confirm_os_window_close 0
-font_size 13.0
+font_size 12.0
 font_family JetBrainsMono Nerd Font
 background_opacity 0.8
 dynamic_background_opacity yes
 
 
+
 # BEGIN_KITTY_THEME
-# Cyberpunk Neon
+# Atom
 include current-theme.conf
 # END_KITTY_THEME

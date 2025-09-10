@@ -2,6 +2,9 @@ cpio
 linux-zen      
 linux-firmware
 linux-zen-headers
+linux-cachyos
+linux-cachyos-headers
+
 pacman-contrib                 
 xdg-user-dirs                  
 networkmanager

@@ -1,6 +1,6 @@
 # Editor and system update aliases
 # alias vi="nvim"
-alias vi="emacs -nw"
+alias vi="emacs"
 
 # ---- ls Aliases (with eza) ----
 alias la='eza -a --color=always --group-directories-first --icons=always "$@"'

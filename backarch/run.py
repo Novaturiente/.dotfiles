@@ -2,9 +2,9 @@
 
 import subprocess
 import os
+import json
 import time
 import typer
-import yaml
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 
@@ -20,22 +20,23 @@ blue_gear = f"{BLUE}⚙{RESET}"
 green_check = f"{GREEN}✓{RESET}"
 
 package_list = [
-    "base_system.yaml",
-    "hyprland.yaml",
-    "internet.yaml",
-    "terminal_tools.yaml",
-    "virtual_management.yaml",
-    "development.yaml",
-    "media.yaml",
-    "gaming.yaml",
+    "base_system",
+    "hyprland",
+    "internet",
+    "terminal_tools",
+    "virtual_management",
+    "development",
+    "media",
+    "gaming",
 ]
 
 script_dir = os.path.abspath(os.path.dirname(__file__))
-systemfile = os.path.join(script_dir, "system.yaml")
+systemfile = os.path.join(script_dir, "system.json")
+
+# Os.system("sudo echo '\n##### STARTING SCRIPT #####\n'")
 
 
 def run_command(command, check=True):
-
     i = 1
     while True:
         result = subprocess.run(command, shell=True)
@@ -55,7 +56,6 @@ def run_command(command, check=True):
 
 
 def chaotic_aur_setup():
-
     chaotic_installed = False
     with open("/etc/pacman.conf", "r") as f:
         lines = f.readlines()
@@ -88,7 +88,6 @@ def chaotic_aur_setup():
 
 
 def update_system():
-
     print(f"{blue_gear} Updating system")
     run_command(
         "sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist"
@@ -97,26 +96,23 @@ def update_system():
 
 
 def get_selected():
-
     selected_packages = []
     for package in package_list:
         path = os.path.join(script_dir, package)
         if os.path.exists(path):
             with open(path, "r") as f:
-                items = yaml.safe_load(f)
-
-            selected_packages.extend(items)
-
+                lines = f.readlines()
+            for line in lines:
+                if line.strip() and not line.strip().startswith("#"):
+                    selected_packages.append(line.strip())
         else:
             print(f"{red_cross} {package} not available")
             exit(1)
 
-    selected_packages = [item for item in selected_packages if item is not None]
     return selected_packages
 
 
 def get_existing():
-
     installed_packages = []
     result = subprocess.run(["pacman", "-Q"], stdout=subprocess.PIPE, text=True)
     pkgs = result.stdout.split("\n")
@@ -128,7 +124,7 @@ def get_existing():
     existing_packages = []
     if os.path.exists(systemfile):
         with open(systemfile, "r") as f:
-            existing_packages = yaml.safe_load(f)
+            existing_packages = json.load(f)
     else:
         print(f"{yellow_warning} Cuttent system does not exist starting fresh")
         update_list = []
@@ -139,13 +135,12 @@ def get_existing():
                 update_list.append(package)
 
         with open(systemfile, "w") as f:
-            yaml.dump(update_list, f)
+            json.dump(update_list, f)
 
     return existing_packages, installed_packages
 
 
 def update_existing(package_list: list, action: int):
-
     existing_packages, installed_packages = get_existing()
 
     if action == 1:
@@ -163,11 +158,10 @@ def update_existing(package_list: list, action: int):
 
     existing_packages.sort()
     with open(systemfile, "w") as f:
-        yaml.dump(existing_packages, f)
+        json.dump(existing_packages, f)
 
 
 def install_packages():
-
     selected_packages = get_selected()
     existing_packages, installed_packages = get_existing()
     tobe_installed = []
@@ -202,7 +196,6 @@ def install_packages():
 
 
 def remove_packages():
-
     selected_packages = get_selected()
     existing_packages, installed_packages = get_existing()
     tobe_removed = []
@@ -257,7 +250,6 @@ def manage_packages():
 
 def copy_configurations():
 
-    # Copy system configurations
     file = os.path.join(script_dir, "system/etc/greetd/config.toml")
     run_command(f"sudo cp {file} /etc/greetd/config.toml", False)
 
@@ -272,24 +264,25 @@ def copy_configurations():
     file = os.path.join(script_dir, "system/etc/tlp.conf")
     run_command(f"sudo cp {file} /etc/tlp.conf", False)
 
-    # Link user configurations
+    file = os.path.join(script_dir, "system/etc/docker/daemon.json")
+    run_command("sudo mkdir /etc/docker")
+    run_command(f"sudo cp {file} /etc/docker/daemon.json", False)
+
     subprocess.run("mkdir ~/.config", shell=True)
+
     subprocess.run("stow -t ~ nova", cwd=os.path.dirname(script_dir), shell=True)
 
-    # Install tmux tpm
     run_command(
         "git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm", False
     )
 
-    # Install Doom emacs
-    run_command(
-        "git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs"
-    )
-    run_command("~/.config/emacs/bin/doom install")
-
     run_command("sudo systemctl enable greetd")
 
     run_command("chsh -s $(which zsh)")
+
+    reboot = input("Configuration completed reboot now [Y/n] :")
+    if reboot.lower == "y":
+        os.system("reboot")
 
 
 @app.command(short_help="Configure system from scratch")
@@ -320,5 +313,4 @@ def update():
 
 
 if __name__ == "__main__":
-    # app()
-    manage_packages()
+    app()

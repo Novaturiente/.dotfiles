@@ -58,6 +58,3 @@ zstyle ':completion:*:descriptions' format '%B%d%b'
 zstyle ':completion:*' group-name ''
 zstyle ':completion::complete::' group-order files local-directories
 zstyle ':completion:*' file-sort modification
-
-
-if [ -e /home/nova/.nix-profile/etc/profile.d/nix.sh ]; then . /home/nova/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
