@@ -80,7 +80,6 @@
 - network-manager-applet
 - networkmanager
 - nodejs
-- nomachine
 - noto-fonts-emoji
 - nvidia-container-toolkit
 - nvidia-open-dkms
@@ -88,7 +87,6 @@
 - nvidia-utils
 - nvtop
 - nwg-look
-- ollama-cuda
 - openbsd-netcat
 - openssh
 - otf-font-awesome
@@ -104,7 +102,6 @@
 - python-adblock
 - python-black
 - python-debugpy
-- python-fake-useragent
 - python-lsp-server
 - python-pynvim
 - python-pytest

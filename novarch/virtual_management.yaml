@@ -6,7 +6,5 @@
 - gnome-boxes
 - podman
 - podman-compose
-- crun
 - openbsd-netcat
 - freerdp
-- nomachine
