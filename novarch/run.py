@@ -27,7 +27,7 @@ package_list = [
     "virtual_management.yaml",
     "development.yaml",
     "media.yaml",
-    # "gaming.yaml",
+    "gaming.yaml",
 ]
 
 script_dir = os.path.abspath(os.path.dirname(__file__))
