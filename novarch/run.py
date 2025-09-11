@@ -274,18 +274,21 @@ def copy_configurations():
 
     # Link user configurations
     subprocess.run("mkdir ~/.config", shell=True)
-    subprocess.run("stow -t ~ nova", cwd=os.path.dirname(script_dir), shell=True)
-
-    # Install tmux tpm
-    run_command(
-        "git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm", False
-    )
 
     # Install Doom emacs
     run_command(
         "git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs"
     )
     run_command("~/.config/emacs/bin/doom install")
+
+    run_command("rm -rf ~/.config/doom")
+
+    subprocess.run("stow -t ~ nova", cwd=os.path.dirname(script_dir), shell=True)
+
+    # Install tmux tpm
+    run_command(
+        "git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm", False
+    )
 
     run_command("sudo systemctl enable greetd")
 
