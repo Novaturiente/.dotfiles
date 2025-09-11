@@ -28,9 +28,6 @@
 - fluent-icon-theme-git
 - freerdp
 - fzf
-- gamemode
-- gamescope
-- ghostty
 - git
 - gnome-boxes
 - gnutls
@@ -53,7 +50,6 @@
 - less
 - lib32-libglvnd
 - lib32-nvidia-utils
-- libjpeg6-turbo
 - libpng
 - libpulse
 - libusb-compat
@@ -65,7 +61,6 @@
 - lsof
 - lua
 - luarocks
-- lutris
 - materia-gtk-theme
 - materia-kde
 - meson
@@ -131,11 +126,9 @@
 - usb_modeswitch
 - uv
 - vulkan-icd-loader
-- vulkan-tools
 - wayland-protocols
 - wf-recorder
 - wget
-- wine-staging
 - wireplumber
 - wl-clipboard
 - wpa_supplicant
