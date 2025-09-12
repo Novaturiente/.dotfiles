@@ -58,3 +58,5 @@ zstyle ':completion:*:descriptions' format '%B%d%b'
 zstyle ':completion:*' group-name ''
 zstyle ':completion::complete::' group-order files local-directories
 zstyle ':completion:*' file-sort modification
+
+export PATH="$HOME/.local/bin:$PATH"

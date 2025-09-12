@@ -17,6 +17,13 @@ application/zip=ark.desktop
 application/x-tar=ark.desktop
 application/x-7z-compressed=ark.desktop
 text/plain=neovim.desktop  # or gedit.desktop, code.desktop, etc.
+application/x-ms-dos-executable=LuxWine.desktop
+application/x-wine-extension-msp=LuxWine.desktop
+application/x-msi=LuxWine.desktop
+application/x-msdos-program=LuxWine.desktop
+text/win-bat=LuxWine.desktop
+application/x-ms-shortcut=LuxWine.desktop
+text/x-ms-regedit=LuxWine.desktop
 
 [Added Associations]
 image/png=qimgv.desktop;feh.desktop;
