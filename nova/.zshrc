@@ -2,18 +2,16 @@
 HISTFILE=$XDG_CONFIG_HOME/zsh/.histfile
 HISTSIZE=10000
 SAVEHIST=10000
-# ---- Compinit ----
-autoload -Uz compinit
-zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
-if [[ ! -s $zcompdump || $zcompdump -ot ~/.zshrc ]]; then
-  compinit -C
-fi
-autoload -U colors && colors
 
 # ---- Load Environment Variables ----
 source $XDG_CONFIG_HOME/zsh/variables.zsh
 if [ -f ~/.env.zsh ]; then
   source ~/.env.zsh
+fi
+
+# Change cursor to vertical bar when inside tmux
+if [ -n "$TMUX" ]; then
+  echo -ne "\e[3 q"
 fi
 
 setopt extendedglob nonomatch
@@ -59,3 +57,16 @@ source $XDG_CONFIG_HOME/zsh/prompt.zsh
 source $XDG_CONFIG_HOME/zsh/functions.zsh
 # ---- Plugin and Theme Sourcing ----
 source $XDG_CONFIG_HOME/zsh/pluginload.zsh
+
+# ---- Compinit ----
+autoload -Uz compinit
+zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
+
+if [[ "$(date +'%j')" != "$(stat -c '%y' "$zcompdump" 2>/dev/null | cut -d' ' -f1)" ]]; then
+  compinit
+  # Optional: compile dump for faster load next time
+  zcompile "$zcompdump"
+else
+  compinit -C
+fi
+autoload -U colors && colors

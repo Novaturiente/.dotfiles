@@ -5,7 +5,9 @@
 
 (add-to-list 'custom-theme-load-path "~/.doom.d/themes")
 (load-theme 'doom-rose-pine t)
-;; (setq doom-theme 'doom-rose-pine)
+;; (setq doom-theme 'doom-one)
+
+(setq vterm-shell "/usr/bin/zsh")
 
 (setq display-line-numbers-type t)
 
@@ -14,7 +16,8 @@
 (setq org-directory "~/Notes/Org/")
 
 (custom-theme-set-faces!
-'doom-one
+;; 'doom-one
+'doom-rose-pine
 '(org-level-1 :inherit outline-1 :height 1.5)
 '(org-level-2 :inherit outline-2 :height 1.4)
 '(org-level-3 :inherit outline-3 :height 1.3)
@@ -22,8 +25,8 @@
 '(org-level-5 :inherit outline-5 :height 1.1)
 '(org-level-6 :inherit outline-6 :height 1.0)
 '(org-level-7 :inherit outline-7 :height 1.0)
-'(org-level-8 :inherit outline-8 :height 1.0)
-'(org-document-title :height 1.6 :bold nil :underline nil))
+'(org-level-8 :inherit outline-8 :height 1.0))
+;; '(org-document-title :height 1.6 :bold nil :underline nil))
 
 (setq org-modern-table-vertical t)
 (setq org-modern-table t)
