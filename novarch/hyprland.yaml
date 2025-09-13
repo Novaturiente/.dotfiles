@@ -43,11 +43,4 @@
 - materia-kde
 - materia-gtk-theme
 - nwg-look
-
-
-# DWM Development
-- libx11
-- libxft
-- xorg-server
-- xorg-xinit
-- terminus-font
+- kvantum
