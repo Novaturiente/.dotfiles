@@ -33,10 +33,15 @@
 
 (map! :leader
       :desc "Open todo.org"
-      "o o" (lambda () (interactive) (find-file "~/Notes/Org/index.org")))
+      "o o" (lambda () (interactive) (find-file "~/Org/index.org")))
 
 (map! :leader
       :desc "Kill buffer" "q w" #'kill-current-buffer)
+
+(map! :leader
+      :desc "change window" "<left>" #'evil-window-left)
+(map! :leader
+      :desc "change window" "<right>" #'evil-window-right)
 
 ;; Unset existing bindings
 (global-unset-key (kbd "M-<left>"))
@@ -50,6 +55,20 @@
   (map! :map prog-mode-map
         :i [tab] (lambda () (interactive) (insert "    "))))
 (global-set-key (kbd "TAB") (lambda () (interactive) (insert "    ")))
+
+
+;; "Open a vterm in a new vertical split window."
+(defun my/vterm-open-vertical-split ()
+  (interactive)
+  (let ((buffer (generate-new-buffer "*vterm*")))
+    (split-window-right)  ;; split window vertically
+    (other-window 1)      ;; move to new window
+    (switch-to-buffer buffer)  ;; switch new window to the new buffer
+    (vterm-mode)))        ;; activate vterm mode explicitly
+
+(map! :leader
+      (:prefix "t"
+       :desc "Open vterm in vertical split" "t" #'my/vterm-open-vertical-split))
 
 ;; Commands
 (defun my/uv-run-current-file ()

@@ -5,6 +5,7 @@ import os
 import time
 import typer
 import yaml
+import configure
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 
@@ -33,25 +34,7 @@ package_list = [
 script_dir = os.path.abspath(os.path.dirname(__file__))
 systemfile = os.path.join(script_dir, "system.yaml")
 
-
-def run_command(command, check=True):
-
-    i = 1
-    while True:
-        result = subprocess.run(command, shell=True)
-
-        if result.returncode != 0:
-            print(f"{red_cross} Error running '{command}'")
-            if check:
-                if i == 3:
-                    print(f"{red_cross} '{command}' failed to complete exiting script")
-                    exit(1)
-                i += 1
-                time.sleep(5)
-            else:
-                break
-        else:
-            break
+run_command = configure.run_command
 
 
 def chaotic_aur_setup():
@@ -255,52 +238,12 @@ def manage_packages():
     remove_packages()
 
 
-def copy_configurations():
-
-    # Copy system configurations
-    file = os.path.join(script_dir, "system/etc/greetd/config.toml")
-    run_command(f"sudo cp {file} /etc/greetd/config.toml", False)
-
-    file = os.path.join(
-        script_dir, "system/etc/modprobe.d/nvidia-power-management.conf"
-    )
-    run_command(f"sudo cp {file} /etc/modprobe.d/nvidia-power-management.conf", False)
-
-    file = os.path.join(script_dir, "system/etc/modules-load/ntsync.conf")
-    run_command(f"sudo cp {file} /etc/modules-load.d/ntsync.conf", False)
-
-    file = os.path.join(script_dir, "system/etc/tlp.conf")
-    run_command(f"sudo cp {file} /etc/tlp.conf", False)
-
-    # Link user configurations
-    subprocess.run("mkdir ~/.config", shell=True)
-
-    # Install Doom emacs
-    run_command(
-        "git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs"
-    )
-    run_command("~/.config/emacs/bin/doom install")
-
-    run_command("rm -rf ~/.config/doom")
-
-    subprocess.run("stow -t ~ nova", cwd=os.path.dirname(script_dir), shell=True)
-
-    # Install tmux tpm
-    run_command(
-        "git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm", False
-    )
-
-    run_command("sudo systemctl enable greetd")
-
-    run_command("chsh -s $(which zsh)")
-
-
 @app.command(short_help="Configure system from scratch")
 def init():
     chaotic_aur_setup()
     update_system()
     manage_packages()
-    copy_configurations()
+    configure.copy_configurations()
 
 
 @app.command(short_help="Install/Remove packages based on updated package list")
