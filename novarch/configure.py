@@ -1,6 +1,19 @@
 import subprocess
 import os
 
+# ANSI color codes
+RED = "\033[91m"
+YELLOW = "\033[93m"
+BLUE = "\033[94m"
+GREEN = "\033[92m"
+RESET = "\033[0m"
+red_cross = f"{RED}✗{RESET}"
+yellow_warning = f"{YELLOW}⚠{RESET}"
+blue_gear = f"{BLUE}⚙{RESET}"
+green_check = f"{GREEN}✓{RESET}"
+
+script_dir = os.path.abspath(os.path.dirname(__file__))
+
 
 def run_command(command, check=True):
 
