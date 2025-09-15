@@ -1,8 +1,11 @@
 - pamixer
 - mpv
 - qimgv-git
-- zathura
 - deluge-gtk
 - scrcpy
 
 - yt-dlp
+
+- emacs
+- poppler
+- poppler-glib

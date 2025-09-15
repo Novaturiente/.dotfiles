@@ -7,11 +7,16 @@
 (load-theme 'doom-rose-pine t)
 ;; (setq doom-theme 'doom-one)
 
-(setq vterm-shell "/usr/bin/zsh")
+(set-frame-parameter nil 'alpha-background 80)
+(add-to-list 'default-frame-alist '(alpha-background . 80))
 
 (setq display-line-numbers-type t)
 
+(setq vterm-shell "/usr/bin/zsh")
+(add-hook 'emacs-startup-hook #'vterm)
+
 (setq confirm-kill-emacs nil)
+(setq confirm-kill-processes nil)
 
 (setq org-directory "~/Notes/Org/")
 
@@ -37,18 +42,44 @@
 
 (map! :leader
       :desc "Kill buffer" "q w" #'kill-current-buffer)
-
 (map! :leader
       :desc "change window" "<left>" #'evil-window-left)
 (map! :leader
       :desc "change window" "<right>" #'evil-window-right)
 
-;; Unset existing bindings
+;; Unset existing bindings & Set M-<left> and M-<right> to switch buffers
 (global-unset-key (kbd "M-<left>"))
 (global-unset-key (kbd "M-<right>"))
-;; Set M-<left> and M-<right> to switch buffers
 (global-set-key (kbd "M-<left>") #'previous-buffer)
 (global-set-key (kbd "M-<right>") #'next-buffer)
+
+(defun close-window-and-kill-buffer ()
+  "Kill the buffer associated with the current window and then close the window."
+  (interactive)
+  (kill-buffer)
+  (delete-window))
+
+(map! :leader
+      :prefix "w"
+      :desc "Close window and kill buffer"
+      "w" #'close-window-and-kill-buffer)
+
+;; Open a vterm in a new vertical split window.
+(defun my/vterm-open-vertical-split ()
+  (interactive)
+  (let ((buffer (generate-new-buffer "*vterm*")))
+    (split-window-right)
+    (other-window 1)
+    (switch-to-buffer buffer)
+    (vterm-mode)))
+
+(map! :leader
+      (:prefix "t"
+       :desc "Open vterm in vertical split" "t" #'my/vterm-open-vertical-split))
+
+(setq vterm-kill-buffer-on-exit t)
+(setq kill-buffer-query-functions
+      (remq 'process-kill-buffer-query-function kill-buffer-query-functions))
 
 ;; Force TAB to insert two spaces in programming modes
 (after! prog-mode
@@ -56,19 +87,17 @@
         :i [tab] (lambda () (interactive) (insert "    "))))
 (global-set-key (kbd "TAB") (lambda () (interactive) (insert "    ")))
 
-
-;; "Open a vterm in a new vertical split window."
-(defun my/vterm-open-vertical-split ()
-  (interactive)
-  (let ((buffer (generate-new-buffer "*vterm*")))
-    (split-window-right)  ;; split window vertically
-    (other-window 1)      ;; move to new window
-    (switch-to-buffer buffer)  ;; switch new window to the new buffer
-    (vterm-mode)))        ;; activate vterm mode explicitly
-
+;; Tab Bar
 (map! :leader
-      (:prefix "t"
-       :desc "Open vterm in vertical split" "t" #'my/vterm-open-vertical-split))
+      :desc "Tab bar toggle" "t s" 'tab-bar-mode)
+(map! :leader
+      :desc "Tab new" "t n" 'tab-bar-new-tab)
+(map! :leader
+      :desc "Tab close" "t k" 'tab-bar-close-tab)
+(map! :leader
+      :desc "Tab next" "t <right>" 'tab-bar-switch-to-next-tab)
+(map! :leader
+      :desc "Tab prev" "t <left>" 'tab-bar-switch-to-prev-tab)
 
 ;; Commands
 (defun my/uv-run-current-file ()
@@ -116,3 +145,20 @@
 
 ;; Disable lsp documentation
 (setq lsp-ui-doc-enable nil lsp-ui-doc-show-with-cursor nil lsp-ui-doc-show-with-mouse nil lsp-eldoc-enable-hover nil lsp-signature-auto-activate nil)
+(after! corfu
+  (setq corfu-auto nil))
+
+;; in ~/.doom.d/config.el
+
+;; First, ensure PATH includes ~/.local/bin
+(setenv "PATH"
+        (concat (expand-file-name "~/.local/bin")
+                ":" (getenv "PATH")))
+
+;; Also adjust exec-path
+(add-to-list 'exec-path (expand-file-name "~/.local/bin"))
+
+(map! :leader
+      :desc "Aider Menu" "z s" #'aider-run-aider)
+(map! :leader
+      :desc "Aider Transient Menu" "z a" #'aider-transient-menu)

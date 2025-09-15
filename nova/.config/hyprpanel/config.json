@@ -626,5 +626,19 @@
   "theme.bar.buttons.modules.worldclock.text": "#FFFFFF",
   "theme.bar.buttons.modules.worldclock.icon": "#FFFFFF",
   "theme.bar.buttons.modules.worldclock.icon_background": "#FFFFFF",
-  "theme.bar.buttons.modules.worldclock.border": "#FFFFFF"
+  "theme.bar.buttons.modules.worldclock.border": "#FFFFFF",
+  "theme.bar.floating": false,
+  "theme.bar.border.width": "0.05em",
+  "theme.bar.shadow": "0px 1px 2px 1px #16161e",
+  "theme.bar.enableShadow": false,
+  "theme.bar.shadowMargins": "0px 0px 4px 0px",
+  "theme.bar.border_radius": "0.4em",
+  "theme.bar.outer_spacing": "1.6em",
+  "theme.bar.buttons.y_margins": "0.4em",
+  "theme.bar.buttons.padding_x": "0.7rem",
+  "theme.bar.buttons.padding_y": "0.2rem",
+  "theme.bar.buttons.radius": "0.3em",
+  "theme.bar.margin_top": "0.5em",
+  "theme.bar.buttons.enableBorders": false,
+  "bar.autoHide": "fullscreen"
 }

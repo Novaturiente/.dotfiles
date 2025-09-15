@@ -51,3 +51,7 @@
   :recipe (:host github
            :repo "rawleyfowler/tokyo-theme.el"
            :branch "main"))
+
+(package! aider
+  :recipe (:host github :repo "tninja/aider.el"
+           :files ("*.el")))  ;; or more explicit file list that includes aider-utils.el

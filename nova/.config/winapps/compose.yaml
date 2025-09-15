@@ -24,7 +24,7 @@ services:
     restart: "no" 
     volumes:
       # - /home/nova/Documents/tiny11.iso:/boot.iso
-      # - /home/nova/Documents/Windows:/oem
+      - /home/nova/Documents/Windows:/oem
       # - ${HOME}:/shared 
       - /home/nova/VM/windows:/storage 
     sysctls:

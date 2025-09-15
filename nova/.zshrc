@@ -70,3 +70,5 @@ else
   compinit -C
 fi
 autoload -U colors && colors
+
+. "$HOME/.local/share/../bin/env"
