@@ -22,6 +22,8 @@
 (setq vterm-shell "/usr/bin/zsh")
 (add-hook 'emacs-startup-hook #'vterm)
 
+(add-hook 'after-init-hook #'spacious-padding-mode)
+
 (setq confirm-kill-emacs nil)
 (setq confirm-kill-processes nil)
 #+end_src
@@ -120,6 +122,9 @@
 (map! :leader
       :desc "Tab prev" "t <left>" 'tab-bar-switch-to-prev-tab)
 
+;; Treemacs
+(map! :leader
+      :desc "Open treemacs" "o o" 'treemacs)
 #+end_src
 
 
@@ -183,8 +188,6 @@
 
 * AI assistant
 #+begin_src emacs-lisp
-;; in ~/.doom.d/config.el
-
 ;; First, ensure PATH includes ~/.local/bin
 (setenv "PATH"
         (concat (expand-file-name "~/.local/bin")

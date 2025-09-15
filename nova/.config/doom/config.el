@@ -15,6 +15,8 @@
 (setq vterm-shell "/usr/bin/zsh")
 (add-hook 'emacs-startup-hook #'vterm)
 
+(add-hook 'after-init-hook #'spacious-padding-mode)
+
 (setq confirm-kill-emacs nil)
 (setq confirm-kill-processes nil)
 
@@ -99,6 +101,10 @@
 (map! :leader
       :desc "Tab prev" "t <left>" 'tab-bar-switch-to-prev-tab)
 
+;; Treemacs
+(map! :leader
+      :desc "Open treemacs" "o o" 'treemacs)
+
 ;; Commands
 (defun my/uv-run-current-file ()
   "Run `uv run` on the current buffer's file."
@@ -147,8 +153,6 @@
 (setq lsp-ui-doc-enable nil lsp-ui-doc-show-with-cursor nil lsp-ui-doc-show-with-mouse nil lsp-eldoc-enable-hover nil lsp-signature-auto-activate nil)
 (after! corfu
   (setq corfu-auto nil))
-
-;; in ~/.doom.d/config.el
 
 ;; First, ensure PATH includes ~/.local/bin
 (setenv "PATH"
