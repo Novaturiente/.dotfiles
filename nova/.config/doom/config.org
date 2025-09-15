@@ -195,4 +195,6 @@
 
 (map! :leader
       :desc "Aider Menu" "z s" #'aider-run-aider)
+(map! :leader
+      :desc "Aider Transient Menu" "z a" #'aider-transient-menu)
 #+end_src
