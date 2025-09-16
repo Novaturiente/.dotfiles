@@ -18,11 +18,11 @@
 *** Settings
 #+begin_src emacs-lisp
 (setq display-line-numbers-type t)
-
 (setq vterm-shell "/usr/bin/zsh")
 (add-hook 'emacs-startup-hook #'vterm)
-
 (add-hook 'after-init-hook #'spacious-padding-mode)
+
+(add-hook 'after-make-frame-functions #'spacious-padding-mode)
 
 (setq confirm-kill-emacs nil)
 (setq confirm-kill-processes nil)
@@ -83,6 +83,10 @@
       :desc "Close window and kill buffer"
       "w" #'close-window-and-kill-buffer)
 #+end_src
+
+#+RESULTS:
+: close-window-and-kill-buffer
+
 *** Coding and Terminal
 #+begin_src emacs-lisp
 ;; Open a vterm in a new vertical split window.
@@ -200,4 +204,30 @@
       :desc "Aider Menu" "z s" #'aider-run-aider)
 (map! :leader
       :desc "Aider Transient Menu" "z a" #'aider-transient-menu)
+#+end_src
+
+
+* Dashboard settings
+#+begin_src emacs-lisp
+;; ~/.doom.d/config.el
+
+(defun my/doom-dashboard-ascii-banner ()
+  (let ((banner '(
+    "███▄▄▄▄    ▄██████▄   ▄█    █▄     ▄████████    ▄████████  ▄████████    ▄█    █▄   "
+    "███▀▀▀██▄ ███    ███ ███    ███   ███    ███   ███    ███ ███    ███   ███    ███  "
+    "███   ███ ███    ███ ███    ███   ███    ███   ███    ███ ███    █▀    ███    ███  "
+    "███   ███ ███    ███ ███    ███   ███    ███  ▄███▄▄▄▄██▀ ███         ▄███▄▄▄▄███▄▄"
+    "███   ███ ███    ███ ███    ███ ▀███████████ ▀▀███▀▀▀▀▀   ███        ▀▀███▀▀▀▀███▀ "
+    "███   ███ ███    ███ ███    ███   ███    ███ ▀███████████ ███    █▄    ███    ███  "
+    "███   ███ ███    ███ ███    ███   ███    ███   ███    ███ ███    ███   ███    ███  "
+    " ▀█   █▀   ▀██████▀   ▀██████▀    ███    █▀    ███    ███ ████████▀    ███    █▀   "
+    "                                               ███    ███                          "
+)))
+    (dolist (line banner)
+      (insert (propertize line 'face 'doom-dashboard-banner) "\n"))))
+
+;; ensure Doom uses it (works whether you start GUI or terminal;
+;; the ASCII will only be visible in terminal frames)
+(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-banner)
+(add-hook '+doom-dashboard-functions #'my/doom-dashboard-ascii-banner)
 #+end_src

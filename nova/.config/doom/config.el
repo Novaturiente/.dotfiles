@@ -11,11 +11,11 @@
 (add-to-list 'default-frame-alist '(alpha-background . 80))
 
 (setq display-line-numbers-type t)
-
 (setq vterm-shell "/usr/bin/zsh")
 (add-hook 'emacs-startup-hook #'vterm)
-
 (add-hook 'after-init-hook #'spacious-padding-mode)
+
+(add-hook 'after-make-frame-functions #'spacious-padding-mode)
 
 (setq confirm-kill-emacs nil)
 (setq confirm-kill-processes nil)
@@ -166,3 +166,25 @@
       :desc "Aider Menu" "z s" #'aider-run-aider)
 (map! :leader
       :desc "Aider Transient Menu" "z a" #'aider-transient-menu)
+
+;; ~/.doom.d/config.el
+
+(defun my/doom-dashboard-ascii-banner ()
+  (let ((banner '(
+    "███▄▄▄▄    ▄██████▄   ▄█    █▄     ▄████████    ▄████████  ▄████████    ▄█    █▄   "
+    "███▀▀▀██▄ ███    ███ ███    ███   ███    ███   ███    ███ ███    ███   ███    ███  "
+    "███   ███ ███    ███ ███    ███   ███    ███   ███    ███ ███    █▀    ███    ███  "
+    "███   ███ ███    ███ ███    ███   ███    ███  ▄███▄▄▄▄██▀ ███         ▄███▄▄▄▄███▄▄"
+    "███   ███ ███    ███ ███    ███ ▀███████████ ▀▀███▀▀▀▀▀   ███        ▀▀███▀▀▀▀███▀ "
+    "███   ███ ███    ███ ███    ███   ███    ███ ▀███████████ ███    █▄    ███    ███  "
+    "███   ███ ███    ███ ███    ███   ███    ███   ███    ███ ███    ███   ███    ███  "
+    " ▀█   █▀   ▀██████▀   ▀██████▀    ███    █▀    ███    ███ ████████▀    ███    █▀   "
+    "                                               ███    ███                          "
+)))
+    (dolist (line banner)
+      (insert (propertize line 'face 'doom-dashboard-banner) "\n"))))
+
+;; ensure Doom uses it (works whether you start GUI or terminal;
+;; the ASCII will only be visible in terminal frames)
+(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-banner)
+(add-hook '+doom-dashboard-functions #'my/doom-dashboard-ascii-banner)
