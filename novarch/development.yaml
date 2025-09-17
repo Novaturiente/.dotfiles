@@ -18,3 +18,9 @@
 - python-pytest
 - python-lsp-server
 - python-debugpy
+- python-pyflakes
+- python-isort
+- python-pipenv
+- python-nose
+- shfmt
+- shellcheck

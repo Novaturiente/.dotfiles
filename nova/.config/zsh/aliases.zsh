@@ -1,6 +1,6 @@
 # Editor and system update aliases
 # alias vi="nvim"
-alias vi="emacs"
+alias vi="emacsclient -c"
 alias doom="~/.config/emacs/bin/doom"
 
 # ---- ls Aliases (with eza) ----
