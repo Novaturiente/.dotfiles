@@ -640,5 +640,5 @@
   "theme.bar.buttons.radius": "0.3em",
   "theme.bar.margin_top": "0.5em",
   "theme.bar.buttons.enableBorders": false,
-  "bar.autoHide": "fullscreen"
+  "bar.autoHide": "never"
 }

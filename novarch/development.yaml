@@ -24,3 +24,5 @@
 - python-nose
 - shfmt
 - shellcheck
+
+- pandoc-cli
