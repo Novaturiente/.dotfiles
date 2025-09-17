@@ -1,6 +1,7 @@
 # Editor and system update aliases
 # alias vi="nvim"
 alias vi="emacs"
+alias doom="~/.config/emacs/bin/doom"
 
 # ---- ls Aliases (with eza) ----
 alias la='eza -a --color=always --group-directories-first --icons=always "$@"'
