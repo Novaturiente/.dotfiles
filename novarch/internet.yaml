@@ -3,4 +3,6 @@
 - python-adblock
 - qutebrowser
 - brave-bin
-- tor-browser-bin
+# - mullvad-browser-bin
+
+- floorp-bin
