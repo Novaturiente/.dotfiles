@@ -11,10 +11,10 @@
 # base16 colors but with variable names that
 # reflect what the color is mainly used for
 
-bg_default = "#282c34"  # main shade darkest
-bg_lighter = "#353b45"
-bg_selection = "#3e4451"
-bg_selection2 = "#1F2228"
+bg_default = "#282c3400"  # main shade darkest
+bg_lighter = "#353b4500"
+bg_selection = "#3e445100"
+bg_selection2 = "#1F222800"
 # "#545862"
 fg_disabled = "#565c64"
 fg_default = "#abb2bf"

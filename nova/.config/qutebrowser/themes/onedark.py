@@ -15,19 +15,15 @@ bg_default = "#282c34"  # main shade darkest
 bg_lighter = "#353b45"
 bg_selection = "#3e4451"
 bg_selection2 = "#1F2228"
-# "#545862"
 fg_disabled = "#565c64"
 fg_default = "#abb2bf"
-# "#b6bdca"
 bg_lightest = "#c8ccd4"  # main shade lightest
 fg_error = "#e06c75"  # red
-# "#d19a66"                     # orange
 bg_hint = "#e5c07b"  # yellow
 fg_matched_text = "#98c379"  # green
 bg_passthrough_mode = "#56b6c2"  # teal
-bg_insert_mode = "#61afef"  # blue
+bg_insert_mode = "rgba(97, 150, 175, 1)"  # Cornflower Blue / Bright Blue - blue
 bg_warning = "#c678dd"  # purple
-# "#be5046"                     # dark red
 
 ############
 # SETTINGS #

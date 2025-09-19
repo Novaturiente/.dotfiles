@@ -52,9 +52,10 @@ c.content.geolocation = False
 
 # GPU accelearation
 c.qt.args = [
-    "ignore-gpu-blocklist",
     "enable-gpu-rasterization",
     "enable-accelerated-video-decode",
+    "enable-quic",
+    "enable-zero-copy",
 ]
 
 # # Privacy and blocking

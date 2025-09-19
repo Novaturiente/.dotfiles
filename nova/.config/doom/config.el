@@ -3,9 +3,12 @@
 (when (display-graphic-p)
   (set-face-attribute 'default nil :weight 'semibold))
 
-(add-to-list 'custom-theme-load-path "~/.doom.d/themes")
-(load-theme 'doom-rose-pine t)
-;; (setq doom-theme 'doom-one)
+;; (add-to-list 'custom-theme-load-path "~/.doom.d/themes")
+;; (load-theme 'doom-rose-pine t)
+;; (setq doom-theme 'doom-challenger-deep)
+;; (setq doom-theme 'doom-monokai-pro)
+;; (setq doom-theme 'doom-oceanic-next)
+
 
 (set-frame-parameter nil 'alpha-background 80)
 (add-to-list 'default-frame-alist '(alpha-background . 80))

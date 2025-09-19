@@ -8,13 +8,20 @@
 (when (display-graphic-p)
   (set-face-attribute 'default nil :weight 'semibold))
 
-(add-to-list 'custom-theme-load-path "~/.doom.d/themes")
-(load-theme 'doom-rose-pine t)
-;; (setq doom-theme 'doom-one)
+;; (add-to-list 'custom-theme-load-path "~/.doom.d/themes")
+;; (load-theme 'doom-rose-pine t)
+;; (setq doom-theme 'doom-challenger-deep)
+;; (setq doom-theme 'doom-monokai-pro)
+;; (setq doom-theme 'doom-oceanic-next)
+
 
 (set-frame-parameter nil 'alpha-background 80)
 (add-to-list 'default-frame-alist '(alpha-background . 80))
 #+end_src
+
+#+RESULTS:
+: ((buffer-predicate . doom-buffer-frame-predicate) (bottom-divider-width . 1) (alpha-background . 80) (vertical-scroll-bars) (tool-bar-lines . 0) (menu-bar-lines . 0) (internal-border-width . 15) (right-divider-width . 30) (left-fringe . 8) (right-fringe . 8) (scroll-bar-width . 8))
+
 *** Settings
 #+begin_src emacs-lisp
 (setq display-line-numbers-type t)
@@ -27,6 +34,8 @@
 (setq confirm-kill-emacs nil)
 (setq confirm-kill-processes nil)
 #+end_src
+
+#+RESULTS:
 
 
 * Org-mode settings
