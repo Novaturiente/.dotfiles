@@ -130,4 +130,5 @@ config.bind("<Ctrl+Alt+t>", "spawn -d floorp {url} ;; tab-close")
 # -- Cast current video
 config.bind(",c", "hint links spawn --userscript cast.sh {hint-url}")
 config.bind(",m", "hint links spawn mpv {hint-url}")
-config.bind(",d", "spawn --userscript open_download")
+config.bind(",D", "spawn --userscript open_download")
+config.bind(",d", "hint links spawn --userscript download.sh {hint-url}")

@@ -6,14 +6,13 @@
 ;; (add-to-list 'custom-theme-load-path "~/.doom.d/themes")
 ;; (load-theme 'doom-rose-pine t)
 ;; (setq doom-theme 'doom-challenger-deep)
-;; (setq doom-theme 'doom-monokai-pro)
-;; (setq doom-theme 'doom-oceanic-next)
 
 
 (set-frame-parameter nil 'alpha-background 80)
 (add-to-list 'default-frame-alist '(alpha-background . 80))
 
 (setq display-line-numbers-type t)
+(setq comint-terminal-type "xterm-256color")
 (setq vterm-shell "/usr/bin/zsh")
 (add-hook 'emacs-startup-hook #'vterm)
 (add-hook 'after-init-hook #'spacious-padding-mode)
@@ -22,28 +21,6 @@
 
 (setq confirm-kill-emacs nil)
 (setq confirm-kill-processes nil)
-
-(setq org-directory "~/Notes/Org/")
-
-(custom-theme-set-faces!
-;; 'doom-one
-'doom-rose-pine
-'(org-level-1 :inherit outline-1 :height 1.5)
-'(org-level-2 :inherit outline-2 :height 1.4)
-'(org-level-3 :inherit outline-3 :height 1.3)
-'(org-level-4 :inherit outline-2 :height 1.2)
-'(org-level-5 :inherit outline-5 :height 1.1)
-'(org-level-6 :inherit outline-6 :height 1.0)
-'(org-level-7 :inherit outline-7 :height 1.0)
-'(org-level-8 :inherit outline-8 :height 1.0))
-;; '(org-document-title :height 1.6 :bold nil :underline nil))
-
-(setq org-modern-table-vertical t)
-(setq org-modern-table t)
-
-(map! :leader
-      :desc "Open todo.org"
-      "o o" (lambda () (interactive) (find-file "~/Org/index.org")))
 
 (map! :leader
       :desc "Kill buffer" "q w" #'kill-current-buffer)
@@ -170,6 +147,28 @@
 (map! :leader
       :desc "Aider Transient Menu" "z a" #'aider-transient-menu)
 
+(setq org-directory "~/Notes/Org/")
+
+(custom-theme-set-faces!
+;; 'doom-one
+'doom-rose-pine
+'(org-level-1 :inherit outline-1 :height 1.5)
+'(org-level-2 :inherit outline-2 :height 1.4)
+'(org-level-3 :inherit outline-3 :height 1.3)
+'(org-level-4 :inherit outline-2 :height 1.2)
+'(org-level-5 :inherit outline-5 :height 1.1)
+'(org-level-6 :inherit outline-6 :height 1.0)
+'(org-level-7 :inherit outline-7 :height 1.0)
+'(org-level-8 :inherit outline-8 :height 1.0))
+;; '(org-document-title :height 1.6 :bold nil :underline nil))
+
+(setq org-modern-table-vertical t)
+(setq org-modern-table t)
+
+(map! :leader
+      :desc "Open todo.org"
+      "o o" (lambda () (interactive) (find-file "~/Org/index.org")))
+
 ;; ~/.doom.d/config.el
 
 (defun my/doom-dashboard-ascii-banner ()
@@ -190,4 +189,6 @@
 ;; ensure Doom uses it (works whether you start GUI or terminal;
 ;; the ASCII will only be visible in terminal frames)
 (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-banner)
+(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu) ; removes menu
+(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)    ; removes footer
 (add-hook '+doom-dashboard-functions #'my/doom-dashboard-ascii-banner)

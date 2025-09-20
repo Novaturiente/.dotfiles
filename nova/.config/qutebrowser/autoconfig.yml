@@ -6,5 +6,5 @@
 
 config_version: 2
 settings:
-  content.notifications.enabled:
-    https://web.tolstoycomments.com: false
+  downloads.open_dispatcher:
+    global: aria2p add {url}
