@@ -65,9 +65,21 @@ def setup_check():
 
 def chaotic_aur_setup():
 
+    multilib_enabled = False
     chaotic_installed = False
     with open("/etc/pacman.conf", "r") as f:
         lines = f.readlines()
+
+    for line in lines:
+        if line.startswith("["):
+            if "multilib" in line:
+                multilib_enabled = True
+                break
+    if not multilib_enabled:
+        with open("/etc/pacman.conf", "a") as f:
+            f.write("[multilib]\n")
+            f.write("Include = /etc/pacman.d/mirrorlist\n")
+
     for line in lines:
         if line.startswith("["):
             if "chaotic-aur" in line:
@@ -96,6 +108,10 @@ def chaotic_aur_setup():
 
 def update_system():
     print(f"{blue_gear} Updating system")
+    paru_check = os.popen("pacman -Q reflector").readlines()
+    if len(paru_check) == 0:
+        print(f"{yellow_warning} reflector not installed installing now")
+        run_command("pacman -S --noconfirm reflector")
     run_command(
         "reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist"
     )
@@ -274,7 +290,7 @@ def manage_packages():
     paru_check = os.popen("pacman -Q paru").readlines()
     if len(paru_check) == 0:
         print(f"{yellow_warning} paru not installed installing now")
-        run_command("sudo pacman -S --noconfirm paru")
+        run_command("pacman -S --noconfirm paru")
 
     install_packages()
     remove_packages()
@@ -284,18 +300,18 @@ def copy_configurations():
 
     # Copy system configurations
     file = os.path.join(script_dir, "system/etc/greetd/config.toml")
-    run_command(f"sudo cp {file} /etc/greetd/config.toml", False)
+    run_command(f"cp {file} /etc/greetd/config.toml", False)
 
     file = os.path.join(
         script_dir, "system/etc/modprobe.d/nvidia-power-management.conf"
     )
-    run_command(f"sudo cp {file} /etc/modprobe.d/nvidia-power-management.conf", False)
+    run_command(f"cp {file} /etc/modprobe.d/nvidia-power-management.conf", False)
 
     file = os.path.join(script_dir, "system/etc/modules-load/ntsync.conf")
-    run_command(f"sudo cp {file} /etc/modules-load.d/ntsync.conf", False)
+    run_command(f"cp {file} /etc/modules-load.d/ntsync.conf", False)
 
     file = os.path.join(script_dir, "system/etc/tlp.conf")
-    run_command(f"sudo cp {file} /etc/tlp.conf", False)
+    run_command(f"cp {file} /etc/tlp.conf", False)
 
     # Link user configurations
     subprocess.run(
