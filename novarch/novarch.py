@@ -79,6 +79,7 @@ def chaotic_aur_setup():
         with open("/etc/pacman.conf", "a") as f:
             f.write("[multilib]\n")
             f.write("Include = /etc/pacman.d/mirrorlist\n")
+    run_command("pacman -Sy")
 
     for line in lines:
         if line.startswith("["):
