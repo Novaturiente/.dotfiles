@@ -26,10 +26,6 @@ alias gadd='git add . && git commit -m "Update"'
 alias hotspot='nmcli dev wifi hotspot ifname wlp0s20f3 ssid Novapc password "Novarch123"'
 alias fileserver="python3 -m http.server 8080 --directory ~/Share"
 
-# alias ollama="docker exec -it ollama ollama"
-# alias ollamaup="podman-compose -f ~/.dotfiles/docker/ollama.yml up -d"
-# alias ollamadown="podman-compose -f ~/.dotfiles/docker/ollama.yml down"
-
 alias winsopen="podman-compose -f ~/.config/winapps/compose.yaml start && sleep 5 && xfreerdp3 /u:Nova /p:novarch /v:127.0.0.1 /cert:ignore /sound /microphone +dynamic-resolution /sec:tls /f +span +home-drive"
 alias winrestart="podman-compose -f ~/.config/winapps/compose.yaml restart && sleep 5 && xfreerdp3 /u:Nova /p:novarch /v:127.0.0.1 /cert:ignore /sound /microphone +dynamic-resolution /sec:tls /f +span +home-drive"
 alias winstop="podman-compose -f ~/.config/winapps/compose.yaml stop"
@@ -41,6 +37,12 @@ alias macdown="podman-compose -f ~/.dotfiles/docker/macos.yaml down"
 alias novarch="uv run --project ~/.dotfiles/novarch ~/.dotfiles/novarch/run.py"
 alias editsystem="nvim ~/.dotfiles/novarch"
 alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && paru -Syu"
+
+alias clear-cache="rm -rf ~/.config/qutebrowser_work/cache/* && rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp"
+
+# alias ollama="docker exec -it ollama ollama"
+# alias ollamaup="podman-compose -f ~/.dotfiles/docker/ollama.yml up -d"
+# alias ollamadown="podman-compose -f ~/.dotfiles/docker/ollama.yml down"
 
 # alias nixup="sudo systemctl enable --now nix-daemon"
 # alias homeup="nix run github:nix-community/home-manager -- init --switch"
