@@ -321,7 +321,7 @@ def copy_configurations():
 
     # Install Doom emacs
     run_command(
-        "git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs"
+        f"sudo -u {original_user} git clone --depth 1 https://github.com/doomemacs/doomemacs /home/{original_user}/.config/emacs"
     )
     run_command(
         f"sudo -u {original_user} /home/{original_user}/.config/emacs/bin/doom install"
