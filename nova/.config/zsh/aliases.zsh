@@ -34,7 +34,7 @@ alias winstart="podman-compose -f ~/.config/winapps/compose.yaml start"
 alias macup="podman-compose -f ~/.dotfiles/docker/macos.yaml up -d"
 alias macdown="podman-compose -f ~/.dotfiles/docker/macos.yaml down"
 
-alias novarch="uv run --project ~/.dotfiles/novarch ~/.dotfiles/novarch/run.py"
+# alias novarch="uv run --project ~/.dotfiles/novarch ~/.dotfiles/novarch/run.py"
 alias editsystem="nvim ~/.dotfiles/novarch"
 alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && paru -Syu"
 
