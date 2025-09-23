@@ -57,3 +57,5 @@
            :files ("*.el")))  ;; or more explicit file list that includes aider-utils.el
 
 (package! spacious-padding)
+
+(package! kdl-mode)

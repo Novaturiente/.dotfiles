@@ -18,7 +18,8 @@
 - btrfs-progs
 - f2fs-tools
 - exfatprogs
-- iptables
+# - iptables
+- iptables-nft
 - cmake
 
 # - nvidia-open-dkms

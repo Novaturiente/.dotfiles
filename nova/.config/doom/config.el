@@ -8,8 +8,8 @@
 ;; (setq doom-theme 'doom-challenger-deep)
 
 
-(set-frame-parameter nil 'alpha-background 80)
-(add-to-list 'default-frame-alist '(alpha-background . 80))
+(set-frame-parameter nil 'alpha-background 90)
+(add-to-list 'default-frame-alist '(alpha-background . 90))
 
 (setq display-line-numbers-type t)
 (setq comint-terminal-type "xterm-256color")
@@ -112,9 +112,10 @@
          :desc "uv run current file with arg" "a" #'my/uv-run-current-file-with-arg)))
 
 (after! company
+  (global-company-mode 1)
   (setq company-idle-delay 0.1)      ;; Show completions instantly as you type
   (setq company-minimum-prefix-length 1)
-  (setq company-backends '((company-capf company-files))))
+  (setq company-backends '((company-capf company-files company-dabbrev-code company-files company-dabbrev))))
 
 (after! company
   ;; Make TAB confirm selection
@@ -133,6 +134,32 @@
 (setq lsp-ui-doc-enable nil lsp-ui-doc-show-with-cursor nil lsp-ui-doc-show-with-mouse nil lsp-eldoc-enable-hover nil lsp-signature-auto-activate nil)
 (after! corfu
   (setq corfu-auto nil))
+
+(defun my/enable-corfu ()
+  "Enable Corfu with dabbrev + file completions in kdl-mode."
+  (company-mode -1) ;; Disable company to avoid conflict
+  (require 'corfu)
+  (require 'cape)
+  (setq-local corfu-auto t) ;; Enable Corfu auto-complete only in kdl-mode
+  (setq corfu-auto-delay 0.1)
+  ;; Add CAPEs without removing existing capfs
+  (add-hook 'completion-at-point-functions #'cape-dabbrev nil t)
+  (add-hook 'completion-at-point-functions #'cape-file nil t)
+  (corfu-mode 1))
+(add-hook 'kdl-mode-hook #'my/enable-corfu)
+(add-hook 'conf-mode-hook #'my/enable-corfu)
+
+(defun my/enable-corfu-in-fundamental ()
+  "Enable Corfu only in buffers using `fundamental-mode` (i.e., no associated major mode)."
+  (require 'corfu)
+  (require 'cape)
+  (company-mode -1) ; Ensure company is off to prevent conflicts
+  (setq-local corfu-auto t)
+  (setq corfu-auto-delay 0.1)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev nil t)
+  (add-hook 'completion-at-point-functions #'cape-file nil t)
+  (corfu-mode 1))
+(add-hook 'fundamental-mode-hook #'my/enable-corfu-in-fundamental)
 
 ;; First, ensure PATH includes ~/.local/bin
 (setenv "PATH"
