@@ -1,0 +1,37 @@
+[Default Applications]
+x-scheme-handler/http=xfce4-web-browser.desktop
+x-scheme-handler/https=xfce4-web-browser.desktop
+text/html=org.qutebrowser.qutebrowser.desktop
+application/pdf=emacs.desktop
+image/png=qimgv.desktop
+image/jpeg=qimgv.desktop
+image/webp=qimgv.desktop
+image/gif=qimgv.desktop
+image/svg+xml=qimgv.desktop
+video/mp4=mpv.desktop
+video/webm=mpv.desktop
+video/x-matroska=mpv.desktop
+audio/mpeg=mpv.desktop
+audio/x-wav=mpv.desktop
+application/zip=ark.desktop
+application/x-tar=ark.desktop
+application/x-7z-compressed=ark.desktop
+text/plain=emacs.desktop
+application/x-ms-dos-executable=LuxWine.desktop
+application/x-wine-extension-msp=LuxWine.desktop
+application/x-msi=LuxWine.desktop
+application/x-msdos-program=LuxWine.desktop
+text/win-bat=LuxWine.desktop
+application/x-ms-shortcut=LuxWine.desktop
+text/x-ms-regedit=LuxWine.desktop
+text/x-org=emacs.desktop
+inode/directory=ranger.desktop
+
+[Added Associations]
+image/png=qimgv.desktop;feh.desktop;
+image/jpeg=org.kde.kdeconnect.app.desktop;qimgv.desktop;qimgv.desktop;
+application/pdf=emacs.desktop;org.pwmt.zathura.desktop;org.qutebrowser.qutebrowser.desktop;
+x-scheme-handler/http=xfce4-web-browser.desktop;
+x-scheme-handler/https=xfce4-web-browser.desktop;
+text/plain=emacs.desktop;neovim.desktop;gedit.desktop;code.desktop;
+text/x-org=emacs.desktop;

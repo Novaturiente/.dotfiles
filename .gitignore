@@ -1,0 +1,13 @@
+fishd.tmp*
+
+nova/.config/zsh/.histfile
+nova/.config/fish/fish_variables
+nova/.config/qutebrowser_work/cache/
+nova/.config/qutebrowser_work/data/
+.opencode/
+**/.opencode/
+docker/database/
+nova/.config/qutebrowser_work/config/__pycache__
+novarch/system.json
+novarch/system.yaml
+.aider*
