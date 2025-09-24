@@ -1,0 +1,55 @@
+
+  # Compatibility (Gaming)
+- lutris
+- gamemode
+- gamescope
+- gnutls
+- lib32-vulkan-icd-loader
+- lib32-gnutls
+- vulkan-tools
+
+- libpulse
+- lib32-libpulse
+- lib32-mpg123
+- lib32-openal
+
+- libpng
+- lib32-libpng
+- libjpeg6-turbo
+- lib32-libjpeg6-turbo
+- libva
+- lib32-libva
+- libvdpau
+- lib32-libvdpau
+
+- lib32-gnutls
+- lib32-libldap
+- lib32-v4l-utils
+- lib32-alsa-plugins
+- lib32-libxcomposite
+- lib32-libxinerama
+- lib32-ncurses
+- lib32-libxml2
+- lib32-freetype2
+- lib32-sdl2-compat
+- dxvk-mingw-git
+- vkd3d
+
+- wine
+- wine-mono
+- winetricks
+- protonup-qt
+
+- libxml2-legacy
+- openssl-1.1
+- lib32-openssl-1.1
+- libtheora
+- libvpx
+- libwebp
+- flac
+- lib32-libtheora
+- lib32-libvpx
+- lib32-libwebp
+- lib32-flac
+- gst-plugins-bad
+- libgusb

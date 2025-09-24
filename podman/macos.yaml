@@ -1,0 +1,23 @@
+services:
+  macos:
+    image: ghcr.io/dockur/macos:latest
+    container_name: macos
+    environment:
+      VERSION: "15"
+      DISK_SIZE: "100G"
+      RAM_SIZE: "12G"
+      CPU_CORES: "12"
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8006:8006
+      - 5900:5900/tcp
+      - 5900:5900/udp
+      - 4000:4000
+    volumes:
+      - /home/nova/VM/macos:/storage
+    restart: "no"
+    stop_grace_period: 2m

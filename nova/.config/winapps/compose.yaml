@@ -1,0 +1,36 @@
+name: "winapps" # Docker Compose Project Name.
+volumes:
+  data:
+services:
+  windows:
+    image: ghcr.io/dockur/windows:latest
+    container_name: WinApps # Created Docker VM Name.
+    environment:
+      # VERSION: "11"
+      RAM_SIZE: "10G" # RAM allocated to the Windows VM.
+      CPU_CORES: "12" # CPU cores allocated to the Windows VM.
+      DISK_SIZE: "100G" # Size of the primary hard disk.
+      USERNAME: "Nova" # Edit here to set a custom Windows username. The default is 'MyWindowsUser'.
+      PASSWORD: "novarch" # Edit here to set a password for the Windows user. The default is 'MyWindowsPassword'.
+      HOME: "${HOME}" # Set path to Linux user home folder.
+    # Rest of your config remains the same
+    ports:
+      - 8006:8006 
+      - 3389:3389/tcp 
+      - 3389:3389/udp 
+    cap_add:
+      - NET_ADMIN  # Add network permission
+    stop_grace_period: 120s 
+    restart: "no" 
+    volumes:
+      # - /home/nova/Documents/tiny11.iso:/boot.iso
+      - /home/nova/Documents/Windows:/oem
+      # - ${HOME}:/shared 
+      - /home/nova/VM/windows:/storage 
+    sysctls:
+       - net.ipv4.ip_forward=1
+    devices:
+      - /dev/kvm # Enable KVM.
+      - /dev/net/tun # Enable tuntap
+    group_add:
+      - keep-groups

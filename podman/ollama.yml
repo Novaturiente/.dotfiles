@@ -1,0 +1,23 @@
+
+services:
+  ollama:
+    volumes:
+      - /home/nova/Docker/docker_data/ollama:/root/.ollama
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+    ports:
+      - 11434:11434
+    environment:
+      NVIDIA_DRIVER_CAPABILITIES: all
+      NVIDIA_VISIBLE_DEVICES: all
+    security_opt:
+      - "label=disable"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
