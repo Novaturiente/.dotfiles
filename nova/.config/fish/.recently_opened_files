@@ -1,0 +1,6 @@
+/home/nova/.dotfiles/nvidia.nix
+/home/nova/.dotfiles/virtualization.nix
+/home/nova/.dotfiles/configuration.nix
+/home/nova/.dotfiles/gaming.nix
+/home/nova/.dotfiles/nova/.config/fish/config.fish
+/home/nova/.dotfiles/nova/.config/nvim/init.lua

@@ -1,0 +1,10 @@
+confirm_os_window_close 0
+font_size 12.0
+font_family JetBrainsMono Nerd Font
+background_opacity 0.9
+dynamic_background_opacity yes
+
+# BEGIN_KITTY_THEME
+# Yorumi Kraken
+include current-theme.conf
+# END_KITTY_THEME
