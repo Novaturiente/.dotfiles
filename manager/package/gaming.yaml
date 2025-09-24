@@ -39,3 +39,17 @@
 - wine-mono
 - winetricks
 - protonup-qt
+
+- libxml2-legacy
+- openssl-1.1
+- lib32-openssl-1.1
+- libtheora
+- libvpx
+- libwebp
+- flac
+- lib32-libtheora
+- lib32-libvpx
+- lib32-libwebp
+- lib32-flac
+- gst-plugins-bad
+- libgusb

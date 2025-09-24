@@ -7,7 +7,6 @@
 ;; (load-theme 'doom-rose-pine t)
 ;; (setq doom-theme 'doom-challenger-deep)
 
-
 (set-frame-parameter nil 'alpha-background 90)
 (add-to-list 'default-frame-alist '(alpha-background . 90))
 
@@ -66,8 +65,8 @@
 ;; Force TAB to insert two spaces in programming modes
 (after! prog-mode
   (map! :map prog-mode-map
-        :i [tab] (lambda () (interactive) (insert "    "))))
-(global-set-key (kbd "TAB") (lambda () (interactive) (insert "    ")))
+        :i [tab] (lambda () (interactive) (insert "  "))))
+(global-set-key (kbd "TAB") (lambda () (interactive) (insert "  ")))
 
 ;; Tab Bar
 (map! :leader
@@ -146,20 +145,10 @@
   (add-hook 'completion-at-point-functions #'cape-dabbrev nil t)
   (add-hook 'completion-at-point-functions #'cape-file nil t)
   (corfu-mode 1))
+
 (add-hook 'kdl-mode-hook #'my/enable-corfu)
 (add-hook 'conf-mode-hook #'my/enable-corfu)
-
-(defun my/enable-corfu-in-fundamental ()
-  "Enable Corfu only in buffers using `fundamental-mode` (i.e., no associated major mode)."
-  (require 'corfu)
-  (require 'cape)
-  (company-mode -1) ; Ensure company is off to prevent conflicts
-  (setq-local corfu-auto t)
-  (setq corfu-auto-delay 0.1)
-  (add-hook 'completion-at-point-functions #'cape-dabbrev nil t)
-  (add-hook 'completion-at-point-functions #'cape-file nil t)
-  (corfu-mode 1))
-(add-hook 'fundamental-mode-hook #'my/enable-corfu-in-fundamental)
+(add-hook 'fundamental-mode-hook #'my/enable-corfu)
 
 ;; First, ensure PATH includes ~/.local/bin
 (setenv "PATH"

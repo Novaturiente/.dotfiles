@@ -35,7 +35,7 @@ bindkey "^l" clear-screen
 #cmp opts
 zstyle ':completion:*' menu select
 zstyle ':completion:*' special-dirs true
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33 
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=*'
 zstyle ':completion:*' verbose yes
 zstyle ':completion:*:descriptions' format '%B%d%b'

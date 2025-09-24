@@ -39,6 +39,8 @@
 - ttf-jetbrains-mono-nerd
 - ttf-roboto-mono-nerd
 
+- ttf-iosevkaterm-nerd
+
 - fluent-icon-theme-git
 - materia-kde
 - materia-gtk-theme
@@ -49,3 +51,6 @@
 - swayidle
 - swaync
 - waybar
+
+- ghostty
+- swayosd
