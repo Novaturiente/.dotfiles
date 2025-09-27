@@ -124,3 +124,5 @@ config.bind(",g", "spawn --userscript qute_search -g", mode="normal")
 config.bind("<Ctrl-Shift-Right>", "open -t {url}")
 
 c.downloads.open_dispatcher = "aria2c --dir=$HOME/Downloads {url}"
+
+config.bind(',v', 'spawn --userscript vibrance.sh')
