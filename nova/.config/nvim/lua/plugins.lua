@@ -31,7 +31,6 @@ return require('lazy').setup({
     end,
     opts = {}
   },
-  { 'rcarriga/nvim-notify' },
   {
     "folke/noice.nvim",
     event = "VeryLazy",
@@ -89,14 +88,6 @@ return require('lazy').setup({
     config = true
   },
   {
-    "kylechui/nvim-surround",
-    version = "^3.0.0",
-    event = "VeryLazy",
-    config = function()
-      require("nvim-surround").setup({})
-    end
-  },
-  {
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
@@ -118,7 +109,16 @@ return require('lazy').setup({
     ui = { enable = true },
     dependencies = { "nvim-lua/plenary.nvim" },
   },
-
+  {
+    'nvim-orgmode/orgmode',
+    event = 'VeryLazy',
+    ft = { 'org' },
+    config = function()
+      -- Setup orgmode
+      require('orgmode').setup({
+      })
+    end,
+  },
   -- === Development Plugins ===
   { "neovim/nvim-lspconfig" },
   {
@@ -129,21 +129,21 @@ return require('lazy').setup({
   { "williamboman/mason-lspconfig.nvim" },
 
   -- DAP
-  { "mfussenegger/nvim-dap" },
-  {
-    "rcarriga/nvim-dap-ui",
-    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" }
-  },
-  { "theHamsta/nvim-dap-virtual-text" },
-  { "mfussenegger/nvim-dap-python" },
-  {
-    "linux-cultist/venv-selector.nvim",
-    config = function()
-      require("venv-selector").setup {
-        auto_refresh = true,
-      }
-    end,
-  },
+  -- { "mfussenegger/nvim-dap" },
+  -- {
+  --   "rcarriga/nvim-dap-ui",
+  --   dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" }
+  -- },
+  -- { "theHamsta/nvim-dap-virtual-text" },
+  -- { "mfussenegger/nvim-dap-python" },
+  -- {
+  --   "linux-cultist/venv-selector.nvim",
+  --   config = function()
+  --     require("venv-selector").setup {
+  --       auto_refresh = true,
+  --     }
+  --   end,
+  -- },
 
   -- Completion
   { "hrsh7th/nvim-cmp" },
@@ -152,11 +152,6 @@ return require('lazy').setup({
   { "hrsh7th/cmp-path" },
   { "hrsh7th/cmp-nvim-lua" },
   { "hrsh7th/cmp-nvim-lsp-signature-help" },
-  { "L3MON4D3/LuaSnip" },
-  {
-    "saadparwaiz1/cmp_luasnip",
-    dependencies = { "rafamadriz/friendly-snippets" },
-  },
 
   -- LSP UI
   {

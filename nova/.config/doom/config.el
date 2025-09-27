@@ -5,7 +5,7 @@
 
 ;; (add-to-list 'custom-theme-load-path "~/.doom.d/themes")
 ;; (load-theme 'doom-rose-pine t)
-;; (setq doom-theme 'doom-challenger-deep)
+(setq doom-theme 'doom-challenger-deep)
 
 (set-frame-parameter nil 'alpha-background 90)
 (add-to-list 'default-frame-alist '(alpha-background . 90))
