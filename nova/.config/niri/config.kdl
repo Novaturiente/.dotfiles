@@ -146,9 +146,6 @@ spawn-sh-at-startup "~/.dotfiles/scripts/start_tmux.sh"
 spawn-sh-at-startup "wl-paste -t text --watch clipman store --max-items 100"
 spawn-sh-at-startup "aria2c --conf-path=/home/nova/.config/aria2/aria2.conf --enable-rpc --daemon"
 
-// Progress indicators
-spawn-at-startup "mkfifo /tmp/wobpipe && tail -f /tmp/wobpipe | wob"
-
 hotkey-overlay {
     skip-at-startup
 }
