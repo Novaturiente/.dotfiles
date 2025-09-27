@@ -2,6 +2,8 @@
 # alias vi="nvim"
 alias vi="emacsclient -c"
 alias doom="~/.config/emacs/bin/doom"
+alias inova="sudo novarch install"
+alias unova="sudo novarch update"
 
 # ---- ls Aliases (with eza) ----
 alias la='eza -a --color=always --group-directories-first --icons=always "$@"'

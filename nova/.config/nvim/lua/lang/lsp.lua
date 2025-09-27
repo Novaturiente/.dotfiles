@@ -90,13 +90,8 @@ end
 
 -- CMP Setup
 local cmp = require("cmp")
-local luasnip = require("luasnip")
-require("luasnip.loaders.from_vscode").lazy_load()
 
 cmp.setup({
-  snippet = {
-    expand = function(args) luasnip.lsp_expand(args.body) end,
-  },
   mapping = cmp.mapping.preset.insert({
     ["<Up>"] = cmp.mapping.select_prev_item(),
     ["<Down>"] = cmp.mapping.select_next_item(),
@@ -116,8 +111,6 @@ cmp.setup({
           cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
         end
         cmp.confirm()
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
       else
         fallback()
       end
@@ -125,8 +118,6 @@ cmp.setup({
     ["<S-Tab>"] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
       else
         fallback()
       end
@@ -134,7 +125,6 @@ cmp.setup({
   }),
   sources = cmp.config.sources({
     { name = "nvim_lsp",                priority = 1000 },
-    { name = "luasnip",                 priority = 750 },
     { name = "nvim_lsp_signature_help", priority = 700 },
   }, {
     { name = "path",     priority = 250 },
@@ -172,7 +162,6 @@ cmp.setup({
       }
       local menu_icon = {
         nvim_lsp = "[LSP]",
-        luasnip = "[Snippet]",
         buffer = "[Buffer]",
         path = "[Path]",
         nvim_lua = "[Lua]",

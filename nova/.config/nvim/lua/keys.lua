@@ -6,9 +6,6 @@ local wk = require("which-key")
 wk.add {
   { "<leader>.", "<cmd>lua require('telescope').extensions.file_browser.file_browser({ path = vim.fn.expand('%:p:h'), select_buffer = true, hidden = true, follow_symlinks = true })<CR>", desc = "Toggle file explorer" },
 }
--- wk.add {
---   { "<leader>O", ":NvimTreeToggle<CR>", desc = "Toggle file explorer" },
--- }
 
 -- Tabs
 wk.add {
@@ -62,6 +59,11 @@ wk.add {
   { "<M-d>", ":ToggleTerm dir=%:p:h direction=vertical size=50<CR>",   desc = "Vertical terminal" },
   { "<M-h>", ":ToggleTerm dir=%:p:h direction=horizontal size=10<CR>", desc = "Horizontal terminal" },
   { "<C-d>", ":ToggleTerm dir=%:p:h direction=float<CR>",              desc = "Floating terminal" },
+}
+wk.add {
+  { "<leader>tt", ":ToggleTerm dir=%:p:h direction=vertical size=50<CR>",   desc = "Vertical terminal" },
+  { "<leader>th", ":ToggleTerm dir=%:p:h direction=horizontal size=10<CR>", desc = "Horizontal terminal" },
+  { "<leader>tf", ":ToggleTerm dir=%:p:h direction=float<CR>",              desc = "Floating terminal" },
 }
 
 -- Buffer Navigation
@@ -159,3 +161,24 @@ end
 -- Set the keybinding
 vim.keymap.set('n', '<leader>e', '<cmd>lua Toggle_nvimtree()<CR>',
   { desc = 'Toggle focus between editor and explorer' })
+
+
+
+-- Set keymaps for terminal mode
+function _G.set_terminal_keymaps()
+  local opts = { noremap = true }
+  local keymap = vim.api.nvim_buf_set_keymap
+  local bufnr = 0
+
+  -- Exit terminal mode
+  keymap(bufnr, 't', '<Esc>', [[<C-\><C-n>]], opts)
+  keymap(bufnr, 't', 'jk', [[<C-\><C-n>]], opts)
+end
+
+-- Keybindings to navigate splits using Ctrl + {h,j,k,l}
+vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true, silent = true, desc = "Move to left split" })
+vim.keymap.set('n', '<C-j>', '<C-w>j', { noremap = true, silent = true, desc = "Move to below split" })
+vim.keymap.set('n', '<C-k>', '<C-w>k', { noremap = true, silent = true, desc = "Move to above split" })
+vim.keymap.set('n', '<C-l>', '<C-w>l', { noremap = true, silent = true, desc = "Move to right split" })
+-- Auto-call the function every time a terminal is opened
+vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
