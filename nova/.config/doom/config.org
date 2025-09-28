@@ -59,8 +59,6 @@
       "w" #'close-window-and-kill-buffer)
 #+end_src
 
-#+RESULTS:
-: close-window-and-kill-buffer
 
 *** Coding and Terminal
 #+begin_src emacs-lisp
@@ -80,6 +78,9 @@
 (setq vterm-kill-buffer-on-exit t)
 (setq kill-buffer-query-functions
       (remq 'process-kill-buffer-query-function kill-buffer-query-functions))
+
+(map! :leader
+      "=" #'+format/buffer)
 #+end_src
 *** General
 #+begin_src emacs-lisp
@@ -140,47 +141,80 @@
 
 * Completion settings
 #+begin_src emacs-lisp
-(after! company
-  (global-company-mode 1)
-  (setq company-idle-delay 0.1)      ;; Show completions instantly as you type
-  (setq company-minimum-prefix-length 1)
-  (setq company-backends '((company-capf company-files company-dabbrev-code company-files company-dabbrev))))
+;; Enable Corfu globally
+(use-package! corfu
+  :custom
+  (corfu-auto t)                      ;; Enable auto completion
+  (corfu-auto-delay 0.01)            ;; Shorter delay = faster feel
+  (corfu-auto-prefix 1)              ;; Start completing after 1 character
+  (corfu-cycle t)                    ;; Cycle around candidates
+  (corfu-preselect-first t)          ;; Preselect first suggestion
+  (corfu-quit-no-match 'separator)   ;; Auto-quit unless separator typed
+  (corfu-popupinfo-mode t)           ;; Show documentation popups
+  :init
+  (global-corfu-mode)
+  :config
+    (define-key corfu-map (kbd "TAB") #'corfu-insert)
+    (define-key corfu-map (kbd "<tab>") #'corfu-insert))
 
-(after! company
-  ;; Make TAB confirm selection
-  (define-key company-active-map (kbd "TAB") #'company-complete-selection)
-  (define-key company-active-map (kbd "<tab>") #'company-complete-selection)
+(use-package! corfu-popupinfo
+  :after corfu
+  :hook (corfu-mode . corfu-popupinfo-mode)
+  :custom
+  (corfu-popupinfo-delay 0.1)
+  (corfu-popupinfo-max-width 80))
 
-  ;; Make RET insert newline (not accept selection)
-  (define-key company-active-map (kbd "RET") nil)
-  (define-key company-active-map (kbd "<return>") nil)
+;; Use cape to enhance completion-at-point
+(use-package! cape
+  :defer nil
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)  ;; buffer words
+  (add-to-list 'completion-at-point-functions #'cape-file)     ;; file paths
+  (add-to-list 'completion-at-point-functions #'cape-keyword)  ;; keywords
+  ;; (add-to-list 'completion-at-point-functions #'cape-symbol)   ;; elisp symbols
+  ;; (add-to-list 'completion-at-point-functions #'cape-yasnippet)
+)
+(setq completion-ignore-case t)     ;; case-insensitive completions
+(setq read-file-name-completion-ignore-case t)
 
-  ;; Allow navigation with up/down arrows (usually works by default)
-  (define-key company-active-map (kbd "C-j") #'company-select-next)
-  (define-key company-active-map (kbd "C-k") #'company-select-previous))
+(after! eglot
+  (setq eglot-send-changes-idle-time 0.1) ; default is 0.5
+  (setq eglot-sync-connect nil))          ; non-blocking startup
 
-;; Disable lsp documentation
-(setq lsp-ui-doc-enable nil lsp-ui-doc-show-with-cursor nil lsp-ui-doc-show-with-mouse nil lsp-eldoc-enable-hover nil lsp-signature-auto-activate nil)
-(after! corfu
-  (setq corfu-auto nil))
+(add-hook 'python-mode-hook #'eglot-ensure)
+;; (add-hook 'eglot-managed-mode-hook
+;;           (lambda ()
+;;             (setq-local completion-at-point-functions
+;;                         (cons #'eglot-completion-at-point
+;;                               (remove #'eglot-completion-at-point completion-at-point-functions)))))
+(setq corfu-quit-no-match 'separator)
+(setq corfu-allow-prefix-predicate #'always)
 
-(defun my/enable-corfu ()
-  "Enable Corfu with dabbrev + file completions in kdl-mode."
-  (company-mode -1) ;; Disable company to avoid conflict
-  (require 'corfu)
-  (require 'cape)
-  (setq-local corfu-auto t) ;; Enable Corfu auto-complete only in kdl-mode
-  (setq corfu-auto-delay 0.1)
-  ;; Add CAPEs without removing existing capfs
-  (add-hook 'completion-at-point-functions #'cape-dabbrev nil t)
-  (add-hook 'completion-at-point-functions #'cape-file nil t)
-  (corfu-mode 1))
+(setq eldoc-idle-delay 0.1)
+(defun my/disable-eldoc-in-minibuffer (orig-fun &rest args)
+  (let ((inhibit-message t)) ;; suppress message echo
+    (apply orig-fun args)))
+(advice-add 'eldoc--message :around #'my/disable-eldoc-in-minibuffer)
 
-(add-hook 'kdl-mode-hook #'my/enable-corfu)
-(add-hook 'conf-mode-hook #'my/enable-corfu)
-(add-hook 'fundamental-mode-hook #'my/enable-corfu)
+;; On-demand documentation popup
+(use-package! eldoc-box
+  :after eglot
+  :commands (eldoc-box-help-at-point))
+(map! :after eglot
+      :map eglot-mode-map
+      :n "K" #'eldoc-box-help-at-point
+      :leader
+      :desc "LSP hover doc (popup)"
+      "c h" #'eldoc-box-help-at-point)
+
+
+;; Format on save
+(add-hook 'before-save-hook
+          (lambda ()
+            (when (bound-and-true-p eglot-managed-mode)
+              (eglot-format-buffer))))
+
 #+end_src
-
 
 * AI assistant
 #+begin_src emacs-lisp
@@ -222,7 +256,7 @@
 
 (map! :leader
       :desc "Open todo.org"
-      "o o" (lambda () (interactive) (find-file "~/Org/index.org")))
+      "o w" (lambda () (interactive) (find-file "~/Org/index.org")))
 #+end_src
 
 * Dashboard settings
