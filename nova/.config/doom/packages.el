@@ -59,3 +59,6 @@
 (package! spacious-padding)
 
 (package! kdl-mode)
+
+(package! cape)
+(package! eldoc-box)

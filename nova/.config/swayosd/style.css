@@ -1,18 +1,21 @@
 window#osd {
-  border-radius: 999px;
+  border-radius: 10px;
   border: none;
-  background: alpha(@theme_bg_color, 0.8); }
+  background: alpha(@theme_bg_color, 1.0); }
   window#osd #container {
-    margin: 16px; }
+    margin: 10px; }
   window#osd image,
   window#osd label {
-    color: @theme_fg_color; }
+    color: @theme_fg_color;
+    font-size: 13px;
+  }
   window#osd progressbar:disabled,
-  window#osd image:disabled {
-    opacity: 0.5; }
+  window#osd image{
+    /* opacity: 0.5; */
+  }
   window#osd progressbar {
-    min-height: 6px;
-    border-radius: 999px;
+    min-height: 4px;
+    border-radius: 10px;
     background: transparent;
     border: none; }
   window#osd trough {
