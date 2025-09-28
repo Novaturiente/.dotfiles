@@ -11,6 +11,7 @@
 ## show percentage on the right of the OSD
 show_percentage = true
 
+
 ## set format for the media player OSD
 # playerctl_format = "{artist} - {title}"
 ## Available values:
