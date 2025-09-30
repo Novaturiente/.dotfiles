@@ -1,7 +1,7 @@
 - cpio
 # - linux-zen
-- linux-firmware
 # - linux-zen-headers
+- linux-firmware
 - pacman-contrib
 - xdg-user-dirs
 - networkmanager
