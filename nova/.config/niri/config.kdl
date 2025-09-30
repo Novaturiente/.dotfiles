@@ -37,8 +37,8 @@ output "eDP-1" {
 // ───────────────────────────────────────────────────────────────────────────────────────────
 layout {
     gaps 10
-    center-focused-column "always"
-
+    // center-focused-column "always"
+    always-center-single-column
     preset-column-widths {
         proportion 0.5
         proportion 0.75
@@ -168,6 +168,7 @@ binds {
     Mod+W      hotkey-overlay-title="Qutebrowser"          { spawn "qutebrowser"; }
     Mod+Ctrl+W hotkey-overlay-title="Qutebrowser work"     { spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"; }
     Mod+N      hotkey-overlay-title="Emacs client"         { spawn-sh "emacsclient -c"; }
+    Mod+M      hotkey-overlay-title="Emacs client"         { spawn-sh "emacs --init-directory ~/.config/emac-temp"; }
     Mod+E      hotkey-overlay-title="File manager"         { spawn-sh "kitty -e ranger"; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐

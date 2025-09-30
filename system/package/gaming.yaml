@@ -13,10 +13,6 @@
 - lib32-mpg123
 - lib32-openal
 
-- libpng
-- lib32-libpng
-- libjpeg6-turbo
-- lib32-libjpeg6-turbo
 - libva
 - lib32-libva
 - libvdpau
@@ -35,21 +31,6 @@
 - dxvk-mingw-git
 - vkd3d
 
-- wine
-- wine-mono
+- wine-cachyos
 - winetricks
 - protonup-qt
-
-- libxml2-legacy
-- openssl-1.1
-- lib32-openssl-1.1
-- libtheora
-- libvpx
-- libwebp
-- flac
-- lib32-libtheora
-- lib32-libvpx
-- lib32-libwebp
-- lib32-flac
-- gst-plugins-bad
-- libgusb
