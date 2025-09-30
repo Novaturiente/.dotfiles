@@ -25,6 +25,7 @@
 (add-hook 'after-init-hook #'spacious-padding-mode)
 
 (add-hook 'after-make-frame-functions #'spacious-padding-mode)
+(setq whole-line-or-region-mode 1)
 
 (setq confirm-kill-emacs nil)
 (setq confirm-kill-processes nil)
@@ -108,7 +109,7 @@
 #+end_src
 
 
-* Python settings
+* Language settings
 *** Run python file
 #+begin_src emacs-lisp
 ;; Commands
@@ -132,12 +133,57 @@
 ;; Keybindings only in python buffers
 (after! python
   (map! :map python-mode-map
-        :leader
+        :localleader
         (:prefix ("r" . "run")
          :desc "uv run current file" "r" #'my/uv-run-current-file
          :desc "uv run current file with arg" "a" #'my/uv-run-current-file-with-arg)))
 #+end_src
 
+*** Run rust
+#+begin_src emacs-lisp
+(defun my/cargo-project-root ()
+  (when buffer-file-name
+    (locate-dominating-file (file-name-directory buffer-file-name) "Cargo.toml")))
+
+(defun my/rust--ensure-cargo-project ()
+  (or (my/cargo-project-root)
+      (user-error "Not in a Cargo project (no Cargo.toml found)")))
+
+(defun my/rust-build-project ()
+  (interactive)
+  (let ((root (my/rust--ensure-cargo-project)))
+    (let ((default-directory root))
+      (compile "cargo build"))))
+
+(defun my/rust-run-project ()
+  (interactive)
+  (let ((root (my/rust--ensure-cargo-project)))
+    (let ((default-directory root))
+      (compile "cargo run"))))
+
+(defun my/rust-run-project-with-arg (arg)
+  (interactive (list (read-string "Argument(s) for cargo run: ")))
+  (let ((root (my/rust--ensure-cargo-project)))
+    (let ((default-directory root))
+      (compile (format "cargo run -- %s" arg)))))
+
+;; Keybindings in Rust buffers only (support both rustic-mode and rust-mode)
+(after! rustic
+  (map! :map rustic-mode-map
+        :localleader
+        (:prefix ("r" . "run")
+         :desc "cargo run project" "r" #'my/rust-run-project
+         :desc "cargo run with args" "a" #'my/rust-run-project-with-arg
+         :desc "cargo build"       "b" #'my/rust-build-project)))
+
+(after! rust-mode
+  (map! :map rust-mode-map
+        :localleader
+        (:prefix ("r" . "run")
+         :desc "cargo run project" "r" #'my/rust-run-project
+         :desc "cargo run with args" "a" #'my/rust-run-project-with-arg
+         :desc "cargo build"       "b" #'my/rust-build-project)))
+#+end_src
 
 * Completion settings
 #+begin_src emacs-lisp
@@ -182,11 +228,14 @@
   (setq eglot-sync-connect nil))          ; non-blocking startup
 
 (add-hook 'python-mode-hook #'eglot-ensure)
-;; (add-hook 'eglot-managed-mode-hook
-;;           (lambda ()
-;;             (setq-local completion-at-point-functions
-;;                         (cons #'eglot-completion-at-point
-;;                               (remove #'eglot-completion-at-point completion-at-point-functions)))))
+
+;; Orderless: flexible matching
+(use-package! orderless
+  :init
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles basic partial-completion)))))
+
 (setq corfu-quit-no-match 'separator)
 (setq corfu-allow-prefix-predicate #'always)
 

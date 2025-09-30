@@ -1,0 +1,27 @@
+- lazygit
+- pkgconf
+- python-pipx
+
+- lua
+- luarocks
+- meson
+
+- nodejs
+- jdk
+- npm
+
+- rustup
+- rust-analyzer
+
+- uv
+- pyright
+- tree-sitter
+- python-pynvim
+- python-black
+- python-lsp-server
+- python-pyflakes
+- python-isort
+- shfmt
+- shellcheck
+
+- pandoc-cli
