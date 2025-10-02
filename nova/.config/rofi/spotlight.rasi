@@ -23,14 +23,17 @@
 window {
     background-color:   @bg0;
 
-    location:       center;
-    width:          1500;
-    border-radius:  8;
+    location:   north;
+    anchor:     south;
+    y-offset:   50px;
+    width:      600px;
+    border:     0px;
+    padding:    3px 5px;
 }
 
 inputbar {
 
-    padding:    12px;
+    padding:    5px 10px;
     spacing:    12px;
     children:   [ icon-search, entry ];
 }
