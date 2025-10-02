@@ -4,7 +4,7 @@
 options=("󰍃  Logout" "  Shutdown" "󰜉  Reboot")
 
 # Show Rofi menu
-selected=$(printf '%s\n' "${options[@]}" | rofi -dmenu -p "Power Menu:" -theme power-menu)
+selected=$(printf '%s\n' "${options[@]}" | rofi -dmenu -p "󰮫 " -theme power)
 
 # Execute the selected action
 case "$selected" in

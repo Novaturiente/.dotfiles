@@ -12,6 +12,8 @@ alias ll='eza -l --color=always --group-directories-first --icons=always "$@"'
 alias lt='eza -aT --color=always --group-directories-first --icons=always "$@"'
 alias l.="eza -a | grep -e '^\.'"
 
+alias rm="trash"
+
 alias grubup="sudo grub-mkconfig -o /boot/grub/grub.cfg"
 alias jctl="journalctl -p 3 -xb"
 alias tarnow='tar -acf '

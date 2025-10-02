@@ -162,20 +162,21 @@ binds {
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ APPLICATIONS                                                                        │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
-    Mod+Return hotkey-overlay-title="Open Kitty"           { spawn-sh "kitty -e tmux attach -t default"; }
-    Mod+Space  hotkey-overlay-title="Open Kitty"           { spawn "kitty"; }
-    Mod+D      hotkey-overlay-title="Application launcher" { spawn-sh "rofi -show drun"; }
-    Mod+W      hotkey-overlay-title="Qutebrowser"          { spawn "qutebrowser"; }
-    Mod+Ctrl+W hotkey-overlay-title="Qutebrowser work"     { spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"; }
-    Mod+N      hotkey-overlay-title="Emacs client"         { spawn-sh "emacsclient -c"; }
-    Mod+M      hotkey-overlay-title="Emacs client"         { spawn-sh "emacs --init-directory ~/.config/emac-temp"; }
-    Mod+E      hotkey-overlay-title="File manager"         { spawn-sh "kitty -e ranger"; }
+    Mod+Return   hotkey-overlay-title="Open Kitty"           { spawn-sh "kitty -e tmux attach -t default"; }
+    Mod+Space    hotkey-overlay-title="Open Kitty"           { spawn "kitty"; }
+    Mod+D        hotkey-overlay-title="Application launcher" { spawn-sh "rofi -show drun -theme spotlight"; }
+    Mod+Shift+D  hotkey-overlay-title="Application launcher" { spawn-sh "~/.dotfiles/scripts/rofi/find.sh"; }
+    Mod+W        hotkey-overlay-title="Qutebrowser"          { spawn "qutebrowser"; }
+    Mod+Ctrl+W   hotkey-overlay-title="Qutebrowser work"     { spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"; }
+    Mod+N        hotkey-overlay-title="Emacs client"         { spawn-sh "emacsclient -c"; }
+    Mod+M        hotkey-overlay-title="Emacs client"         { spawn-sh "emacs --init-directory ~/.config/emacs-temp"; }
+    Mod+E        hotkey-overlay-title="File manager"         { spawn-sh "kitty -e ranger"; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ UTILITIES & MENUS                                                                   │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+Ctrl+D  hotkey-overlay-title="Download using aria2"    { spawn-sh "~/.config/rofi/download.sh"; }
-    Mod+B       hotkey-overlay-title="Bookmarks"               { spawn-sh "~/.config/rofi/bookmarks.sh"; }
+    Mod+B       hotkey-overlay-title="Bookmarks"               { spawn-sh "~/.dotfiles/scripts/rofi/bookmarks.sh"; }
     Mod+V       hotkey-overlay-title="Clipboard"               { spawn-sh "clipman pick -t rofi --max-items 25"; }
     Mod+Ctrl+N  hotkey-overlay-title="Notification center"     { spawn-sh "swaync-client -t"; }
     Mod+Shift+B hotkey-overlay-title="Toggle waybar"          { spawn-sh "killall waybar || waybar"; }
@@ -194,7 +195,7 @@ binds {
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+I        hotkey-overlay-title="Toggle idle"      { spawn-sh "~/.dotfiles/scripts/idle.sh"; }
     Mod+L        hotkey-overlay-title="Lock"             { spawn "hyprlock"; }
-    Mod+Shift+E  hotkey-overlay-title="Power menu"       { spawn-sh "~/.config/rofi/power_menu.sh"; }
+    Mod+Shift+E  hotkey-overlay-title="Power menu"       { spawn-sh "~/.dotfiles/scripts/rofi/power.sh"; }
 
     Mod+T        { toggle-column-tabbed-display; }
     Alt+Tab      repeat=false { toggle-overview; }
