@@ -64,7 +64,7 @@ configuration {
 window {
     /* properties for window widget */
     transparency:                "real";
-    location:                    north;
+    location:                    south;
     anchor:                      center;
     fullscreen:                  false;
     width:                       800px;
