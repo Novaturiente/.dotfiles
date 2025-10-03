@@ -49,7 +49,7 @@ window {
 inputbar {
     padding:    5px 10px;
     spacing:    12px;
-    children:   [ entry ];
+    children:   [ prompt, entry ];
 }
 
 prompt, entry, element-text, element-icon {
