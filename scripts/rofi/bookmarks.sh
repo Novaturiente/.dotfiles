@@ -34,7 +34,7 @@ else
 
     elif [[ $INPUT == "-" ]]; then
         # Show bookmark list for removal
-        SELECTED=$(rofi -dmenu -theme tokyonight -p "Remove bookmark" < "$BOOKMARKS_FILE")
+        SELECTED=$(rofi -dmenu -theme black -p "Remove bookmark" < "$BOOKMARKS_FILE")
         if [[ -n "$SELECTED" ]]; then
             sed -i "/^$(printf '%s' "$SELECTED" | sed 's/[]\/.^$*]/\\&/g')$/d" "$BOOKMARKS_FILE"
         fi

@@ -28,4 +28,4 @@ SELECTED=$(echo "$ENTRIES" | rofi -dmenu -i -p "󱎱 SEARCH" -theme "black.rasi"
 # Strip the icon (first 2 characters: icon + space)
 SELECTED="${SELECTED:2}"
 
-emacsclient -c "$SELECTED" &
+emacsclient -c "$SELECTED"

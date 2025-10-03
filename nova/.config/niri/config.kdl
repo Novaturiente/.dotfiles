@@ -145,7 +145,7 @@ spawn-sh-at-startup "nm-applet --indicator"
 spawn-sh-at-startup "udiskie --tray --notify"
 spawn-sh-at-startup "batsignal -w 20 -c 10 -d 5"
 spawn-sh-at-startup "~/.dotfiles/scripts/start_tmux.sh"
-spawn-sh-at-startup "wl-paste -t text --watch clipman store --max-items 100"
+spawn-sh-at-startup "wl-paste --watch cliphist store --max-items 100"
 spawn-sh-at-startup "aria2c --conf-path=/home/nova/.config/aria2/aria2.conf --enable-rpc --daemon"
 
 hotkey-overlay {
@@ -177,9 +177,10 @@ binds {
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+Ctrl+D  hotkey-overlay-title="Download using aria2"    { spawn-sh "~/.config/rofi/download.sh"; }
     Mod+B       hotkey-overlay-title="Bookmarks"               { spawn-sh "~/.dotfiles/scripts/rofi/bookmarks.sh"; }
-    Mod+V       hotkey-overlay-title="Clipboard"               { spawn-sh "clipman pick -t rofi --max-items 25"; }
+    Mod+V       hotkey-overlay-title="Clipboard"               { spawn-sh "~/.dotfiles/scripts/rofi/clipboard.sh"; }
+    Mod+Shift+X hotkey-overlay-title="Tools"                   { spawn-sh "~/.dotfiles/scripts/rofi/tools.sh"; }
     Mod+Ctrl+N  hotkey-overlay-title="Notification center"     { spawn-sh "swaync-client -t"; }
-    Mod+Shift+B hotkey-overlay-title="Toggle waybar"          { spawn-sh "killall waybar || waybar"; }
+    Mod+Shift+B hotkey-overlay-title="Toggle waybar"           { spawn-sh "killall waybar || waybar"; }
     Mod+Ctrl+P  hotkey-overlay-title="Phone mirror"            { spawn-sh "scrcpy --max-fps 60 -Sw"; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐

@@ -82,6 +82,18 @@
 
 (map! :leader
       "=" #'+format/buffer)
+
+
+(defun make-current-file-executable ()
+  "Make the current file executable, if it exists and is a file."
+  (interactive)
+  (when buffer-file-name
+    (chmod buffer-file-name #o755)
+    (message "Made %s executable" buffer-file-name)))
+
+(map! :leader
+      :desc "Make current file executable"
+      "f x" #'make-current-file-executable)
 #+end_src
 *** General
 #+begin_src emacs-lisp
@@ -183,6 +195,49 @@
          :desc "cargo run project" "r" #'my/rust-run-project
          :desc "cargo run with args" "a" #'my/rust-run-project-with-arg
          :desc "cargo build"       "b" #'my/rust-build-project)))
+#+end_src
+
+*** Run shell scripts
+#+begin_src emacs-lisp
+;; Enable bash-ts-mode for .sh files
+(add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
+
+(defun my/bash-run-current-file ()
+  "Run the current shell script file with bash."
+  (interactive)
+  (let ((file buffer-file-name))
+    (unless file
+      (user-error "Current buffer is not visiting a file"))
+    (compile (format "bash %s" (shell-quote-argument file)))))
+
+(defun my/bash-run-current-file-with-arg (arg)
+  "Prompt for ARG, then run the current shell script file with bash and ARG."
+  (interactive (list (read-string "Argument(s) for bash script: ")))
+  (let ((file buffer-file-name))
+    (unless file
+      (user-error "Current buffer is not visiting a file"))
+    (compile (format "bash %s %s"
+                     (shell-quote-argument file)
+                     arg))))
+
+;; Use a hook to set keybindings when bash-ts-mode loads
+(defun my/bash-ts-mode-keybindings ()
+  "Set up keybindings for bash-ts-mode."
+  (map! :map bash-ts-mode-map
+        :localleader
+        (:prefix ("r" . "run")
+         :desc "Run current bash script" "r" #'my/bash-run-current-file
+         :desc "Run current bash script with arg" "a" #'my/bash-run-current-file-with-arg)))
+
+(add-hook 'bash-ts-mode-hook #'my/bash-ts-mode-keybindings)
+
+;; Fallback for sh-mode (if bash-ts-mode isn't available)
+(after! sh-script
+  (map! :map sh-mode-map
+        :localleader
+        (:prefix ("r" . "run")
+         :desc "Run current bash script" "r" #'my/bash-run-current-file
+         :desc "Run current bash script with arg" "a" #'my/bash-run-current-file-with-arg)))
 #+end_src
 
 * Completion settings
