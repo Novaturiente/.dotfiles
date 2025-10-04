@@ -169,6 +169,48 @@
          :desc "cargo run with args" "a" #'my/rust-run-project-with-arg
          :desc "cargo build"       "b" #'my/rust-build-project)))
 
+(defun my/go-project-root ()
+  (when buffer-file-name
+    (locate-dominating-file (file-name-directory buffer-file-name) "go.mod")))
+
+(defun my/go--ensure-project ()
+  (or (my/go-project-root)
+      (user-error "Not in a Go project (no go.mod found)")))
+
+(defun my/go-build-project ()
+  (interactive)
+  (let ((root (my/go--ensure-project)))
+    (let ((default-directory root))
+      (compile "go build"))))
+
+(defun my/go-run-project ()
+  (interactive)
+  (let ((root (my/go--ensure-project)))
+    (let ((default-directory root))
+      (compile "go run ."))))
+
+(defun my/go-run-project-with-arg (arg)
+  (interactive (list (read-string "Argument(s) for go run: ")))
+  (let ((root (my/go--ensure-project)))
+    (let ((default-directory root))
+      (compile (format "go run . %s" arg)))))
+
+(defun my/go-test-project ()
+  (interactive)
+  (let ((root (my/go--ensure-project)))
+    (let ((default-directory root))
+      (compile "go test -v ./..."))))
+
+;; Keybindings in Go buffers only
+(after! go-mode
+  (map! :map go-mode-map
+        :localleader
+        (:prefix ("r" . "run")
+         :desc "go run project" "r" #'my/go-run-project
+         :desc "go run with args" "a" #'my/go-run-project-with-arg
+         :desc "go build"        "b" #'my/go-build-project
+         :desc "go test"         "t" #'my/go-test-project)))
+
 ;; Enable bash-ts-mode for .sh files
 (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
 

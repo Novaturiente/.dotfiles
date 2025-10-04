@@ -1,4 +1,4 @@
-timeout 300 'hyprlock'
+timeout 300 'swaylock --screenshots --effect-blur 10x5 --clock'
 timeout 600 'systemctl suspend'
-before-sleep 'hyprlock'
-after-resume 'hyprlock'
+before-sleep 'swaylock --screenshots --effect-blur 10x5 --clock'
+after-resume 'swaylock --screenshots --effect-blur 10x5 --clock'

@@ -13,6 +13,8 @@
 - rustup
 - rust-analyzer
 
+- go
+
 - uv
 - pyright
 - tree-sitter

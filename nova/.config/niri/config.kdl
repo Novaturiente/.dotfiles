@@ -194,7 +194,7 @@ binds {
     // │ SYSTEM CONTROLS                                                                     │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+I        hotkey-overlay-title="Toggle idle"      { spawn-sh "~/.dotfiles/scripts/idle.sh"; }
-    Mod+L        hotkey-overlay-title="Lock"             { spawn "hyprlock"; }
+    Mod+L        hotkey-overlay-title="Lock"             { spawn-sh "swaylock --screenshots --grace 5 --fade-in 0.3 --effect-blur 10x5 --clock"; }
     Mod+Shift+E  hotkey-overlay-title="Power menu"       { spawn-sh "~/.dotfiles/scripts/rofi/power.sh"; }
 
     Mod+T        { toggle-column-tabbed-display; }
