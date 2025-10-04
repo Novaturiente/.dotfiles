@@ -12,7 +12,8 @@
 # - hyprpolkitagent
 # - hyprutils
 # - xdg-desktop-portal-hyprland
-- hyprlock
+# - hyprlock
+- swaylock-effects
 - rofi
 - swaybg
 - brightnessctl
