@@ -1,0 +1,12 @@
+[Unit]
+Description=Tmux default session
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/tmux new-session -d -s default -f ~/.tmux.conf
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target
