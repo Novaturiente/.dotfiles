@@ -3,7 +3,7 @@
 FOLDER_ICON="󰙅" #
 FILE_ICON="󱓧"   #
 
-exclude_folders=(.git node_modules .cache .local cache *Brave* emacs data Games .venv .cargo .android .aider .floorp .histdb .mozilla .mullvad .npm .nv .pki .rustup .ssh .fonts Torrent)
+exclude_folders=(.git node_modules .cache .local cache *Brave* go emacs data Games .venv .cargo .android .aider .floorp .histdb .mozilla .mullvad .npm .nv .pki .rustup .ssh .fonts Torrent)
 
 exclude_args=()
 for folder in "${exclude_folders[@]}"; do
@@ -11,23 +11,17 @@ for folder in "${exclude_folders[@]}"; do
 done
 
 copy_move() {
-    SOURCE_ENTRIES=$(
-        fd --type f --type d --hidden --follow . "$HOME" "${exclude_args[@]}" |
-            while read -r path; do
-                # Get modification time as epoch seconds
-                mtime=$(stat --format="%Y" "$path")
-                echo "$mtime $path"
-            done |
-            sort -nr |
-            cut -d' ' -f2- |
-            while read -r path; do
-                if [[ -d "$path" ]]; then
-                    echo "${FOLDER_ICON} $path"
-                else
-                    echo "${FILE_ICON} $path"
-                fi
-            done
-    )
+    SOURCE_ENTRIES=$(fd --type f --type d --hidden --follow . "$HOME" "${exclude_args[@]}" \
+        --exec stat --format="%Y %n" {} \; | \
+        sort -nr | \
+        cut -d' ' -f2- | \
+        while read -r path; do
+            if [[ -d "$path" ]]; then
+                echo "${FOLDER_ICON} $path"
+            else
+                echo "${FILE_ICON} $path"
+            fi
+        done)
 
     SOURCE=$(echo "$SOURCE_ENTRIES" | rofi -dmenu -i -p "󰆏 SELECT " -theme "black.rasi")
 
@@ -77,23 +71,17 @@ copy_move() {
 }
 
 rename() {
-    SOURCE_ENTRIES=$(
-        fd --type f --type d --hidden --follow . "$HOME" "${exclude_args[@]}" |
-            while read -r path; do
-                # Get modification time as epoch seconds
-                mtime=$(stat --format="%Y" "$path")
-                echo "$mtime $path"
-            done |
-            sort -nr |
-            cut -d' ' -f2- |
-            while read -r path; do
-                if [[ -d "$path" ]]; then
-                    echo "${FOLDER_ICON} $path"
-                else
-                    echo "${FILE_ICON} $path"
-                fi
-            done
-    )
+    SOURCE_ENTRIES=$(fd --type f --type d --hidden --follow . "$HOME" "${exclude_args[@]}" \
+        --exec stat --format="%Y %n" {} \; | \
+        sort -nr | \
+        cut -d' ' -f2- | \
+        while read -r path; do
+            if [[ -d "$path" ]]; then
+                echo "${FOLDER_ICON} $path"
+            else
+                echo "${FILE_ICON} $path"
+            fi
+        done)
 
     SOURCE=$(echo "$SOURCE_ENTRIES" | rofi -dmenu -i -p "󰆏 SELECT " -theme "black.rasi")
 
@@ -113,23 +101,17 @@ rename() {
 }
 
 delete() {
-    SOURCE_ENTRIES=$(
-        fd --type f --type d --hidden --follow . "$HOME" "${exclude_args[@]}" |
-            while read -r path; do
-                # Get modification time as epoch seconds
-                mtime=$(stat --format="%Y" "$path")
-                echo "$mtime $path"
-            done |
-            sort -nr |
-            cut -d' ' -f2- |
-            while read -r path; do
-                if [[ -d "$path" ]]; then
-                    echo "${FOLDER_ICON} $path"
-                else
-                    echo "${FILE_ICON} $path"
-                fi
-            done
-    )
+    SOURCE_ENTRIES=$(fd --type f --type d --hidden --follow . "$HOME" "${exclude_args[@]}" \
+        --exec stat --format="%Y %n" {} \; | \
+        sort -nr | \
+        cut -d' ' -f2- | \
+        while read -r path; do
+            if [[ -d "$path" ]]; then
+                echo "${FOLDER_ICON} $path"
+            else
+                echo "${FILE_ICON} $path"
+            fi
+        done)
 
     SOURCE=$(echo "$SOURCE_ENTRIES" | rofi -dmenu -i -p "󰆏 SELECT " -theme "black.rasi")
 
