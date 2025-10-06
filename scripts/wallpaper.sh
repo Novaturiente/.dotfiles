@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 while true
 do
   DIR="$HOME/Pictures"
@@ -23,6 +22,12 @@ do
 
   # Select random image
   random_image="${images[RANDOM % ${#images[@]}]}"
+
+  # Get PID of current swaybg instance (if any)
+  OLD_PID=$(pidof swaybg)
+
+  # Start new swaybg instance in background
   swaybg -i "$random_image" -m fill &
+
   sleep 30m
 done
