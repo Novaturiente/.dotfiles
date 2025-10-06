@@ -8,13 +8,17 @@ FOLDER_ICON="󰙅"  #
 FILE_ICON="󱓧"    #
 
 # Generate list with icons
-ENTRIES=$(fd --type f --type d --hidden --follow . "${SEARCH_DIRS[@]}" | while read -r path; do
-    if [[ -d "$path" ]]; then
-        echo "${FOLDER_ICON} $path"
-    else
-        echo "${FILE_ICON} $path"
-    fi
-done)
+ENTRIES=$(fd --type f --type d --hidden --follow . "${SEARCH_DIRS[@]}" | \
+    awk '{print gsub(/\//, "/"), $0}' | \
+    sort -n | \
+    cut -d' ' -f2- | \
+    while read -r path; do
+        if [[ -d "$path" ]]; then
+            echo "${FOLDER_ICON} $path"
+        else
+            echo "${FILE_ICON} $path"
+        fi
+    done)
 
 ENTRIES="${FOLDER_ICON} $HOME/.dotfiles
 $ENTRIES"
