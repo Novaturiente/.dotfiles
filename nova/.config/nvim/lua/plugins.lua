@@ -26,7 +26,21 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 	-- ========================================================================
-	-- DEVELOPMENT UTILITIES
+	-- COLORSCHEME
+	-- ========================================================================
+
+	-- Tokyonight: Clean and modern colorscheme
+	{
+		"folke/tokyonight.nvim",
+		priority = 1000, -- Load before other plugins
+		config = function()
+			require("tokyonight").setup({ styles = { comments = { italic = false } } })
+			vim.cmd.colorscheme("tokyonight-night")
+		end,
+	},
+
+	-- ========================================================================
+	-- EVELOPMENT UTILITIES
 	-- ========================================================================
 
 	-- Hot reload: Automatically reload Neovim config on file changes
@@ -58,9 +72,6 @@ require("lazy").setup({
 		dependencies = {
 			"nvim-lua/plenary.nvim", -- required
 			"sindrets/diffview.nvim", -- optional - Diff integration
-
-			-- Only one of these is needed.
-			"nvim-telescope/telescope.nvim", -- optional
 		},
 	},
 
@@ -124,7 +135,25 @@ require("lazy").setup({
 		event = "VimEnter",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
-			"nvim-telescope/telescope-file-browser.nvim",
+			{
+				"nvim-telescope/telescope-file-browser.nvim",
+				config = function()
+					require("telescope").setup({
+						extensions = {
+							file_browser = {
+								hidden = { file_browser = true, folder_browser = true },
+								respect_gitignore = false,
+								grouped = true,
+								-- Optional: exclude .git directory
+								file_ignore_patterns = { "^.git/" },
+							},
+						},
+					})
+
+					-- Load the extension
+					require("telescope").load_extension("file_browser")
+				end,
+			},
 			{
 				"nvim-telescope/telescope-fzf-native.nvim",
 				build = "make",
@@ -142,6 +171,14 @@ require("lazy").setup({
 			-- Load extensions
 			pcall(require("telescope").load_extension, "fzf")
 			pcall(require("telescope").load_extension, "ui-select")
+
+			pickers = {
+				find_files = {
+					hidden = true,
+					-- Optional: exclude certain patterns
+					file_ignore_patterns = { ".git/", ".cache/", ".local/" },
+				},
+			}
 		end,
 	},
 
@@ -198,11 +235,37 @@ require("lazy").setup({
 			-- Get LSP capabilities from completion plugin
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
 
+			-- Define custom LSP configuration for KDL
+			local lspconfig = require("lspconfig")
+			local lspconfig_configs = require("lspconfig.configs")
+
+			-- Register kdl-lsp if not already registered
+			if not lspconfig_configs.kdl_lsp then
+				lspconfig_configs.kdl_lsp = {
+					default_config = {
+						cmd = { "kdl-lsp" }, -- Assumes kdl-lsp is in PATH
+						filetypes = { "kdl" },
+						root_dir = lspconfig.util.root_pattern(".git", vim.fn.getcwd()),
+						settings = {},
+					},
+				}
+			end
+
 			-- Define LSP servers and their settings
 			local servers = {
 				lua_ls = {
 					settings = { Lua = { completion = { callSnippet = "Replace" } } },
 				},
+				pyright = {},
+				rust_analyzer = {},
+				gopls = {},
+				bashls = {},
+			}
+
+			-- Add foldingRange capability for nvim-ufo
+			capabilities.textDocument.foldingRange = {
+				dynamicRegistration = false,
+				lineFoldingOnly = true,
 			}
 
 			-- Install tools automatically
@@ -223,6 +286,40 @@ require("lazy").setup({
 				},
 			})
 		end,
+	},
+
+	-- ========================================================================
+	-- SYNTAX HIGHLIGHTING
+	-- ========================================================================
+
+	-- Treesitter: Advanced syntax highlighting and code understanding
+	{
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		main = "nvim-treesitter.configs",
+		opts = {
+			ensure_installed = {
+				"bash",
+				"c",
+				"diff",
+				"html",
+				"lua",
+				"luadoc",
+				"markdown",
+				"markdown_inline",
+				"query",
+				"vim",
+				"vimdoc",
+
+				"python",
+				"rust",
+				"go",
+				"yaml",
+				"toml",
+				"kdl",
+			},
+			auto_install = true, -- Automatically install missing parsers
+		},
 	},
 
 	-- ========================================================================
@@ -252,51 +349,59 @@ require("lazy").setup({
 	-- ========================================================================
 	-- AUTOCOMPLETION
 	-- ========================================================================
-
 	-- Blink.cmp: Fast and feature-rich completion engine
 	{
 		"saghen/blink.cmp",
 		event = "VimEnter",
 		version = "1.*",
 		dependencies = {
-			{
-				"L3MON4D3/LuaSnip",
-				version = "2.*",
-				build = (function()
-					if vim.fn.has("win32") == 1 or vim.fn.executable("make") == 0 then
-						return
-					end
-					return "make install_jsregexp"
-				end)(),
-				opts = {},
-			},
 			"folke/lazydev.nvim",
 		},
+		--- @module 'blink.cmp'
+		--- @type blink.cmp.Config
 		opts = {
-			keymap = { preset = "super-tab" }, -- Use Tab for completion navigation
-			appearance = { nerd_font_variant = "mono" },
-			completion = { documentation = { auto_show = false, auto_show_delay_ms = 500 } },
+			keymap = {
+				preset = "super-tab",
+			},
+			appearance = {
+				nerd_font_variant = "mono",
+			},
+			completion = {
+				documentation = { auto_show = false, auto_show_delay_ms = 500 },
+			},
+			cmdline = {
+				keymap = { preset = "inherit" },
+				completion = { menu = { auto_show = true } },
+			},
 			sources = {
 				default = { "lsp", "path", "snippets", "lazydev" },
-				providers = { lazydev = { module = "lazydev.integrations.blink", score_offset = 100 } },
+				providers = {
+					lazydev = { module = "lazydev.integrations.blink", score_offset = 100 },
+				},
 			},
-			snippets = { preset = "luasnip" },
+
 			fuzzy = { implementation = "prefer_rust" },
 			signature = { enabled = true },
 		},
 	},
 
 	-- ========================================================================
-	-- COLORSCHEME
+	-- AUTO-PAIRING
 	-- ========================================================================
 
-	-- Tokyonight: Clean and modern colorscheme
+	-- Automatically insert matching closing characters for brackets, quotes, etc.
 	{
-		"folke/tokyonight.nvim",
-		priority = 1000, -- Load before other plugins
+		"windwp/nvim-autopairs",
+		event = "InsertEnter",
 		config = function()
-			require("tokyonight").setup({ styles = { comments = { italic = false } } })
-			vim.cmd.colorscheme("tokyonight-night")
+			require("nvim-autopairs").setup({
+				check_ts = true, -- Enable treesitter integration
+				ts_config = {
+					lua = { "string" }, -- Don't add pairs in lua string treesitter nodes
+					javascript = { "template_string" },
+					java = false, -- Don't check treesitter on java
+				},
+			})
 		end,
 	},
 
@@ -310,6 +415,35 @@ require("lazy").setup({
 		event = "VimEnter",
 		dependencies = "nvim-lua/plenary.nvim",
 		opts = { signs = false },
+	},
+
+	-- ============================================================================
+	-- CODE FOLDING
+	-- ============================================================================
+
+	{
+		"kevinhwang91/nvim-ufo",
+		dependencies = "kevinhwang91/promise-async",
+		event = "BufReadPost",
+		config = function()
+			-- Set fold options
+			vim.o.foldcolumn = "1"
+			vim.o.foldlevel = 99
+			vim.o.foldlevelstart = 99
+			vim.o.foldenable = true
+
+			-- Setup ufo with treesitter provider
+			require("ufo").setup({
+				provider_selector = function(bufnr, filetype, buftype)
+					return { "treesitter", "indent" }
+				end,
+			})
+
+			-- Keymaps for folding
+			vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "Open all folds" })
+			vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "Close all folds" })
+			vim.keymap.set("n", "zK", require("ufo").peekFoldedLinesUnderCursor, { desc = "Peek folded lines" })
+		end,
 	},
 
 	-- ========================================================================
@@ -326,6 +460,8 @@ require("lazy").setup({
 			-- Surround operations (e.g., saiw), sd', sr)')
 			require("mini.surround").setup()
 
+			require("mini.move").setup()
+
 			-- Minimal statusline
 			local statusline = require("mini.statusline")
 			statusline.setup({ use_icons = vim.g.have_nerd_font })
@@ -336,33 +472,22 @@ require("lazy").setup({
 	},
 
 	-- ========================================================================
-	-- SYNTAX HIGHLIGHTING
+	-- MESSAGE UTILITIES
 	-- ========================================================================
+	-- Capture and show :messages in a customizable floating buffer
+	{ "AckslD/messages.nvim", opts = {} },
 
-	-- Treesitter: Advanced syntax highlighting and code understanding
-	{
-		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-		main = "nvim-treesitter.configs",
-		opts = {
-			ensure_installed = {
-				"bash",
-				"c",
-				"diff",
-				"html",
-				"lua",
-				"luadoc",
-				"markdown",
-				"markdown_inline",
-				"query",
-				"vim",
-				"vimdoc",
-			},
-			auto_install = true, -- Automatically install missing parsers
-			highlight = { enable = true, additional_vim_regex_highlighting = { "ruby" } },
-			indent = { enable = true, disable = { "ruby" } },
-		},
-	},
+	-- ============================================================================
+	-- MESSAGE MANAGEMENT KEYMAPS
+	-- ============================================================================
+
+	-- Show messages in a new buffer (native method)
+	vim.keymap.set("n", "<leader>M", function()
+		vim.cmd("new")
+		vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(vim.fn.execute("messages"), "\n"))
+		vim.bo.buftype = "nofile"
+		vim.bo.bufhidden = "wipe"
+	end, { noremap = true, silent = true, desc = "Messages in new buffer" }),
 }, {
 	-- ========================================================================
 	-- LAZY.NVIM UI CONFIGURATION
