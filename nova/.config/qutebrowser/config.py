@@ -1,69 +1,123 @@
-# from fake_useragent import UserAgent
+# ============================================================================
+# Qutebrowser Configuration
+# ============================================================================
 c = c  # pyright: ignore
 config = config  # pyright: ignore
 
-# ua = UserAgent(browsers=['Edge', 'Chrome','Firefox'],os=["Windows"])
+# ============================================================================
+# Autoconfig
+# ============================================================================
 
-# Load settings made via the :set command from autoconfig.yml.
-config.load_autoconfig(False)  # Set to True if you want to keep using autoconfig.yml
+# Load settings from autoconfig.yml (set to True to merge with UI settings)
+config.load_autoconfig(False)
 
-# Enable JavaScript clipboard access
-c.content.javascript.clipboard = "access-paste"
-
+# ============================================================================
 # Theme
+# ============================================================================
+
 config.source("themes/city-lights-theme.py")
 
+# ============================================================================
+# Page Appearance & Dark Mode
+# ============================================================================
 
-# Tab settings
-# c.tabs.position = "right"
-# c.tabs.width = 125
-c.tabs.title.format = "{current_title}"
-c.tabs.padding = {"top": 5, "bottom": 5, "left": 0, "right": 0}
-c.tabs.title.alignment = "center"
-c.tabs.favicons.scale = 1
-
-# save session
-c.auto_save.session = True
-
-# last tab close action
-c.tabs.last_close = "startpage"
-
-# Enable dark mode for webpages
+# Dark mode settings
 c.colors.webpage.bg = "#282828"
 c.colors.webpage.darkmode.enabled = True
 c.colors.webpage.preferred_color_scheme = "dark"
 c.colors.webpage.darkmode.policy.images = "never"
 
-# Defauly to input mode
+# ============================================================================
+# Tabs Configuration
+# ============================================================================
+
+# Tab display settings
+# c.tabs.position = "right"
+# c.tabs.width = 125
+c.tabs.title.format = "{current_title}"
+c.tabs.title.alignment = "center"
+c.tabs.padding = {"top": 5, "bottom": 5, "left": 0, "right": 0}
+c.tabs.favicons.scale = 1
+c.fonts.tabs.selected = "12pt default_family"
+c.fonts.tabs.unselected = "10pt default_family"
+
+# Tab behavior
+c.tabs.last_close = "startpage"
+c.tabs.select_on_remove = "last-used"
+
+# ============================================================================
+# Session Management
+# ============================================================================
+
+c.auto_save.session = True
+c.session.lazy_restore = True
+
+# ============================================================================
+# Downloads
+# ============================================================================
+
+c.downloads.position = "bottom"
+c.downloads.remove_finished = 3000  # milliseconds
+
+# ============================================================================
+# Input Mode
+# ============================================================================
+
+# Default to insert mode for input fields
 c.input.insert_mode.auto_enter = True
 c.input.insert_mode.auto_load = True
 c.input.insert_mode.leave_on_load = True
 
-# Smooth scrolling
-c.scrolling.smooth = False
+# ============================================================================
+# Mic
+# ============================================================================
 
-# GPU accelearation
+c.scrolling.smooth = True
+c.search.ignore_case = "smart"
+c.search.wrap = True
+
+# ============================================================================
+# Performance & Hardware Acceleration
+# ============================================================================
+
 c.qt.args = [
     "enable-gpu-rasterization",
     "enable-accelerated-video-decode",
     "enable-quic",
-    "enable-zero-copy",
 ]
 
-# Privacy and blocking
+# ============================================================================
+# Privacy & Security
+# ============================================================================
+
+# User agent (mimics Edge/Chrome on Windows)
 c.content.headers.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+
+# JavaScript settings
+c.content.javascript.clipboard = "access-paste"
 # c.content.javascript.enabled = False
+
+# Canvas and WebGL (disabled for fingerprinting protection)
 c.content.canvas_reading = False
 c.content.webgl = False
+
+# Header privacy settings
 c.content.headers.accept_language = "en-US,en;q=0.5"
 c.content.headers.referer = "same-domain"
+c.content.headers.do_not_track = True
 c.content.headers.custom = {
     "Permissions-Policy": "geolocation=(), microphone=(), camera=(), interest-cohort=()"
 }
+
+# Cookie settings
 c.content.cookies.accept = "no-3rdparty"
+
+# Tracking and fingerprinting protection
 c.content.cache.appcache = False
-c.content.headers.do_not_track = True
 c.content.hyperlink_auditing = False
+c.content.dns_prefetch = True
+
+# Content blocking
 c.content.blocking.enabled = True
 c.content.blocking.method = "both"
 c.content.blocking.adblock.lists = [
@@ -71,25 +125,35 @@ c.content.blocking.adblock.lists = [
     "https://easylist.to/easylist/easyprivacy.txt",
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt",
 ]
-# Video auto play and location
+
+# Media and location permissions
 c.content.autoplay = False
 c.content.geolocation = False
 
-# — Hint selection improvements —
-# Add more elements to hinting for clickable areas (e.g. dropdowns/forms)
+# Site compatibility
+c.content.site_specific_quirks.enabled = True
+
+# ============================================================================
+# Hint Selection & Navigation
+# ============================================================================
+
+# Enhanced hint selectors for better element detection
 c.hints.selectors["all"].extend(
     [
-        "[aria-haspopup]",  # dropdown elements (Keeper, etc.)
+        "[aria-haspopup]",  # Dropdown elements
         '[role="link"]',
         '[role="button"]',
     ]
 )
-# For focusing scrollable frames (e.g. Jira, Confluence)
-c.hints.selectors["frame"] = ["div", "header", "section", "nav"]
-# — Opening links selectively —
-config.bind(";f", "hint links run open {hint-url}")
 
-# — Search & completion customization —
+# Frame scrolling selectors
+c.hints.selectors["frame"] = ["div", "header", "section", "nav"]
+
+# ============================================================================
+# Completion & Search
+# ============================================================================
+
+# Completion settings
 c.completion.shrink = True
 c.completion.open_categories = [
     "quickmarks",
@@ -98,39 +162,50 @@ c.completion.open_categories = [
     "history",
 ]
 
-# Add custom quick keyword-based search engines
+# Search engines
 c.url.searchengines = {
     "DEFAULT": "https://duckduckgo.com/?q={}",
     "g": "https://www.google.com/search?q={}",
     "yt": "https://www.youtube.com/results?search_query={}",
 }
 
-# Always search if input isn't a URL
+# Auto-search behavior
 c.url.auto_search = "naive"
 
+# Start page
 c.url.start_pages = ["https://www.perplexity.ai/"]
 
-## Key bindings
-# Bind Escape in insert mode to blur the active element, then leave insert mode
+# ============================================================================
+# Key Bindings
+# ============================================================================
+
+# Key mapping
 c.bindings.key_mappings["<Ctrl-x>"] = "<Escape>"
+
+# Insert mode - Escape behavior
 config.bind(
-    "<Escape>", "mode-leave ;; jseval -q document.activeElement.blur()", mode="insert"
+    "<Escape>",
+    "mode-leave ;; jseval -q document.activeElement.blur()",
+    mode="insert"
 )
 
+# Hint mode bindings
 config.bind("I", "hint inputs")
 config.bind("h", "hint all hover")
+config.bind(";f", "hint links run open {hint-url}")
 
-# Map Alt+Right to next tab
+# Tab navigation
 config.bind("<Alt-Right>", "tab-next")
-# Map Alt+Left to previous tab
 config.bind("<Alt-Left>", "tab-prev")
-# Open page in zen-browser
+
+# External applications
 config.bind("<Ctrl+Alt+t>", "spawn -d floorp {url} ;; tab-close")
 
-# -- Cast current video
+# Media and video bindings
 config.bind(",c", "hint links spawn --userscript cast.sh {hint-url}")
 config.bind(",m", "hint links spawn mpv {hint-url}")
-config.bind(",D", "spawn --userscript open_download")
-config.bind(",d", "hint links spawn --userscript download.sh {hint-url}")
-config.bind(',v', 'spawn --userscript vibrance.sh')
-config.bind(',b', "spawn ~/.dotfiles/scripts/rofi/bookmarks.sh {url} ;; message-info 'Bookmark added'")
+config.bind(",v", "spawn --userscript vibrance.sh")
+config.bind(
+    ",b",
+    "spawn ~/.dotfiles/scripts/rofi/bookmarks.sh {url} ;; message-info 'Bookmark added'"
+)
