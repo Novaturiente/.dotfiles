@@ -12,3 +12,4 @@ novarch/system.json
 novarch/system.yaml
 .aider*
 **/default.target.wants/
+nova/.config/ranger/__pycache__/commands.cpython-313.pyc
