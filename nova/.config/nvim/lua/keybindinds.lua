@@ -5,20 +5,13 @@
 -- Organized by functionality for easy navigation and maintenance.
 -- ============================================================================
 local vim = vim
-
 -- ============================================================================
 -- BASIC KEYMAPS
 -- ============================================================================
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { noremap = true, silent = true, desc = "Clear search highlights" })
-
 -- Diagnostic keymaps
-vim.keymap.set(
-	"n",
-	"<leader>d",
-	vim.diagnostic.setloclist,
-	{ noremap = true, silent = true, desc = "Open diagnostic quickfix list" }
-)
+vim.keymap.set("n", "<leader>d", vim.diagnostic.setloclist, { noremap = true, silent = true, desc = "Open quickfix" })
 
 -- ============================================================================
 -- SPLIT NAVIGATION
@@ -53,28 +46,29 @@ vim.keymap.set("n", "<C-A-Right>", ":bnext<CR>", { noremap = true, silent = true
 -- ============================================================================
 -- BUFFER MANAGEMENT
 -- ============================================================================
--- Close the current buffer without closing the window
 -- Alt+d forcefully closes the buffer even if there are unsaved changes
-vim.keymap.set("n", "<A-d>", ":bdelete!<CR>", { noremap = true, silent = true, desc = "Delete current buffer" })
+vim.keymap.set("n", "<A-q>", ":bdelete!<CR>", { noremap = true, silent = true, desc = "Force Delete current buffer" })
+vim.keymap.set("n", "<leader>qw", ":bdelete<CR>", { noremap = true, silent = true, desc = "Close current buffer" })
+vim.keymap.set("n", "<leader>qq", ":q<CR>", { noremap = true, silent = true, desc = "Exit Neovim" })
 
 -- ============================================================================
 -- TERMINAL KEYBINDINGS
 -- ============================================================================
--- Open terminal in vertical split
-vim.keymap.set(
-	"n",
-	"<leader>tt",
-	":vsplit | terminal<CR>",
-	{ noremap = true, silent = true, desc = "Open vertical terminal" }
-)
--- Open terminal in horizontal split
-vim.keymap.set(
-	"n",
-	"<leader>th",
-	":split | terminal<CR>",
-	{ noremap = true, silent = true, desc = "Open horizontal terminal" }
-)
+-- Open terminal in vertical split (in current buffer's directory)
+vim.keymap.set("n", "<leader>tt", function()
+	local dir = vim.fn.expand("%:p:h")
+	vim.cmd("vsplit")
+	vim.cmd("lcd " .. dir)
+	vim.cmd("terminal")
+end, { noremap = true, silent = true, desc = "Open vertical terminal" })
 
+-- Open terminal in horizontal split (in current buffer's directory)
+vim.keymap.set("n", "<leader>th", function()
+	local dir = vim.fn.expand("%:p:h")
+	vim.cmd("split")
+	vim.cmd("lcd " .. dir)
+	vim.cmd("terminal")
+end, { noremap = true, silent = true, desc = "Open horizontal terminal" })
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true, desc = "Exit terminal mode" })
 
@@ -82,29 +76,22 @@ vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true, des
 -- FILE EXPLORER KEYBINDING
 -- ============================================================================
 -- Open command line with expanded directory path
-vim.keymap.set("n", "<leader>e", function()
-	local path = vim.fn.expand("%:p:h") .. "/"
-	vim.api.nvim_feedkeys(":e " .. path, "n", false)
-end, { noremap = true, silent = false, desc = "Edit file in current directory" })
+vim.keymap.set("n", "<leader>e", "<CMD>Oil<CR>", { noremap = true, silent = false, desc = "File explorer" })
 
 -- ============================================================================
 -- TELESCOPE FUZZY FINDER
 -- ============================================================================
 -- text, help docs, and more. All bindings use <leader>s prefix for search.
 local builtin = require("telescope.builtin")
-
 -- Search Commands
-vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
-vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
-vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
-vim.keymap.set("n", "<leader>ss", builtin.builtin, { desc = "[S]earch [S]elect Telescope" })
-vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
-vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
-vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
-vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
-vim.keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
-
+vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "[S]earch [H]elp" })
+vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
+vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "[S]earch [F]iles" })
+vim.keymap.set("n", "<leader>fs", builtin.builtin, { desc = "[S]earch [S]elect Telescope" })
+vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
+vim.keymap.set("n", "<leader>fd", builtin.diagnostics, { desc = "[D]iagnostics" })
+vim.keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = 'Recent Files ("." for repeat)' })
+vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "Find existing buffers" })
 -- Advanced Telescope Commands
 -- Fuzzy search in current buffer with custom theme
 vim.keymap.set("n", "<leader>/", function()
@@ -112,55 +99,36 @@ vim.keymap.set("n", "<leader>/", function()
 		winblend = 10,
 		previewer = false,
 	}))
-end, { desc = "[/] Fuzzily search in current buffer" })
-
+end, { desc = "Search in current buffer" })
 -- Search Neovim configuration files
-vim.keymap.set("n", "<leader>sn", function()
+vim.keymap.set("n", "<leader>fn", function()
 	builtin.find_files({ cwd = vim.fn.stdpath("config") })
 end, { desc = "[S]earch [N]eovim files" })
-
--- Open file browser in current file's directory
-vim.keymap.set(
-	"n",
-	"<leader>.",
-	":Telescope file_browser path=%:p:h select_buffer=true<CR>",
-	{ desc = "Open file browser" }
-)
 
 -- ============================================================================
 -- LSP (LANGUAGE SERVER PROTOCOL) KEYBINDINGS
 -- ============================================================================
--- LSP provides IDE-like features such as go-to-definition, find references,
--- code actions, and more. These keybindings are only active when an LSP
--- server is attached to the current buffer.
--- See `:help lsp` for more information
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("lsp-keybindings", { clear = true }),
 	callback = function(event)
-		-- Helper function to create LSP keybindings
 		-- Automatically sets the buffer and adds "LSP: " prefix to descriptions
 		local map = function(keys, func, desc, mode)
 			mode = mode or "n"
 			vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
 		end
-
 		-- Code Navigation
 		map("grd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
 		map("grD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 		map("gri", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
 		map("grt", require("telescope.builtin").lsp_type_definitions, "[G]oto [T]ype Definition")
 		map("grr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
-
 		-- Symbol Navigation
 		map("grO", require("telescope.builtin").lsp_document_symbols, "Open Document Symbols")
 		map("grW", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
-
 		-- Code Actions
 		map("grn", vim.lsp.buf.rename, "[R]e[n]ame")
 		map("gra", vim.lsp.buf.code_action, "[C]ode [A]ction", { "n", "x" })
-
 		-- Helper function to check LSP method support across Neovim versions
-		-- Handles API differences between Neovim 0.10 and 0.11
 		local function client_supports_method(client, method, bufnr)
 			if vim.fn.has("nvim-0.11") == 1 then
 				return client:supports_method(method, bufnr)
@@ -168,33 +136,28 @@ vim.api.nvim_create_autocmd("LspAttach", {
 				return client.supports_method(method, { bufnr = bufnr })
 			end
 		end
-
 		-- ====================================================================
 		-- DOCUMENT HIGHLIGHT SETUP
 		-- ====================================================================
 		-- Automatically highlight references to the symbol under cursor
-		-- when the cursor is held still for a moment
 		local client = vim.lsp.get_client_by_id(event.data.client_id)
 		if
 			client
 			and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf)
 		then
 			local highlight_augroup = vim.api.nvim_create_augroup("lsp-highlight", { clear = false })
-
 			-- Highlight references when cursor stops moving
 			vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
 				buffer = event.buf,
 				group = highlight_augroup,
 				callback = vim.lsp.buf.document_highlight,
 			})
-
 			-- Clear highlights when cursor moves
 			vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
 				buffer = event.buf,
 				group = highlight_augroup,
 				callback = vim.lsp.buf.clear_references,
 			})
-
 			-- Clean up when LSP detaches
 			vim.api.nvim_create_autocmd("LspDetach", {
 				group = vim.api.nvim_create_augroup("lsp-detach", { clear = true }),
@@ -204,14 +167,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
 				end,
 			})
 		end
-
 		-- ====================================================================
 		-- INLAY HINTS TOGGLE
 		-- ====================================================================
 		-- Inlay hints show additional type information and parameter names
-		-- inline with your code. Toggle with <leader>th if supported.
 		if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
-			map("<leader>hh", function()
+			map("<leader>gh", function()
 				vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
 			end, "[T]oggle Inlay [H]ints")
 		end
@@ -222,18 +183,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
 -- CODE FORMATTING
 -- ============================================================================
 -- Format the current buffer using conform.nvim
--- Falls back to LSP formatting if no formatter is configured
--- See `:help conform.nvim` for more information
-vim.keymap.set("", "<leader>ff", function()
+vim.keymap.set("", "<leader>=", function()
 	require("conform").format({ async = true, lsp_format = "fallback" })
-end, { desc = "[F]ormat buffer" })
+end, { desc = "Format buffer" })
 
 -- ============================================================================
 -- NEOGIT CONFIGURATION
 -- ============================================================================
--- Require Neogit
 local neogit = require("neogit")
-
 -- Helper to get project root of the current buffer
 local function get_project_root()
 	-- You can use builtin LSP or 'plenary' or fallback to git root
@@ -245,7 +202,6 @@ local function get_project_root()
 	end
 	return root
 end
-
 -- Keymap to open Neogit in the current buffer's project
 vim.keymap.set("n", "<leader>gg", function()
 	local root = get_project_root()
@@ -254,3 +210,105 @@ vim.keymap.set("n", "<leader>gg", function()
 		neogit.open({ cwd = root }) -- open Neogit in that directory
 	end
 end, { desc = "Open Neogit in current project's git root" })
+
+-- ============================================================================
+-- MESSAGE MANAGEMENT KEYMAPS
+-- ============================================================================
+-- Show messages in a new buffer (native method)
+vim.keymap.set("n", "<leader>ms", function()
+	vim.cmd("messages")
+end, { noremap = true, silent = true, desc = "Show messages" })
+
+-- ============================================================================
+-- COMMAND LINE MODE KEYBINDINGS
+-- ============================================================================
+-- Paste from system clipboard
+vim.keymap.set("c", "<C-a>", "<Home>", { noremap = true, desc = "Move to start of line" })
+-- Move to end of line
+vim.keymap.set("c", "<C-e>", "<End>", { noremap = true, desc = "Move to end of line" })
+-- Delete word backward
+vim.keymap.set("c", "<C-BS>", "<C-w>", { noremap = true, desc = "Delete word backward" })
+
+-- ============================================================================
+-- CUSTOM COMMAND LINE MODE WITH SPECIFIC KEYBINDINGS
+-- ============================================================================
+local in_custom_cmdline = false
+-- Function to open command line with ":e " pre-filled and custom keybindings
+local function open_file_browser()
+	in_custom_cmdline = true
+	-- Custom backspace behavior
+	vim.keymap.set("c", "<BS>", function()
+		local cmdline = vim.fn.getcmdline()
+		local pos = vim.fn.getcmdpos() - 1
+		local last_char = cmdline:sub(pos, pos)
+
+		if last_char == "/" then
+			return "<C-w><C-w>"
+		else
+			return "<BS>"
+		end
+	end, { expr = true, noremap = true })
+	-- Paste from system clipboard
+	vim.keymap.set("c", "<C-v>", "<C-r>+", { noremap = true })
+	-- Get current buffer's directory path
+	local home = vim.fn.expand("~")
+	local current_dir = vim.fn.expand("%:p:h")
+	if current_dir == "" or current_dir == "." then
+		current_dir = home
+	end
+	if current_dir:sub(1, #home) == home then
+		current_dir = "~" .. current_dir:sub(#home + 1)
+	end
+	local cmd = ":e " .. current_dir .. "/"
+	local keys = vim.api.nvim_replace_termcodes(cmd .. "<C-d>", true, false, true)
+	vim.fn.feedkeys(keys, "n")
+end
+-- Autocmd to clean up keybindings when leaving command line
+vim.api.nvim_create_autocmd("CmdlineLeave", {
+	group = vim.api.nvim_create_augroup("CustomCmdlineCleanup", { clear = true }),
+	callback = function()
+		if in_custom_cmdline then
+			-- Remove custom keybindings
+			pcall(vim.keymap.del, "c", "<BS>")
+			pcall(vim.keymap.del, "c", "<C-v>")
+			in_custom_cmdline = false
+		end
+	end,
+})
+-- Keybinding to trigger the custom command line
+vim.keymap.set("n", "<leader>.", open_file_browser, {
+	noremap = true,
+	silent = true,
+	desc = "Open file",
+})
+
+-- ============================================================================
+-- COLORSCHEME SWITCHING
+-- ============================================================================
+-- Define available colorschemes
+local colorschemes = {
+	"tokyonight-night",
+	"rose-pine-moon",
+}
+local current_scheme_index = 2
+vim.cmd.colorscheme(colorschemes[current_scheme_index])
+-- Function to cycle through colorschemes
+local function select_colorscheme()
+	vim.ui.select(colorschemes, {
+		prompt = "Select Colorscheme:",
+		format_item = function(item)
+			return item
+		end,
+	}, function(choice)
+		if choice then
+			vim.cmd.colorscheme(choice)
+			print("Colorscheme: " .. choice)
+		end
+	end)
+end
+-- Keybinding to cycle colorschemes using Ctrl + Alt + C
+vim.keymap.set("n", "<C-A-c>", select_colorscheme, {
+	noremap = true,
+	silent = true,
+	desc = "Cycle through colorschemes",
+})

@@ -2,7 +2,7 @@
 -- NEOVIM SETTINGS
 -- ============================================================================
 -- NEOVIDE SETTINGS
-vim.o.guifont = "JetBrainsMono Nerd Font:h12"
+vim.o.guifont = "JetBrainsMono Nerd Font Mono:h12"
 vim.g.neovide_padding_top = 3
 vim.g.neovide_padding_bottom = 0
 vim.g.neovide_padding_right = 3
@@ -12,6 +12,8 @@ vim.g.neovide_normal_opacity = 0.9
 vim.g.neovide_hide_mouse_when_typing = false
 vim.g.neovide_cursor_short_animation_length = 0.04
 vim.g.neovide_cursor_trail_size = 0.5
+
+vim.loader.enable()
 
 -- Set <space> as the leader key
 vim.g.mapleader = " "
@@ -69,3 +71,4 @@ require("autostart")
 require("plugins")
 require("keybindinds")
 require("ui")
+require("coding")
