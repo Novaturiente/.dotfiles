@@ -33,10 +33,12 @@ require("lazy").setup({
 	{
 		"folke/tokyonight.nvim",
 		priority = 1000, -- Load before other plugins
-		config = function()
-			require("tokyonight").setup({ styles = { comments = { italic = false } } })
-			vim.cmd.colorscheme("tokyonight-night")
-		end,
+		name = "tokyonight",
+	},
+	{
+		"rose-pine/neovim",
+		priority = 1000, -- Load before other plugins
+		name = "rose-pine",
 	},
 
 	-- ========================================================================
@@ -118,9 +120,99 @@ require("lazy").setup({
 				},
 			},
 			spec = {
-				{ "<leader>s", group = "[S]earch" },
-				{ "<leader>t", group = "[T]oggle" },
-				{ "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
+				{ "<leader>f", group = "Search", icon = "󰜏" },
+				{ "<leader>t", group = "Terminal" },
+				{ "<leader>g", group = "Git", mode = { "n", "v" } },
+				{ "<leader>r", group = "Run", icon = "" },
+				{ "<leader>rs", group = "Run with sudo", icon = "" },
+				{ "<leader>rb", group = "Build" },
+				{ "<leader>q", group = "Exit" },
+				{ "<leader>m", group = "Message", icon = "󱥁" },
+				{ "<leader>e", desc = "File explorer", icon = "󰙅" },
+			},
+		},
+	},
+
+	-- NOICE NVIM
+	{
+		"folke/noice.nvim",
+		event = "VeryLazy",
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+			{
+				-- Notification system (required by noice)
+				"rcarriga/nvim-notify",
+				opts = {
+					top_down = false, -- Show notifications from bottom to top
+					timeout = 1000,
+					-- Custom stage that removes borders
+					stages = "fade_in_slide_out",
+					render = "compact",
+				},
+			},
+		},
+		opts = {
+			cmdline = {
+				enabled = true,
+				view = "cmdline_popup", -- Shows command line in a popup
+				opts = {
+					position = {
+						row = "80%",
+						col = "50%",
+					},
+					size = {
+						width = 100,
+						height = "auto",
+					},
+					border = {
+						style = "rounded",
+					},
+					win_options = {
+						winhighlight = "NormalFloat:NormalFloat,FloatBorder:FloatBorder",
+					},
+				},
+			},
+			messages = {
+				enabled = true,
+				view = "notify",
+				view_error = "notify",
+				view_warn = "notify",
+			},
+			popupmenu = {
+				enabled = false,
+			},
+			presets = {
+				bottom_search = true,
+				command_palette = true,
+				long_message_to_split = true,
+			},
+			lsp = {
+				override = {
+					["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+					["vim.lsp.util.stylize_markdown"] = true,
+				},
+			},
+			notify = {
+				enabled = true,
+				view = "notify",
+			},
+			views = {
+				popupmenu = {
+					position = {
+						row = "75%",
+						col = "50%",
+					},
+					size = {
+						width = 100,
+						height = 10,
+					},
+					border = {
+						padding = { 1, 2 },
+					},
+					win_options = {
+						winhighlight = { Normal = "Normal", FloatBorder = "DiagnosticInfo" },
+					},
+				},
 			},
 		},
 	},
@@ -137,22 +229,6 @@ require("lazy").setup({
 			"nvim-lua/plenary.nvim",
 			{
 				"nvim-telescope/telescope-file-browser.nvim",
-				config = function()
-					require("telescope").setup({
-						extensions = {
-							file_browser = {
-								hidden = { file_browser = true, folder_browser = true },
-								respect_gitignore = false,
-								grouped = true,
-								-- Optional: exclude .git directory
-								file_ignore_patterns = { "^.git/" },
-							},
-						},
-					})
-
-					-- Load the extension
-					require("telescope").load_extension("file_browser")
-				end,
 			},
 			{
 				"nvim-telescope/telescope-fzf-native.nvim",
@@ -166,19 +242,26 @@ require("lazy").setup({
 		},
 		config = function()
 			require("telescope").setup({
-				extensions = { ["ui-select"] = { require("telescope.themes").get_dropdown() } },
+				pickers = {
+					find_files = {
+						hidden = true,
+						file_ignore_patterns = { ".git/", ".cache/", ".local/" },
+					},
+				},
+				extensions = {
+					["ui-select"] = { require("telescope.themes").get_dropdown() },
+					file_browser = {
+						hidden = { file_browser = true, folder_browser = true },
+						respect_gitignore = false,
+						grouped = true,
+						file_ignore_patterns = { "^.git/" },
+					},
+				},
 			})
 			-- Load extensions
 			pcall(require("telescope").load_extension, "fzf")
 			pcall(require("telescope").load_extension, "ui-select")
-
-			pickers = {
-				find_files = {
-					hidden = true,
-					-- Optional: exclude certain patterns
-					file_ignore_patterns = { ".git/", ".cache/", ".local/" },
-				},
-			}
+			pcall(require("telescope").load_extension, "file_browser")
 		end,
 	},
 
@@ -201,7 +284,6 @@ require("lazy").setup({
 			"mason-org/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
 			{ "j-hui/fidget.nvim", opts = {} }, -- LSP progress notifications
-			"saghen/blink.cmp",
 		},
 		config = function()
 			-- LSP keybindings are defined in separate keybindings file
@@ -367,14 +449,20 @@ require("lazy").setup({
 				nerd_font_variant = "mono",
 			},
 			completion = {
-				documentation = { auto_show = false, auto_show_delay_ms = 500 },
+				list = { selection = { preselect = false } },
+				menu = {
+					auto_show = function(ctx)
+						return vim.fn.getcmdtype() == ":"
+					end,
+				},
+				ghost_text = { enabled = true },
 			},
 			cmdline = {
 				keymap = { preset = "inherit" },
 				completion = { menu = { auto_show = true } },
 			},
 			sources = {
-				default = { "lsp", "path", "snippets", "lazydev" },
+				default = { "lsp", "path", "snippets", "lazydev", "buffer" },
 				providers = {
 					lazydev = { module = "lazydev.integrations.blink", score_offset = 100 },
 				},
@@ -420,31 +508,31 @@ require("lazy").setup({
 	-- ============================================================================
 	-- CODE FOLDING
 	-- ============================================================================
-
-	{
-		"kevinhwang91/nvim-ufo",
-		dependencies = "kevinhwang91/promise-async",
-		event = "BufReadPost",
-		config = function()
-			-- Set fold options
-			vim.o.foldcolumn = "1"
-			vim.o.foldlevel = 99
-			vim.o.foldlevelstart = 99
-			vim.o.foldenable = true
-
-			-- Setup ufo with treesitter provider
-			require("ufo").setup({
-				provider_selector = function(bufnr, filetype, buftype)
-					return { "treesitter", "indent" }
-				end,
-			})
-
-			-- Keymaps for folding
-			vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "Open all folds" })
-			vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "Close all folds" })
-			vim.keymap.set("n", "zK", require("ufo").peekFoldedLinesUnderCursor, { desc = "Peek folded lines" })
-		end,
-	},
+	--
+	-- {
+	-- 	"kevinhwang91/nvim-ufo",
+	-- 	dependencies = "kevinhwang91/promise-async",
+	-- 	event = "BufReadPost",
+	-- 	config = function()
+	-- 		-- Set fold options
+	-- 		vim.o.foldcolumn = "1"
+	-- 		vim.o.foldlevel = 99
+	-- 		vim.o.foldlevelstart = 99
+	-- 		vim.o.foldenable = true
+	--
+	-- 		-- Setup ufo with treesitter provider
+	-- 		require("ufo").setup({
+	-- 			provider_selector = function(bufnr, filetype, buftype)
+	-- 				return { "treesitter", "indent" }
+	-- 			end,
+	-- 		})
+	--
+	-- 		-- Keymaps for folding
+	-- 		vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "Open all folds" })
+	-- 		vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "Close all folds" })
+	-- 		vim.keymap.set("n", "zK", require("ufo").peekFoldedLinesUnderCursor, { desc = "Peek folded lines" })
+	-- 	end,
+	-- },
 
 	-- ========================================================================
 	-- MINI PLUGINS
@@ -470,24 +558,93 @@ require("lazy").setup({
 			end
 		end,
 	},
+	-- ========================================================================
+	-- FILE MANAGEMENT
+	-- ========================================================================
 
-	-- ========================================================================
-	-- MESSAGE UTILITIES
-	-- ========================================================================
-	-- Capture and show :messages in a customizable floating buffer
-	{ "AckslD/messages.nvim", opts = {} },
+	-- Oil.nvim: Edit your filesystem like a normal Neovim buffer
+	{
+		"stevearc/oil.nvim",
+		---@module 'oil'
+		---@type oil.SetupOpts
+		opts = {},
+		dependencies = { { "nvim-mini/mini.icons", opts = {} } },
+		lazy = false,
+		config = function()
+			require("oil").setup({
+				default_file_explorer = true,
+				delete_to_trash = true,
+				skip_confirm_for_simple_edits = true,
+				prompt_save_on_select_new_entry = true,
+				constrain_cursor = "editable",
+				watch_for_changes = false,
+				keymaps = {
+					["."] = { "actions.open_cwd", mode = "n" },
+				},
+				-- use_default_keymaps = true,
+				view_options = {
+					-- Hide hidden files by default
+					show_hidden = false,
+
+					-- This function defines what is considered a "hidden" file
+					-- Return false for files you want to show, true for files to hide
+					is_hidden_file = function(name, bufnr)
+						-- Whitelist specific hidden folders/files you want to see
+						local whitelist = {
+							".github",
+							".gitignore",
+							".env.example",
+							".config",
+							".dotfiles",
+						}
+						if vim.tbl_contains(whitelist, name) then
+							return false
+						end
+						return vim.startswith(name, ".")
+					end,
+
+					is_always_hidden = function(name, bufnr)
+						return vim.tbl_contains({
+							"go",
+						}, name)
+					end,
+				},
+			})
+		end,
+	},
 
 	-- ============================================================================
-	-- MESSAGE MANAGEMENT KEYMAPS
+	-- VIRTUAL ENVIRONMENT SELECTOR (PYTHON)
 	-- ============================================================================
+	{
+		"linux-cultist/venv-selector.nvim",
+		dependencies = {
+			"neovim/nvim-lspconfig",
+			{ "nvim-telescope/telescope.nvim", branch = "0.1.x", dependencies = { "nvim-lua/plenary.nvim" } }, -- optional: you can also use fzf-lua, snacks, mini-pick instead.
+		},
+		ft = "python", -- Load when opening Python files
+		keys = {
+			{ ",v", "<cmd>VenvSelect<cr>" }, -- Open picker on keymap
+		},
+		opts = { -- this can be an empty lua table - just showing below for clarity.
+			search = { cwd = false },
+			options = {}, -- if you add plugin options, they go here.
+		},
+	},
 
-	-- Show messages in a new buffer (native method)
-	vim.keymap.set("n", "<leader>M", function()
-		vim.cmd("new")
-		vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(vim.fn.execute("messages"), "\n"))
-		vim.bo.buftype = "nofile"
-		vim.bo.bufhidden = "wipe"
-	end, { noremap = true, silent = true, desc = "Messages in new buffer" }),
+	-- ============================================================================
+	-- VIRTUAL ENVIRONMENT SELECTOR (PYTHON)
+	-- ============================================================================
+	{
+		"goolord/alpha-nvim",
+		-- dependencies = { 'echasnovski/mini.icons' },
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		config = function()
+			local startify = require("alpha.themes.startify")
+			startify.file_icons.provider = "devicons"
+			require("alpha").setup(startify.config)
+		end,
+	},
 }, {
 	-- ========================================================================
 	-- LAZY.NVIM UI CONFIGURATION

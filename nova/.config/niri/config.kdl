@@ -162,26 +162,26 @@ binds {
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ APPLICATIONS                                                                        │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
-    Mod+Return   hotkey-overlay-title="Open Kitty"           { spawn-sh "kitty -e tmux attach -t default"; }
-    Mod+Space    hotkey-overlay-title="Open Kitty"           { spawn "kitty"; }
-    Mod+D        hotkey-overlay-title="Application launcher" { spawn-sh "rofi -show drun -theme spotlight"; }
-    Mod+Shift+D  hotkey-overlay-title="Application launcher" { spawn-sh "~/.dotfiles/scripts/rofi/find.sh"; }
-    Mod+W        hotkey-overlay-title="Qutebrowser"          { spawn "qutebrowser"; }
-    Mod+Ctrl+W   hotkey-overlay-title="Qutebrowser work"     { spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"; }
-    Mod+N        hotkey-overlay-title="Emacs client"         { spawn-sh "emacsclient -c"; }
-    Mod+M        hotkey-overlay-title="Emacs client"         { spawn-sh "neovide"; }
-    Mod+E        hotkey-overlay-title="File manager"         { spawn-sh "kitty -e ranger"; }
+    Mod+Return   hotkey-overlay-title="Open Kitty"           	{ spawn-sh "kitty -e tmux attach -t default"; }
+    Mod+Space    hotkey-overlay-title="Open Kitty"           	{ spawn "kitty"; }
+    Mod+D        hotkey-overlay-title="Application launcher" 	{ spawn-sh "rofi -show drun -theme spotlight"; }
+    Mod+Shift+D  hotkey-overlay-title="Application launcher" 	{ spawn-sh "~/.dotfiles/scripts/rofi/find.sh"; }
+    Mod+W        hotkey-overlay-title="Qutebrowser"          	{ spawn "qutebrowser"; }
+    Mod+Ctrl+W   hotkey-overlay-title="Qutebrowser work"     	{ spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"; }
+    Mod+M        hotkey-overlay-title="Emacs client"         	{ spawn-sh "emacsclient -c"; }
+    Mod+N        hotkey-overlay-title="Emacs client"         	{ spawn-sh "neovide"; }
+    Mod+E        hotkey-overlay-title="File manager"         	{ spawn-sh "kitty -e ranger"; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ UTILITIES & MENUS                                                                   │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
-    Mod+Ctrl+D  hotkey-overlay-title="Download using aria2"    { spawn-sh "~/.config/rofi/download.sh"; }
-    Mod+B       hotkey-overlay-title="Bookmarks"               { spawn-sh "~/.dotfiles/scripts/rofi/bookmarks.sh"; }
-    Mod+V       hotkey-overlay-title="Clipboard"               { spawn-sh "~/.dotfiles/scripts/rofi/clipboard.sh"; }
-    Mod+Shift+X hotkey-overlay-title="Tools"                   { spawn-sh "~/.dotfiles/scripts/rofi/tools.sh"; }
-    Mod+Ctrl+N  hotkey-overlay-title="Notification center"     { spawn-sh "swaync-client -t"; }
-    Mod+Shift+B hotkey-overlay-title="Toggle waybar"           { spawn-sh "killall waybar || waybar"; }
-    Mod+Ctrl+P  hotkey-overlay-title="Phone mirror"            { spawn-sh "scrcpy --max-fps 60 -Sw"; }
+    Mod+Ctrl+D  hotkey-overlay-title="Download using aria2"    	{ spawn-sh "~/.config/rofi/download.sh"; }
+    Mod+B       hotkey-overlay-title="Bookmarks"               	{ spawn-sh "~/.dotfiles/scripts/rofi/bookmarks.sh"; }
+    Mod+V       hotkey-overlay-title="Clipboard"               	{ spawn-sh "~/.dotfiles/scripts/rofi/clipboard.sh"; }
+    Mod+Shift+X hotkey-overlay-title="Tools"                   	{ spawn-sh "~/.dotfiles/scripts/rofi/tools.sh"; }
+    Mod+Ctrl+N  hotkey-overlay-title="Notification center"     	{ spawn-sh "swaync-client -t"; }
+    Mod+Shift+B hotkey-overlay-title="Toggle waybar"           	{ spawn-sh "killall waybar || waybar"; }
+    Mod+Ctrl+P  hotkey-overlay-title="Phone mirror"            	{ spawn-sh "scrcpy --max-fps 60 -Sw"; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ SCREENSHOTS                                                                         │
@@ -194,9 +194,9 @@ binds {
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ SYSTEM CONTROLS                                                                     │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
-    Mod+I        hotkey-overlay-title="Toggle idle"      { spawn-sh "~/.dotfiles/scripts/idle.sh"; }
-    Mod+L        hotkey-overlay-title="Lock"             { spawn-sh "swaylock --screenshots --grace 5 --fade-in 0.3 --effect-blur 10x5 --clock"; }
-    Mod+Shift+E  hotkey-overlay-title="Power menu"       { spawn-sh "~/.dotfiles/scripts/rofi/power.sh"; }
+    Mod+I        hotkey-overlay-title="Toggle idle"	{ spawn-sh "~/.dotfiles/scripts/idle.sh"; }
+    Mod+L        hotkey-overlay-title="Lock"       	{ spawn-sh "swaylock --screenshots --grace 5 --fade-in 0.3 --effect-blur 10x5 --clock"; }
+    Mod+Shift+E  hotkey-overlay-title="Power menu" 	{ spawn-sh "~/.dotfiles/scripts/rofi/power.sh"; }
 
     Mod+T        { toggle-column-tabbed-display; }
     Alt+Tab      repeat=false { toggle-overview; }
@@ -211,45 +211,45 @@ binds {
     // │ MEDIA KEYS                                                                          │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     // Volume controls
-    XF86AudioRaiseVolume   allow-when-locked=true { spawn-sh "swayosd-client --output-volume raise"; }
-    XF86AudioLowerVolume   allow-when-locked=true { spawn-sh "swayosd-client --output-volume lower"; }
-    XF86AudioMute          allow-when-locked=true { spawn-sh "swayosd-client --output-volume mute-toggle"; }
-    XF86AudioMicMute       allow-when-locked=true { spawn-sh "swayosd-client --input-volume mute-toggle"; }
-    Caps_Lock                                     { spawn-sh "sleep 0.3 && swayosd-client --caps-lock"; }
-    Num_Lock                                      { spawn-sh "sleep 0.3 && swayosd-client --num-lock"; }
+    XF86AudioRaiseVolume   allow-when-locked=true 	{ spawn-sh "swayosd-client --output-volume raise"; }
+    XF86AudioLowerVolume   allow-when-locked=true 	{ spawn-sh "swayosd-client --output-volume lower"; }
+    XF86AudioMute          allow-when-locked=true 	{ spawn-sh "swayosd-client --output-volume mute-toggle"; }
+    XF86AudioMicMute       allow-when-locked=true 	{ spawn-sh "swayosd-client --input-volume mute-toggle"; }
+    Caps_Lock                                     	{ spawn-sh "sleep 0.3 && swayosd-client --caps-lock"; }
+    Num_Lock                                      	{ spawn-sh "sleep 0.3 && swayosd-client --num-lock"; }
 
     // Brightness controls
-    XF86MonBrightnessUp    allow-when-locked=true { spawn-sh "~/.dotfiles/scripts/brigtness.sh up"; }
-    XF86MonBrightnessDown  allow-when-locked=true { spawn-sh "~/.dotfiles/scripts/brigtness.sh down"; }
+    XF86MonBrightnessUp    allow-when-locked=true 	{ spawn-sh "~/.dotfiles/scripts/brigtness.sh up"; }
+    XF86MonBrightnessDown  allow-when-locked=true 	{ spawn-sh "~/.dotfiles/scripts/brigtness.sh down"; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ NAVIGATION - COLUMNS                                                                │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
-    Mod+Left   { focus-column-left; }
-    Mod+Right  { focus-column-right; }
+    Mod+Left   		{ focus-column-left; }
+    Mod+Right  		{ focus-column-right; }
 
-    Mod+Ctrl+Left   { move-column-left; }
-    Mod+Ctrl+Right  { move-column-right; }
-    Mod+Ctrl+H      { move-column-left; }
-    Mod+Ctrl+L      { move-column-right; }
+    Mod+Ctrl+Left   	{ move-column-left; }
+    Mod+Ctrl+Right  	{ move-column-right; }
+    Mod+Ctrl+H      	{ move-column-left; }
+    Mod+Ctrl+L      	{ move-column-right; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ NAVIGATION - WINDOWS                                                                │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
-    Mod+Ctrl+Down  { move-window-down; }
-    Mod+Ctrl+Up    { move-window-up; }
-    Mod+Ctrl+J     { move-window-down; }
-    Mod+Ctrl+K     { move-window-up; }
+    Mod+Ctrl+Down  	{ move-window-down; }
+    Mod+Ctrl+Up    	{ move-window-up; }
+    Mod+Ctrl+J     	{ move-window-down; }
+    Mod+Ctrl+K     	{ move-window-up; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ NAVIGATION - MONITORS                                                               │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
-    Mod+Shift+Left   { focus-monitor-left; }
-    Mod+Shift+Right  { focus-monitor-right; }
-    Mod+Shift+H      { focus-monitor-left; }
-    Mod+Shift+J      { focus-monitor-down; }
-    Mod+Shift+K      { focus-monitor-up; }
-    Mod+Shift+L      { focus-monitor-right; }
+    Mod+Shift+Left   	{ focus-monitor-left; }
+    Mod+Shift+Right  	{ focus-monitor-right; }
+    Mod+Shift+H      	{ focus-monitor-left; }
+    Mod+Shift+J      	{ focus-monitor-down; }
+    Mod+Shift+K      	{ focus-monitor-up; }
+    Mod+Shift+L      	{ focus-monitor-right; }
 
     Mod+Shift+Ctrl+Left   { move-column-to-monitor-left; }
     Mod+Shift+Ctrl+Down   { move-column-to-monitor-down; }
@@ -312,16 +312,16 @@ binds {
     Mod+Ctrl+WheelScrollUp   cooldown-ms=150 { move-column-to-workspace-up; }
 
     // Column scrolling
-    Mod+WheelScrollRight      { focus-column-right; }
-    Mod+WheelScrollLeft       { focus-column-left; }
-    Mod+Ctrl+WheelScrollRight { move-column-right; }
-    Mod+Ctrl+WheelScrollLeft  { move-column-left; }
+    Mod+WheelScrollRight      		{ focus-column-right; }
+    Mod+WheelScrollLeft       		{ focus-column-left; }
+    Mod+Ctrl+WheelScrollRight 		{ move-column-right; }
+    Mod+Ctrl+WheelScrollLeft  		{ move-column-left; }
 
     // Horizontal scrolling with Shift
-    Mod+Shift+WheelScrollDown      { focus-column-right; }
-    Mod+Shift+WheelScrollUp        { focus-column-left; }
-    Mod+Ctrl+Shift+WheelScrollDown { move-column-right; }
-    Mod+Ctrl+Shift+WheelScrollUp   { move-column-left; }
+    Mod+Shift+WheelScrollDown      	{ focus-column-right; }
+    Mod+Shift+WheelScrollUp        	{ focus-column-left; }
+    Mod+Ctrl+Shift+WheelScrollDown 	{ move-column-right; }
+    Mod+Ctrl+Shift+WheelScrollUp   	{ move-column-left; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ WINDOW MANAGEMENT                                                                   │

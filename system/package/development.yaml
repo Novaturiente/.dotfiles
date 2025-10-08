@@ -26,4 +26,5 @@
 - shfmt
 - shellcheck
 
+- python-pynvim
 - pandoc-cli

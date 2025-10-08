@@ -1,6 +1,8 @@
 # Custom XDG Base Directories
-export EDITOR="emacs --background-color=black"
-export VISUAL="emacs --background-color=black"
+# export EDITOR="emacs --background-color=black"
+# export VISUAL="emacs --background-color=black"
+export EDITOR="neovide"
+export VISUAL="neovide"
 
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
