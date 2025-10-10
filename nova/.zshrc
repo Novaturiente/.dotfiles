@@ -45,22 +45,6 @@ bindkey "^[[H" beginning-of-line    # Alternate Home
 bindkey "^[[F" end-of-line          # Alternate End
 bindkey "^l" clear-screen
 
-# Autosuggestions & Menu Selection
-bindkey              '^I' autosuggest-accept
-bindkey "$terminfo[kcbt]" menu-select
-bindkey -M menuselect              '^I'         menu-complete
-bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
-bindkey '^I^I' menu-select
-
-# -------------------------------------------------------------------
-# Completion Configuration
-# -------------------------------------------------------------------
-zstyle ':completion:*:default' list-colors \
-  'di=34:fi=31:ln=36:ex=32' \
-  'ma=48;5;17;38;5;255'
-zstyle ':completion:*' list-columns 2
-zstyle ':completion:*' list-packed yes
-
 # -------------------------------------------------------------------
 # Custom Widgets
 # -------------------------------------------------------------------
@@ -74,8 +58,17 @@ bracketed-paste-strip-edges() {
 zle -N bracketed-paste bracketed-paste-strip-edges
 
 # -------------------------------------------------------------------
+# Source Additional Configuration
+# -------------------------------------------------------------------
+source $XDG_CONFIG_HOME/zsh/aliases.zsh
+source $XDG_CONFIG_HOME/zsh/prompt.zsh
+source $XDG_CONFIG_HOME/zsh/functions.zsh
+
+# -------------------------------------------------------------------
+# -------------------------------------------------------------------
 # External Tools & Plugins
 # -------------------------------------------------------------------
+source $XDG_CONFIG_HOME/zsh/pluginload.zsh
 # Initialize Zoxide
 eval "$(zoxide init zsh)"
 
@@ -85,10 +78,17 @@ source <(fzf --zsh)
 # Initialize Atuin
 eval "$(atuin init zsh)"
 
+# Completion Configuration
 # -------------------------------------------------------------------
-# Source Additional Configuration
-# -------------------------------------------------------------------
-source $XDG_CONFIG_HOME/zsh/aliases.zsh
-source $XDG_CONFIG_HOME/zsh/prompt.zsh
-source $XDG_CONFIG_HOME/zsh/functions.zsh
-source $XDG_CONFIG_HOME/zsh/pluginload.zsh
+zstyle ':completion:*:default' list-colors \
+  'di=34:fi=31:ln=36:ex=32' \
+  'ma=48;5;17;38;5;255'
+zstyle ':completion:*' list-columns 2
+zstyle ':completion:*' list-packed yes
+
+# Autosuggestions & Menu Selection
+bindkey "$terminfo[kcbt]" menu-select
+bindkey -M menuselect              '^I'         menu-complete
+bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
+bindkey '^I' menu-select
+
