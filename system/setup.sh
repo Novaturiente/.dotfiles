@@ -10,15 +10,17 @@ sudo cp system/etc/ly/config.ini /etc/ly/config.ini
 
 sudo cp system/etc/modules-load/ntsync.conf /etc/modules-load.d/ntsync.conf
 
-sudo cp system/etc/modprobe.d/nvidia-power-management.conf /etc/modprobe.d/nvidia-power-management.conf
+sudo cp ./system/etc/systemd/sleep.conf /etc/systemd/sleep.conf
+
+sudo cp ./system/etc/modprobe.d/nvidia-sleep.conf /etc/modprobe.d/nvidia-sleep.conf
 
 mdkir ~/.config
 
-git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+# git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+#
+# ~/.config/emacs/bin/doom install
 
-~/.config/emacs/bin/doom install
-
-rm -rf ~/.config/doom
+# rm -rf ~/.config/doom
 
 stow -d ~/.dotfiles -t ~ nova
 
@@ -28,4 +30,10 @@ sudo systemctl enable ly
 
 systemctl --user enable batsignal.service
 
+sudo systemctl enable nvidia-resume.service
+
 chsh "$(whoami)" -s "$(which zsh)"
+
+sudo mkinitcpio -P
+
+sudo reboot
