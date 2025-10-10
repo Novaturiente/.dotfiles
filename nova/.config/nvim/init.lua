@@ -2,19 +2,26 @@
 -- NEOVIM SETTINGS
 -- ============================================================================
 -- NEOVIDE SETTINGS
-vim.o.guifont = "JetBrainsMono Nerd Font Mono:h12"
-vim.g.neovide_padding_top = 3
-vim.g.neovide_padding_bottom = 0
-vim.g.neovide_padding_right = 3
-vim.g.neovide_padding_left = 3
-vim.g.neovide_opacity = 0.9
-vim.g.neovide_normal_opacity = 0.9
-vim.g.neovide_hide_mouse_when_typing = false
-vim.g.neovide_cursor_short_animation_length = 0.04
-vim.g.neovide_cursor_trail_size = 0.5
+if vim.g.neovide then
+	vim.g.neovide_padding_top = 3
+	vim.g.neovide_padding_bottom = 0
+	vim.g.neovide_padding_right = 3
+	vim.g.neovide_padding_left = 3
+	vim.g.neovide_opacity = 0.9
+	vim.g.neovide_normal_opacity = 0.9
+	vim.g.neovide_hide_mouse_when_typing = true
+	vim.g.neovide_cursor_short_animation_length = 0.04
+	vim.g.neovide_cursor_trail_size = 0.5
+
+	vim.g.neovide_floating_blur_amount_x = 4.0
+	vim.g.neovide_floating_blur_amount_y = 4.0
+	vim.g.neovide_floating_shadow = true
+
+	vim.g.neovide_window_blurred = true
+end
 
 vim.loader.enable()
-
+vim.o.guifont = "JetBrainsMonoNL Nerd Font Mono:h13"
 -- Set <space> as the leader key
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
@@ -23,6 +30,7 @@ vim.g.have_nerd_font = true
 
 -- Make line numbers default
 vim.o.number = true
+vim.o.relativenumber = true
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = "a"
 -- Sync clipboard between OS and Neovim.
@@ -72,3 +80,4 @@ require("plugins")
 require("keybindinds")
 require("ui")
 require("coding")
+require("orgsetup")
