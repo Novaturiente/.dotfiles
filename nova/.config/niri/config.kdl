@@ -120,12 +120,18 @@ window-rule {
 }
 */
 
+environment {
+    // Qt applications
+    QT_QPA_PLATFORM "wayland"
+    QT_QPA_PLATFORMTHEME "xdgdesktopportal"
+}
+
+
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // STARTUP APPLICATIONS
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // System services
-spawn-at-startup "systemctl --user start xdg-desktop-portal"
-spawn-at-startup "systemctl --user start xdg-desktop-portal-gtk"
+spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 
 // Status bar and notifications
 spawn-at-startup "waybar"
@@ -170,7 +176,9 @@ binds {
     Mod+Ctrl+W   hotkey-overlay-title="Qutebrowser work"     	{ spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"; }
     Mod+M        hotkey-overlay-title="Emacs client"         	{ spawn-sh "emacsclient -c"; }
     Mod+N        hotkey-overlay-title="Emacs client"         	{ spawn-sh "neovide"; }
+    Mod+Shift+N        hotkey-overlay-title="Emacs client"         	{ spawn-sh "kitty -e nvim"; }
     Mod+E        hotkey-overlay-title="File manager"         	{ spawn-sh "kitty -e ranger"; }
+    Mod+O	 hotkey-overlay-title="Ollama" 			{ spawn-sh "~/.dotfiles/scripts/llm.sh"; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ UTILITIES & MENUS                                                                   │
@@ -195,7 +203,7 @@ binds {
     // │ SYSTEM CONTROLS                                                                     │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+I        hotkey-overlay-title="Toggle idle"	{ spawn-sh "~/.dotfiles/scripts/idle.sh"; }
-    Mod+L        hotkey-overlay-title="Lock"       	{ spawn-sh "swaylock --screenshots --grace 5 --fade-in 0.3 --effect-blur 10x5 --clock"; }
+    Mod+Shift+L  hotkey-overlay-title="Lock"       	{ spawn-sh "swaylock --screenshots --grace 5 --fade-in 0.3 --effect-blur 10x5 --clock"; }
     Mod+Shift+E  hotkey-overlay-title="Power menu" 	{ spawn-sh "~/.dotfiles/scripts/rofi/power.sh"; }
 
     Mod+T        { toggle-column-tabbed-display; }
@@ -205,7 +213,7 @@ binds {
 
     Ctrl+Alt+Delete        { quit; }
     Mod+Ctrl+Shift+P       { power-off-monitors; }
-    XF86PowerOff           allow-when-locked=true { spawn "systemctl suspend"; }
+    XF86PowerOff           allow-when-locked=true { spawn "systemctl suspend-then-hibernate"; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ MEDIA KEYS                                                                          │
@@ -227,6 +235,9 @@ binds {
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+Left   		{ focus-column-left; }
     Mod+Right  		{ focus-column-right; }
+    Mod+L 		{ focus-column-right; }
+    Mod+H 		{ focus-column-left; }
+
 
     Mod+Ctrl+Left   	{ move-column-left; }
     Mod+Ctrl+Right  	{ move-column-right; }
@@ -246,10 +257,6 @@ binds {
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+Shift+Left   	{ focus-monitor-left; }
     Mod+Shift+Right  	{ focus-monitor-right; }
-    Mod+Shift+H      	{ focus-monitor-left; }
-    Mod+Shift+J      	{ focus-monitor-down; }
-    Mod+Shift+K      	{ focus-monitor-up; }
-    Mod+Shift+L      	{ focus-monitor-right; }
 
     Mod+Shift+Ctrl+Left   { move-column-to-monitor-left; }
     Mod+Shift+Ctrl+Down   { move-column-to-monitor-down; }
@@ -264,7 +271,9 @@ binds {
     // │ NAVIGATION - WORKSPACES                                                             │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+Down           { focus-workspace-down; }
+    Mod+J              { focus-workspace-down; }
     Mod+Up             { focus-workspace-up; }
+    Mod+K              { focus-workspace-up; }
     Mod+Page_Down      { focus-workspace-down; }
     Mod+Page_Up        { focus-workspace-up; }
     Mod+Tab            { focus-workspace-previous; }
@@ -360,7 +369,7 @@ binds {
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 switch-events {
-    lid-close { spawn "notify-send" "The laptop lid is closed! && systemctl suspend"; }
+    lid-close { spawn "notify-send" "The laptop lid is closed! && systemctl suspend-then-hibernate"; }
 }
 
 cursor {

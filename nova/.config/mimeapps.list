@@ -1,7 +1,7 @@
 [Default Applications]
-x-scheme-handler/http=xfce4-web-browser.desktop
-x-scheme-handler/https=xfce4-web-browser.desktop
-text/html=org.qutebrowser.qutebrowser.desktop
+x-scheme-handler/http=zen.desktop
+x-scheme-handler/https=zen.desktop
+text/html=zen.desktop
 application/pdf=emacs.desktop
 image/png=qimgv.desktop
 image/jpeg=qimgv.desktop
@@ -26,6 +26,8 @@ application/x-ms-shortcut=LuxWine.desktop
 text/x-ms-regedit=LuxWine.desktop
 text/x-org=emacs.desktop
 inode/directory=ranger.desktop
+x-scheme-handler/about=zen.desktop
+x-scheme-handler/unknown=zen.desktop
 
 [Added Associations]
 image/png=qimgv.desktop;feh.desktop;

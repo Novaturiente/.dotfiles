@@ -8,6 +8,7 @@ local vim = vim
 -- ============================================================================
 -- BASIC KEYMAPS
 -- ============================================================================
+vim.api.nvim_set_keymap("i", "jk", "<ESC>", { noremap = false })
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { noremap = true, silent = true, desc = "Clear search highlights" })
 -- Diagnostic keymaps
@@ -287,10 +288,11 @@ vim.keymap.set("n", "<leader>.", open_file_browser, {
 -- ============================================================================
 -- Define available colorschemes
 local colorschemes = {
-	"tokyonight-night",
 	"rose-pine-moon",
+	"tokyonight-night",
+	"vague",
 }
-local current_scheme_index = 2
+local current_scheme_index = 1
 vim.cmd.colorscheme(colorschemes[current_scheme_index])
 -- Function to cycle through colorschemes
 local function select_colorscheme()

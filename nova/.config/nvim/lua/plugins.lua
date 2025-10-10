@@ -33,21 +33,23 @@ require("lazy").setup({
 	{
 		"folke/tokyonight.nvim",
 		priority = 1000, -- Load before other plugins
-		name = "tokyonight",
 	},
 	{
 		"rose-pine/neovim",
 		priority = 1000, -- Load before other plugins
-		name = "rose-pine",
+	},
+	{
+		"vague-theme/vague.nvim",
+		lazy = false, -- make sure we load this during startup if it is your main colorscheme
+		priority = 1000, -- make sure to load this before all the other plugins
 	},
 
 	-- ========================================================================
-	-- EVELOPMENT UTILITIES
+	-- DEVELOPMENT UTILITIES
 	-- ========================================================================
 
 	-- Hot reload: Automatically reload Neovim config on file changes
 	{ "Zeioth/hot-reload.nvim", dependencies = "nvim-lua/plenary.nvim", event = "BufEnter", opts = {} },
-
 	-- Automatically detect and set indentation based on file content
 	"NMAC427/guess-indent.nvim",
 
@@ -68,7 +70,6 @@ require("lazy").setup({
 			},
 		},
 	},
-
 	{
 		"NeogitOrg/neogit",
 		dependencies = {
@@ -275,7 +276,6 @@ require("lazy").setup({
 		ft = "lua",
 		opts = { library = { { path = "${3rd}/luv/library", words = { "vim%.uv" } } } },
 	},
-
 	-- LSP Configuration: Provides IDE-like features
 	{
 		"neovim/nvim-lspconfig",
@@ -291,7 +291,6 @@ require("lazy").setup({
 				group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
 				callback = function(event) end,
 			})
-
 			-- Configure diagnostic display
 			vim.diagnostic.config({
 				severity_sort = true,
@@ -313,14 +312,11 @@ require("lazy").setup({
 					end,
 				},
 			})
-
 			-- Get LSP capabilities from completion plugin
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
-
 			-- Define custom LSP configuration for KDL
 			local lspconfig = require("lspconfig")
 			local lspconfig_configs = require("lspconfig.configs")
-
 			-- Register kdl-lsp if not already registered
 			if not lspconfig_configs.kdl_lsp then
 				lspconfig_configs.kdl_lsp = {
@@ -332,7 +328,6 @@ require("lazy").setup({
 					},
 				}
 			end
-
 			-- Define LSP servers and their settings
 			local servers = {
 				lua_ls = {
@@ -343,18 +338,15 @@ require("lazy").setup({
 				gopls = {},
 				bashls = {},
 			}
-
 			-- Add foldingRange capability for nvim-ufo
 			capabilities.textDocument.foldingRange = {
 				dynamicRegistration = false,
 				lineFoldingOnly = true,
 			}
-
 			-- Install tools automatically
 			local ensure_installed = vim.tbl_keys(servers or {})
 			vim.list_extend(ensure_installed, { "stylua" })
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
-
 			-- Setup LSP servers
 			require("mason-lspconfig").setup({
 				ensure_installed = {},
@@ -392,7 +384,6 @@ require("lazy").setup({
 				"query",
 				"vim",
 				"vimdoc",
-
 				"python",
 				"rust",
 				"go",
@@ -401,6 +392,7 @@ require("lazy").setup({
 				"kdl",
 			},
 			auto_install = true, -- Automatically install missing parsers
+			ignore_install = { "org" },
 		},
 	},
 
@@ -431,6 +423,7 @@ require("lazy").setup({
 	-- ========================================================================
 	-- AUTOCOMPLETION
 	-- ========================================================================
+
 	-- Blink.cmp: Fast and feature-rich completion engine
 	{
 		"saghen/blink.cmp",
@@ -451,14 +444,12 @@ require("lazy").setup({
 			completion = {
 				list = { selection = { preselect = false } },
 				menu = {
-					auto_show = function(ctx)
-						return vim.fn.getcmdtype() == ":"
-					end,
+					auto_show = true,
 				},
 				ghost_text = { enabled = true },
 			},
 			cmdline = {
-				keymap = { preset = "inherit" },
+				keymap = { preset = "super-tab" },
 				completion = { menu = { auto_show = true } },
 			},
 			sources = {
@@ -467,7 +458,6 @@ require("lazy").setup({
 					lazydev = { module = "lazydev.integrations.blink", score_offset = 100 },
 				},
 			},
-
 			fuzzy = { implementation = "prefer_rust" },
 			signature = { enabled = true },
 		},
@@ -506,33 +496,44 @@ require("lazy").setup({
 	},
 
 	-- ============================================================================
-	-- CODE FOLDING
+	-- ORG MODE CONFIGURATION
 	-- ============================================================================
-	--
-	-- {
-	-- 	"kevinhwang91/nvim-ufo",
-	-- 	dependencies = "kevinhwang91/promise-async",
-	-- 	event = "BufReadPost",
-	-- 	config = function()
-	-- 		-- Set fold options
-	-- 		vim.o.foldcolumn = "1"
-	-- 		vim.o.foldlevel = 99
-	-- 		vim.o.foldlevelstart = 99
-	-- 		vim.o.foldenable = true
-	--
-	-- 		-- Setup ufo with treesitter provider
-	-- 		require("ufo").setup({
-	-- 			provider_selector = function(bufnr, filetype, buftype)
-	-- 				return { "treesitter", "indent" }
-	-- 			end,
-	-- 		})
-	--
-	-- 		-- Keymaps for folding
-	-- 		vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "Open all folds" })
-	-- 		vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "Close all folds" })
-	-- 		vim.keymap.set("n", "zK", require("ufo").peekFoldedLinesUnderCursor, { desc = "Peek folded lines" })
-	-- 	end,
-	-- },
+
+	{
+		"nvim-orgmode/orgmode",
+		event = "VeryLazy",
+		ft = { "org" },
+		config = function()
+			require("orgmode").setup({
+				org_agenda_files = "~/Org/**/*",
+				org_default_notes_file = "~/Org/refile.org",
+			})
+		end,
+	},
+	{
+		"nvim-orgmode/org-bullets.nvim",
+		dependencies = { "nvim-orgmode/orgmode" },
+		ft = { "org" },
+		config = function()
+			require("org-bullets").setup()
+		end,
+	},
+	{
+		"nvim-orgmode/telescope-orgmode.nvim",
+		event = "VeryLazy",
+		dependencies = {
+			"nvim-orgmode/orgmode",
+			"nvim-telescope/telescope.nvim",
+		},
+		config = function()
+			require("telescope").load_extension("orgmode")
+		end,
+	},
+	{
+		"lukas-reineke/headlines.nvim",
+		dependencies = "nvim-treesitter/nvim-treesitter",
+		config = true, -- or `opts = {}`
+	},
 
 	-- ========================================================================
 	-- MINI PLUGINS
@@ -544,12 +545,9 @@ require("lazy").setup({
 		config = function()
 			-- Better text objects (e.g., va), yinq, ci')
 			require("mini.ai").setup({ n_lines = 500 })
-
 			-- Surround operations (e.g., saiw), sd', sr)')
 			require("mini.surround").setup()
-
 			require("mini.move").setup()
-
 			-- Minimal statusline
 			local statusline = require("mini.statusline")
 			statusline.setup({ use_icons = vim.g.have_nerd_font })
@@ -558,6 +556,7 @@ require("lazy").setup({
 			end
 		end,
 	},
+
 	-- ========================================================================
 	-- FILE MANAGEMENT
 	-- ========================================================================
@@ -585,7 +584,6 @@ require("lazy").setup({
 				view_options = {
 					-- Hide hidden files by default
 					show_hidden = false,
-
 					-- This function defines what is considered a "hidden" file
 					-- Return false for files you want to show, true for files to hide
 					is_hidden_file = function(name, bufnr)
@@ -602,7 +600,6 @@ require("lazy").setup({
 						end
 						return vim.startswith(name, ".")
 					end,
-
 					is_always_hidden = function(name, bufnr)
 						return vim.tbl_contains({
 							"go",
@@ -616,6 +613,7 @@ require("lazy").setup({
 	-- ============================================================================
 	-- VIRTUAL ENVIRONMENT SELECTOR (PYTHON)
 	-- ============================================================================
+
 	{
 		"linux-cultist/venv-selector.nvim",
 		dependencies = {
@@ -624,7 +622,7 @@ require("lazy").setup({
 		},
 		ft = "python", -- Load when opening Python files
 		keys = {
-			{ ",v", "<cmd>VenvSelect<cr>" }, -- Open picker on keymap
+			{ "ev", "<cmd>VenvSelect<cr>" }, -- Open picker on keymap
 		},
 		opts = { -- this can be an empty lua table - just showing below for clarity.
 			search = { cwd = false },
@@ -633,8 +631,9 @@ require("lazy").setup({
 	},
 
 	-- ============================================================================
-	-- VIRTUAL ENVIRONMENT SELECTOR (PYTHON)
+	-- DASHBOARD
 	-- ============================================================================
+
 	{
 		"goolord/alpha-nvim",
 		-- dependencies = { 'echasnovski/mini.icons' },
@@ -646,6 +645,7 @@ require("lazy").setup({
 		end,
 	},
 }, {
+
 	-- ========================================================================
 	-- LAZY.NVIM UI CONFIGURATION
 	-- ========================================================================
