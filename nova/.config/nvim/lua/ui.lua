@@ -12,7 +12,6 @@ vim.api.nvim_create_autocmd("BufWinLeave", {
 	end,
 	desc = "Save fold state when leaving buffer",
 })
-
 vim.api.nvim_create_autocmd("BufWinEnter", {
 	pattern = "*",
 	callback = function()

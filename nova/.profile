@@ -8,3 +8,6 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_STATE_HOME="$HOME/.local/state"
 
 export QT_SELECT=qt6
+export QT_QPA_PLATFORMTHEME=gtk3
+
+[ -f ~/.env ] && set -a && source ~/.env && set +a

@@ -1,6 +1,7 @@
 -- ============================================================================
 -- PYTHON SPECIFIC CONFIGURATION
 -- ============================================================================
+
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "python",
 	callback = function()
@@ -71,6 +72,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- ============================================================================
 -- BASH CONFIGURATION
 -- ============================================================================
+
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = { "sh", "bash" },
 	callback = function()
@@ -122,6 +124,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- ============================================================================
 -- RUST CONFIGURATION
 -- ============================================================================
+
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "rust",
 	callback = function()
@@ -201,6 +204,7 @@ vim.api.nvim_create_autocmd("FileType", {
 -- ============================================================================
 -- GO CONFIGURATION
 -- ============================================================================
+
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "go",
 	callback = function()
@@ -268,5 +272,46 @@ vim.api.nvim_create_autocmd("FileType", {
 				end, { noremap = true, silent = true, desc = "Build file" })
 			end,
 		})
+	end,
+})
+-- ============================================================================
+-- HEADER CONFIGURATION
+-- ============================================================================
+vim.api.nvim_create_autocmd("BufNewFile", {
+	pattern = { "*.py", "*.sh", "*.rs", "*.go", "*.js" },
+	callback = function()
+		local ft = vim.bo.filetype
+		local filename = vim.fn.expand("%:t")
+		local header = {}
+
+		if ft == "python" then
+			header = {
+				"# File: " .. filename,
+				"# Author: " .. (os.getenv("USER") or "unknown"),
+				"# Created: " .. os.date("%Y-%m-%d %H:%M:%S"),
+				"",
+			}
+		elseif ft == "sh" then
+			header = {
+				"#!/usr/bin/env bash",
+				"#",
+				"# File: " .. filename,
+				"# Author: " .. (os.getenv("USER") or "unknown"),
+				"# Created: " .. os.date("%Y-%m-%d %H:%M:%S"),
+				"",
+			}
+		elseif ft == "rust" then
+			header = {
+				"// File: " .. filename,
+				"// Author: " .. (os.getenv("USER") or "unknown"),
+				"// Created: " .. os.date("%Y-%m-%d %H:%M:%S"),
+				"",
+			}
+		end
+
+		-- Insert lines only if file is empty
+		if vim.fn.line("$") == 1 and vim.fn.getline(1) == "" then
+			vim.api.nvim_buf_set_lines(0, 0, -1, false, header)
+		end
 	end,
 })

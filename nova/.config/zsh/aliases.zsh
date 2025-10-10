@@ -1,6 +1,6 @@
 # Editor and system update aliases
 # alias vi="nvim"
-alias vi="emacsclient -c"
+alias vi="nvim"
 alias doom="~/.config/emacs/bin/doom"
 alias inova="sudo novarch install"
 alias unova="sudo novarch update"

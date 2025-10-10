@@ -1,11 +1,9 @@
 # - hyprland
-# - greetd
-# - greetd-tuigreet
 - wayland-protocols
 - xorg-xwayland
 - xwayland-satellite
 
-- #Hyprland Extras
+- #Window manager Extras
 # - ags-hyprpanel-git
 # - hypridle
 # - hyprshade
@@ -21,6 +19,8 @@
 - udiskie
 - kdeconnect
 - xdg-desktop-portal
+- xdg-desktop-portal-gnome
+- mate-polkit
 - network-manager-applet
 
 - grim
@@ -44,7 +44,6 @@
 - materia-kde
 - materia-gtk-theme
 - nwg-look
-- kvantum
 
 - niri
 - swayidle

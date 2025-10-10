@@ -42,3 +42,28 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 		vim.diagnostic.enable(true, { bufnr = args.buf })
 	end,
 })
+
+-- ============================================================================
+-- AUTO-CREATE DIRECTORIES GLOBALLY
+-- ============================================================================
+
+-- Method 1: Autocmd (recommended - works everywhere)
+vim.api.nvim_create_autocmd({ "BufWritePre", "FileWritePre" }, {
+	group = vim.api.nvim_create_augroup("auto_create_dir", { clear = true }),
+	callback = function(event)
+		local file = vim.fn.expand("<afile>")
+
+		-- Skip special buffers and URLs (oil://, ftp://, etc.)
+		if vim.bo[event.buf].buftype ~= "" or file:match("^%w+://") then
+			return
+		end
+
+		local dir = vim.fn.fnamemodify(file, ":p:h")
+
+		-- Create directory if it doesn't exist (with all parents)
+		if vim.fn.isdirectory(dir) == 0 then
+			vim.fn.mkdir(dir, "p")
+		end
+	end,
+	desc = "Auto-create parent directories when saving",
+})
