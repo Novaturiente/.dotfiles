@@ -1,30 +1,43 @@
-# ---- ZSH Configuration ----
-HISTFILE=$XDG_CONFIG_HOME/zsh/.histfile
-HISTSIZE=10000
-SAVEHIST=10000
+# ===================================================================
+# ZSH CONFIGURATION
+# ===================================================================
 
-# ---- Load Environment Variables ----
+# -------------------------------------------------------------------
+# Environment Variables & Path
+# -------------------------------------------------------------------
 source $XDG_CONFIG_HOME/zsh/variables.zsh
+
 if [ -f ~/.env.zsh ]; then
   source ~/.env.zsh
 fi
+
+export PATH="$HOME/.local/bin:$PATH"
+
+. "$HOME/.local/share/../bin/env"
+
+# -------------------------------------------------------------------
+# Shell Options
+# -------------------------------------------------------------------
+setopt extendedglob nonomatch
+setopt notify
+setopt autocd
+setopt CORRECT
+setopt no_case_glob no_case_match
+setopt auto_pushd pushd_ignore_dups
+
+# -------------------------------------------------------------------
+# Terminal Setup
+# -------------------------------------------------------------------
+autoload -U colors && colors
 
 # Change cursor to vertical bar when inside tmux
 if [ -n "$TMUX" ]; then
   echo -ne "\e[3 q"
 fi
 
-setopt extendedglob nonomatch
-setopt notify
-setopt autocd
-setopt CORRECT
-setopt append_history inc_append_history share_history
-setopt hist_ignore_dups hist_ignore_all_dups hist_reduce_blanks
-setopt no_case_glob no_case_match
-setopt auto_menu menu_complete
-setopt auto_pushd pushd_ignore_dups
-
-# ---- Key Bindings for Special Keys ----
+# -------------------------------------------------------------------
+# Key Bindings
+# -------------------------------------------------------------------
 bindkey "^[[3~" delete-char         # Delete
 bindkey "^[[1~" beginning-of-line   # Home
 bindkey "^[[4~" end-of-line         # End
@@ -32,43 +45,50 @@ bindkey "^[[H" beginning-of-line    # Alternate Home
 bindkey "^[[F" end-of-line          # Alternate End
 bindkey "^l" clear-screen
 
-#cmp opts
-zstyle ':completion:*' menu select
-zstyle ':completion:*' special-dirs true
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS} ma=0\;33
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=*'
-zstyle ':completion:*' verbose yes
-zstyle ':completion:*:descriptions' format '%B%d%b'
-zstyle ':completion:*' group-name ''
-zstyle ':completion::complete::' group-order files local-directories
-zstyle ':completion:*' file-sort modification
+# Autosuggestions & Menu Selection
+bindkey              '^I' autosuggest-accept
+bindkey "$terminfo[kcbt]" menu-select
+bindkey -M menuselect              '^I'         menu-complete
+bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
+bindkey '^I^I' menu-select
 
-export PATH="$HOME/.local/bin:$PATH"
+# -------------------------------------------------------------------
+# Completion Configuration
+# -------------------------------------------------------------------
+zstyle ':completion:*:default' list-colors \
+  'di=34:fi=31:ln=36:ex=32' \
+  'ma=48;5;17;38;5;255'
+zstyle ':completion:*' list-columns 2
+zstyle ':completion:*' list-packed yes
 
-# ---- Initialize Zoxide ----
+# -------------------------------------------------------------------
+# Custom Widgets
+# -------------------------------------------------------------------
+# Strip leading/trailing newlines from pasted content
+bracketed-paste-strip-edges() {
+  local content
+  zle .$WIDGET
+  LBUFFER="${LBUFFER##$'\n'##}"
+  BUFFER="${BUFFER%%$'\n'##}"
+}
+zle -N bracketed-paste bracketed-paste-strip-edges
+
+# -------------------------------------------------------------------
+# External Tools & Plugins
+# -------------------------------------------------------------------
+# Initialize Zoxide
 eval "$(zoxide init zsh)"
-# ---- FZF Configuration ----
+
+# FZF Configuration
 source <(fzf --zsh)
-# ---- Aliases ----
+
+# Initialize Atuin
+eval "$(atuin init zsh)"
+
+# -------------------------------------------------------------------
+# Source Additional Configuration
+# -------------------------------------------------------------------
 source $XDG_CONFIG_HOME/zsh/aliases.zsh
-# ---- Prompt Sourcing ----
 source $XDG_CONFIG_HOME/zsh/prompt.zsh
-# ---- Functions ----
 source $XDG_CONFIG_HOME/zsh/functions.zsh
-# ---- Plugin and Theme Sourcing ----
 source $XDG_CONFIG_HOME/zsh/pluginload.zsh
-
-# ---- Compinit ----
-autoload -Uz compinit
-zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
-
-if [[ "$(date +'%j')" != "$(stat -c '%y' "$zcompdump" 2>/dev/null | cut -d' ' -f1)" ]]; then
-  compinit
-  # Optional: compile dump for faster load next time
-  zcompile "$zcompdump"
-else
-  compinit -C
-fi
-autoload -U colors && colors
-
-. "$HOME/.local/share/../bin/env"
