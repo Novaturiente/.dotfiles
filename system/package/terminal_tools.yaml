@@ -2,12 +2,15 @@
 - nvtop
 - zsh
 - fish
-- kitty
 - tmux
 - atuin
 - neovim
 - neovide
-- ranger
+
+- yazi
+
+- ghostty
+- ndrop-git
 
 - fzf
 - eza

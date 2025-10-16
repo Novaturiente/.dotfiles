@@ -5,8 +5,8 @@ services:
     environment:
       VERSION: "15"
       DISK_SIZE: "100G"
-      RAM_SIZE: "12G"
-      CPU_CORES: "12"
+      RAM_SIZE: "10G"
+      CPU_CORES: "10"
     devices:
       - /dev/kvm
       - /dev/net/tun

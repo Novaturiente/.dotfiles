@@ -19,12 +19,13 @@
 - pyright
 - tree-sitter
 - python-pynvim
-- python-black
+- python-ruff
 - python-lsp-server
 - python-pyflakes
-- python-isort
 - shfmt
 - shellcheck
+
+- prettier
 
 - python-pynvim
 - pandoc-cli

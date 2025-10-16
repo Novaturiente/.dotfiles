@@ -1,0 +1,152 @@
+
+@import url("file:///home/nova/.cache/wal/colors-waybar.css");
+
+* {
+  min-height: 0;
+  min-width: 0;
+  font-family: "JetBrainsMono Nerd Font","FiraCode Nerd Font";
+  font-size: 13px;
+  font-weight: 500;
+}
+
+window#waybar {
+  transition-property: background-color;
+  transition-duration: 0.5s;
+  background-color: rgba(0, 0, 0, 0.0);
+}
+
+#workspaces button {
+  border-radius: 6px;
+  color: @foreground;
+}
+
+#workspaces button:hover {
+  color: @background;
+  background-color: @foreground;
+}
+
+#workspaces button.active {
+  background-color: @color0;
+  color: @color4;
+  font-weight: bold;
+}
+
+#workspaces button.urgent {
+  color: @color1;
+}
+
+#backlight,
+#battery,
+#clock,
+#network,
+#pulseaudio,
+#custom-logo,
+#custom-power,
+#custom-spotify,
+#custom-notification,
+#cpu,
+#tray,
+#memory,
+#window,
+#workspaces,
+#mpris {
+  padding: 0.1rem 0.6rem;
+  margin: 0.1rem 0.08rem;
+  border-radius: 6px;
+  background-color: @color0;
+}
+
+#mpris.playing {
+  color: @color2;
+}
+
+#mpris.paused {
+  color: @color8;
+}
+
+#custom-sep {
+  padding: 0px;
+  color: @color8;
+}
+
+window#waybar.empty #window {
+  background-color: transparent;
+}
+
+#cpu {
+  color: @color6;
+}
+
+#memory {
+  color: @color5;
+}
+
+#clock {
+  color: @color4;
+}
+
+#clock.simpleclock {
+  color: @color4;
+}
+
+#window {
+  color: @foreground;
+}
+
+#pulseaudio {
+  color: @color12;
+}
+
+#pulseaudio.muted {
+  color: @color8;
+}
+
+#custom-logo {
+  color: @color4;
+}
+
+#custom-power {
+  color: @color1;
+}
+
+tooltip {
+  border: 2px solid @color4;
+}
+
+#battery {
+    color: @foreground;
+    background-color: @color0;
+}
+
+#battery.good {
+    color: @color2;
+}
+
+#battery.warning {
+    color: @color3;
+}
+
+#battery.critical {
+    color: @color1;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+#battery.charging {
+    color: @color6;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+#network {
+	color: @color6;
+}
