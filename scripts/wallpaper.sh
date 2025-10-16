@@ -27,12 +27,12 @@ while true; do
 
 	wal -n -i "$random_image"
 
-	killall waybar
-	waybar &
-
-	if pgrep -x qutebrowser >/dev/null; then
-		qutebrowser :config-source
-	fi
-
+	# killall waybar
+	# waybar &
+	#
+	# if pgrep -x qutebrowser >/dev/null; then
+	# 	qutebrowser :config-source
+	# fi
+	#
 	sleep 30m
 done

@@ -3,7 +3,7 @@
 - paru
 
 # Virtualization
-- gnome-boxes
+# - gnome-boxes
 - podman
 - podman-compose
 - openbsd-netcat
