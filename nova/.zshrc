@@ -60,8 +60,8 @@ zle -N bracketed-paste bracketed-paste-strip-edges
 # -------------------------------------------------------------------
 # Source Additional Configuration
 # -------------------------------------------------------------------
-source $XDG_CONFIG_HOME/zsh/aliases.zsh
 source $XDG_CONFIG_HOME/zsh/prompt.zsh
+source $XDG_CONFIG_HOME/zsh/aliases.zsh
 source $XDG_CONFIG_HOME/zsh/functions.zsh
 
 # -------------------------------------------------------------------
@@ -70,7 +70,7 @@ source $XDG_CONFIG_HOME/zsh/functions.zsh
 # -------------------------------------------------------------------
 source $XDG_CONFIG_HOME/zsh/pluginload.zsh
 # Initialize Zoxide
-eval "$(zoxide init zsh)"
+eval "$(zoxide init zsh --cmd cd)"
 
 # FZF Configuration
 source <(fzf --zsh)
