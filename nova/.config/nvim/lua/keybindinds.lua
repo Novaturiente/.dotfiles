@@ -74,10 +74,24 @@ end, { noremap = true, silent = true, desc = "Open horizontal terminal" })
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true, desc = "Exit terminal mode" })
 
 -- ============================================================================
--- FILE EXPLORER KEYBINDING
+-- FILE EXPLORER (OIL.NVIM) - TOGGLE LEFT SIDEBAR
 -- ============================================================================
--- Open command line with expanded directory path
-vim.keymap.set("n", "<leader>e", "<CMD>Oil<CR>", { noremap = true, silent = false, desc = "File explorer" })
+-- Track Oil window state
+local oil_win = nil
+
+vim.keymap.set("n", "<leader>e", function()
+	if oil_win and vim.api.nvim_win_is_valid(oil_win) then
+		-- Close the Oil window if it's open
+		vim.api.nvim_win_close(oil_win, true)
+		oil_win = nil
+	else
+		-- Open Oil in a new vertical split on the far left
+		vim.cmd("topleft vsplit")
+		oil_win = vim.api.nvim_get_current_win()
+		vim.cmd("Oil")
+		vim.cmd("vertical resize 30")
+	end
+end, { noremap = true, silent = true, desc = "Toggle file explorer" })
 
 -- ============================================================================
 -- TELESCOPE FUZZY FINDER
@@ -191,18 +205,38 @@ end, { desc = "Format buffer" })
 -- ============================================================================
 -- NEOGIT CONFIGURATION
 -- ============================================================================
+
 local neogit = require("neogit")
+
 -- Helper to get project root of the current buffer
 local function get_project_root()
-	-- You can use builtin LSP or 'plenary' or fallback to git root
-	local cwd = vim.fn.expand("%:p:h") -- directory of current file
-	local root = vim.fn.systemlist("git -C " .. cwd .. " rev-parse --show-toplevel")[1]
+	local cwd
+
+	-- Check if current buffer is an oil.nvim buffer
+	local bufname = vim.api.nvim_buf_get_name(0)
+	if bufname:match("^oil://") then
+		-- Get directory from oil.nvim
+		local ok, oil = pcall(require, "oil")
+		if ok then
+			cwd = oil.get_current_dir()
+		else
+			vim.notify("Oil.nvim not available", vim.log.levels.ERROR)
+			return nil
+		end
+	else
+		-- Regular file buffer - get directory of current file
+		cwd = vim.fn.expand("%:p:h")
+	end
+
+	-- Find git root from the current directory
+	local root = vim.fn.systemlist("git -C " .. vim.fn.shellescape(cwd) .. " rev-parse --show-toplevel")[1]
 	if vim.v.shell_error ~= 0 then
 		vim.notify("Not a git repository", vim.log.levels.ERROR)
 		return nil
 	end
 	return root
 end
+
 -- Keymap to open Neogit in the current buffer's project
 vim.keymap.set("n", "<leader>gg", function()
 	local root = get_project_root()
@@ -288,6 +322,7 @@ vim.keymap.set("n", "<leader>.", open_file_browser, {
 -- ============================================================================
 -- Define available colorschemes
 local colorschemes = {
+	"yorumi",
 	"rose-pine-moon",
 	"tokyonight-night",
 	"vague",
