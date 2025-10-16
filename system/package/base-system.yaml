@@ -1,28 +1,38 @@
+# System Core
 - cpio
-# - linux-zen
-# - linux-zen-headers
 - linux-firmware
 - pacman-contrib
 - xdg-user-dirs
-- networkmanager
 - intel-ucode
+
+# Network
+- networkmanager
 - wpa_supplicant
 - openssh
+- dnsmasq
+
+# File Sync
 - rsync
+
+# Development
 - base-devel
 - git
+- cmake
+
+# USB Support
 - libusb-compat
 - sof-firmware
 - usb_modeswitch
-- dnsmasq
+
+# Filesystem Tools
 - btrfs-progs
 - f2fs-tools
 - exfatprogs
-# - iptables
-- iptables-nft
-- cmake
 
-# - nvidia-open-dkms
+# Firewall
+- iptables-nft
+
+# NVIDIA/Graphics
 - nvidia-utils
 - lib32-nvidia-utils
 - nvidia-container-toolkit
@@ -30,16 +40,22 @@
 - lib32-libglvnd
 - vulkan-icd-loader
 
+# Bluetooth
 - blueman
 - bluez-utils
+
+# Audio
 - pipewire
 - pipewire-pulse
 - wireplumber
+- libpulse
 
+# Compression
 - 7zip
 - zip
 - unrar
 - unzip
 
+# Secure Boot
 - sbctl
 - systemd-ukify
