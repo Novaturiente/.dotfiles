@@ -16,6 +16,7 @@ config.load_autoconfig(False)
 # ============================================================================
 
 config.source("themes/city-lights-theme.py")
+# config.source("themes/pywal-theme.py")
 
 # ============================================================================
 # Page Appearance & Dark Mode
@@ -113,7 +114,6 @@ c.content.headers.custom = {
 c.content.cookies.accept = "no-3rdparty"
 
 # Tracking and fingerprinting protection
-c.content.cache.appcache = False
 c.content.hyperlink_auditing = False
 c.content.dns_prefetch = True
 
@@ -184,9 +184,7 @@ c.bindings.key_mappings["<Ctrl-x>"] = "<Escape>"
 
 # Insert mode - Escape behavior
 config.bind(
-    "<Escape>",
-    "mode-leave ;; jseval -q document.activeElement.blur()",
-    mode="insert"
+    "<Escape>", "mode-leave ;; jseval -q document.activeElement.blur()", mode="insert"
 )
 
 # Hint mode bindings
@@ -207,5 +205,5 @@ config.bind(",m", "hint links spawn mpv {hint-url}")
 config.bind(",v", "spawn --userscript vibrance.sh")
 config.bind(
     ",b",
-    "spawn ~/.dotfiles/scripts/rofi/bookmarks.sh {url} ;; message-info 'Bookmark added'"
+    "spawn ~/.dotfiles/scripts/rofi/bookmarks.sh {url} ;; message-info 'Bookmark added'",
 )

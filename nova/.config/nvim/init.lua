@@ -18,6 +18,8 @@ if vim.g.neovide then
 	vim.g.neovide_floating_shadow = true
 
 	vim.g.neovide_window_blurred = true
+
+	vim.env.PATH = vim.env.HOME .. "/.cargo/bin:" .. vim.env.PATH
 end
 
 vim.loader.enable()
@@ -60,6 +62,9 @@ vim.o.splitright = true
 vim.o.splitbelow = true
 
 -- Sets how neovim will display certain whitespace characters in the editor.
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
 vim.o.list = true
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 

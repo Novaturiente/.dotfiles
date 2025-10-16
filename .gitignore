@@ -13,3 +13,4 @@ novarch/system.yaml
 .aider*
 **/default.target.wants/
 nova/.config/ranger/__pycache__/commands.cpython-313.pyc
+nova/.config/menus/applications-merged/user-chrome-apps.menu

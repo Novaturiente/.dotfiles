@@ -12,7 +12,7 @@ if [ -f ~/.env.zsh ]; then
 fi
 
 export PATH="$HOME/.local/bin:$PATH"
-
+export PATH="$HOME/.cargo/bin:$PATH"
 . "$HOME/.local/share/../bin/env"
 
 # -------------------------------------------------------------------

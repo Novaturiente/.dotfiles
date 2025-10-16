@@ -43,6 +43,10 @@ require("lazy").setup({
 		lazy = false, -- make sure we load this during startup if it is your main colorscheme
 		priority = 1000, -- make sure to load this before all the other plugins
 	},
+	{
+		"yorumicolors/yorumi.nvim",
+		priority = 1000, -- make sure to load this before all the other plugins
+	},
 
 	-- ========================================================================
 	-- DEVELOPMENT UTILITIES
@@ -390,33 +394,69 @@ require("lazy").setup({
 				"yaml",
 				"toml",
 				"kdl",
+				"json",
 			},
 			auto_install = true, -- Automatically install missing parsers
 			ignore_install = { "org" },
 		},
 	},
 
-	-- ========================================================================
-	-- CODE FORMATTING
-	-- ========================================================================
-
-	-- Conform: Lightweight formatter with format-on-save support
+	-- ============================================================================
+	-- CONFORM.NVIM - CODE FORMATTING
+	-- ============================================================================
 	{
 		"stevearc/conform.nvim",
 		event = "BufWritePre",
 		cmd = "ConformInfo",
 		opts = {
-			notify_on_error = false,
+			notify_on_error = true, -- Changed to true for debugging
 			format_on_save = function(bufnr)
 				-- Disable auto-format for C/C++ files
 				local disable_filetypes = { c = true, cpp = true }
-				return disable_filetypes[vim.bo[bufnr].filetype] and nil
-					or { timeout_ms = 500, lsp_format = "fallback" }
+				if disable_filetypes[vim.bo[bufnr].filetype] then
+					return
+				end
+				return {
+					timeout_ms = 2000, -- Increased timeout
+					lsp_fallback = true, -- Fixed: was lsp_format
+				}
 			end,
 			formatters_by_ft = {
 				lua = { "stylua" },
-				python = { "isort", "black" },
+				python = { "ruff_organize_imports", "ruff_format" },
+				rust = { "rustfmt" },
+				bash = { "shfmt" },
+				sh = { "shfmt" },
+				yaml = { "prettier" },
+				toml = { "taplo" },
+				json = { "prettier" },
+				jsonc = { "prettier" },
 			},
+		},
+	},
+
+	-- ============================================================================
+	-- BETTER PYTHON INDENTATION
+	-- ============================================================================
+	{
+		"Vimjas/vim-python-pep8-indent",
+		ft = "python",
+	},
+
+	-- ============================================================================
+	-- INDENT GUIDES
+	-- ============================================================================
+	{
+		"lukas-reineke/indent-blankline.nvim",
+		main = "ibl",
+		opts = {
+			indent = {
+				char = "│",
+			},
+			whitespace = {
+				highlight = { "Whitespace" },
+			},
+			scope = { enabled = false },
 		},
 	},
 
@@ -594,6 +634,8 @@ require("lazy").setup({
 							".env.example",
 							".config",
 							".dotfiles",
+							".zshrc",
+							".tmux.conf",
 						}
 						if vim.tbl_contains(whitelist, name) then
 							return false

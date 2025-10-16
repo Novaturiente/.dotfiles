@@ -22,12 +22,17 @@ while true; do
 	# Select random image
 	random_image="${images[RANDOM % ${#images[@]}]}"
 
-	# Get PID of current swaybg instance (if any)
-	OLD_PID=$(pidof swaybg)
-
 	killall swaybg
-	# Start new swaybg instance in background
 	swaybg -i "$random_image" -m fill &
+
+	wal -n -i "$random_image"
+
+	killall waybar
+	waybar &
+
+	if pgrep -x qutebrowser >/dev/null; then
+		qutebrowser :config-source
+	fi
 
 	sleep 30m
 done
