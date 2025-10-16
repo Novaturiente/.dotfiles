@@ -111,6 +111,10 @@ window-rule {
     match app-id="com.mitchellh.ghostty"
     draw-border-with-background false
 }
+window-rule {
+    match app-id="org.wezfurlong.wezterm"
+    draw-border-with-background false
+}
 
 // Example: enable rounded corners for all windows
 window-rule {
@@ -132,7 +136,7 @@ environment {
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 
 // Status bar and notifications
-// spawn-at-startup "waybar"
+spawn-at-startup "waybar"
 spawn-at-startup "swaync"
 spawn-at-startup "swayosd-server"
 
@@ -142,7 +146,7 @@ spawn-at-startup "~/.dotfiles/scripts/wallpaper.sh"
 
 // Background services
 spawn-sh-at-startup "kdeconnectd"
-spawn-sh-at-startup "emacs --daemon"
+// spawn-sh-at-startup "emacs --daemon"
 spawn-sh-at-startup "blueman-applet"
 spawn-sh-at-startup "kdeconnect-indicator"
 spawn-sh-at-startup "nm-applet --indicator"
@@ -155,10 +159,12 @@ hotkey-overlay {
     skip-at-startup
 }
 
+
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // KEYBINDINGS
 // ───────────────────────────────────────────────────────────────────────────────────────────
 binds {
+
     // Help
     Mod+Shift+Slash { show-hotkey-overlay; }
 
@@ -167,15 +173,16 @@ binds {
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+Return   hotkey-overlay-title="Open ghostty"           	{ spawn-sh "ghostty -e tmux attach -t default"; }
     Mod+Space    hotkey-overlay-title="Open ghostty"           	{ spawn "ghostty"; }
+    Mod+Ctrl+Space    hotkey-overlay-title="Open wezterm"           	{ spawn "wezterm"; }
     Mod+D        hotkey-overlay-title="Application launcher" 	{ spawn-sh "rofi -show drun -theme spotlight"; }
     Mod+Shift+D  hotkey-overlay-title="Application launcher" 	{ spawn-sh "~/.dotfiles/scripts/rofi/find.sh"; }
     Mod+W        hotkey-overlay-title="Qutebrowser"          	{ spawn "qutebrowser"; }
     Mod+Ctrl+W   hotkey-overlay-title="Qutebrowser work"     	{ spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"; }
-    Mod+M        hotkey-overlay-title="Emacs client"         	{ spawn-sh "emacsclient -c"; }
-    Mod+N        hotkey-overlay-title="Emacs client"         	{ spawn-sh "neovide"; }
-    Mod+Shift+N        hotkey-overlay-title="Emacs client"      { spawn-sh "ghostty -e nvim"; }
+    Mod+M        hotkey-overlay-title="Emacs client"         	{ spawn-sh "emacsc"; }
+    Mod+N        hotkey-overlay-title="Noevide"		         	{ spawn-sh "neovide"; }
+    Mod+Shift+N  hotkey-overlay-title="Neovim"					{ spawn-sh "ghostty -e nvim"; }
     Mod+E        hotkey-overlay-title="File manager"         	{ spawn-sh "ghostty -e yazi"; }
-    Mod+O	 hotkey-overlay-title="Ollama" 			{ spawn-sh "~/.dotfiles/scripts/llm.sh"; }
+    Mod+O		 hotkey-overlay-title="Ollama"					{ spawn-sh "~/.dotfiles/scripts/llm.sh"; }
 
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ UTILITIES & MENUS                                                                   │
@@ -364,7 +371,7 @@ binds {
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // MISCELLANEOUS SETTINGS
 // ───────────────────────────────────────────────────────────────────────────────────────────
-screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+screenshot-path "~/Desktop/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
 switch-events {
     lid-close { spawn "notify-send" "The laptop lid is closed! && systemctl suspend-then-hibernate"; }
