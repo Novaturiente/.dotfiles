@@ -3,11 +3,11 @@ x-scheme-handler/http=zen.desktop
 x-scheme-handler/https=zen.desktop
 text/html=zen.desktop
 application/pdf=emacs.desktop
-image/png=qimgv.desktop
-image/jpeg=qimgv.desktop
-image/webp=qimgv.desktop
-image/gif=qimgv.desktop
-image/svg+xml=qimgv.desktop
+image/png=feh.desktop
+image/jpeg=feh.desktop
+image/webp=feh.desktop
+image/gif=feh.desktop
+image/svg+xml=feh.desktop
 video/mp4=mpv.desktop
 video/webm=mpv.desktop
 video/x-matroska=mpv.desktop
@@ -30,8 +30,8 @@ x-scheme-handler/about=zen.desktop
 x-scheme-handler/unknown=zen.desktop
 
 [Added Associations]
-image/png=qimgv.desktop;feh.desktop;
-image/jpeg=org.kde.kdeconnect.app.desktop;qimgv.desktop;qimgv.desktop;
+image/png=feh.desktop;feh.desktop;
+image/jpeg=org.kde.kdeconnect.app.desktop;feh.desktop;feh.desktop;
 application/pdf=emacs.desktop;org.pwmt.zathura.desktop;org.qutebrowser.qutebrowser.desktop;
 x-scheme-handler/http=xfce4-web-browser.desktop;
 x-scheme-handler/https=xfce4-web-browser.desktop;
