@@ -14,3 +14,9 @@ novarch/system.yaml
 **/default.target.wants/
 nova/.config/ranger/__pycache__/commands.cpython-313.pyc
 nova/.config/menus/applications-merged/user-chrome-apps.menu
+
+# Ignore all .desktop files
+*.desktop
+
+# Except feh.desktop
+!feh.desktop
