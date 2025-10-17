@@ -1,27 +1,24 @@
 -- ============================================================================
 -- NEOVIM KEYBINDINGS CONFIGURATION
 -- ============================================================================
--- This file contains all custom keybindings for Neovim.
--- Organized by functionality for easy navigation and maintenance.
--- ============================================================================
 local vim = vim
 -- ============================================================================
 -- BASIC KEYMAPS
 -- ============================================================================
-vim.api.nvim_set_keymap("i", "jk", "<ESC>", { noremap = false })
+vim.keymap.set("i", "jk", "<ESC>", { noremap = true })
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { noremap = true, silent = true, desc = "Clear search highlights" })
 -- Diagnostic keymaps
 vim.keymap.set("n", "<leader>d", vim.diagnostic.setloclist, { noremap = true, silent = true, desc = "Open quickfix" })
 
 -- ============================================================================
--- SPLIT NAVIGATION
+-- INSERT MODE NAVIGATION
 -- ============================================================================
--- Keybinds to make split navigation easier
-vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { noremap = true, silent = true, desc = "Move focus to the left window" })
-vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { noremap = true, silent = true, desc = "Move focus to the right window" })
-vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { noremap = true, silent = true, desc = "Move focus to the lower window" })
-vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { noremap = true, silent = true, desc = "Move focus to the upper window" })
+vim.keymap.set("i", "<C-h>", "<C-o>h", { noremap = true, silent = true, desc = "Move left in insert mode" })
+vim.keymap.set("i", "<C-j>", "<C-o>j", { noremap = true, silent = true, desc = "Move down in insert mode" })
+vim.keymap.set("i", "<C-k>", "<C-o>k", { noremap = true, silent = true, desc = "Move up in insert mode" })
+vim.keymap.set("i", "<C-l>", "<C-o>l", { noremap = true, silent = true, desc = "Move right in insert mode" })
+
 -- ============================================================================
 -- WINDOW NAVIGATION
 -- ============================================================================
@@ -49,8 +46,28 @@ vim.keymap.set("n", "<C-A-Right>", ":bnext<CR>", { noremap = true, silent = true
 -- ============================================================================
 -- Alt+d forcefully closes the buffer even if there are unsaved changes
 vim.keymap.set("n", "<A-q>", ":bdelete!<CR>", { noremap = true, silent = true, desc = "Force Delete current buffer" })
-vim.keymap.set("n", "<leader>qw", ":bdelete<CR>", { noremap = true, silent = true, desc = "Close current buffer" })
+vim.keymap.set(
+	"n",
+	"<leader>qw",
+	":bprevious |:bdelete<CR>",
+	{ noremap = true, silent = true, desc = "Close current buffer" }
+)
 vim.keymap.set("n", "<leader>qq", ":q<CR>", { noremap = true, silent = true, desc = "Exit Neovim" })
+
+-- ============================================================================
+-- WINDOW REPOSITIONING
+-- ============================================================================
+-- Move current window to another pane using Alt + Shift + Arrow Keys
+vim.keymap.set("n", "<A-S-Left>", "<C-w>H", { noremap = true, silent = true, desc = "Move window to far left" })
+vim.keymap.set("n", "<A-S-Down>", "<C-w>J", { noremap = true, silent = true, desc = "Move window to far bottom" })
+vim.keymap.set("n", "<A-S-Up>", "<C-w>K", { noremap = true, silent = true, desc = "Move window to far top" })
+vim.keymap.set("n", "<A-S-Right>", "<C-w>L", { noremap = true, silent = true, desc = "Move window to far right" })
+
+-- Move current window to another pane using Alt + Shift + hjkl
+vim.keymap.set("n", "<A-S-h>", "<C-w>H", { noremap = true, silent = true, desc = "Move window to far left" })
+vim.keymap.set("n", "<A-S-j>", "<C-w>J", { noremap = true, silent = true, desc = "Move window to far bottom" })
+vim.keymap.set("n", "<A-S-k>", "<C-w>K", { noremap = true, silent = true, desc = "Move window to far top" })
+vim.keymap.set("n", "<A-S-l>", "<C-w>L", { noremap = true, silent = true, desc = "Move window to far right" })
 
 -- ============================================================================
 -- TERMINAL KEYBINDINGS
@@ -207,11 +224,9 @@ end, { desc = "Format buffer" })
 -- ============================================================================
 
 local neogit = require("neogit")
-
 -- Helper to get project root of the current buffer
 local function get_project_root()
 	local cwd
-
 	-- Check if current buffer is an oil.nvim buffer
 	local bufname = vim.api.nvim_buf_get_name(0)
 	if bufname:match("^oil://") then
@@ -227,7 +242,6 @@ local function get_project_root()
 		-- Regular file buffer - get directory of current file
 		cwd = vim.fn.expand("%:p:h")
 	end
-
 	-- Find git root from the current directory
 	local root = vim.fn.systemlist("git -C " .. vim.fn.shellescape(cwd) .. " rev-parse --show-toplevel")[1]
 	if vim.v.shell_error ~= 0 then
@@ -236,7 +250,6 @@ local function get_project_root()
 	end
 	return root
 end
-
 -- Keymap to open Neogit in the current buffer's project
 vim.keymap.set("n", "<leader>gg", function()
 	local root = get_project_root()
@@ -276,7 +289,6 @@ local function open_file_browser()
 		local cmdline = vim.fn.getcmdline()
 		local pos = vim.fn.getcmdpos() - 1
 		local last_char = cmdline:sub(pos, pos)
-
 		if last_char == "/" then
 			return "<C-w><C-w>"
 		else

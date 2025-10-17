@@ -1,7 +1,6 @@
 -- ============================================================================
 -- FOLD PERSISTENCE
 -- ============================================================================
--- Combined with kevinhwang91/nvim-ufo
 -- Automatically save and restore fold state
 vim.api.nvim_create_autocmd("BufWinLeave", {
 	pattern = "*",
