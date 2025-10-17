@@ -80,6 +80,12 @@ vim.o.scrolloff = 10
 -- Confirm before exit,
 vim.o.confirm = true
 
+-- Fold configuration
+vim.o.foldcolumn = "1"
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+vim.o.foldenable = true
+
 require("autostart")
 require("plugins")
 require("keybindinds")

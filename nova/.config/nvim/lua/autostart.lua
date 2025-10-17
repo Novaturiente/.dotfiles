@@ -29,17 +29,12 @@ vim.api.nvim_create_autocmd("TermOpen", {
 -- SUPPRESS INITIAL DIAGNOSTIC FLOOD (UPDATED API)
 -- ============================================================================
 -- Hide diagnostics on file open and enable after first save
--- Prevents incorrect errors while LSP server indexes the project
 
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(args)
-		vim.diagnostic.enable(false, { bufnr = args.buf })
-	end,
-})
-
-vim.api.nvim_create_autocmd("BufWritePost", {
-	callback = function(args)
-		vim.diagnostic.enable(true, { bufnr = args.buf })
+		vim.defer_fn(function()
+			vim.diagnostic.enable(true, { bufnr = args.buf })
+		end, 3000) -- Enable after 1 second
 	end,
 })
 
