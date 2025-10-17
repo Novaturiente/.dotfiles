@@ -89,7 +89,7 @@ require("lazy").setup({
 	-- Which-key: Display pending keybindings in a popup
 	{
 		"folke/which-key.nvim",
-		event = "VimEnter",
+		event = "VeryLazy",
 		opts = {
 			delay = 100, -- Delay before showing popup (ms)
 			icons = {
@@ -582,6 +582,7 @@ require("lazy").setup({
 	-- Mini.nvim: Collection of small, independent plugins
 	{
 		"echasnovski/mini.nvim",
+		event = "VeryLazy",
 		config = function()
 			-- Better text objects (e.g., va), yinq, ci')
 			require("mini.ai").setup({ n_lines = 500 })
