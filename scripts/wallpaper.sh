@@ -25,7 +25,7 @@ while true; do
 	killall swaybg
 	swaybg -i "$random_image" -m fill &
 
-	wal -n -i "$random_image"
+	# wal -n -i "$random_image"
 
 	# killall waybar
 	# waybar &
