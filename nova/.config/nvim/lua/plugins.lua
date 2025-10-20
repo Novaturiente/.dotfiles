@@ -602,13 +602,10 @@ require("lazy").setup({
 	-- FILE MANAGEMENT
 	-- ========================================================================
 
-	-- Oil.nvim: Edit your filesystem like a normal Neovim buffer
 	{
 		"stevearc/oil.nvim",
-		---@module 'oil'
-		---@type oil.SetupOpts
 		opts = {},
-		dependencies = { { "nvim-mini/mini.icons", opts = {} } },
+		dependencies = { { "nvim-tree/nvim-web-devicons", opts = {} } },
 		lazy = false,
 		config = function()
 			require("oil").setup({
@@ -621,14 +618,9 @@ require("lazy").setup({
 				keymaps = {
 					["."] = { "actions.open_cwd", mode = "n" },
 				},
-				-- use_default_keymaps = true,
 				view_options = {
-					-- Hide hidden files by default
 					show_hidden = false,
-					-- This function defines what is considered a "hidden" file
-					-- Return false for files you want to show, true for files to hide
 					is_hidden_file = function(name, bufnr)
-						-- Whitelist specific hidden folders/files you want to see
 						local whitelist = {
 							".github",
 							".gitignore",
@@ -644,9 +636,7 @@ require("lazy").setup({
 						return vim.startswith(name, ".")
 					end,
 					is_always_hidden = function(name, bufnr)
-						return vim.tbl_contains({
-							"go",
-						}, name)
+						return vim.tbl_contains({ "go" }, name)
 					end,
 				},
 			})

@@ -45,6 +45,8 @@ bindkey "^[[H" beginning-of-line    # Alternate Home
 bindkey "^[[F" end-of-line          # Alternate End
 bindkey "^l" clear-screen
 
+bindkey -v
+
 # -------------------------------------------------------------------
 # Custom Widgets
 # -------------------------------------------------------------------
@@ -91,4 +93,3 @@ bindkey "$terminfo[kcbt]" menu-select
 bindkey -M menuselect              '^I'         menu-complete
 bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 bindkey '^I' menu-select
-
