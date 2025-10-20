@@ -15,7 +15,6 @@
 - swaybg
 - brightnessctl
 - udiskie
-- kdeconnect
 - network-manager-applet
 - stow
 - upower
@@ -33,4 +32,7 @@
 - bibata-cursor-theme
 - materia-kde
 - materia-gtk-theme
+- whitesur-icon-theme-git
+
 - nwg-look
+- kdeconnect

@@ -4,7 +4,6 @@
 - tmux
 - neovim
 - neovide
-- emacs-wayland
 - yazi
 - nvtop
 - btop
@@ -28,5 +27,3 @@
 - wget
 - sshfs
 - dialog
-- poppler
-- poppler-glib
