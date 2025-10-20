@@ -8,3 +8,6 @@
 - podman-compose
 - openbsd-netcat
 - freerdp
+
+- qemu
+- virt-manager
