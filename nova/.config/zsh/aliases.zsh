@@ -7,6 +7,8 @@ alias unova="sudo novarch update"
 alias anova="sudo novarch add"
 alias rnova="sudo novarch remove"
 
+alias cedit="nvim -c 'enew | put + | setlocal buftype=nofile bufhidden=wipe noswapfile'"
+
 # ---- ls Aliases (with eza) ----
 alias la='eza -a --color=always --group-directories-first --icons=always "$@"'
 alias ls='eza -al --color=always --group-directories-first --icons=always "$@"'

@@ -1,13 +1,11 @@
-# Package & Application Management
 - flatpak
 - paru
-
-# Virtualization
-# - gnome-boxes
 - podman
 - podman-compose
 - openbsd-netcat
 - freerdp
-
 - qemu
 - virt-manager
+- dmg2img
+- net-tools
+- tigervnc
