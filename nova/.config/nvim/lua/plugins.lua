@@ -677,6 +677,15 @@ require("lazy").setup({
 			require("alpha").setup(startify.config)
 		end,
 	},
+
+	{
+		"tris203/precognition.nvim",
+		config = function()
+			require("precognition").setup()
+		end,
+	},
+
+	{ "ThePrimeagen/vim-be-good" },
 }, {
 
 	-- ========================================================================

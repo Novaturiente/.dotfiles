@@ -5,6 +5,11 @@ local vim = vim
 -- ============================================================================
 -- BASIC KEYMAPS
 -- ============================================================================
+-- Use the black hole register for deletions and changes
+vim.keymap.set({ "n", "v" }, "c", '"_c')
+vim.keymap.set({ "n", "v" }, "C", '"_C')
+vim.keymap.set({ "n", "v" }, "x", '"_x')
+vim.keymap.set({ "n", "v" }, "X", '"_X')
 vim.keymap.set("i", "jk", "<ESC>", { noremap = true })
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { noremap = true, silent = true, desc = "Clear search highlights" })
@@ -325,8 +330,8 @@ vim.keymap.set("n", "<leader>.", open_file_browser, {
 -- ============================================================================
 -- Define available colorschemes
 local colorschemes = {
-	"yorumi",
 	"rose-pine-moon",
+	"yorumi",
 	"tokyonight-night",
 	"vague",
 }
