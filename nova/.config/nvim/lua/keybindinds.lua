@@ -28,16 +28,15 @@ vim.keymap.set("i", "<C-l>", "<C-o>l", { noremap = true, silent = true, desc = "
 -- WINDOW NAVIGATION
 -- ============================================================================
 -- Navigate between split windows using Alt + Arrow Keys in normal mode
-vim.keymap.set("n", "<A-Left>", "<C-w>h", { noremap = true, silent = true, desc = "Move to left window" })
-vim.keymap.set("n", "<A-Down>", "<C-w>j", { noremap = true, silent = true, desc = "Move to window below" })
-vim.keymap.set("n", "<A-Up>", "<C-w>k", { noremap = true, silent = true, desc = "Move to window above" })
-vim.keymap.set("n", "<A-Right>", "<C-w>l", { noremap = true, silent = true, desc = "Move to right window" })
+vim.keymap.set({ "n", "t", "i" }, "<A-Left>", "<C-w>h", { noremap = true, silent = true })
+vim.keymap.set({ "n", "t", "i" }, "<A-Down>", "<C-w>j", { noremap = true, silent = true })
+vim.keymap.set({ "n", "t", "i" }, "<A-Up>", "<C-w>k", { noremap = true, silent = true })
+vim.keymap.set({ "n", "t", "i" }, "<A-Right>", "<C-w>l", { noremap = true, silent = true })
 
--- Navigate between split windows using Alt + Arrow Keys in terminal mode
-vim.keymap.set("t", "<A-Left>", "<C-\\><C-N><C-w>h", { noremap = true, silent = true })
-vim.keymap.set("t", "<A-Down>", "<C-\\><C-N><C-w>j", { noremap = true, silent = true })
-vim.keymap.set("t", "<A-Up>", "<C-\\><C-N><C-w>k", { noremap = true, silent = true })
-vim.keymap.set("t", "<A-Right>", "<C-\\><C-N><C-w>l", { noremap = true, silent = true })
+vim.keymap.set({ "n", "t", "i" }, "<A-h>", "<C-w>h", { noremap = true, silent = true })
+vim.keymap.set({ "n", "t", "i" }, "<A-j>", "<C-w>j", { noremap = true, silent = true })
+vim.keymap.set({ "n", "t", "i" }, "<A-k>", "<C-w>k", { noremap = true, silent = true })
+vim.keymap.set({ "n", "t", "i" }, "<A-l>", "<C-w>l", { noremap = true, silent = true })
 
 -- ============================================================================
 -- BUFFER NAVIGATION
