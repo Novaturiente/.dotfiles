@@ -54,8 +54,6 @@ require("lazy").setup({
 
 	-- Hot reload: Automatically reload Neovim config on file changes
 	{ "Zeioth/hot-reload.nvim", dependencies = "nvim-lua/plenary.nvim", event = "BufEnter", opts = {} },
-	-- Automatically detect and set indentation based on file content
-	"NMAC427/guess-indent.nvim",
 
 	-- ========================================================================
 	-- GIT INTEGRATION
@@ -376,6 +374,10 @@ require("lazy").setup({
 		build = ":TSUpdate",
 		main = "nvim-treesitter.configs",
 		opts = {
+
+			indent = {
+				enable = true,
+			},
 			ensure_installed = {
 				"bash",
 				"c",
@@ -396,7 +398,7 @@ require("lazy").setup({
 				"kdl",
 				"json",
 			},
-			auto_install = true, -- Automatically install missing parsers
+			auto_install = true,
 			ignore_install = { "org" },
 		},
 	},
@@ -431,21 +433,20 @@ require("lazy").setup({
 				toml = { "taplo" },
 				json = { "prettier" },
 				jsonc = { "prettier" },
+				kdl = { "kdlfmt" },
 			},
 		},
 	},
 
 	-- ============================================================================
-	-- BETTER PYTHON INDENTATION
+	-- INDENTATION
 	-- ============================================================================
 	{
-		"Vimjas/vim-python-pep8-indent",
-		ft = "python",
+		"NMAC427/guess-indent.nvim",
+		config = function()
+			require("guess-indent").setup({})
+		end,
 	},
-
-	-- ============================================================================
-	-- INDENT GUIDES
-	-- ============================================================================
 	{
 		"lukas-reineke/indent-blankline.nvim",
 		main = "ibl",
@@ -533,6 +534,66 @@ require("lazy").setup({
 		event = "VimEnter",
 		dependencies = "nvim-lua/plenary.nvim",
 		opts = { signs = false },
+	},
+
+	-- ========================================================================
+	-- CODE NAVIGATION
+	-- ========================================================================
+
+	-- Outline: Code outline window for viewing and jumping to symbols
+	{
+		"hedyhli/outline.nvim",
+		lazy = true,
+		cmd = { "Outline", "OutlineOpen" },
+		keys = {
+			{ "<leader>mm", "<cmd>Outline<CR>", desc = "Toggle outline" },
+		},
+		config = function()
+			require("outline").setup({
+				outline_window = {
+					position = "right", -- Right side positioning
+					width = 25,
+					relative_width = true,
+					auto_close = false,
+					auto_jump = false,
+					focus_on_open = true,
+					show_numbers = false,
+					show_relative_numbers = false,
+				},
+				outline_items = {
+					show_symbol_details = true,
+					show_symbol_lineno = true, -- Show line numbers
+					highlight_hovered_item = true,
+					auto_set_cursor = true,
+				},
+				symbol_folding = {
+					autofold_depth = 1,
+					auto_unfold = {
+						hovered = true,
+					},
+				},
+				preview_window = {
+					auto_preview = false, -- Set true for auto preview
+				},
+				symbols = {
+					icons = {
+						File = { icon = "󰈔", hl = "Identifier" },
+						Module = { icon = "󰆧", hl = "Include" },
+						Namespace = { icon = "󰅪", hl = "Include" },
+						Package = { icon = "󰏗", hl = "Include" },
+						Class = { icon = "𝓒", hl = "Type" },
+						Method = { icon = "ƒ", hl = "Function" },
+						Property = { icon = "", hl = "Identifier" },
+						Field = { icon = "󰆨", hl = "Identifier" },
+						Constructor = { icon = "", hl = "Special" },
+						Enum = { icon = "ℰ", hl = "Type" },
+						Interface = { icon = "󰜰", hl = "Type" },
+						Function = { icon = "", hl = "Function" },
+						Variable = { icon = "", hl = "Constant" },
+					},
+				},
+			})
+		end,
 	},
 
 	-- ============================================================================
@@ -677,14 +738,6 @@ require("lazy").setup({
 			require("alpha").setup(startify.config)
 		end,
 	},
-
-	{
-		"tris203/precognition.nvim",
-		config = function()
-			require("precognition").setup()
-		end,
-	},
-
 	{ "ThePrimeagen/vim-be-good" },
 }, {
 
