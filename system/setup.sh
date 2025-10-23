@@ -2,7 +2,7 @@
 
 sudo cp novarch /usr/bin/novarch
 
-sudo novarch init
+novarch init
 
 sudo cp system/etc/tlp.conf /etc/tlp.conf
 
