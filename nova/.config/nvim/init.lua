@@ -87,8 +87,24 @@ vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
 vim.o.foldenable = true
 
+-- ============================================================================
+-- LAZY.NVIM SETUP
+-- ============================================================================
+-- Automatically install lazy.nvim if not present
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+	if vim.v.shell_error ~= 0 then
+		error("Error cloning lazy.nvim:\n" .. out)
+	end
+end
+vim.opt.rtp:prepend(lazypath)
+-- Load plugins from plugins module and setup lazy with options
+local plugins = require("plugins")
+require("lazy").setup(plugins)
+
 require("autostart")
-require("plugins")
 require("keybindinds")
 require("ui")
 require("coding")
