@@ -70,7 +70,7 @@ vim.api.nvim_create_autocmd({ "BufWritePre", "FileWritePre" }, {
 local function toggle_outline_by_width()
 	local width = vim.o.columns
 
-	if width >= 150 then
+	if width >= 170 then
 		-- open outline if not already visible
 		if not require("outline").is_open() then
 			require("outline").open()

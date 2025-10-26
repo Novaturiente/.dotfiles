@@ -13,17 +13,23 @@ vim.keymap.set({ "n", "v" }, "X", '"_X')
 vim.keymap.set("i", "jk", "<ESC>", { noremap = true })
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", { noremap = true, silent = true, desc = "Clear search highlights" })
--- Diagnostic keymaps
-vim.keymap.set("n", "<leader>d", vim.diagnostic.setloclist, { noremap = true, silent = true, desc = "Open quickfix" })
+
+-- Normal mode: move single line with K/J
+vim.keymap.set("n", "KK", ":m .-2<CR>==", { noremap = true, silent = true, desc = "Move line up" })
+vim.keymap.set("n", "JJ", ":m .+1<CR>==", { noremap = true, silent = true, desc = "Move line down" })
+-- Visual mode: move multiple selected lines with K/J
+vim.keymap.set("v", "KK", ":m '<-2<CR>gv=gv", { noremap = true, silent = true, desc = "Move selection up" })
+vim.keymap.set("v", "JJ", ":m '>+1<CR>gv=gv", { noremap = true, silent = true, desc = "Move selection down" })
 
 -- ============================================================================
 -- INSERT MODE NAVIGATION
 -- ============================================================================
 vim.keymap.set("i", "<C-h>", "<C-o>h", { noremap = true, silent = true, desc = "Move left in insert mode" })
 vim.keymap.set("i", "<C-j>", "<C-o>j", { noremap = true, silent = true, desc = "Move down in insert mode" })
-vim.keymap.set("i", "<C-k>", "<C-o>k", { noremap = true, silent = true, desc = "Move up in insert mode" })
+vim.keymap.set("i", "<C-k><C-k>", "<C-o>k", { noremap = true, silent = true, desc = "Move up in insert mode" })
 vim.keymap.set("i", "<C-l>", "<C-o>l", { noremap = true, silent = true, desc = "Move right in insert mode" })
-
+vim.keymap.set("i", "<C-S-h>", "<BS>", { noremap = true, silent = true, desc = "Backspace" })
+vim.keymap.set("i", "<C-S-l>", "<Del>", { noremap = true, silent = true, desc = "Delete forward" })
 -- ============================================================================
 -- WINDOW NAVIGATION
 -- ============================================================================
@@ -32,7 +38,7 @@ vim.keymap.set({ "n", "t", "i" }, "<A-Left>", "<C-w>h", { noremap = true, silent
 vim.keymap.set({ "n", "t", "i" }, "<A-Down>", "<C-w>j", { noremap = true, silent = true })
 vim.keymap.set({ "n", "t", "i" }, "<A-Up>", "<C-w>k", { noremap = true, silent = true })
 vim.keymap.set({ "n", "t", "i" }, "<A-Right>", "<C-w>l", { noremap = true, silent = true })
-
+-- Using lkjh
 vim.keymap.set({ "n", "t", "i" }, "<A-h>", "<C-w>h", { noremap = true, silent = true })
 vim.keymap.set({ "n", "t", "i" }, "<A-j>", "<C-w>j", { noremap = true, silent = true })
 vim.keymap.set({ "n", "t", "i" }, "<A-k>", "<C-w>k", { noremap = true, silent = true })
@@ -43,7 +49,9 @@ vim.keymap.set({ "n", "t", "i" }, "<A-l>", "<C-w>l", { noremap = true, silent = 
 -- ============================================================================
 -- Navigate between buffers using Ctrl + Alt + Arrow Keys
 vim.keymap.set("n", "<C-A-Left>", ":bprevious<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
+vim.keymap.set("n", "<C-A-h>", ":bprevious<CR>", { noremap = true, silent = true, desc = "Previous buffer" })
 vim.keymap.set("n", "<C-A-Right>", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
+vim.keymap.set("n", "<C-A-l>", ":bnext<CR>", { noremap = true, silent = true, desc = "Next buffer" })
 
 -- ============================================================================
 -- BUFFER MANAGEMENT
@@ -52,11 +60,12 @@ vim.keymap.set("n", "<C-A-Right>", ":bnext<CR>", { noremap = true, silent = true
 vim.keymap.set("n", "<A-q>", ":bdelete!<CR>", { noremap = true, silent = true, desc = "Force Delete current buffer" })
 vim.keymap.set(
 	"n",
-	"<leader>qw",
+	"<leader>qq",
 	":bprevious |:bdelete<CR>",
 	{ noremap = true, silent = true, desc = "Close current buffer" }
 )
-vim.keymap.set("n", "<leader>qq", ":q<CR>", { noremap = true, silent = true, desc = "Exit Neovim" })
+vim.keymap.set("n", "<leader>qw", ":q<CR>", { noremap = true, silent = true, desc = "Exit Neovim" })
+vim.keymap.set("n", "<leader>ww", ":w<CR>", { noremap = true, silent = true, desc = "Save file" })
 
 -- ============================================================================
 -- WINDOW REPOSITIONING
@@ -66,7 +75,6 @@ vim.keymap.set("n", "<A-S-Left>", "<C-w>H", { noremap = true, silent = true, des
 vim.keymap.set("n", "<A-S-Down>", "<C-w>J", { noremap = true, silent = true, desc = "Move window to far bottom" })
 vim.keymap.set("n", "<A-S-Up>", "<C-w>K", { noremap = true, silent = true, desc = "Move window to far top" })
 vim.keymap.set("n", "<A-S-Right>", "<C-w>L", { noremap = true, silent = true, desc = "Move window to far right" })
-
 -- Move current window to another pane using Alt + Shift + hjkl
 vim.keymap.set("n", "<A-S-h>", "<C-w>H", { noremap = true, silent = true, desc = "Move window to far left" })
 vim.keymap.set("n", "<A-S-j>", "<C-w>J", { noremap = true, silent = true, desc = "Move window to far bottom" })
@@ -83,7 +91,6 @@ vim.keymap.set("n", "<leader>tt", function()
 	vim.cmd("lcd " .. dir)
 	vim.cmd("terminal")
 end, { noremap = true, silent = true, desc = "Open vertical terminal" })
-
 -- Open terminal in horizontal split (in current buffer's directory)
 vim.keymap.set("n", "<leader>th", function()
 	local dir = vim.fn.expand("%:p:h")
@@ -92,7 +99,7 @@ vim.keymap.set("n", "<leader>th", function()
 	vim.cmd("terminal")
 end, { noremap = true, silent = true, desc = "Open horizontal terminal" })
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
-vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true, desc = "Exit terminal mode" })
+vim.keymap.set("t", "jk", "<C-\\><C-n>", { noremap = true, silent = true, desc = "Exit terminal mode" })
 
 -- ============================================================================
 -- FILE EXPLORER (OIL.NVIM) - TOGGLE LEFT SIDEBAR
@@ -101,7 +108,7 @@ vim.keymap.set("n", "<leader>e", function()
 	if vim.bo.filetype == "oil" then
 		require("oil.actions").close.callback()
 	else
-		vim.cmd("Oil")
+		vim.cmd("Oil --float")
 	end
 end, { desc = "Toggle Oil" })
 
@@ -210,42 +217,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
 -- CODE FORMATTING
 -- ============================================================================
 -- Format the current buffer using conform.nvim
-vim.keymap.set("", "<leader>=", function()
+vim.keymap.set("n", "<leader>=", function()
 	require("conform").format({ async = true, lsp_format = "fallback" })
 end, { desc = "Format buffer" })
 
 -- ============================================================================
--- NEOGIT CONFIGURATION
+-- NEOGIT
 -- ============================================================================
-
-local neogit = require("neogit")
--- Helper to get project root of the current buffer
-local function get_project_root()
-	local cwd
-	-- Check if current buffer is an oil.nvim buffer
-	local bufname = vim.api.nvim_buf_get_name(0)
-	if bufname:match("^oil://") then
-		-- Get directory from oil.nvim
-		local ok, oil = pcall(require, "oil")
-		if ok then
-			cwd = oil.get_current_dir()
-		else
-			vim.notify("Oil.nvim not available", vim.log.levels.ERROR)
-			return nil
-		end
-	else
-		-- Regular file buffer - get directory of current file
-		cwd = vim.fn.expand("%:p:h")
-	end
-	-- Find git root from the current directory
-	local root = vim.fn.systemlist("git -C " .. vim.fn.shellescape(cwd) .. " rev-parse --show-toplevel")[1]
-	if vim.v.shell_error ~= 0 then
-		vim.notify("Not a git repository", vim.log.levels.ERROR)
-		return nil
-	end
-	return root
-end
--- Keymap to open Neogit in the current buffer's project
 vim.keymap.set("n", "<leader>gg", function()
 	local root = get_project_root()
 	if root then
@@ -263,6 +241,46 @@ vim.keymap.set("n", "<leader>ms", function()
 end, { noremap = true, silent = true, desc = "Show messages" })
 
 -- ============================================================================
+-- TROUBLE KEYBINDINGS
+-- ============================================================================
+-- Toggle diagnostics for all buffers
+vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", {
+	noremap = true,
+	silent = true,
+	desc = "Toggle Trouble diagnostics",
+})
+-- Toggle diagnostics for current buffer only
+vim.keymap.set("n", "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", {
+	noremap = true,
+	silent = true,
+	desc = "Toggle buffer diagnostics",
+})
+-- Toggle document symbols
+vim.keymap.set("n", "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", {
+	noremap = true,
+	silent = true,
+	desc = "Toggle symbols (Trouble)",
+})
+-- Toggle LSP definitions/references
+vim.keymap.set("n", "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", {
+	noremap = true,
+	silent = true,
+	desc = "Toggle LSP definitions/references",
+})
+-- Toggle location list
+vim.keymap.set("n", "<leader>xL", "<cmd>Trouble loclist toggle<cr>", {
+	noremap = true,
+	silent = true,
+	desc = "Toggle location list",
+})
+-- Toggle quickfix list
+vim.keymap.set("n", "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", {
+	noremap = true,
+	silent = true,
+	desc = "Toggle quickfix list",
+})
+
+-- ============================================================================
 -- COMMAND LINE MODE KEYBINDINGS
 -- ============================================================================
 -- Paste from system clipboard
@@ -271,6 +289,39 @@ vim.keymap.set("c", "<C-a>", "<Home>", { noremap = true, desc = "Move to start o
 vim.keymap.set("c", "<C-e>", "<End>", { noremap = true, desc = "Move to end of line" })
 -- Delete word backward
 vim.keymap.set("c", "<C-BS>", "<C-w>", { noremap = true, desc = "Delete word backward" })
+
+-- ============================================================================
+-- COLORSCHEME SWITCHING
+-- ============================================================================
+-- Define available colorschemes
+local colorschemes = {
+	"rose-pine-moon",
+	"yorumi",
+	"tokyonight-night",
+	"vague",
+}
+local current_scheme_index = 1
+vim.cmd.colorscheme(colorschemes[current_scheme_index])
+-- Function to cycle through colorschemes
+local function select_colorscheme()
+	vim.ui.select(colorschemes, {
+		prompt = "Select Colorscheme:",
+		format_item = function(item)
+			return item
+		end,
+	}, function(choice)
+		if choice then
+			vim.cmd.colorscheme(choice)
+			print("Colorscheme: " .. choice)
+		end
+	end)
+end
+-- Keybinding to cycle colorschemes using Ctrl + Alt + C
+vim.keymap.set("n", "<C-A-c>", select_colorscheme, {
+	noremap = true,
+	silent = true,
+	desc = "Cycle through colorschemes",
+})
 
 -- ============================================================================
 -- CUSTOM COMMAND LINE MODE WITH SPECIFIC KEYBINDINGS
@@ -322,37 +373,4 @@ vim.keymap.set("n", "<leader>.", open_file_browser, {
 	noremap = true,
 	silent = true,
 	desc = "Open file",
-})
-
--- ============================================================================
--- COLORSCHEME SWITCHING
--- ============================================================================
--- Define available colorschemes
-local colorschemes = {
-	"rose-pine-moon",
-	"yorumi",
-	"tokyonight-night",
-	"vague",
-}
-local current_scheme_index = 1
-vim.cmd.colorscheme(colorschemes[current_scheme_index])
--- Function to cycle through colorschemes
-local function select_colorscheme()
-	vim.ui.select(colorschemes, {
-		prompt = "Select Colorscheme:",
-		format_item = function(item)
-			return item
-		end,
-	}, function(choice)
-		if choice then
-			vim.cmd.colorscheme(choice)
-			print("Colorscheme: " .. choice)
-		end
-	end)
-end
--- Keybinding to cycle colorschemes using Ctrl + Alt + C
-vim.keymap.set("n", "<C-A-c>", select_colorscheme, {
-	noremap = true,
-	silent = true,
-	desc = "Cycle through colorschemes",
 })
