@@ -1,30 +1,7 @@
 -- ============================================================================
 -- NEOVIM PLUGIN CONFIGURATION
 -- ============================================================================
--- This file manages all Neovim plugins using lazy.nvim plugin manager.
--- Lazy.nvim provides fast startup times through automatic caching and
--- lazy-loading capabilities.
--- ============================================================================
-
--- ============================================================================
--- LAZY.NVIM BOOTSTRAP
--- ============================================================================
--- Automatically install lazy.nvim if not present
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-	if vim.v.shell_error ~= 0 then
-		error("Error cloning lazy.nvim:\n" .. out)
-	end
-end
-vim.opt.rtp:prepend(lazypath)
-
--- ============================================================================
--- PLUGIN SPECIFICATIONS
--- ============================================================================
-
-require("lazy").setup({
+return {
 	-- ========================================================================
 	-- COLORSCHEME
 	-- ========================================================================
@@ -47,13 +24,6 @@ require("lazy").setup({
 		"yorumicolors/yorumi.nvim",
 		priority = 1000, -- make sure to load this before all the other plugins
 	},
-
-	-- ========================================================================
-	-- DEVELOPMENT UTILITIES
-	-- ========================================================================
-
-	-- Hot reload: Automatically reload Neovim config on file changes
-	{ "Zeioth/hot-reload.nvim", dependencies = "nvim-lua/plenary.nvim", event = "BufEnter", opts = {} },
 
 	-- ========================================================================
 	-- GIT INTEGRATION
@@ -126,8 +96,8 @@ require("lazy").setup({
 				{ "<leader>f", group = "Search", icon = "󰜏" },
 				{ "<leader>t", group = "Terminal" },
 				{ "<leader>g", group = "Git", mode = { "n", "v" } },
-				{ "<leader>r", group = "Run", icon = "" },
-				{ "<leader>rs", group = "Run with sudo", icon = "" },
+				{ "<leader>r", group = "Run", icon = "" },
+				{ "<leader>rs", group = "Run with sudo", icon = "" },
 				{ "<leader>rb", group = "Build" },
 				{ "<leader>q", group = "Exit" },
 				{ "<leader>m", group = "Message", icon = "󱥁" },
@@ -374,10 +344,10 @@ require("lazy").setup({
 		build = ":TSUpdate",
 		main = "nvim-treesitter.configs",
 		opts = {
-
 			indent = {
 				enable = true,
 			},
+			highlight = { enable = true },
 			ensure_installed = {
 				"bash",
 				"c",
@@ -438,9 +408,22 @@ require("lazy").setup({
 		},
 	},
 
+	-- ========================================================================
+	-- DIAGNOSTICS & TROUBLE
+	-- ========================================================================
+	{
+		"folke/trouble.nvim",
+		cmd = "Trouble",
+		opts = {
+			auto_close = true,
+			focus = true,
+		}, -- Uses default configuration
+	},
+
 	-- ============================================================================
 	-- INDENTATION
 	-- ============================================================================
+
 	{
 		"NMAC427/guess-indent.nvim",
 		config = function()
@@ -649,7 +632,6 @@ require("lazy").setup({
 			require("mini.ai").setup({ n_lines = 500 })
 			-- Surround operations (e.g., saiw), sd', sr)')
 			require("mini.surround").setup()
-			require("mini.move").setup()
 			-- Minimal statusline
 			local statusline = require("mini.statusline")
 			statusline.setup({ use_icons = vim.g.have_nerd_font })
@@ -700,6 +682,12 @@ require("lazy").setup({
 						return vim.tbl_contains({ "go" }, name)
 					end,
 				},
+				float = {
+					padding = 2,
+					max_width = 80,
+					max_height = 30,
+					border = "rounded",
+				},
 			})
 		end,
 	},
@@ -738,27 +726,9 @@ require("lazy").setup({
 			require("alpha").setup(startify.config)
 		end,
 	},
-	{ "ThePrimeagen/vim-be-good" },
-}, {
-
-	-- ========================================================================
-	-- LAZY.NVIM UI CONFIGURATION
-	-- ========================================================================
-	ui = {
-		icons = vim.g.have_nerd_font and {} or {
-			cmd = "⌘",
-			config = "🛠",
-			event = "📅",
-			ft = "📂",
-			init = "⚙",
-			keys = "🗝",
-			plugin = "🔌",
-			runtime = "💻",
-			require = "🌙",
-			source = "📄",
-			start = "🚀",
-			task = "📌",
-			lazy = "💤 ",
-		},
+	{
+		"NStefan002/speedtyper.nvim",
+		branch = "v2",
+		lazy = false,
 	},
-})
+}
