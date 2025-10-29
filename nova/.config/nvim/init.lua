@@ -34,7 +34,7 @@ vim.g.have_nerd_font = true
 vim.o.number = true
 vim.o.relativenumber = true
 -- Enable mouse mode, can be useful for resizing splits for example!
-vim.o.mouse = "a"
+vim.o.mouse = "nvc"
 -- Sync clipboard between OS and Neovim.
 vim.schedule(function()
 	vim.o.clipboard = "unnamedplus"
