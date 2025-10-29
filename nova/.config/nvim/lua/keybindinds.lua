@@ -30,6 +30,14 @@ vim.keymap.set("i", "<C-k><C-k>", "<C-o>k", { noremap = true, silent = true, des
 vim.keymap.set("i", "<C-l>", "<C-o>l", { noremap = true, silent = true, desc = "Move right in insert mode" })
 vim.keymap.set("i", "<C-S-h>", "<BS>", { noremap = true, silent = true, desc = "Backspace" })
 vim.keymap.set("i", "<C-S-l>", "<Del>", { noremap = true, silent = true, desc = "Delete forward" })
+vim.keymap.set("i", "<C-l>", function()
+	local c = vim.fn.getline("."):sub(vim.fn.col("."), vim.fn.col("."))
+	if c == ")" or c == "]" or c == "}" or c == '"' or c == "'" then
+		return "<Right>"
+	else
+		return "<C-l>"
+	end
+end, { expr = true, noremap = true, silent = true })
 -- ============================================================================
 -- WINDOW NAVIGATION
 -- ============================================================================
@@ -224,6 +232,33 @@ end, { desc = "Format buffer" })
 -- ============================================================================
 -- NEOGIT
 -- ============================================================================
+local neogit = require("neogit")
+-- Helper to get project root of the current buffer
+local function get_project_root()
+	local cwd
+	-- Check if current buffer is an oil.nvim buffer
+	local bufname = vim.api.nvim_buf_get_name(0)
+	if bufname:match("^oil://") then
+		-- Get directory from oil.nvim
+		local ok, oil = pcall(require, "oil")
+		if ok then
+			cwd = oil.get_current_dir()
+		else
+			vim.notify("Oil.nvim not available", vim.log.levels.ERROR)
+			return nil
+		end
+	else
+		-- Regular file buffer - get directory of current file
+		cwd = vim.fn.expand("%:p:h")
+	end
+	-- Find git root from the current directory
+	local root = vim.fn.systemlist("git -C " .. vim.fn.shellescape(cwd) .. " rev-parse --show-toplevel")[1]
+	if vim.v.shell_error ~= 0 then
+		vim.notify("Not a git repository", vim.log.levels.ERROR)
+		return nil
+	end
+	return root
+end
 vim.keymap.set("n", "<leader>gg", function()
 	local root = get_project_root()
 	if root then
