@@ -119,7 +119,7 @@ environment {
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 // Status bar and notifications
 spawn-at-startup "waybar"
-spawn-at-startup "swaync"
+spawn-at-startup "mako"
 spawn-at-startup "swayosd-server"
 // System utilities
 spawn-at-startup "swayidle"
@@ -252,7 +252,7 @@ binds {
         power-off-monitors
     }
     XF86PowerOff allow-when-locked=true {
-        spawn "systemctl suspend-then-hibernate"
+        spawn "systemctl hibernate"
     }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ MEDIA KEYS                                                                          │
