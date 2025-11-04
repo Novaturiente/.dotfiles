@@ -68,17 +68,13 @@ c.qt.args = [
 # ============================================================================
 c.content.headers.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
 # c.content.javascript.enabled = False
-c.content.canvas_reading = False
-c.content.webgl = False
 c.content.headers.accept_language = "en-US,en;q=0.5"
 c.content.headers.referer = "same-domain"
 c.content.headers.custom = {
     "Permissions-Policy": "geolocation=(), microphone=(), camera=(), interest-cohort=()"
 }
 c.content.cookies.accept = "no-3rdparty"
-c.content.cache.appcache = False
 c.content.headers.do_not_track = True
-c.content.hyperlink_auditing = False
 c.content.blocking.enabled = True
 c.content.blocking.method = "both"
 c.content.blocking.adblock.lists = [

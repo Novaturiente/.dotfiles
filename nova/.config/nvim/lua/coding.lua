@@ -275,6 +275,17 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 -- ============================================================================
+-- MARKDOWN AND GO
+-- ============================================================================
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "markdown", "org" },
+	callback = function()
+		vim.opt_local.linebreak = true
+		vim.opt_local.wrap = true
+	end,
+})
+
+-- ============================================================================
 -- HEADER CONFIGURATION
 -- ============================================================================
 vim.api.nvim_create_autocmd("BufNewFile", {
