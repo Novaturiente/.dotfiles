@@ -11,7 +11,7 @@
 - luarocks
 
 # JavaScript/Node.js
-- nodejs
+- nodejs-lts-jod
 - npm
 
 # Java

@@ -1,14 +1,14 @@
 - zsh
-- fish
 - ghostty
 - tmux
 - neovim
 - neovide
 - yazi
+- dragon-drop
 - nvtop
 - btop
 - fastfetch
-- ncdu
+- gdu
 - duf
 - lsof
 - atuin
@@ -17,10 +17,8 @@
 - eza
 - ripgrep
 - fd
-- entr
 - bat
 - jq
-- lazygit
 - github-cli
 - bash-language-server
 - trash-cli

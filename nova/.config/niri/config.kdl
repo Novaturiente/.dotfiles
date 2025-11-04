@@ -99,9 +99,21 @@ window-rule {
     draw-border-with-background false
 }
 window-rule {
-    match app-id="org.wezfurlong.wezterm"
+    match app-id="Zoom Workplace"
     draw-border-with-background false
 }
+// window-rule {
+//     match app-id="Zoom Workplace" title="as_toolbar"
+//     draw-border-with-background false
+//     open-floating true
+//     open-focused true
+// }
+// window-rule {
+//     match app-id="zoom" title="Meeting"
+//     draw-border-with-background false
+//     open-floating true
+//     open-focused true
+// }
 // Example: enable rounded corners for all windows
 window-rule {
     geometry-corner-radius 5
@@ -571,7 +583,7 @@ binds {
 screenshot-path "~/Desktop/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 switch-events {
     lid-close {
-        spawn "notify-send" "The laptop lid is closed! && systemctl suspend-then-hibernate"
+        spawn "notify-send" "The laptop lid is closed! && systemctl hibernate"
     }
 }
 cursor {
