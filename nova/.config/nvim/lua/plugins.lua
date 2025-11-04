@@ -579,6 +579,30 @@ return {
 		end,
 	},
 
+	-- Comments and notes navigation
+	{
+		"you-n-g/navigate-note.nvim",
+		opts = {
+			filename = "info.md",
+			width = 0.6,
+			keymaps = {
+				nav_mode = {
+					next = "<tab>",
+					prev = "<s-tab>",
+					open = "<m-cr>",
+					switch_back = "<m-h>",
+					append_link = "<m-p>",
+					jump_mode = "<m-l>",
+				},
+				add = "<m-a>",
+				open_nav = "<m-o>",
+			},
+			link_surround = { left = "[[", right = "]]" },
+			context_line_count = { tab = 8, vline = 1 },
+			enable_block = false,
+		},
+	},
+
 	-- ============================================================================
 	-- ORG MODE CONFIGURATION
 	-- ============================================================================
@@ -618,6 +642,7 @@ return {
 		dependencies = "nvim-treesitter/nvim-treesitter",
 		config = true, -- or `opts = {}`
 	},
+	{ "jghauser/follow-md-links.nvim" },
 
 	-- ========================================================================
 	-- MINI PLUGINS

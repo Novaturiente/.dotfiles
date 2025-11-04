@@ -5,12 +5,13 @@
 - swayidle
 - swaylock-effects
 - ly
+- terminus-font
 - xdg-desktop-portal
 - xdg-desktop-portal-luminous
 - mate-polkit
 - rofi
-- waybar
-- swaync
+- waybar-minimal-git
+- mako
 - swayosd
 - swaybg
 - brightnessctl
