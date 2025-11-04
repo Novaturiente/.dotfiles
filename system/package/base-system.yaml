@@ -59,3 +59,5 @@
 # Secure Boot
 - sbctl
 - systemd-ukify
+
+- paru

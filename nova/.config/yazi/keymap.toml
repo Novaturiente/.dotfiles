@@ -47,7 +47,7 @@ desc = "Maximize or restore the preview pane"
 
 [[mgr.prepend_keymap]]
 on = "<C-y>"
-run = ['shell -- dragon-drop "$@" & disown']
+run = ['shell -- dragon-drop -a -x "$@" & disown']
 desc = "Drag selected files (Wayland)"
 
 # ZOOM
