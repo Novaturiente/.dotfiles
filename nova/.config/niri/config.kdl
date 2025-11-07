@@ -144,7 +144,6 @@ spawn-sh-at-startup "kdeconnect-indicator"
 spawn-sh-at-startup "nm-applet --indicator"
 spawn-sh-at-startup "udiskie --tray --notify"
 spawn-sh-at-startup "wl-paste --watch cliphist store --max-items 100"
-spawn-sh-at-startup "aria2c --conf-path=/home/nova/.config/aria2/aria2.conf --enable-rpc --daemon"
 spawn-sh-at-startup "~/.dotfiles/scripts/start_tmux.sh"
 hotkey-overlay {
     skip-at-startup
@@ -199,9 +198,6 @@ binds {
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ UTILITIES & MENUS                                                                   │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
-    Mod+Ctrl+D hotkey-overlay-title="Download using aria2" {
-        spawn-sh "~/.config/rofi/download.sh"
-    }
     Mod+B hotkey-overlay-title="Bookmarks" {
         spawn-sh "~/.dotfiles/scripts/rofi/bookmarks.sh"
     }
@@ -260,7 +256,7 @@ binds {
     Ctrl+Alt+Delete {
         quit
     }
-    Mod+Ctrl+Shift+P {
+    Mod+Ctrl+Shift+P hotkey-overlay-title="Turn off monitor" {
         power-off-monitors
     }
     XF86PowerOff allow-when-locked=true {

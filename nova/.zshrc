@@ -15,6 +15,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 . "$HOME/.local/share/../bin/env"
 export PATH=~/.npm-global/bin:$PATH
+export PATH=/home/nova/.local/share/gem/ruby/3.4.0/bin:$PATH
 
 # -------------------------------------------------------------------
 # Shell Options
@@ -94,3 +95,5 @@ bindkey "$terminfo[kcbt]" menu-select
 bindkey -M menuselect              '^I'         menu-complete
 bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 bindkey '^I' menu-select
+export PATH=/home/nova/.rbenv/bin:$PATH
+eval "$(rbenv init - zsh)"
