@@ -50,6 +50,8 @@ alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --sa
 
 alias clear-cache="rm -rf ~/.config/qutebrowser_work/cache/* && rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp"
 
+alias eeclogin="ssh -i ~/.ssh/id_eecdev eecdev@139.59.75.32"
+
 # alias ollama="docker exec -it ollama ollama"
 # alias ollamaup="podman-compose -f ~/.dotfiles/docker/ollama.yml up -d"
 # alias ollamadown="podman-compose -f ~/.dotfiles/docker/ollama.yml down"
