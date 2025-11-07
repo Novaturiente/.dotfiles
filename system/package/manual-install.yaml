@@ -4,3 +4,11 @@
 - xdg-desktop-portal-gnome
 - gnome-shell
 - gnome-control-center
+- espeak-ng
+- postgresql
+- pgvector
+- distrobox
+- docker
+- docker-compose
+- opencode
+- flatpak
