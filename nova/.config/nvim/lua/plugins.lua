@@ -756,4 +756,46 @@ return {
 		branch = "v2",
 		lazy = false,
 	},
+
+	-- ============================================================================
+	-- AVANTE AI
+	-- ============================================================================
+
+	{
+		"yetone/avante.nvim",
+		event = "VeryLazy",
+		lazy = false,
+		version = false,
+		opts = {
+			provider = "gemini",
+			gemini = {
+				-- Default endpoint is built-in; no need to override for Gemini API.
+				-- Pick the exact model:
+				model = "gemini-2.5-flash",
+				temperature = 0,
+				max_tokens = 8192,
+				-- Optional: reasoning/thinking config supported by 2.5 Flash
+				generationConfig = {
+					thinkingConfig = {
+						thinkingBudget = 1024,
+					},
+				},
+			},
+			behaviour = {
+				auto_suggestions = false,
+			},
+		},
+		build = "make",
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"stevearc/dressing.nvim",
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
+			{
+				"MeanderingProgrammer/render-markdown.nvim",
+				opts = { file_types = { "markdown", "Avante" } },
+				ft = { "markdown", "Avante" },
+			},
+		},
+	},
 }
