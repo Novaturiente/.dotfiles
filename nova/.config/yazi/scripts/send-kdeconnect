@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+device_id="$(kdeconnect-cli --list-available --id-only)"
+
+for f in "$@"; do
+	kdeconnect-cli --device "$device_id" --share "$f"
+done
+

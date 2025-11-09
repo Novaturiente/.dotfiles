@@ -60,3 +60,8 @@ desc = "Zoom in hovered file"
 on = "-"
 run = "plugin zoom -1"
 desc = "Zoom out hovered file"
+
+[[mgr.prepend_keymap]]
+on = "<A-k>"
+run = 'shell -- /home/nova/.config/yazi/scripts/send-kdeconnect "$@" --block'
+desc = "Send via KDE Connect"

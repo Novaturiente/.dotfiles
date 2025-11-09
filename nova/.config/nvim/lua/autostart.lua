@@ -62,33 +62,3 @@ vim.api.nvim_create_autocmd({ "BufWritePre", "FileWritePre" }, {
 	end,
 	desc = "Auto-create parent directories when saving",
 })
-
--- ============================================================================
--- AUTO ENABLE CODE MAP
--- ============================================================================
--- Auto open/close Outline.nvim depending on window width
-local function toggle_outline_by_width()
-	local width = vim.o.columns
-
-	if width >= 170 then
-		-- open outline if not already visible
-		if not require("outline").is_open() then
-			require("outline").open()
-		end
-	else
-		-- close outline if open
-		if require("outline").is_open() then
-			require("outline").close()
-		end
-	end
-end
-
--- Run this whenever the window is resized
-vim.api.nvim_create_autocmd("VimResized", {
-	callback = toggle_outline_by_width,
-})
-
--- Optional: also run it once when starting Neovim
-vim.api.nvim_create_autocmd("VimEnter", {
-	callback = toggle_outline_by_width,
-})

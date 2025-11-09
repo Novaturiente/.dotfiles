@@ -1,0 +1,8 @@
+# - rbenv
+# - ruby-build
+- ruby
+# - rvm
+
+- readline
+- base-devel
+- openssl
