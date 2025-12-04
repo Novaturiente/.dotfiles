@@ -6,5 +6,5 @@
 
 config_version: 2
 settings:
-  content.register_protocol_handler:
-    https://outlook.live.com?mailtouri=%25s: true
+  content.notifications.enabled:
+    https://web.whatsapp.com: true

@@ -61,3 +61,7 @@
 - systemd-ukify
 
 - paru
+
+- flatpak
+- pipewire-alsa
+- alsa-utils
