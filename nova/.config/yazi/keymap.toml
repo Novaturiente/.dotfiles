@@ -65,3 +65,6 @@ desc = "Zoom out hovered file"
 on = "<A-k>"
 run = 'shell -- /home/nova/.config/yazi/scripts/send-kdeconnect "$@" --block'
 desc = "Send via KDE Connect"
+
+[keys.normal]
+o = "open --choose"

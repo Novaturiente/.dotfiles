@@ -11,6 +11,9 @@ if [ -f ~/.env.zsh ]; then
   source ~/.env.zsh
 fi
 
+if [ -f ~/.env ]; then
+  source ~/.env
+fi
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 . "$HOME/.local/share/../bin/env"
@@ -97,3 +100,4 @@ bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 bindkey '^I' menu-select
 export PATH=/home/nova/.rbenv/bin:$PATH
 eval "$(rbenv init - zsh)"
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"

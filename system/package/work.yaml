@@ -1,8 +1,13 @@
-# - rbenv
-# - ruby-build
-- ruby
-# - rvm
-
 - readline
 - base-devel
 - openssl
+- jdk-openjdk
+- espeak-ng
+- android-studio
+- docker
+- docker-compose
+- visual-studio-code-bin
+- opencode-bin
+- mysql
+- postgresql
+- pgvector

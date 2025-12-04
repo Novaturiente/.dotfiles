@@ -99,21 +99,22 @@ window-rule {
     draw-border-with-background false
 }
 window-rule {
-    match app-id="Zoom Workplace"
+    match app-id="Zoom Workplac"
+    draw-border-with-background false
+    open-floating true
+}
+window-rule {
+    match app-id="zoom"
+    draw-border-with-background false
+    open-floating true
+}
+window-rule {
+    // This regex matches any App ID starting with "RAIL:"
+    // This covers Excel, Notepad, or any other RemoteApp you launch.
+    match app-id="RAIL:.*"
+    open-floating true
     draw-border-with-background false
 }
-// window-rule {
-//     match app-id="Zoom Workplace" title="as_toolbar"
-//     draw-border-with-background false
-//     open-floating true
-//     open-focused true
-// }
-// window-rule {
-//     match app-id="zoom" title="Meeting"
-//     draw-border-with-background false
-//     open-floating true
-//     open-focused true
-// }
 // Example: enable rounded corners for all windows
 window-rule {
     geometry-corner-radius 5
@@ -131,7 +132,7 @@ environment {
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 // Status bar and notifications
 spawn-at-startup "waybar"
-spawn-at-startup "mako"
+// spawn-at-startup "mako"
 spawn-at-startup "swayosd-server"
 // System utilities
 spawn-at-startup "swayidle"
@@ -192,8 +193,8 @@ binds {
     Mod+O hotkey-overlay-title="Ollama" {
         spawn-sh "~/.dotfiles/scripts/llm.sh"
     }
-    Mod+Ctrl+T hotkey-overlay-title="Torrent manager" {
-        spawn-sh "ghostty -e ~/.dotfiles/scripts/torrent.sh"
+    Mod+Ctrl+Shift+W hotkey-overlay-title="Windows" {
+        spawn-sh "~/.dotfiles/scripts/windows.sh"
     }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ UTILITIES & MENUS                                                                   │
@@ -238,7 +239,7 @@ binds {
         spawn-sh "~/.dotfiles/scripts/idle.sh"
     }
     Mod+Shift+L hotkey-overlay-title="Lock" {
-        spawn-sh "swaylock --screenshots --grace 5 --fade-in 0.3 --effect-blur 10x5 --clock"
+        spawn-sh " dms ipc call lock lock "
     }
     Mod+Shift+E hotkey-overlay-title="Power menu" {
         spawn-sh "~/.dotfiles/scripts/rofi/power.sh"
@@ -260,26 +261,23 @@ binds {
         power-off-monitors
     }
     XF86PowerOff allow-when-locked=true {
-        spawn "systemctl hibernate"
+        spawn "systemctl suspend-then-hibernate"
     }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ MEDIA KEYS                                                                          │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     // Volume controls
     XF86AudioRaiseVolume allow-when-locked=true {
-        spawn-sh "swayosd-client --output-volume raise"
+        spawn-sh "dms ipc call audio increment 5"
     }
     XF86AudioLowerVolume allow-when-locked=true {
-        spawn-sh "swayosd-client --output-volume lower"
+        spawn-sh "dms ipc call audio decrement 5"
     }
     XF86AudioMute allow-when-locked=true {
-        spawn-sh "swayosd-client --output-volume mute-toggle"
+        spawn-sh "dms ipc call audio mute"
     }
     XF86AudioMicMute allow-when-locked=true {
         spawn-sh "swayosd-client --input-volume mute-toggle"
-    }
-    Caps_Lock {
-        spawn-sh "sleep 0.3 && swayosd-client --caps-lock"
     }
     Num_Lock {
         spawn-sh "sleep 0.3 && swayosd-client --num-lock"
@@ -579,7 +577,7 @@ binds {
 screenshot-path "~/Desktop/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 switch-events {
     lid-close {
-        spawn "notify-send" "The laptop lid is closed! && systemctl hibernate"
+        spawn "notify-send" "The laptop lid is closed! && systemctl suspend-then-hibernate"
     }
 }
 cursor {
