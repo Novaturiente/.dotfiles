@@ -17,6 +17,7 @@ everforest.set(c, scheme="dark", intensity="hard")
 # ============================================================================
 # Tab Settings
 # ============================================================================
+c.url.start_pages = "https://gemini.google.com"
 c.tabs.title.format = "{current_title}"
 c.tabs.padding = {"top": 5, "bottom": 5, "left": 0, "right": 0}
 c.tabs.title.alignment = "center"
@@ -59,33 +60,37 @@ c.scrolling.smooth = True
 c.qt.args = [
     "enable-gpu-rasterization",
     "enable-accelerated-video-decode",
-    "enable-quic",
+    "--disable-features=NetworkService",
 ]
 
 
 # ============================================================================
 # Privacy and Blocking Settings
 # ============================================================================
-c.content.headers.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+# c.content.headers.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
 # c.content.javascript.enabled = False
 c.content.headers.accept_language = "en-US,en;q=0.5"
 c.content.headers.referer = "same-domain"
-c.content.headers.custom = {
-    "Permissions-Policy": "geolocation=(), microphone=(), camera=(), interest-cohort=()"
-}
+c.content.headers.custom = {}
 c.content.cookies.accept = "no-3rdparty"
 c.content.headers.do_not_track = True
+
 c.content.blocking.enabled = True
-c.content.blocking.method = "both"
+c.content.blocking.method = "auto"
 c.content.blocking.adblock.lists = [
     "https://easylist.to/easylist/easylist.txt",
     "https://easylist.to/easylist/easyprivacy.txt",
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt",
 ]
-c.content.dns_prefetch = True
+c.content.dns_prefetch = False
 c.content.autoplay = False
 c.content.geolocation = False
+c.content.proxy_dns_requests = True
 
+config.bind("o", "cmd-set-text -s :open")
+config.bind("O", "cmd-set-text -s :open -t")
+
+c.downloads.location.directory = "~/Downloads/"
 
 # ============================================================================
 # Hint Selection Settings
@@ -116,10 +121,6 @@ c.completion.open_categories = [
 # Custom quick keyword-based search engines
 c.url.searchengines = {
     "DEFAULT": "https://www.google.com/search?q={}",
-    "d": "https://duckduckgo.com/?q={}",
-    "w": "https://en.wikipedia.org/wiki/{}",
-    "yt": "https://www.youtube.com/results?search_query={}",
-    "aw": "https://wiki.archlinux.org/?search={}",
 }
 
 # Always search if input isn't a URL

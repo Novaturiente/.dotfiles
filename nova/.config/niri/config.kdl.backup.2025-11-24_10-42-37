@@ -99,22 +99,21 @@ window-rule {
     draw-border-with-background false
 }
 window-rule {
-    match app-id="Zoom Workplac"
-    draw-border-with-background false
-    open-floating true
-}
-window-rule {
-    match app-id="zoom"
-    draw-border-with-background false
-    open-floating true
-}
-window-rule {
-    // This regex matches any App ID starting with "RAIL:"
-    // This covers Excel, Notepad, or any other RemoteApp you launch.
-    match app-id="RAIL:.*"
-    open-floating true
+    match app-id="Zoom Workplace"
     draw-border-with-background false
 }
+// window-rule {
+//     match app-id="Zoom Workplace" title="as_toolbar"
+//     draw-border-with-background false
+//     open-floating true
+//     open-focused true
+// }
+// window-rule {
+//     match app-id="zoom" title="Meeting"
+//     draw-border-with-background false
+//     open-floating true
+//     open-focused true
+// }
 // Example: enable rounded corners for all windows
 window-rule {
     geometry-corner-radius 5
@@ -193,8 +192,8 @@ binds {
     Mod+O hotkey-overlay-title="Ollama" {
         spawn-sh "~/.dotfiles/scripts/llm.sh"
     }
-    Mod+Ctrl+Shift+W hotkey-overlay-title="Windows" {
-        spawn-sh "~/.dotfiles/scripts/windows.sh"
+    Mod+Ctrl+T hotkey-overlay-title="Torrent manager" {
+        spawn-sh "ghostty -e ~/.dotfiles/scripts/torrent.sh"
     }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ UTILITIES & MENUS                                                                   │
@@ -239,7 +238,7 @@ binds {
         spawn-sh "~/.dotfiles/scripts/idle.sh"
     }
     Mod+Shift+L hotkey-overlay-title="Lock" {
-        spawn-sh " dms ipc call lock lock "
+        spawn-sh "swaylock --screenshots --grace 5 --fade-in 0.3 --effect-blur 10x5 --clock"
     }
     Mod+Shift+E hotkey-overlay-title="Power menu" {
         spawn-sh "~/.dotfiles/scripts/rofi/power.sh"
@@ -268,16 +267,19 @@ binds {
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     // Volume controls
     XF86AudioRaiseVolume allow-when-locked=true {
-        spawn-sh "dms ipc call audio increment 5"
+        spawn-sh "swayosd-client --output-volume raise"
     }
     XF86AudioLowerVolume allow-when-locked=true {
-        spawn-sh "dms ipc call audio decrement 5"
+        spawn-sh "swayosd-client --output-volume lower"
     }
     XF86AudioMute allow-when-locked=true {
-        spawn-sh "dms ipc call audio mute"
+        spawn-sh "swayosd-client --output-volume mute-toggle"
     }
     XF86AudioMicMute allow-when-locked=true {
         spawn-sh "swayosd-client --input-volume mute-toggle"
+    }
+    Caps_Lock {
+        spawn-sh "sleep 0.3 && swayosd-client --caps-lock"
     }
     Num_Lock {
         spawn-sh "sleep 0.3 && swayosd-client --num-lock"
