@@ -1,0 +1,11 @@
+[Unit]
+Description=Enable Acer Battery Health Mode (80% Limit)
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo 1 > /sys/bus/wmi/drivers/acer-wmi-battery/health_mode'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

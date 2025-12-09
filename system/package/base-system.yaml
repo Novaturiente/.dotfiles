@@ -65,3 +65,6 @@
 - flatpak
 - pipewire-alsa
 - alsa-utils
+
+- tlp
+- acer-wmi-battery-dkms-git
