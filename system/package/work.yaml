@@ -3,11 +3,13 @@
 - openssl
 - jdk-openjdk
 - espeak-ng
-- android-studio
 - docker
 - docker-compose
-- visual-studio-code-bin
-- opencode-bin
 - mysql
 - postgresql
 - pgvector
+- antigravity-bin
+- google-chrome
+- zoom
+- libreoffice
+- anydesk-bin

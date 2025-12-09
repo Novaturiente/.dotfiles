@@ -3,7 +3,6 @@
 - xwayland-satellite
 - niri
 - swayidle
-# - swaylock-effects
 - ly
 - terminus-font
 - xdg-desktop-portal
@@ -11,12 +10,14 @@
 - xdg-desktop-portal-gnome
 - mate-polkit
 - rofi
+- brightnessctl
+- udiskie
+# - swaylock-effects
 # - waybar-minimal-git
 # - mako
 # - swayosd
 # - swaybg
-- brightnessctl
-- udiskie
+
 # - network-manager-applet
 - stow
 - upower
@@ -36,5 +37,7 @@
 - materia-gtk-theme
 - whitesur-icon-theme-git
 - nwg-look
-
+- tree
+- wf-recorder
 - dms-shell-git
+- kdeconnect
