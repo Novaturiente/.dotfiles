@@ -4,10 +4,8 @@
 - tree
 - wf-recorder
 - gemini-cli
-- freerdp-git
-- v4l2loopback-dkms
 - zoom
-- onlyoffice
 - libreoffice
 - anydesk-bin
-- emacs-wayland
+- git-filter-repo
+- zen-browser-bin
