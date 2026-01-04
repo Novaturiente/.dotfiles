@@ -55,6 +55,7 @@
 - zip
 - unrar
 - unzip
+- tree
 
 # Secure Boot
 - sbctl
@@ -67,4 +68,7 @@
 - alsa-utils
 
 - tlp
+- tlp-rdw
+- tlp-pd
+- powertop
 - acer-wmi-battery-dkms-git
