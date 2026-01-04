@@ -13,8 +13,9 @@ input {
         natural-scroll
     }
     mouse {
-        // off
-        natural-scroll
+ // off
+        //natural-scroll
+
     }
     warp-mouse-to-focus
     focus-follows-mouse max-scroll-amount="40%"
@@ -84,12 +85,18 @@ prefer-no-csd
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // WINDOW RULES
 // ───────────────────────────────────────────────────────────────────────────────────────────
+// General window rules
 window-rule {
     default-column-width {
         proportion 0.75
     }
     open-focused true
 }
+window-rule {
+    geometry-corner-radius 5
+    clip-to-geometry true
+}
+// Specific window rules
 window-rule {
     match app-id="scrcpy"
     open-floating true
@@ -99,29 +106,27 @@ window-rule {
     draw-border-with-background false
 }
 window-rule {
-    match app-id="Zoom Workplac"
+    match app-id="Zoom Workplace"
     draw-border-with-background false
-    open-floating true
 }
 window-rule {
     match app-id="zoom"
     draw-border-with-background false
-    open-floating true
 }
 window-rule {
-    // This regex matches any App ID starting with "RAIL:"
-    // This covers Excel, Notepad, or any other RemoteApp you launch.
-    match app-id="RAIL:.*"
-    open-floating true
+    match title="as_toolbar"
     draw-border-with-background false
+    block-out-from "screencast"
 }
-// Example: enable rounded corners for all windows
 window-rule {
-    geometry-corner-radius 5
-    clip-to-geometry true
+    match title="ZapZap"
+    draw-border-with-background false
+    block-out-from "screencast"
 }
+// ───────────────────────────────────────────────────────────────────────────────────────────
+// ENVIRONMENT VARIABLES
+// ───────────────────────────────────────────────────────────────────────────────────────────
 environment {
-    // Qt applications
     QT_QPA_PLATFORM "wayland"
     QT_QPA_PLATFORMTHEME "xdgdesktopportal"
 }
@@ -161,7 +166,7 @@ binds {
     // │ APPLICATIONS                                                                        │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+Space hotkey-overlay-title="Open ghostty" {
-        spawn "ghostty"
+        spawn "~/.dotfiles/scripts/rofi/tmux.sh"
     }
     Mod+W hotkey-overlay-title="Qutebrowser" {
         spawn "qutebrowser"
@@ -474,23 +479,23 @@ binds {
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     // Workspace scrolling
     Mod+WheelScrollDown cooldown-ms=150 {
-        focus-workspace-down
+        focus-column-right
     }
     Mod+WheelScrollUp cooldown-ms=150 {
-        focus-workspace-up
+        focus-column-left
     }
     Mod+Ctrl+WheelScrollDown cooldown-ms=150 {
-        move-column-to-workspace-down
+        focus-workspace-down
     }
     Mod+Ctrl+WheelScrollUp cooldown-ms=150 {
-        move-column-to-workspace-up
+        focus-workspace-up
     }
     // Column scrolling
     Mod+WheelScrollRight {
-        focus-column-right
+        move-column-to-workspace-down
     }
     Mod+WheelScrollLeft {
-        focus-column-left
+        move-column-to-workspace-up
     }
     Mod+Ctrl+WheelScrollRight {
         move-column-right
