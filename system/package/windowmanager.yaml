@@ -12,14 +12,8 @@
 - rofi
 - brightnessctl
 - udiskie
-# - swaylock-effects
-# - waybar-minimal-git
-# - mako
-# - swayosd
-# - swaybg
 
 # - network-manager-applet
-- stow
 - upower
 - batsignal
 - grim
@@ -27,8 +21,6 @@
 - swappy
 - wl-clipboard
 - cliphist
-- playerctl
-- zenity
 - noto-fonts-emoji
 - ttf-jetbrains-mono-nerd
 - ttf-iosevkaterm-nerd
@@ -37,7 +29,5 @@
 - materia-gtk-theme
 - whitesur-icon-theme-git
 - nwg-look
-- tree
 - wf-recorder
 - dms-shell-git
-- kdeconnect

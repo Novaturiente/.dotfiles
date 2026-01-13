@@ -593,3 +593,5 @@ layer-rule {
     baba-is-float true
 }
 
+
+include "dms/cursor.kdl"

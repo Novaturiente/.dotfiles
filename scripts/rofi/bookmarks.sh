@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 BOOKMARKS_FILE="$HOME/.dotfiles/.bookmarks"
 BROWSER="qutebrowser"
