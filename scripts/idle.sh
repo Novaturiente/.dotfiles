@@ -1,6 +1,4 @@
-#!/usr/bin/env sh
-
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Check if swayidle is running
 if pgrep -x swayidle >/dev/null; then
