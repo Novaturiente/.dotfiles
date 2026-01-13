@@ -1,0 +1,11 @@
+{
+  "powerUsagePlugin": {
+    "enabled": true
+  },
+  "niriWindows": {
+    "enabled": false
+  },
+  "wallpaperShufflerPlugin": {
+    "enabled": true
+  }
+}

@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+import os
+import subprocess
+import sys
+from urllib.parse import urlparse
+
+def get_rofi_input(prompt, password=False):
+    """Prompts user for input via rofi."""
+    cmd = ["rofi", "-dmenu", "-p", prompt, "-lines", "0"]
+    if password:
+        cmd.append("-password")
+    
+    result = subprocess.run(cmd, input="", stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    return result.stdout.strip()
+
+def send_notification(message):
+    """Sends a notification to qutebrowser."""
+    fifo = os.environ.get("QUTE_FIFO")
+    if fifo:
+        with open(fifo, "w") as f:
+            f.write(f"message-info '{message}'\n")
+
+def main():
+    url = os.environ.get("QUTE_URL")
+    if not url:
+        sys.exit(1)
+
+    # Extract domain
+    domain = urlparse(url).netloc
+    # Remove www. prefix if present
+    if domain.startswith("www."):
+        domain = domain[4:]
+
+    if not domain:
+        send_notification("Error: Could not determine domain")
+        sys.exit(1)
+
+    # Prompt for Username
+    username = get_rofi_input(f"Username for {domain}:")
+    if not username:
+        return # User cancelled
+
+    # Prompt for Password
+    password = get_rofi_input(f"Password for {username}:", password=True)
+    if not password:
+        return # User cancelled
+
+    # Construct pass entry path
+    # Convention: web/domain/username
+    pass_path = f"web/{domain}/{username}"
+
+    # Insert into pass (piping password twice for confirmation)
+    try:
+        # pass insert -f (force) to overwrite if exists, reads from stdin
+        # We need to send password twice separated by newline if using standard insert,
+        # but 'insert -m' (multiline) might be better?
+        # Actually 'pass insert -e' opens editor.
+        # 'pass insert <name>' reads from stdin. 
+        
+        proc = subprocess.Popen(
+            ["pass", "insert", "-f", "-m", pass_path],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        # We send password + newline (and maybe username as metadata if -m)
+        input_data = f"{password}\nlogin: {username}\nurl: {url}"
+        stdout, stderr = proc.communicate(input=input_data)
+
+        if proc.returncode == 0:
+            send_notification(f"Saved password for {username} @ {domain}")
+        else:
+            send_notification(f"Error saving password: {stderr.strip()}")
+
+    except Exception as e:
+        send_notification(f"Script Error: {e}")
+
+if __name__ == "__main__":
+    main()

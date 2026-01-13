@@ -17,7 +17,6 @@
 # Development
 - base-devel
 - git
-- cmake
 
 # USB Support
 - libusb-compat
@@ -28,6 +27,7 @@
 - btrfs-progs
 - f2fs-tools
 - exfatprogs
+- gparted
 
 # Firewall
 - iptables-nft
@@ -44,12 +44,6 @@
 - blueman
 - bluez-utils
 
-# Audio
-- pipewire
-- pipewire-pulse
-- wireplumber
-- libpulse
-
 # Compression
 - 7zip
 - zip
@@ -57,16 +51,35 @@
 - unzip
 - tree
 
+# Security
+- pass
+
 # Secure Boot
 - sbctl
 - systemd-ukify
 
+# Package Managers
 - paru
-
 - flatpak
+
+# Audio
+- pipewire
+- pipewire-pulse
+- wireplumber
+- libpulse
 - pipewire-alsa
 - alsa-utils
 
+# System Libraries
+- readline
+- openssl
+
+# Utilities
+- stow
+- zenity
+- xdotool
+
+# Power Management
 - tlp
 - tlp-rdw
 - tlp-pd

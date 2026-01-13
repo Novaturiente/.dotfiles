@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Get the current mute status
 MUTE_STATUS=$(pamixer --get-mute)
