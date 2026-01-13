@@ -134,6 +134,23 @@ c.content.geolocation = False
 c.content.site_specific_quirks.enabled = True
 
 # ============================================================================
+# Site Specific Overrides
+# ============================================================================
+
+# Google Login (Fix "Browser not supported")
+with config.pattern("*://accounts.google.com/*") as p:
+    p.content.canvas_reading = True
+    p.content.webgl = True
+    p.content.blocking.enabled = False
+    p.content.cookies.accept = "all"
+    p.content.headers.referer = "always"
+    p.content.headers.user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0"
+
+# Google Services (General)
+with config.pattern("*://*.google.com/*") as p:
+    p.content.geolocation = True
+
+# ============================================================================
 # Hint Selection & Navigation
 # ============================================================================
 
@@ -192,6 +209,44 @@ config.bind("I", "hint inputs")
 config.bind("h", "hint all hover")
 config.bind(";f", "hint links run open {hint-url}")
 
+# Load darkmode exclusions
+import os
+
+exclude_file = os.path.expanduser("~/.config/qutebrowser/darkmode_excludes")
+if os.path.exists(exclude_file):
+    with open(exclude_file, "r") as f:
+        c.colors.webpage.darkmode.enabled = True  # Default to True
+        for line in f:
+            domain = line.strip()
+            if domain:
+                with config.pattern(f"*://{domain}/*") as p:
+                    p.colors.webpage.darkmode.enabled = False
+
+# Toggle dark mode binding
+
+
+config.bind(",dm", "spawn --userscript toggle_darkmode.py")
+config.bind(
+    ",b",
+    "spawn ~/.dotfiles/scripts/rofi/bookmarks.sh {url} ;; message-info 'Bookmark added'",
+)
+
+
+# Password Manager (Pass + Rofi)
+config.bind(
+    ",pl",
+    'spawn --userscript qute-pass --dmenu-invocation "rofi -dmenu -p Login"',
+)
+config.bind(
+    ",pu",
+    'spawn --userscript qute-pass --username-only --dmenu-invocation "rofi -dmenu -p Login"',
+)
+config.bind(
+    ",pp",
+    'spawn --userscript qute-pass --password-only --dmenu-invocation "rofi -dmenu -p Login"',
+)
+config.bind(",pa", "spawn --userscript qute-pass-add")
+
 # Tab navigation
 config.bind("<Alt-Right>", "tab-next")
 config.bind("<Alt-Left>", "tab-prev")
@@ -203,7 +258,3 @@ config.bind("<Ctrl+Alt+t>", "spawn -d floorp {url} ;; tab-close")
 config.bind(",c", "hint links spawn --userscript cast.sh {hint-url}")
 config.bind(",m", "hint links spawn mpv {hint-url}")
 config.bind(",v", "spawn --userscript vibrance.sh")
-config.bind(
-    ",b",
-    "spawn ~/.dotfiles/scripts/rofi/bookmarks.sh {url} ;; message-info 'Bookmark added'",
-)

@@ -4,17 +4,17 @@ sudo cp novarch /usr/bin/novarch
 
 novarch init
 
-sudo cp system/etc/tlp.conf /etc/tlp.conf
+sudo cp system/system/etc/tlp.conf /etc/tlp.conf
 
-sudo cp system/etc/ly/config.ini /etc/ly/config.ini
+sudo cp system/system/etc/ly/config.ini /etc/ly/config.ini
 
-sudo cp system/etc/modules-load/ntsync.conf /etc/modules-load.d/ntsync.conf
+sudo cp system/system/etc/modules-load/ntsync.conf /etc/modules-load.d/ntsync.conf
 
-sudo cp ./system/etc/systemd/sleep.conf /etc/systemd/sleep.conf
+sudo cp ./system/system/etc/systemd/sleep.conf /etc/systemd/sleep.conf
 
-sudo cp ./system/etc/modprobe.d/nvidia-sleep.conf /etc/modprobe.d/nvidia-sleep.conf
+sudo cp ./system/system/etc/modprobe.d/nvidia-sleep.conf /etc/modprobe.d/nvidia-sleep.conf
 
-mdkir ~/.config
+mkdir ~/.config
 
 # git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
 #

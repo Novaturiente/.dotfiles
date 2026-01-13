@@ -1,14 +1,12 @@
 - pkgconf
 - meson
 - cmake
-- python-pipx
 - lua
 - luarocks
 - nodejs-lts-jod
 - npm
 - rustup
 - rust-analyzer
-- go
 - uv
 - pyright
 - python-pynvim
@@ -20,6 +18,4 @@
 - shellcheck
 - prettier
 
-- gemini-cli
 - git-filter-repo
-- localsend

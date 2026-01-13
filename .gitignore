@@ -1,22 +1,24 @@
-fishd.tmp*
+# Backup files
+*.back
+*.backup*
+*~
+*.swp
+*.swo
+*#
 
-nova/.config/zsh/.histfile
-nova/.config/fish/fish_variables
-nova/.config/qutebrowser_work/cache/
-nova/.config/qutebrowser_work/data/
-.opencode/
-**/.opencode/
-docker/database/
-nova/.config/qutebrowser_work/config/__pycache__
-novarch/system.json
-novarch/system.yaml
-.aider*
-**/default.target.wants/
-nova/.config/ranger/__pycache__/commands.cpython-313.pyc
-nova/.config/menus/applications-merged/user-chrome-apps.menu
+# Editor temporary files
+COMMIT_EDITMSG~
+*.tmp
 
-# Ignore all .desktop files
-*.desktop
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# Except feh.desktop
-!feh.desktop
+# System files
+*.log
+*.pid
+
+# Temporary directories
+/tmp/
+*.cache

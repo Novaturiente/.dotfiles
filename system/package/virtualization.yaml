@@ -1,7 +1,7 @@
-- podman
-- podman-compose
-- openbsd-netcat
-- qemu
-- virt-manager
-- net-tools
-- freerdp-git
+#- podman
+#- podman-compose
+#- openbsd-netcat
+#- qemu
+#- virt-manager
+#- net-tools
+#- freerdp-git
