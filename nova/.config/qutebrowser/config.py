@@ -33,11 +33,11 @@ c.colors.webpage.darkmode.policy.images = "never"
 # ============================================================================
 
 # Tab display settings
-# c.tabs.position = "right"
+c.tabs.position = "top"
 # c.tabs.width = 125
 c.tabs.title.format = "{current_title}"
-c.tabs.title.alignment = "center"
-c.tabs.padding = {"top": 5, "bottom": 5, "left": 0, "right": 0}
+c.tabs.title.alignment = "left"
+c.tabs.padding = {"top": 5, "bottom": 5, "left": 5, "right": 5}
 c.tabs.favicons.scale = 1
 c.fonts.tabs.selected = "12pt default_family"
 c.fonts.tabs.unselected = "10pt default_family"
@@ -92,7 +92,7 @@ c.qt.args = [
 # ============================================================================
 
 # User agent (mimics Edge/Chrome on Windows)
-c.content.headers.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+# c.content.headers.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
 
 # JavaScript settings
 c.content.javascript.clipboard = "access-paste"
@@ -119,7 +119,7 @@ c.content.dns_prefetch = True
 
 # Content blocking
 c.content.blocking.enabled = True
-c.content.blocking.method = "both"
+c.content.blocking.method = "auto"
 c.content.blocking.adblock.lists = [
     "https://easylist.to/easylist/easylist.txt",
     "https://easylist.to/easylist/easyprivacy.txt",
@@ -143,7 +143,7 @@ with config.pattern("*://accounts.google.com/*") as p:
     p.content.webgl = True
     p.content.blocking.enabled = False
     p.content.cookies.accept = "all"
-    p.content.headers.referer = "always"
+
     p.content.headers.user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0"
 
 # Google Services (General)
@@ -225,36 +225,37 @@ if os.path.exists(exclude_file):
 # Toggle dark mode binding
 
 
-config.bind(",dm", "spawn --userscript toggle_darkmode.py")
+config.bind("<Space>dm", "spawn --userscript toggle_darkmode.py")
 config.bind(
-    ",b",
+    "<Space>b",
     "spawn ~/.dotfiles/scripts/rofi/bookmarks.sh {url} ;; message-info 'Bookmark added'",
 )
 
 
 # Password Manager (Pass + Rofi)
 config.bind(
-    ",pl",
+    "<Space>pl",
     'spawn --userscript qute-pass --dmenu-invocation "rofi -dmenu -p Login"',
 )
 config.bind(
-    ",pu",
+    "<Space>pu",
     'spawn --userscript qute-pass --username-only --dmenu-invocation "rofi -dmenu -p Login"',
 )
 config.bind(
-    ",pp",
+    "<Space>pp",
     'spawn --userscript qute-pass --password-only --dmenu-invocation "rofi -dmenu -p Login"',
 )
-config.bind(",pa", "spawn --userscript qute-pass-add")
+config.bind("<Space>pa", "spawn --userscript qute-pass-add")
 
 # Tab navigation
 config.bind("<Alt-Right>", "tab-next")
 config.bind("<Alt-Left>", "tab-prev")
+config.bind("<Space>tt", "config-cycle tabs.position left top ;; message-info 'Toggled Tabs Layout'")
 
 # External applications
-config.bind("<Ctrl+Alt+t>", "spawn -d floorp {url} ;; tab-close")
+config.bind("<Ctrl+Alt+t>", "spawn -d zen-browser {url} ;; tab-close")
 
 # Media and video bindings
-config.bind(",c", "hint links spawn --userscript cast.sh {hint-url}")
-config.bind(",m", "hint links spawn mpv {hint-url}")
-config.bind(",v", "spawn --userscript vibrance.sh")
+config.bind("<Space>c", "hint links spawn --userscript cast.sh {hint-url}")
+config.bind("<Space>m", "hint links spawn mpv {hint-url}")
+config.bind("<Space>v", "spawn --userscript vibrance.sh")
