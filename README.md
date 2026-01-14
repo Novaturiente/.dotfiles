@@ -126,12 +126,20 @@ Container configurations in `podman/`:
 ## 🎨 Desktop Environment
 
 - **Window Manager:** Niri (Wayland compositor)
-- **Display Manager:** Greetd with tuigreet
+- **Lockscreen:** ly
+- **Top Bar:** Dank Linux
 - **Terminal:** Ghostty
-- **Shell:** Fish (with zsh fallback)
+- **Shell:** ZSH
+- **File Manager:** Yazi
 - **Editor:** Doom Emacs + Neovim
-- **Browser:** Qutebrowser
-- **Application Launcher:** Rofi
+- **Launcher:** Rofi
+
+### 🌐 Qutebrowser Profiles
+
+This configuration relies on two distinct browser profiles to balance privacy and usability:
+
+- **Normal Profile:** Optimized for privacy and security. Uses stricter blocking lists and hardening settings.
+- **Work Profile:** Configured for maximum compatibility. Permissive settings for Google services, Zoom, and other work tools.
 
 ## 🔧 Hardware Profile
 
@@ -160,3 +168,37 @@ The setup script configures iptables firewall with:
 - [GNU Stow Documentation](https://www.gnu.org/software/stow/)
 - [Arch Linux Wiki](https://wiki.archlinux.org/)
 - [Niri Documentation](https://github.com/YaLTeR/niri)
+
+## 🆘 Disaster Recovery
+
+Steps to restore the system from a fresh install or data loss:
+
+### 1. Bootstrap Network (Live USB)
+If running from a live environment without `setup.sh` network configs:
+```bash
+# Connect to WiFi manually if needed
+iwctl station wlan0 connect <SSID>
+```
+
+### 2. Restore Secrets (Manual)
+**CRITICAL:** These files are NOT in the repository and must be restored from an external encrypted backup (USB/Cloud).
+
+*   **GPG Keys:** (Required for `pass` password manager)
+    ```bash
+    gpg --import private-key.asc
+    gpg --import-ownertrust ownertrust.txt
+    ```
+*   **SSH Keys:**
+    ```bash
+    mkdir -p ~/.ssh
+    cp /backup/id_ed25519 ~/.ssh/
+    chmod 600 ~/.ssh/id_ed25519
+    ```
+*   **Rclone Config:** `~/.config/rclone/rclone.conf`
+
+### 3. Clone & Provision
+Once keys are restored (for git auth):
+```bash
+git clone git@github.com:username/dotfiles.git ~/.dotfiles
+./system/setup.sh
+```

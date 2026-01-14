@@ -532,7 +532,14 @@
           "all"
         ]
       },
-      "positions": {}
+      "positions": {
+        "eDP-1": {
+          "width": 320,
+          "height": 480,
+          "x": 800,
+          "y": 300
+        }
+      }
     },
     {
       "id": "dw_1768279550386_up4ys3qjo",
@@ -561,6 +568,7 @@
       }
     }
   ],
+  "desktopWidgetGroups": [],
   "builtInPluginSettings": {
     "dms_settings_search": {
       "trigger": "?"
