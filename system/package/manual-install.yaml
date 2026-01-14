@@ -1,1 +1,4 @@
 - python-tldextract
+- dmidecode
+- v4l-utils
+- cameractrls
