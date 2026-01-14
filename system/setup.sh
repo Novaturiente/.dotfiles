@@ -14,7 +14,7 @@ sudo cp ./system/system/etc/systemd/sleep.conf /etc/systemd/sleep.conf
 
 sudo cp ./system/system/etc/modprobe.d/nvidia-sleep.conf /etc/modprobe.d/nvidia-sleep.conf
 
-mkdir ~/.config
+mkdir -p ~/.config
 
 # git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
 #
