@@ -100,4 +100,3 @@ bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 bindkey '^I' menu-select
 export PATH=/home/nova/.rbenv/bin:$PATH
 eval "$(rbenv init - zsh)"
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
