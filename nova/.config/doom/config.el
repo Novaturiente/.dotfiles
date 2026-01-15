@@ -13,7 +13,7 @@
 (setq display-line-numbers-type t)
 (setq comint-terminal-type "xterm-256color")
 (setq vterm-shell "/usr/bin/zsh")
-(add-hook 'emacs-startup-hook #'vterm)
+;; (add-hook 'emacs-startup-hook #'vterm)
 (add-hook 'after-init-hook #'spacious-padding-mode)
 
 (add-hook 'after-make-frame-functions #'spacious-padding-mode)
