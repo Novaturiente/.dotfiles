@@ -1,5 +1,4 @@
 - python-tldextract
-- dmidecode
-- v4l-utils
-- cameractrls
-- emacs-wayland
+- catt
+- sunshine
+- rbenv
