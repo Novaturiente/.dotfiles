@@ -1,0 +1,42 @@
+windows:
+- active: true
+  geometry: !!binary |
+    AdnQywADAAAAAAUAAAAAAAAACo0AAAP9AAAFAAAAAAAAAAqNAAAD/QAAAAAAAAAAB4AAAAUAAAAA
+    AAAACo0AAAP9
+  tabs:
+  - active: true
+    history:
+    - last_visited: '2026-01-15T14:44:11'
+      pinned: false
+      title: Google Gemini
+      url: https://gemini.google.com/app
+    - last_visited: '2026-01-15T14:44:23'
+      pinned: false
+      title: Sign in - Google Accounts
+      url: https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fgemini.google.com%2Fapp%2F959f64588565b872&dsh=S-2147225085%3A1768468462998615&ec=GAZAkgU&followup=https%3A%2F%2Fgemini.google.com%2Fapp%2F959f64588565b872&ifkv=AXbMIuCuR4tr5V0VYatYD1MF60PXaXn12Mv2PnLtZl3yo0mu4AMxKfV2gqMoepuRQSPIUgA2VFG2&passive=1209600&flowName=GlifWebSignIn&flowEntry=ServiceLogin
+    - last_visited: '2026-01-15T14:45:30'
+      pinned: false
+      title: 2-Step Verification To help keep your account safe, Google wants to make
+        sure it’s really you trying to sign in
+      url: https://accounts.google.com/v3/signin/challenge/dp?TL=APgKAcbNS_otaxl7NNp--OSQtGv_vfrKl3iRLxEp6Ibd6ef39hjxE9NaHCnXuG6y&checkConnection=youtube%3A526&checkedDomains=youtube&cid=10&continue=https%3A%2F%2Fgemini.google.com%2Fapp%2F959f64588565b872&dsh=S-2147225085%3A1768468462998615&ec=GAZAkgU&flowEntry=ServiceLogin&flowName=GlifWebSignIn&followup=https%3A%2F%2Fgemini.google.com%2Fapp%2F959f64588565b872&ifkv=AXbMIuCuR4tr5V0VYatYD1MF60PXaXn12Mv2PnLtZl3yo0mu4AMxKfV2gqMoepuRQSPIUgA2VFG2&pstMsg=1
+    - last_visited: '2026-01-15T14:45:41'
+      pinned: false
+      title: Google Account
+      url: https://gds.google.com/web/homeaddress?cardIndex=0&hl=en&authuser=0&tda=CAA&gdsid=-1311883902&continue=https%3A%2F%2Faccounts.google.com%2FServiceLogin%3Fcontinue%3Dhttps%3A%2F%2Fgemini.google.com%2Fapp%2F959f64588565b872%26hl%3Den%26authuser%3D0%26passive%3Dtrue%26sarp%3D1%26aodrpl%3D1%26checkedDomains%3Dyoutube%26checkConnection%3Dyoutube%3A526%26pstMsg%3D1&rapt=AEjHL4ND9d1_WZ30dpQjmgIPa64czmPgl1EpEXeH7gin6CsdP5b-A4FnozA_DGIWo7U6PvHP4UdjNBspfIU68vBhSo-Wr-DO1A&ep=p
+    - last_visited: '2026-01-15T14:45:45'
+      pinned: false
+      title: Google Account
+      url: https://gds.google.com/web/pgc?cardIndex=1&hl=en&authuser=0&tda=CAA&gdsid=-1311883902&continue=https%3A%2F%2Faccounts.google.com%2FServiceLogin%3Fcontinue%3Dhttps%3A%2F%2Fgemini.google.com%2Fapp%2F959f64588565b872%26hl%3Den%26authuser%3D0%26passive%3Dtrue%26sarp%3D1%26aodrpl%3D1%26checkedDomains%3Dyoutube%26checkConnection%3Dyoutube%3A526%26pstMsg%3D1&rapt=AEjHL4ND9d1_WZ30dpQjmgIPa64czmPgl1EpEXeH7gin6CsdP5b-A4FnozA_DGIWo7U6PvHP4UdjNBspfIU68vBhSo-Wr-DO1A&ep=p
+    - last_visited: '2026-01-15T14:45:52'
+      pinned: false
+      title: Google Gemini
+      url: https://gemini.google.com/app/959f64588565b872?pli=1
+    - active: true
+      last_visited: '2026-01-15T14:45:53'
+      pinned: false
+      scroll-pos:
+        x: 0
+        y: 0
+      title: Google Gemini
+      url: https://gemini.google.com/app?pli=1
+      zoom: 1.0

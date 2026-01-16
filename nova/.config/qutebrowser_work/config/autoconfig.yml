@@ -6,7 +6,5 @@
 
 config_version: 2
 settings:
-  colors.webpage.darkmode.enabled:
-    '*://localhost:3000/*': false
-  content.media.audio_capture:
-    http://localhost:3000: true
+  tabs.position:
+    global: top
