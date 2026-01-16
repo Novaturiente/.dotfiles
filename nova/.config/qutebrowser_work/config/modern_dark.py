@@ -8,8 +8,8 @@ def setup(c):
     fg_default = "#f4f4f5"  # Zinc 100
     fg_muted = "#a1a1aa"    # Zinc 400
     
-    accent = "#3b82f6"      # Blue 500
-    accent_dark = "#2563eb" # Blue 600
+    accent = "#2563eb"      # Blue 600
+    accent_dark = "#1d4ed8" # Blue 700
     
     error = "#ef4444"       # Red 500
     warning = "#f59e0b"     # Amber 500

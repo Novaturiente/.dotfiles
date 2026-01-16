@@ -25,7 +25,8 @@
      "9b9d7a851a8e26f294e778e02c8df25c8a3b15170e6f9fd6965ac5f2544ef2a9"
      "921f165deb8030167d44eaa82e85fcef0254b212439b550a9b6c924f281b5695"
      "09e98c608045c7778c67d5671161cfbb741cc25350abe61e3eb2ce798bb88209"
-     "56044c5a9cc45b6ec45c0eb28df100d3f0a576f18eef33ff8ff5d32bac2d9700" default)))
+     "56044c5a9cc45b6ec45c0eb28df100d3f0a576f18eef33ff8ff5d32bac2d9700" default))
+ '(package-selected-packages '(aider)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

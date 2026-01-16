@@ -27,7 +27,7 @@ output "eDP-1" {
     // off
     mode "1920x1080@60"
     scale 1
-    position x=1280 y=0
+    position x=0 y=0
 }
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // VISUAL SETTINGS & LAYOUT
@@ -129,6 +129,7 @@ window-rule {
 environment {
     QT_QPA_PLATFORM "wayland"
     QT_QPA_PLATFORMTHEME "xdgdesktopportal"
+    WLR_HEADLESS_OUTPUTS "1"
 }
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // STARTUP APPLICATIONS
@@ -144,7 +145,7 @@ spawn-at-startup "swayidle"
 spawn-at-startup "~/.dotfiles/scripts/wallpaper.sh"
 // Background services
 spawn-sh-at-startup "kdeconnectd"
-// spawn-sh-at-startup "emacs --daemon"
+spawn-sh-at-startup "emacs --daemon"
 spawn-sh-at-startup "blueman-applet"
 spawn-sh-at-startup "kdeconnect-indicator"
 spawn-sh-at-startup "nm-applet --indicator"
@@ -187,10 +188,10 @@ binds {
         spawn-sh "emacs"
     }
     Mod+N hotkey-overlay-title="Noevide" {
-        spawn-sh "neovide"
+        spawn-sh "emacsclient -c"
     }
     Mod+Shift+N hotkey-overlay-title="Neovim" {
-        spawn-sh "ghostty -e nvim"
+        spawn-sh "neovide"
     }
     Mod+E hotkey-overlay-title="File manager" {
         spawn-sh "ghostty -e yazi"
@@ -592,6 +593,5 @@ layer-rule {
     match namespace="^$"
     baba-is-float true
 }
-
-
 include "dms/cursor.kdl"
+
