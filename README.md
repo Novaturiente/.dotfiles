@@ -18,6 +18,8 @@ Complete configuration repository for Arch Linux system setup, managed with GNU 
 └── podman/           # Podman container configurations
 ```
 
+.dotfiles/nova/ is the home directory configurations (stow-managed), when editing configuration instead of looking at ~/.config first look at .dotfiles/nova/.config/
+
 ## 🚀 Quick Start
 
 ### Initial Setup
