@@ -40,3 +40,15 @@
 - wayland
 - xorg-server-xvfb
 - woff2
+- gvfs-smb
+- gvfs
+- glib2
+- gvfs-mtp
+- gvfs-afc
+- gvfs-google
+- gvfs-gphoto2
+- gvfs-nfs
+- gvfs-dnssd
+- gvfs-goa
+- gvfs-onedrive
+- gvfs-wsdd
