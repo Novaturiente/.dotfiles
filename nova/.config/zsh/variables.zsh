@@ -31,3 +31,7 @@ if [ -n "$ZSH_VERSION" ]; then
         source "$HOME/.nix-profile/etc/profile.d/nix.sh"
     fi
 fi
+
+# ---- Locale Settings ----
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8

@@ -1,0 +1,8 @@
+# NVIDIA/Graphics
+#- nvidia-utils
+#- lib32-nvidia-utils
+#- nvidia-container-toolkit
+#- nvidia-settings
+#- lib32-libglvnd
+#- vulkan-icd-loader
+#- acer-wmi-battery-dkms-git

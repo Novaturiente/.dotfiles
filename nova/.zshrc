@@ -14,9 +14,11 @@ fi
 if [ -f ~/.env ]; then
   source ~/.env
 fi
+if [ -f "$HOME/.local/share/../bin/env" ]; then
+  . "$HOME/.local/share/../bin/env"
+fi
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
-. "$HOME/.local/share/../bin/env"
 export PATH=~/.npm-global/bin:$PATH
 export PATH=/home/nova/.local/share/gem/ruby/3.4.0/bin:$PATH
 

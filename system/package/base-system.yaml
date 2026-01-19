@@ -4,6 +4,7 @@
 - pacman-contrib
 - xdg-user-dirs
 - intel-ucode
+- acpi_call
 
 # Network
 - networkmanager
@@ -31,14 +32,6 @@
 
 # Firewall
 - iptables-nft
-
-# NVIDIA/Graphics
-- nvidia-utils
-- lib32-nvidia-utils
-- nvidia-container-toolkit
-- nvidia-settings
-- lib32-libglvnd
-- vulkan-icd-loader
 
 # Bluetooth
 - blueman
@@ -84,4 +77,3 @@
 - tlp-rdw
 - tlp-pd
 - powertop
-- acer-wmi-battery-dkms-git
