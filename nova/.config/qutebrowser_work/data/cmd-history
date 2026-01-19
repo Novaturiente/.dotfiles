@@ -28,3 +28,8 @@
 :open -t g,co/sc
 :open g.co/sc
 :open https://chatgpt.com/
+:open -t yazi smb
+/smb
+:open courses.eecglobal.com
+:open -t courses.eecglobal.com
+:open -t wiring

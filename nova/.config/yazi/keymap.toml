@@ -4,6 +4,27 @@
 on = "M"
 run = "plugin mount"
 
+# HOME NAVIGATION
+[[mgr.prepend_keymap]]
+on = "H"
+run = "cd ~"
+desc = "Go to home directory"
+
+# SMB MOUNT (Direct)
+[[mgr.prepend_keymap]]
+on = ["g", "s"]
+run = 'shell "gio mount smb://192.168.220.100/Shared --anonymous; ya emit cd \"/run/user/1000/gvfs/smb-share:server=192.168.220.100,share=shared\""'
+desc = "Mount and go to SMB share"
+
+# CREATE
+[[mgr.prepend_keymap]]
+on = ["m", "k"]
+run = "create"
+desc = "Create file or directory (end with / for folder)"
+
+
+
+
 
 # SMART FILTER
 [[mgr.prepend_keymap]]
@@ -26,24 +47,24 @@ run = "plugin toggle-pane min-preview"
 desc = "Show or hide the preview pane"
 
 [[mgr.prepend_keymap]]
-on = "T"
+on = "<C-t>"
 run = "plugin toggle-pane max-preview"
 desc = "Maximize or restore the preview pane"
 
 [[mgr.prepend_keymap]]
 on = "P"
 run = "plugin toggle-pane min-parent"
-desc = "Show or hide the preview pane"
+desc = "Show or hide the parent pane"
 
 [[mgr.prepend_keymap]]
-on = "P"
-run = "plugin toggle-pane min-parent"
-desc = "Maximize or restore the preview pane"
+on = "<C-p>"
+run = "plugin toggle-pane max-parent"
+desc = "Maximize or restore the parent pane"
 
 [[mgr.prepend_keymap]]
 on = "R"
 run = "plugin toggle-pane reset"
-desc = "Maximize or restore the preview pane"
+desc = "Reset pane layout"
 
 [[mgr.prepend_keymap]]
 on = "<C-y>"
@@ -68,3 +89,9 @@ desc = "Send via KDE Connect"
 
 [keys.normal]
 o = "open --choose"
+
+# INPUT BINDINGS
+[[input.prepend_keymap]]
+on = "<Tab>"
+run = "complete"
+desc = "Complete the command/path"

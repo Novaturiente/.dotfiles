@@ -1,33 +1,6 @@
-2026/01/18-21:17:22.689 7b10f Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/Session Storage/MANIFEST-000001
-2026/01/18-21:17:22.690 7b10f Recovering log #3
-2026/01/18-21:17:22.691 7b10f Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/Session Storage/000003.log 
-2026/01/18-21:17:43.037 7b10f Level-0 table #5: started
-2026/01/18-21:17:43.048 7b10f Level-0 table #5: 26103 bytes OK
-2026/01/18-21:17:43.057 7b10f Delete type=0 #3
-2026/01/18-21:19:37.746 7b111 Level-0 table #7: started
-2026/01/18-21:19:37.802 7b111 Level-0 table #7: 684037 bytes OK
-2026/01/18-21:19:37.811 7b111 Delete type=0 #4
-2026/01/18-21:22:40.510 7b111 Level-0 table #9: started
-2026/01/18-21:22:40.521 7b111 Level-0 table #9: 26313 bytes OK
-2026/01/18-21:22:40.536 7b111 Delete type=0 #6
-2026/01/18-21:25:56.265 7b10f Level-0 table #11: started
-2026/01/18-21:25:56.291 7b10f Level-0 table #11: 348656 bytes OK
-2026/01/18-21:25:56.301 7b10f Delete type=0 #8
-2026/01/18-21:28:42.467 7b10f Level-0 table #13: started
-2026/01/18-21:28:42.478 7b10f Level-0 table #13: 361138 bytes OK
-2026/01/18-21:28:42.486 7b10f Delete type=0 #10
-2026/01/18-21:30:42.428 7b111 Level-0 table #15: started
-2026/01/18-21:30:42.480 7b111 Level-0 table #15: 360827 bytes OK
-2026/01/18-21:30:42.489 7b111 Delete type=0 #12
-2026/01/18-21:30:42.490 7b111 Compacting 4@0 + 1@1 files
-2026/01/18-21:30:42.513 7b111 Generated table #16@0: 17 keys, 684658 bytes
-2026/01/18-21:30:42.513 7b111 Compacted 4@0 + 1@1 files => 684658 bytes
-2026/01/18-21:30:42.521 7b111 compacted to: files[ 0 1 1 0 0 0 0 ]
-2026/01/18-21:30:42.521 7b111 Delete type=2 #7
-2026/01/18-21:30:42.522 7b111 Delete type=2 #9
-2026/01/18-21:30:42.522 7b111 Delete type=2 #11
-2026/01/18-21:30:42.522 7b111 Delete type=2 #13
-2026/01/18-21:30:42.522 7b111 Delete type=2 #15
-2026/01/19-10:07:49.567 7b111 Level-0 table #18: started
-2026/01/19-10:07:49.594 7b111 Level-0 table #18: 349187 bytes OK
-2026/01/19-10:07:49.603 7b111 Delete type=0 #14
+2026/01/19-12:41:11.468 5529 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/Session Storage/MANIFEST-000001
+2026/01/19-12:41:11.472 5529 Recovering log #17
+2026/01/19-12:41:11.472 5529 Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/Session Storage/000017.log 
+2026/01/19-12:41:17.169 5529 Level-0 table #21: started
+2026/01/19-12:41:17.187 5529 Level-0 table #21: 685237 bytes OK
+2026/01/19-12:41:17.196 5529 Delete type=0 #17
