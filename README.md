@@ -111,9 +111,9 @@ System-level configurations in `system/system/etc/`:
 
 - **greetd/** - Display manager (tuigreet → niri)
 - **ly/** - Alternative login manager configuration
-- **tlp.conf** - Power management (RTX 2050 + Intel i5 12th Gen optimized)
+- **tlp.conf** - Power management (Intel Core Ultra 5 optimized)
 - **systemd/sleep.conf** - Suspend/hibernate configuration
-- **modprobe.d/** - NVIDIA sleep configuration
+- **modprobe.d/** - Kernel module configuration
 - **modules-load/** - Kernel modules (ntsync for WSL compatibility)
 - **boot/grub/** - Custom GRUB theme (CyberSynchro)
 
@@ -121,9 +121,9 @@ System-level configurations in `system/system/etc/`:
 
 Container configurations in `podman/`:
 
-- **ollama.yml** - Ollama LLM service (NVIDIA GPU support)
+- **ollama.yml** - Ollama LLM service
 - **ollama-ui.yml** - Ollama web UI
-- **immich/** - Immich photo management (GPU-accelerated ML)
+- **immich/** - Immich photo management
 - **macos.yaml** - macOS development container
 
 ## 🎨 Desktop Environment
@@ -146,10 +146,10 @@ This configuration relies on two distinct browser profiles to balance privacy an
 
 ## 🔧 Hardware Profile
 
-- **Laptop:** Acer
-- **CPU:** Intel i5 12th Gen
-- **GPU:** NVIDIA RTX 2050
-- **Power Management:** TLP with Acer-specific battery limiting
+- **Laptop:** Lenovo Ideapad Slim 5
+- **CPU:** Intel Core Ultra 5
+- **GPU:** Integrated (no dedicated GPU)
+- **Power Management:** TLP with Lenovo-specific battery limiting
 
 ## 📝 Notes
 
@@ -160,7 +160,7 @@ This configuration relies on two distinct browser profiles to balance privacy an
 
 ## 🔒 Security
 
-The setup script configures iptables firewall with:
+The setup script configures ufw firewall with:
 - Default INPUT policy: DROP
 - Allows established/related connections
 - Opens ports for KDE Connect (1714-1764)
