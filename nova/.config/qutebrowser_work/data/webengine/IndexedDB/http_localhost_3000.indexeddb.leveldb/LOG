@@ -1,0 +1,6 @@
+2026/01/17-15:05:09.972 13d76 Creating DB /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/http_localhost_3000.indexeddb.leveldb since it was missing.
+2026/01/17-15:05:09.988 13d76 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/http_localhost_3000.indexeddb.leveldb/MANIFEST-000001
+2026/01/17-15:05:10.020 13d83 Level-0 table #5: started
+2026/01/17-15:05:10.031 13d83 Level-0 table #5: 661 bytes OK
+2026/01/17-15:05:10.039 13d83 Delete type=0 #3
+2026/01/17-15:05:10.040 13d75 Manual compaction at level-0 from '\x00\x01\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x02\x00\x00\x00' @ 0 : 0; will stop at (end)
