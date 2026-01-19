@@ -1,0 +1,7 @@
+2026/01/17-17:54:26.532 13d75 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_meet.google.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/01/17-17:54:26.533 13d75 Recovering log #3
+2026/01/17-17:54:26.534 13d75 Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_meet.google.com_0.indexeddb.leveldb/000003.log 
+2026/01/17-18:40:48.746 13d76 Level-0 table #5: started
+2026/01/17-18:40:48.752 13d76 Level-0 table #5: 7149 bytes OK
+2026/01/17-18:40:48.761 13d76 Delete type=0 #3
+2026/01/17-18:40:48.761 13d76 Manual compaction at level-0 from (begin) .. (end); will stop at (end)

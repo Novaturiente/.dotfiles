@@ -8,11 +8,11 @@ sudo cp system/system/etc/tlp.conf /etc/tlp.conf
 
 sudo cp system/system/etc/ly/config.ini /etc/ly/config.ini
 
-sudo cp system/system/etc/modules-load/ntsync.conf /etc/modules-load.d/ntsync.conf
+# sudo cp system/system/etc/modules-load/ntsync.conf /etc/modules-load.d/ntsync.conf
 
-sudo cp ./system/system/etc/systemd/sleep.conf /etc/systemd/sleep.conf
+# sudo cp ./system/system/etc/systemd/sleep.conf /etc/systemd/sleep.conf
 
-sudo cp ./system/system/etc/modprobe.d/nvidia-sleep.conf /etc/modprobe.d/nvidia-sleep.conf
+# sudo cp ./system/system/etc/modprobe.d/nvidia-sleep.conf /etc/modprobe.d/nvidia-sleep.conf
 
 mkdir -p ~/.config
 
@@ -30,7 +30,7 @@ sudo systemctl enable ly
 
 systemctl --user enable batsignal.service
 
-sudo systemctl enable nvidia-resume.service
+# sudo systemctl enable nvidia-resume.service
 
 chsh "$(whoami)" -s "$(which zsh)"
 

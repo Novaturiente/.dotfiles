@@ -5,7 +5,6 @@
 - mysql
 - postgresql
 - pgvector
-- antigravity-bin
 - google-chrome
 - gemini-cli
 - zoom
@@ -13,3 +12,4 @@
 - zapzap # Whatsapp
 - wps-office
 - ttf-wps-fonts
+

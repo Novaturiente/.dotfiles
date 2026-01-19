@@ -1,7 +1,3 @@
-2026/01/15-14:33:34.955 b3df Creating DB /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb since it was missing.
-2026/01/15-14:33:34.978 b3df Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/MANIFEST-000001
-2026/01/15-14:33:34.978 b3df Recovering log #131
-2026/01/15-14:33:34.979 b3df Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/000131.log 
-2026/01/15-14:41:01.388 b3df Level-0 table #133: started
-2026/01/15-14:41:01.400 b3df Level-0 table #133: 77217 bytes OK
-2026/01/15-14:41:01.410 b3df Delete type=0 #131
+2026/01/18-21:17:22.113 7b10f Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/MANIFEST-000001
+2026/01/18-21:17:22.130 7b10f Recovering log #143
+2026/01/18-21:17:22.131 7b10f Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/Local Storage/leveldb/000143.log 
