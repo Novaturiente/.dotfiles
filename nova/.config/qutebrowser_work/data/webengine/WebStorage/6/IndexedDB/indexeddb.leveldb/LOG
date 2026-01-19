@@ -1,3 +1,15 @@
-2026/01/18-21:17:26.078 7b10f Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/WebStorage/6/IndexedDB/indexeddb.leveldb/MANIFEST-000001
-2026/01/18-21:17:26.079 7b10f Recovering log #4
-2026/01/18-21:17:26.081 7b10f Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/WebStorage/6/IndexedDB/indexeddb.leveldb/000004.log 
+2026/01/19-14:54:27.936 1a2a1 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/WebStorage/6/IndexedDB/indexeddb.leveldb/MANIFEST-000001
+2026/01/19-14:54:27.937 1a2a1 Recovering log #4
+2026/01/19-14:54:27.938 1a2a1 Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/WebStorage/6/IndexedDB/indexeddb.leveldb/000004.log 
+2026/01/19-14:58:04.170 1a2a1 Level-0 table #8: started
+2026/01/19-14:58:04.176 1a2a1 Level-0 table #8: 37805 bytes OK
+2026/01/19-14:58:04.184 1a2a1 Delete type=0 #4
+2026/01/19-14:58:04.184 1a2a1 Manual compaction at level-0 from (begin) .. (end); will stop at (end)
+2026/01/19-14:58:04.185 1a2a1 Manual compaction at level-1 from (begin) .. (end); will stop at '\x00\x02\x01\x1f\x04\x03\x01\x03\x00N\x00E\x00W\x03\x00\x00\x00\x00\x00\x00L@\x03\x00P@-Y\xbdyB\x00\x03\x00\x00\x00\x00\x00\x00;@' @ 895 : 1
+2026/01/19-14:58:04.185 1a2a1 Compacting 1@1 + 1@2 files
+2026/01/19-14:58:04.190 1a2a1 Generated table #9@1: 68 keys, 3737 bytes
+2026/01/19-14:58:04.190 1a2a1 Compacted 1@1 + 1@2 files => 3737 bytes
+2026/01/19-14:58:04.198 1a2a1 compacted to: files[ 0 0 1 0 0 0 0 ]
+2026/01/19-14:58:04.198 1a2a1 Delete type=2 #5
+2026/01/19-14:58:04.198 1a2a1 Delete type=2 #8
+2026/01/19-14:58:04.198 1a2a1 Manual compaction at level-1 from '\x00\x02\x01\x1f\x04\x03\x01\x03\x00N\x00E\x00W\x03\x00\x00\x00\x00\x00\x00L@\x03\x00P@-Y\xbdyB\x00\x03\x00\x00\x00\x00\x00\x00;@' @ 895 : 1 .. (end); will stop at (end)

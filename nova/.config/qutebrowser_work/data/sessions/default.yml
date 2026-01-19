@@ -1,25 +1,18 @@
 windows:
 - active: true
   geometry: !!binary |
-    AdnQywADAAAAAAAAAAAAAAAABY0AAAR1AAAAAAAAAAAAAAWNAAAEdQAAAAAAAAAAB4AAAAAAAAAA
-    AAAABY0AAAR1
+    AdnQywADAAAAAAAAAAAAAAAABY0AAAR4AAAAAAAAAAAAAAWNAAAEeAAAAAAAAAAAB4AAAAAAAAAA
+    AAAABY0AAAR4
   tabs:
   - active: true
     history:
-    - last_visited: '2026-01-19T12:41:11'
-      pinned: false
-      title: Cloudflare Dashboard | Manage Your Account
-      url: https://dash.cloudflare.com/33db10eb5234e982f725f4efec40ee02/novarch.site/dns/records
-    - last_visited: '2026-01-19T12:41:20'
-      pinned: false
-      title: ChatGPT
-      url: https://chatgpt.com/
     - active: true
-      last_visited: '2026-01-19T12:41:38'
+      last_visited: '2026-01-19T15:01:32'
+      original-url: https://google.com/
       pinned: false
       scroll-pos:
         x: 0
         y: 0
-      title: ChatGPT
-      url: https://chatgpt.com/
+      title: Google
+      url: https://www.google.com/
       zoom: 1.0
