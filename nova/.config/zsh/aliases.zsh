@@ -52,6 +52,8 @@ alias clear-cache="rm -rf ~/.config/qutebrowser_work/cache/* && rm -rf ~/.cache/
 
 alias eeclogin="ssh -i ~/.ssh/id_eecdev eecdev@139.59.75.32"
 
+alias agentrun="~/.dotfiles/scripts/tmux_agent.sh"
+
 # alias ollama="docker exec -it ollama ollama"
 # alias ollamaup="podman-compose -f ~/.dotfiles/docker/ollama.yml up -d"
 # alias ollamadown="podman-compose -f ~/.dotfiles/docker/ollama.yml down"
