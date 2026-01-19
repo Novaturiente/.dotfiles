@@ -12,6 +12,7 @@ font-style-bold = ExtraBold
 theme = yourumi-abbys
 # theme = /home/nova/.cache/wal/colors-ghostty
 background-opacity = 0.8
+background-blur-radius = 10
 
 # Window Settings
 window-padding-x = 5
