@@ -56,6 +56,7 @@ stow -d ~/.dotfiles -t ~ -D nova
 Packages are organized into YAML files in `system/package/`:
 
 - **base-system.yaml** - Core system packages, drivers, utilities
+- **nvidia.yaml** - NVIDIA graphics drivers and utilities
 - **windowmanager.yaml** - Wayland compositor, desktop environment
 - **development.yaml** - Development tools, language runtimes, linters
 - **terminal-tools.yaml** - Terminal emulators, CLI utilities
