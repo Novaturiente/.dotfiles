@@ -1,0 +1,10 @@
+[Unit]
+Description=Lenovo IdeaPad Battery Charge Limiter
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/nova/.dotfiles/scripts/battery-limit.sh
+
+[Install]
+WantedBy=multi-user.target
