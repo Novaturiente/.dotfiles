@@ -10,6 +10,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking (copying) text",
 })
 
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, { command = "checktime" })
 -- ============================================================================
 -- TERMINAL AUTO CONFIGURATION
 -- ============================================================================

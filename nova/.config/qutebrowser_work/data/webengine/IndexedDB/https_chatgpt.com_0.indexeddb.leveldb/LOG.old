@@ -1,2 +1,3 @@
-2026/01/19-12:41:39.060 5529 Creating DB /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_chatgpt.com_0.indexeddb.leveldb since it was missing.
-2026/01/19-12:41:39.073 5529 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_chatgpt.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/01/20-14:00:14.860 7fc92 Reusing MANIFEST /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_chatgpt.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/01/20-14:00:14.860 7fc92 Recovering log #4
+2026/01/20-14:00:14.860 7fc92 Reusing old log /home/nova/.config/qutebrowser_work/data/webengine/IndexedDB/https_chatgpt.com_0.indexeddb.leveldb/000004.log 
