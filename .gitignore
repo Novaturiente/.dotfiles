@@ -21,5 +21,8 @@ desktop.ini
 
 # Temporary directories
 /tmp/
-*.cache
+*.cache/
 .aider*
+
+# Qutebrowser cache
+nova/.config/qutebrowser_work/cache/
