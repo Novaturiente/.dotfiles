@@ -1,1 +1,1 @@
-nova/.config/qutebrowser_work/data/
+git rm -r --cached nova/.config/qutebrowser_work/data
