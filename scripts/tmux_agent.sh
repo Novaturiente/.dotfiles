@@ -8,7 +8,7 @@
 if [ "$1" = "-c" ]; then
     command="agent"
 else
-    command="aider --model openrouter/x-ai/grok-code-fast-1"
+    command="aider"
 fi
 
 # Split window horizontally, making right pane 35% (left becomes 65%)
