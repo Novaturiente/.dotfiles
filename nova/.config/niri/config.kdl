@@ -65,6 +65,8 @@ layout {
 
     }
 }
+
+
 animations {
     window-open {
         duration-ms 200
@@ -135,11 +137,11 @@ environment {
 // STARTUP APPLICATIONS
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // System services
-spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 // Status bar and notifications
 // spawn-at-startup "waybar"
 // spawn-at-startup "mako"
 // spawn-at-startup "swayosd-server"
+spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 // System utilities
 spawn-at-startup "swayidle"
 spawn-at-startup "~/.dotfiles/scripts/wallpaper.sh"

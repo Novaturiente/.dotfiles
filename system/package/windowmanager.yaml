@@ -1,7 +1,7 @@
 - wayland-protocols
 - xorg-xwayland
 - xwayland-satellite
-- niri
+- niri-git
 - swayidle
 - ly
 - terminus-font
