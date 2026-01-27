@@ -13,11 +13,11 @@ fi
 capacity=$(cat "$BATTERY")
 current_mode=$(cat "$CONSERVATION")
 
-if [[ "$capacity" -ge 80 && "$current_mode" -eq 0 ]]; then
-    echo 1 > "$CONSERVATION"
+if [[ "$capacity" -ge 75 && "$current_mode" -eq 0 ]]; then
+    echo 1 >"$CONSERVATION"
     echo "Battery at ${capacity}% - enabled conservation mode"
-elif [[ "$capacity" -le 50 && "$current_mode" -eq 1 ]]; then
-    echo 0 > "$CONSERVATION"
+elif [[ "$capacity" -le 70 && "$current_mode" -eq 1 ]]; then
+    echo 0 >"$CONSERVATION"
     echo "Battery at ${capacity}% - disabled conservation mode"
 else
     echo "Battery at ${capacity}% - conservation mode: $current_mode (no change)"
