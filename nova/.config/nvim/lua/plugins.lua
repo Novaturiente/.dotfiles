@@ -307,7 +307,7 @@ return {
 				},
 				pyright = {},
 				rust_analyzer = {},
-				gopls = {},
+				-- gopls = {},
 				bashls = {},
 			}
 			-- Add foldingRange capability for nvim-ufo
@@ -315,10 +315,13 @@ return {
 				dynamicRegistration = false,
 				lineFoldingOnly = true,
 			}
-			-- Install tools automatically
+			-- Install tools automatically (delay so Mason registry is ready)
 			local ensure_installed = vim.tbl_keys(servers or {})
 			vim.list_extend(ensure_installed, { "stylua" })
-			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+			require("mason-tool-installer").setup({
+				ensure_installed = ensure_installed,
+				start_delay = 5000, -- ms: allow Mason to load its registry before installing
+			})
 			-- Setup LSP servers
 			require("mason-lspconfig").setup({
 				ensure_installed = {},
@@ -342,7 +345,7 @@ return {
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
-		main = "nvim-treesitter.configs",
+		main = "nvim-treesitter.config",
 		opts = {
 			indent = {
 				enable = true,
@@ -759,5 +762,49 @@ return {
 	{
 		"dhruvasagar/vim-table-mode",
 		ft = { "markdown", "rst", "org", "text" },
+	},
+
+	-- ============================================================================
+	-- AIDER CONFIGURATION
+	-- ============================================================================
+	{
+		"GeorgesAlkhouri/nvim-aider",
+		cmd = "Aider",
+		-- Example key mappings for common actions:
+		keys = {
+			{ "<leader>a/", "<cmd>Aider toggle<cr>", desc = "Toggle Aider" },
+			{ "<leader>as", "<cmd>Aider send<cr>", desc = "Send to Aider", mode = { "n", "v" } },
+			{ "<leader>ac", "<cmd>Aider command<cr>", desc = "Aider Commands" },
+			{ "<leader>ab", "<cmd>Aider buffer<cr>", desc = "Send Buffer" },
+			{ "<leader>a+", "<cmd>Aider add<cr>", desc = "Add File" },
+			{ "<leader>a-", "<cmd>Aider drop<cr>", desc = "Drop File" },
+			{ "<leader>ar", "<cmd>Aider add readonly<cr>", desc = "Add Read-Only" },
+			{ "<leader>aR", "<cmd>Aider reset<cr>", desc = "Reset Session" },
+			-- Example nvim-tree.lua integration if needed
+			{ "<leader>a+", "<cmd>AiderTreeAddFile<cr>", desc = "Add File from Tree to Aider", ft = "NvimTree" },
+			{ "<leader>a-", "<cmd>AiderTreeDropFile<cr>", desc = "Drop File from Tree from Aider", ft = "NvimTree" },
+		},
+		dependencies = {
+			{ "folke/snacks.nvim", version = ">=2.24.0" },
+			--- The below dependencies are optional
+			"catppuccin/nvim",
+			"nvim-treesitter/nvim-treesitter",
+			--- Neo-tree integration
+			{
+				"nvim-neo-tree/neo-tree.nvim",
+				opts = function(_, opts)
+					-- Example mapping configuration (already set by default)
+					-- opts.window = {
+					--   mappings = {
+					--     ["+"] = { "nvim_aider_add", desc = "add to aider" },
+					--     ["-"] = { "nvim_aider_drop", desc = "drop from aider" }
+					--     ["="] = { "nvim_aider_add_read_only", desc = "add read-only to aider" }
+					--   }
+					-- }
+					require("nvim_aider.neo_tree").setup(opts)
+				end,
+			},
+		},
+		config = true,
 	},
 }
