@@ -1,4 +1,5 @@
 import os
+import shlex
 import subprocess
 
 from ranger.api.commands import Command
@@ -13,31 +14,30 @@ class kdeconnect_send(Command):
     """
 
     def execute(self):
-        # Get device id
-        id = subprocess.run(
-            ["kdeconnect-cli", "-a", "--id-only", "|", "awk", "'{printf $1}'"],
+        # Get first available device id
+        result = subprocess.run(
+            ["kdeconnect-cli", "-a", "--id-only"],
             capture_output=True,
-            encoding="utf-8",
-        ).stdout.rstrip("\n")
+            text=True,
+        )
+        device_id = (result.stdout or "").strip().splitlines()[0].strip() if result.returncode == 0 else ""
 
-        # Exit if no connected device
-        if id == "":
+        if not device_id:
             self.fm.notify("No device found", bad=True)
             return
 
-        # Get paths of selected files
+        # Get full paths of selected files (skip directories)
         paths = []
-        for file in self.fm.thisdir.get_selection():
-            path = file.basename
-            if os.path.isfile(path):
-                paths.append("'" + path + "'")
+        for f in self.fm.thistab.get_selection():
+            if f.path and not f.is_directory and os.path.isfile(f.path):
+                paths.append(f.path)
 
-        paths = " ".join(paths)
+        if not paths:
+            self.fm.notify("No files selected", bad=True)
+            return
 
-        # Share files
-        command = f"kdeconnect-cli -d {id} --share {paths}"
-        self.fm.notify(f"Sending {paths} to device {id}")
+        paths_s = " ".join(shlex.quote(p) for p in paths)
+        command = f"kdeconnect-cli -d {shlex.quote(device_id)} --share {paths_s}"
+        self.fm.notify(f"Sending {len(paths)} file(s) to device")
         self.fm.execute_command(command)
-
-        # Unmark files when done
         self.fm.thisdir.mark_all(False)

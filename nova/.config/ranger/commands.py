@@ -16,7 +16,6 @@ import os
 from ranger.api.commands import Command
 
 from plugins.ranger_blkmenu.mounter import mount
-testing = mount
 
 # Any class that is a subclass of "Command" will be integrated into ranger as a
 # command.  Try typing ":my_edit<ENTER>" in ranger!

@@ -125,6 +125,21 @@ window-rule {
     draw-border-with-background false
     block-out-from "screencast"
 }
+window-rule {
+    match app-id="zenity"
+    open-floating true
+}
+window-rule {
+    // This catches the standard IBus bar
+    // match app-id="ibus-ui-gtk3"
+    match app-id=r"ibus.*"
+    open-floating true
+    draw-border-with-background false
+    open-focused false
+    default-column-width { fixed 200; }
+    default-window-height { fixed 300; }
+}
+
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // ENVIRONMENT VARIABLES
 // ───────────────────────────────────────────────────────────────────────────────────────────
@@ -132,6 +147,10 @@ environment {
     QT_QPA_PLATFORM "wayland"
     QT_QPA_PLATFORMTHEME "xdgdesktopportal"
     WLR_HEADLESS_OUTPUTS "1"
+    GTK_IM_MODULE "ibus"
+    QT_IM_MODULE "ibus"
+    XMODIFIERS "@im=ibus"
+    GLFW_IM_MODULE "ibus"
 }
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // STARTUP APPLICATIONS
@@ -144,6 +163,7 @@ environment {
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 // System utilities
 spawn-at-startup "swayidle"
+spawn-at-startup "ibus-daemon" "-drx"
 spawn-at-startup "~/.dotfiles/scripts/wallpaper.sh"
 // Background services
 spawn-sh-at-startup "kdeconnectd"
@@ -154,6 +174,8 @@ spawn-sh-at-startup "nm-applet --indicator"
 spawn-sh-at-startup "udiskie --tray --notify"
 spawn-sh-at-startup "wl-paste --watch cliphist store --max-items 100"
 spawn-sh-at-startup "~/.dotfiles/scripts/start_tmux.sh"
+spawn-at-startup "sshfs" "nova@novahome:/home/nova" "/home/nova/server" \
+    "-o" "reconnect,ServerAliveInterval=15,ServerAliveCountMax=3"
 hotkey-overlay {
     skip-at-startup
 }
@@ -198,26 +220,29 @@ binds {
     Mod+E hotkey-overlay-title="File manager" {
         spawn-sh "ghostty -e yazi"
     }
-    Mod+O hotkey-overlay-title="Ollama" {
-        spawn-sh "~/.dotfiles/scripts/llm.sh"
-    }
     Mod+Ctrl+Shift+W hotkey-overlay-title="Windows" {
         spawn-sh "~/.dotfiles/scripts/windows.sh"
     }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ UTILITIES & MENUS                                                                   │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
+    Mod+O hotkey-overlay-title="File picker" {
+        spawn-sh "~/.dotfiles/scripts/file_picker.sh"
+    }
+    Mod+Shift+O hotkey-overlay-title="Text extractor" {
+        spawn-sh "~/.dotfiles/scripts/ocr_select.sh"
+    }
     Mod+B hotkey-overlay-title="Bookmarks" {
         spawn-sh "~/.dotfiles/scripts/rofi/bookmarks.sh"
+    }
+    Mod+G hotkey-overlay-title="Grammar fix" {
+        spawn-sh "~/.dotfiles/scripts/fix_grammar.sh"
     }
     Mod+V hotkey-overlay-title="Clipboard" {
         spawn-sh "~/.dotfiles/scripts/rofi/clipboard.sh"
     }
     Mod+Shift+X hotkey-overlay-title="Tools" {
         spawn-sh "~/.dotfiles/scripts/rofi/tools.sh"
-    }
-    Mod+Ctrl+N hotkey-overlay-title="Notification center" {
-        spawn-sh "swaync-client -t"
     }
     Mod+Shift+B hotkey-overlay-title="Toggle waybar" {
         spawn-sh "killall waybar || waybar"
@@ -243,9 +268,6 @@ binds {
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ SYSTEM CONTROLS                                                                     │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
-    Mod+I hotkey-overlay-title="Toggle idle" {
-        spawn-sh "~/.dotfiles/scripts/idle.sh"
-    }
     Mod+Shift+L hotkey-overlay-title="Lock" {
         spawn-sh " dms ipc call lock lock "
     }
@@ -270,6 +292,9 @@ binds {
     }
     XF86PowerOff allow-when-locked=true {
         spawn "systemctl suspend-then-hibernate"
+    }
+    Mod+I hotkey-overlay-title="Toggle idle" {
+        spawn-sh "~/.dotfiles/scripts/idle.sh"
     }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ MEDIA KEYS                                                                          │
