@@ -100,5 +100,5 @@ bindkey "$terminfo[kcbt]" menu-select
 bindkey -M menuselect              '^I'         menu-complete
 bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 bindkey '^I' menu-select
-export PATH=/home/nova/.rbenv/bin:$PATH
-eval "$(rbenv init - zsh)"
+# export PATH=/home/nova/.rbenv/bin:$PATH
+# eval "$(rbenv init - zsh)"
