@@ -12,7 +12,7 @@ else
 fi
 
 # Split window horizontally, making right pane 35% (left becomes 65%)
-tmux split-window -h -l 35%
+tmux split-window -h -l 50%
 
 # Open the determined command in the right pane (pane 1)
 tmux send-keys -t 1 "$command" C-m
