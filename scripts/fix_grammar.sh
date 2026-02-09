@@ -27,8 +27,7 @@ notify-send -t 1000 "AI Fix" "Fixing... $CLEAN_INPUT"
 
 # 2. Run AI
 # We keep the tags <answer> in the prompt so we can find the text easily
-PROMPT="<|im_start|>system
-You are a grammar correction tool. 
+PROMPT="You are a grammar correction tool. 
 1. Output ONLY the corrected text. 
 2. Maintain the original language (English).
 3. Do not include any additional text.
@@ -42,8 +41,6 @@ FIXED_TEXT=$(llama-completion -m "$MODEL_PATH" \
 	-st \
 	-p "$PROMPT" \
 	2>/dev/null)
-
-notify-send "$FIXED_TEXT"
 
 # 3. Handle Result & Extract
 if [ -n "$FIXED_TEXT" ]; then
@@ -70,4 +67,5 @@ if [ -n "$FIXED_TEXT" ]; then
 	ydotool key 29:1 47:1 47:0 29:0
 else
 	notify-send "AI Fix" "AI returned EMPTY result."
+	exit 1
 fi
