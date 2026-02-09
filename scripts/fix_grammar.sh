@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # --- CONFIGURATION ---
-MODEL_PATH="$HOME/ai-models/granite-4.0-h-1b-Q4_1.gguf"
+MODEL_PATH="$HOME/ai-models/gemma-3n-E2B-it-Q4_K_M.gguf"
 # Ensure ydotool knows where to look
 export YDOTOOL_SOCKET="/run/user/$(id -u)/.ydotool_socket"
 
@@ -42,6 +42,8 @@ FIXED_TEXT=$(llama-completion -m "$MODEL_PATH" \
 	-st \
 	-p "$PROMPT" \
 	2>/dev/null)
+
+notify-send "$FIXED_TEXT"
 
 # 3. Handle Result & Extract
 if [ -n "$FIXED_TEXT" ]; then
