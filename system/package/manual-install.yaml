@@ -1,8 +1,4 @@
-- ydotool
-- llama.cpp
-- tesseract
-- tesseract-data-eng
-- jellyfin-desktop
-- gvfs-smb
-- gnu-netcat
-- fuse
+- intel-compute-runtime
+- intel-media-driver
+- vulkan-intel
+- csvlens
