@@ -160,10 +160,6 @@ environment {
 // STARTUP APPLICATIONS
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // System services
-// Status bar and notifications
-// spawn-at-startup "waybar"
-// spawn-at-startup "mako"
-// spawn-at-startup "swayosd-server"
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 // System utilities
 spawn-at-startup "swayidle"
@@ -194,12 +190,18 @@ binds {
     // │ APPLICATIONS                                                                        │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+Space hotkey-overlay-title="Open ghostty" {
+        spawn "ghostty"
+    }
+    Mod+Ctrl+Space hotkey-overlay-title="Open tmux sessions" {
         spawn "~/.dotfiles/scripts/rofi/tmux.sh"
     }
     Mod+W hotkey-overlay-title="Qutebrowser" {
+        spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"
+    }
+    Mod+Ctrl+W hotkey-overlay-title="Qutebrowser work" {
         spawn "qutebrowser"
     }
-    Mod+Return hotkey-overlay-title="Open ghostty" {
+    Mod+Return hotkey-overlay-title="Open tmux" {
         spawn-sh "ghostty -e ~/.dotfiles/scripts/start_tmux.sh"
     }
     Mod+D hotkey-overlay-title="Application launcher" {
@@ -207,9 +209,6 @@ binds {
     }
     Mod+Shift+D hotkey-overlay-title="Application launcher" {
         spawn-sh "~/.dotfiles/scripts/rofi/find.sh"
-    }
-    Mod+Ctrl+W hotkey-overlay-title="Qutebrowser work" {
-        spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"
     }
     Mod+N hotkey-overlay-title="Neovim" {
         spawn-sh "neovide"
