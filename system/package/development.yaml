@@ -17,5 +17,15 @@
 - shfmt
 - shellcheck
 - prettier
-
 - git-filter-repo
+- tesseract
+- tesseract-data-eng
+- gvfs-smb
+- gnu-netcat
+- fuse
+- intel-npu-driver-bin
+- intel-gpu-tools
+- sesh-bin
+- realvnc-vnc-viewer
+- lazygit
+- gst-plugins-bad

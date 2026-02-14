@@ -64,6 +64,13 @@ layout {
     struts {
 
     }
+
+    blur {
+      on
+      passes 2 // number of times to apply the blur effect
+      radius 1.0 // radius of the blur effect
+      noise 0.1 //add grain to the blur
+    }
 }
 
 
@@ -101,10 +108,6 @@ window-rule {
 // Specific window rules
 window-rule {
     match app-id="scrcpy"
-    open-floating true
-}
-window-rule {
-    match app-id="satty"
     open-floating true
 }
 window-rule {
@@ -164,6 +167,7 @@ environment {
 // spawn-at-startup "waybar"
 // spawn-at-startup "mako"
 // spawn-at-startup "swayosd-server"
+spawn-sh-at-startup "dms run"
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 // System utilities
 spawn-at-startup "swayidle"
@@ -171,6 +175,7 @@ spawn-at-startup "ibus-daemon" "-drx"
 spawn-at-startup "~/.dotfiles/scripts/wallpaper.sh"
 // Background services
 spawn-sh-at-startup "kdeconnectd"
+spawn-sh-at-startup "emacs --daemon"
 spawn-sh-at-startup "blueman-applet"
 spawn-sh-at-startup "kdeconnect-indicator"
 spawn-sh-at-startup "nm-applet --indicator"
@@ -179,6 +184,7 @@ spawn-sh-at-startup "wl-paste --watch cliphist store --max-items 100"
 spawn-sh-at-startup "~/.dotfiles/scripts/start_tmux.sh"
 spawn-at-startup "sshfs" "nova@novahome:/home/nova" "/home/nova/server" \
     "-o" "reconnect,ServerAliveInterval=15,ServerAliveCountMax=3"
+spawn-sh-at-startup "sleep 5 && nvim --headless /home/nova/.config/niri/blur.kdl -c 'wq'"
 hotkey-overlay {
     skip-at-startup
 }
@@ -211,7 +217,13 @@ binds {
     Mod+Ctrl+W hotkey-overlay-title="Qutebrowser work" {
         spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"
     }
-    Mod+N hotkey-overlay-title="Neovim" {
+    Mod+M hotkey-overlay-title="Emacs client" {
+        spawn-sh "emacs"
+    }
+    Mod+N hotkey-overlay-title="Noevide" {
+        spawn-sh "emacsclient -c"
+    }
+    Mod+Shift+N hotkey-overlay-title="Neovim" {
         spawn-sh "neovide"
     }
     Mod+E hotkey-overlay-title="File manager" {
@@ -235,17 +247,8 @@ binds {
     Mod+G hotkey-overlay-title="Grammar fix" {
         spawn-sh "~/.dotfiles/scripts/fix_grammar.sh"
     }
-    Mod+Shift+N hotkey-overlay-title="Notepad" {
-      spawn "dms" "ipc" "call" "notepad" "toggle";  
-    }
-    Mod+Shift+Space hotkey-overlay-title="Application Launcher" { 
-        spawn "dms" "ipc" "call" "spotlight" "toggle"; 
-    }
-    // Mod+V hotkey-overlay-title="Clipboard" {
-    //     spawn-sh "~/.dotfiles/scripts/rofi/clipboard.sh"
-    // }
-    Mod+V hotkey-overlay-title="Clipboard Manager" { 
-        spawn "dms" "ipc" "call" "clipboard" "toggle"; 
+    Mod+V hotkey-overlay-title="Clipboard" {
+        spawn-sh "~/.dotfiles/scripts/rofi/clipboard.sh"
     }
     Mod+Shift+X hotkey-overlay-title="Tools" {
         spawn-sh "~/.dotfiles/scripts/rofi/tools.sh"
@@ -616,7 +619,7 @@ binds {
 screenshot-path "~/Desktop/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 switch-events {
     lid-close {
-        spawn "systemctl suspend-then-hibernate"
+        spawn "systemctl hibernate"
     }
 }
 cursor {

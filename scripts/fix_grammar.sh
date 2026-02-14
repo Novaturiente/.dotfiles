@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # --- CONFIGURATION ---
-MODEL_PATH="$HOME/ai-models/gemma-3n-E2B-it-Q4_K_M.gguf"
+# NVIDIA API key (use env NVAPI_KEY to override)
+invoke_url='https://integrate.api.nvidia.com/v1/chat/completions'
+NVAPI_KEY="${NVAPI_KEY:-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}"
+# Save raw API response (before <answer> extraction) for testing; set empty to disable
+DEBUG_OUTPUT_FILE="${DEBUG_OUTPUT_FILE:-/tmp/fix_grammar_response.txt}"
 # Ensure ydotool knows where to look
 export YDOTOOL_SOCKET="/run/user/$(id -u)/.ydotool_socket"
 
@@ -21,11 +25,12 @@ if [ -z "$INPUT_TEXT" ]; then
 	exit 1
 fi
 
-# Clean input
+# Clean input: escape backslashes for sed, then escape double quotes for safe use in PROMPT
 CLEAN_INPUT=$(echo "$INPUT_TEXT" | sed 's/\\/\\\\/g')
+PROMPT_SAFE=$(echo "$CLEAN_INPUT" | sed 's/"/\\"/g')
 notify-send -t 1000 "AI Fix" "Fixing... $CLEAN_INPUT"
 
-# 2. Run AI
+# 2. Run AI (NVIDIA chat completions API)
 # We keep the tags <answer> in the prompt so we can find the text easily
 PROMPT="You are a grammar correction tool. 
 1. Output ONLY the corrected text. 
@@ -33,22 +38,53 @@ PROMPT="You are a grammar correction tool.
 3. Do not include any additional text.
 4. Enclose the fixed text inside <answer> </answer>
 
-Fix this text: $CLEAN_INPUT
+Fix this text: $PROMPT_SAFE
 "
 
-# Note: We use -n 1024 to ensure it doesn't cut off long sentences
-FIXED_TEXT=$(llama-completion -m "$MODEL_PATH" \
-	-st \
-	-p "$PROMPT" \
-	2>/dev/null)
+# Build JSON body with jq so content is safely escaped
+payload=$(jq -n \
+	--arg content "$PROMPT" \
+	'{
+		model: "openai/gpt-oss-120b",
+		messages: [{ role: "user", content: $content }],
+		temperature: 1,
+		top_p: 1,
+		frequency_penalty: 0,
+		presence_penalty: 0,
+		max_tokens: 4096,
+		stream: false,
+		reasoning_effort: "medium"
+	}')
+
+response=$(curl -s -w "\n%{http_code}" --request POST \
+	--url "$invoke_url" \
+	--header "Authorization: Bearer $NVAPI_KEY" \
+	--header "Accept: application/json" \
+	--header "Content-Type: application/json" \
+	--data "$payload")
+
+http_code=$(echo "$response" | tail -n1)
+body=$(echo "$response" | sed '$d')
+
+if [ "$http_code" != "200" ]; then
+	notify-send "AI Fix" "API error (HTTP $http_code)"
+	exit 1
+fi
+
+FIXED_TEXT=$(echo "$body" | jq -r '.choices[0].message.content // empty')
+
+# Save raw fixed text before <answer> extraction (for testing)
+if [ -n "$DEBUG_OUTPUT_FILE" ]; then
+	printf '%s' "$FIXED_TEXT" > "$DEBUG_OUTPUT_FILE"
+fi
 
 # 3. Handle Result & Extract
 if [ -n "$FIXED_TEXT" ]; then
 	# --- EXTRACTION LOGIC ---
 	# 1. Remove everything before (and including) <answer>
 	# 2. Remove everything after (and including) </answer>
-	# 3. Trim whitespace
-	FINAL_TEXT=$(grep -ozP '(?s)<answer>\K.*?(?=</answer>)' <<<"$FIXED_TEXT" | tr -d '\0' | xargs)
+	# 3. Trim leading/trailing whitespace (sed; do not use xargs - it breaks on apostrophes)
+	FINAL_TEXT=$(grep -ozP '(?s)<answer>\K.*?(?=</answer>)' <<<"$FIXED_TEXT" | tr -d '\0' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 	if [ -z "$FINAL_TEXT" ]; then
 		notify-send "AI Error" "Could not find <answer> tags in output."

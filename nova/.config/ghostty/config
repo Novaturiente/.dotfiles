@@ -9,10 +9,11 @@ font-style = SemiBold
 font-style-bold = ExtraBold
 
 # Theme and Appearance
-theme = yourumi-abbys
-# theme = /home/nova/.cache/wal/colors-ghostty
+# theme = yourumi-abbys
+theme = Catppuccin Mocha
+# theme = Rose Pine
 background-opacity = 0.8
-background-blur-radius = 10
+background-blur = true
 
 # Window Settings
 window-padding-x = 5

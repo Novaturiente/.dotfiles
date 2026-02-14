@@ -87,6 +87,11 @@ source <(fzf --zsh)
 # Initialize Atuin
 eval "$(atuin init zsh)"
 
+
+#Sesh session manager
+fpath=(~/.config/zsh/completions $fpath)
+autoload -U compinit && compinit
+
 # Completion Configuration
 # -------------------------------------------------------------------
 zstyle ':completion:*:default' list-colors \
@@ -100,5 +105,3 @@ bindkey "$terminfo[kcbt]" menu-select
 bindkey -M menuselect              '^I'         menu-complete
 bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 bindkey '^I' menu-select
-# export PATH=/home/nova/.rbenv/bin:$PATH
-# eval "$(rbenv init - zsh)"
