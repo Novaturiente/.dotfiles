@@ -1,0 +1,34 @@
+h, j, k, l (or ←↓↑→)     Scroll one row/column
+Ctrl+f / Page Down       Scroll one window down
+Ctrl+b / Page Up         Scroll one window up
+Ctrl+d / d               Scroll half window down
+Ctrl+u / u               Scroll half window up
+Ctrl+h                   Scroll one window left
+Ctrl+l                   Scroll one window right
+Ctrl+←                   Scroll to first column
+Ctrl+→                   Scroll to last column
+Ctrl+e                   Print marked lines to stdout and exit
+G / End                  Go to bottom
+g / Home                 Go to top
+/                        Find (regex), highlight matches
+n (in Find)              Next result
+N (in Find)              Previous result
+&                        Filter rows by regex
+*                        Filter columns by regex
+TAB                      Toggle row/column/cell selection mode
+>                        Increase column width
+<                        Decrease column width
+Shift+↓ / J              Sort by selected column (toggle direction)
+Ctrl+j                   Sort by natural order
+# (Cell mode)            Find rows like selected cell
+@ (Cell mode)            Filter rows like selected cell
+y                        Copy row/cell to clipboard
+Enter (Cell mode)        Print cell to stdout and exit
+-S                       Toggle line wrapping
+-W                       Toggle word wrapping
+f                        Freeze columns from left
+m                        Mark/unmark row
+M                        Clear all row marks
+r                        Reset view (clear filters, widths)
+H / ?                    Display help
+q                        Exit

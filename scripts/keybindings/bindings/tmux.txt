@@ -1,0 +1,53 @@
+C-l                  Send keys
+copy-mode-vi C-c     Cancel
+copy-mode-vi Enter   Copy selection
+copy-mode-vi Escape  Clear selection
+copy-mode-vi Space   Start selection
+copy-mode-vi y       Copy to clipboard
+Prefix 0-9           Select window by number
+Prefix b             Toggle status
+Prefix C-c           New session
+Prefix =             Choose buffer (paste)
+Prefix c             New window
+Prefix C-n           Next window
+Prefix :             Command prompt
+Prefix C-p           Previous window
+Prefix C-z           Suspend client
+Prefix d             Detach client
+Prefix Down          Select pane down
+Prefix [             Enter copy mode
+Prefix f             Find window
+Prefix H             Select pane left
+Prefix i             Display pane info
+Prefix J             Select pane down
+Prefix &             Kill current window
+Prefix K             Select pane up
+Prefix ;             Last pane
+Prefix Left          Select pane left
+Prefix ?             List key bindings
+Prefix l             Last window
+Prefix L             Select pane right
+Prefix M-n           Next window
+Prefix .             Move window
+Prefix M-p           Previous window
+Prefix n             Next window
+Prefix o             Next pane
+Prefix ]             Paste buffer
+Prefix p             Previous window
+Prefix q             Show pane numbers
+Prefix ,             Rename window
+Prefix Right         Select pane right
+Prefix r             Redraw client
+Prefix R             Reload config
+Prefix `             Send prefix
+Prefix "             Split pane horizontal
+Prefix %             Split pane vertical
+Prefix s             Run shell (sesh/snippet)
+Prefix }             Swap pane down
+Prefix {             Swap pane up
+Prefix t             Clock
+Prefix Up            Select pane up
+Prefix w             Choose window
+Prefix x             Kill pane
+Prefix X             Run shell (sesh/snippet)
+Prefix z             Zoom pane

@@ -6,7 +6,6 @@
 - postgresql
 - pgvector
 - google-chrome
-- gemini-cli
 - zoom
 - zapzap
 - wps-office
@@ -14,3 +13,5 @@
 - python-tldextract
 - antigravity
 - dbeaver
+- csvlens
+- rustdesk
