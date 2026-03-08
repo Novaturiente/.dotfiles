@@ -7,7 +7,6 @@
 - btop
 - fastfetch
 - gdu
-- duf
 - lsof
 - atuin
 - zoxide
@@ -17,10 +16,8 @@
 - fd
 - bat
 - jq
-- github-cli
 - bash-language-server
 - trash-cli
 - wget
 - sshfs
 - dialog
-- aichat

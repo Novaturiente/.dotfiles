@@ -11,8 +11,6 @@
 - pyright
 - python-pynvim
 - python-ruff
-- python-lsp-server
-- python-pyflakes
 - tree-sitter
 - shfmt
 - shellcheck
@@ -29,3 +27,6 @@
 - realvnc-vnc-viewer
 - lazygit
 - gst-plugins-bad
+- opencode
+- claude-code
+- go

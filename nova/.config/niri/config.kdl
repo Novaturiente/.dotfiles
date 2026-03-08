@@ -184,7 +184,7 @@ hotkey-overlay {
 binds {
     // Help
     Mod+Shift+Slash {
-        show-hotkey-overlay
+        spawn "~/.dotfiles/scripts/keybindings/keybindings.sh"
     }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ APPLICATIONS                                                                        │
