@@ -1,0 +1,44 @@
+Prefix "               Split pane horizontal
+Prefix %               Split pane vertical
+Prefix &               Kill current window
+Prefix ,               Rename window
+Prefix .               Move window
+Prefix 0-9             Select window by number
+Prefix :               Command prompt
+Prefix ;               Last pane
+Prefix =               Choose buffer (paste)
+Prefix ?               List key bindings
+Prefix [               Enter copy mode
+Prefix ]               Paste buffer
+Prefix c               New window
+Prefix d               Detach client
+Prefix f               Find window
+Prefix i               Display pane info
+Prefix l               Last window
+Prefix n               Next window
+Prefix o               Next pane
+Prefix p               Previous window
+Prefix q               Show pane numbers
+Prefix r               Redraw client
+Prefix s               List sessions
+Prefix t               Clock
+Prefix w               Choose window
+Prefix x               Kill pane (confirm)
+Prefix z               Zoom pane
+Prefix {               Swap pane up
+Prefix }               Swap pane down
+Prefix Down            Select pane down
+Prefix Left            Select pane left
+Prefix Right           Select pane right
+Prefix Up              Select pane up
+Prefix C-c             New session
+Prefix C-n             Next window
+Prefix C-p             Previous window
+Prefix C-z             Suspend client
+Prefix M-n             Next window
+Prefix M-p             Previous window
+copy-mode-vi Enter     Copy selection
+copy-mode-vi Space    Start selection
+copy-mode-vi Escape   Clear selection
+copy-mode-vi C-c      Cancel
+copy-mode-vi y        Copy (pipe)

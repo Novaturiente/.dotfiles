@@ -1,6 +1,7 @@
 -- ============================================================================
 -- NEOVIM SETTINGS
 -- ============================================================================
+vim = vim
 -- NEOVIDE SETTINGS
 if vim.g.neovide then
 	vim.g.neovide_padding_top = 3
@@ -99,6 +100,9 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 		error("Error cloning lazy.nvim:\n" .. out)
 	end
 end
+
+vim.env.PATH = "/home/nova/.local/bin:" .. vim.env.PATH
+
 vim.opt.rtp:prepend(lazypath)
 -- Load plugins from plugins module and setup lazy with options
 local plugins = require("plugins")

@@ -8,8 +8,8 @@
 - xdg-desktop-portal
 - xdg-desktop-portal-gtk
 - xdg-desktop-portal-gnome
-- mate-polkit
-- rofi
+- polkit-gnome
+- rofi-wayland
 - brightnessctl
 - udiskie
 

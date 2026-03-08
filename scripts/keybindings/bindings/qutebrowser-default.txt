@@ -1,0 +1,78 @@
+<Alt-Backspace>              Leave insert/passthrough mode
+<Alt-Left>                   Previous tab
+<Alt-Right>                  Next tab
+<Ctrl+Alt+t>                 Open URL in external browser, close tab
+<Ctrl-Shift-n>               New window (clone)
+<Ctrl-Shift-Right>           Open URL in new tab
+<Ctrl-n>                     New window
+<Space>pa                    Add password (qute-pass)
+<Space>pf                    Password fill auto
+<Space>pl                    Login choose
+<Space>pp                    Login password
+<Space>pu                    Login username
+<Space>sb                    Bookmarks search
+<Space>td                    Toggle dark mode
+<Space>tg                    Toggle adblock
+<Space>tm                    Toggle mobile view
+<Space>ts                    Sync toggle
+<Space>tt                    Toggle tabs layout
+,b                           Add bookmark (rofi)
+:                            Command mode
+;c                           Quickmark load
+;m                           Quickmark save
+<<                           Decrease indent
+>>                           Increase indent
+?                            Search backwards
+O                            Open URL in new tab (prompt)
+[[                           Navigate prev (links)
+]]                           Navigate next (links)
+d                            Scroll half page down
+f                            Hint links (follow)
+g$                           Tab last
+g0                           Tab first
+gC                          Close all tabs to the right
+gD                          Open URL in new window
+gJ                          Tab move to window
+gO                          Open qute://bookmarks
+gT                          Tab previous
+g^                           Tab first (non-pinned)
+ga                          Open qute://bookmarks
+gb                          Tab select (completion)
+gd                          Download link (hint)
+gf                          View source
+gg                          Scroll to top
+gh                          Go home
+gi                          Focus last used input
+gl                          Tab next
+gm                          Tab middle
+go                          Open URL (completion)
+gr                          Reload (no cache)
+gs                          Stop
+gt                          Tab next
+gu                          Navigate up (URL)
+gx                          Close tab
+gy                          Yank link (hint)
+h                            Back
+j                            Scroll down
+k                            Scroll up
+l                            Forward
+m                            Set mark
+o                            Open URL (prompt)
+p                            Paste and go / Paste
+q                            Close window
+r                            Reload
+s                            Search (prompt)
+t                            Open tab (prompt)
+u                            Scroll half page up / Undo close tab
+w                            Session save
+x                            Tab close
+y                            Yank URL to clipboard
+zH                          Scroll left (full)
+zL                          Scroll right (full)
+zh                          Scroll left
+zl                          Scroll right
+{{                           Navigate prev (path)
+}}                           Navigate next (path)
+/                            Search
+n                            Search next
+N                            Search previous

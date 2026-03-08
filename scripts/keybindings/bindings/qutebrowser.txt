@@ -1,0 +1,78 @@
+<Alt-Backspace>     Leave insert/passthrough mode
+<Alt-Left>          Previous tab
+<Alt-Right>         Next tab
+,b                  Add bookmark (rofi)
+:                   Command mode
+;c                  Quickmark load
+<Ctrl+Alt+t>        Open in external browser, close tab
+<Ctrl-n>            New window
+<Ctrl-Shift-n>      Clone window
+<Ctrl-Shift-Right>  Open URL in new tab
+<<                  Decrease indent
+d                   Scroll half page down
+f                   Hint links (follow)
+g$                  Tab last
+g0                  Tab first
+ga                  Open qute://bookmarks
+gb                  Tab select (completion)
+gC                  Close all tabs to the right
+gd                  Download link (hint)
+gD                  Open URL in new window
+gf                  View source
+gg                  Scroll to top
+gh                  Go home
+gi                  Focus last used input
+gJ                  Tab move to window
+gl                  Tab next
+gm                  Tab middle
+gO                  Open qute://bookmarks
+go                  Open URL (completion)
+gr                  Reload (no cache)
+gs                  Stop
+g^                  Tab first (non-pinned)
+gt                  Tab next
+gT                  Tab previous
+gu                  Navigate up (URL)
+gx                  Close tab
+gy                  Yank link (hint)
+h                   Back
+>>                  Increase indent
+j                   Scroll down
+k                   Scroll up
+l                   Forward
+;m                  Quickmark save
+m                   Set mark
+]]                  Navigate next (links)
+}}                  Navigate next (path)
+[[                  Navigate prev (links)
+{{                  Navigate prev (path)
+n                   Search next
+N                   Search previous
+O                   Open URL in new tab (prompt)
+o                   Open URL (prompt)
+p                   Paste and go / Paste
+q                   Close window
+r                   Reload
+/                   Search
+?                   Search backwards
+<Space>pa           Add password
+<Space>pf           Password fill auto
+<Space>pl           Login choose
+<Space>pp           Login password
+<Space>pu           Login username
+<Space>sb           Bookmarks search
+<Space>td           Toggle dark mode
+<Space>tg           Toggle adblock
+<Space>tm           Toggle mobile view
+<Space>ts           Sync toggle
+<Space>tt           Toggle tabs layout
+s                   Search (prompt)
+t                   Open tab (prompt)
+u                   Scroll half page up / Undo close tab
+w                   Session save
+x                   Tab close
+y                   Yank URL to clipboard
+zh                  Scroll left
+zH                  Scroll left (full)
+zl                  Scroll right
+zL                  Scroll right (full)
