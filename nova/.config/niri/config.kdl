@@ -448,8 +448,8 @@ binds {
     Mod+Page_Up {
         focus-workspace-up
     }
-    Mod+Tab {
-        focus-workspace-previous
+    Mod+Tab hotkey-overlay-title="Window switcher" {
+        spawn-sh "~/.dotfiles/scripts/rofi/windows.sh"
     }
     Mod+Ctrl+Page_Down {
         move-column-to-workspace-down
