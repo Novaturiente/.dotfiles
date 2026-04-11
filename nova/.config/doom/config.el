@@ -29,11 +29,39 @@
 (map! :leader
       :desc "change window" "<right>" #'evil-window-right)
 
-;; Unset existing bindings & Set M-<left> and M-<right> to switch buffers
-(global-unset-key (kbd "M-<left>"))
-(global-unset-key (kbd "M-<right>"))
-(global-set-key (kbd "M-<left>") #'previous-buffer)
-(global-set-key (kbd "M-<right>") #'next-buffer)
+;; M-q to close file but keep the window open
+(defun my/kill-buffer-keep-window ()
+  "Kill current buffer, keep the window. Show dashboard if no file buffers remain."
+  (interactive)
+  (let ((win (selected-window)))
+    (kill-current-buffer)
+    (when (and (window-valid-p win)
+               (not (buffer-file-name (window-buffer win))))
+      (with-selected-window win
+        (when (fboundp '+doom-dashboard/open)
+          (+doom-dashboard/open (current-buffer)))))))
+
+;; Enable mouse in terminal Emacs
+(unless (display-graphic-p)
+  (xterm-mouse-mode 1)
+  (global-set-key [mouse-4] #'scroll-down-line)
+  (global-set-key [mouse-5] #'scroll-up-line))
+
+;; Allow treemacs to be selected by mouse/window commands
+(after! treemacs
+  (setq treemacs-is-never-other-window nil))
+
+;; Pane navigation: M-h/M-l (works in terminal + tmux)
+(map! :nviemg "M-h" #'windmove-left
+      :nviemg "M-l" #'windmove-right
+      :nviemg "M-q" #'my/kill-buffer-keep-window)
+
+;; Ensure these override vterm's key capture
+(after! vterm
+  (evil-define-key* '(normal insert emacs) vterm-mode-map
+    (kbd "M-h") #'windmove-left
+    (kbd "M-l") #'windmove-right
+    (kbd "M-q") #'my/kill-buffer-keep-window))
 
 (defun close-window-and-kill-buffer ()
   "Kill the buffer associated with the current window and then close the window."
@@ -339,6 +367,79 @@
       :desc "Aider Menu" "z s" #'aider-run-aider)
 (map! :leader
       :desc "Aider Transient Menu" "z a" #'aider-transient-menu)
+
+;; Start Emacs server for emacsclient (used by Claude Code hooks)
+(require 'server)
+(unless (server-running-p)
+  (server-start))
+
+;; Claude Code IDE integration
+(use-package! claude-code-ide
+  :config
+  (claude-code-ide-emacs-tools-setup)
+  (setq claude-code-ide-terminal-backend 'vterm
+        claude-code-ide-window-side 'right
+        claude-code-ide-window-width 70
+        claude-code-ide-use-side-window t
+        claude-code-ide-use-ide-diff t))
+
+;; Make claude side window selectable by mouse/keyboard after it opens
+(defun my/make-windows-selectable (&rest _)
+  (dolist (win (window-list))
+    (set-window-parameter win 'no-other-window nil)))
+(advice-add 'claude-code-ide :after #'my/make-windows-selectable)
+
+;; Open files in the editor pane (not treemacs or vterm)
+(defun my/open-in-editor (file)
+  "Open FILE in the main editor window."
+  (when (file-exists-p file)
+    (let ((win (cl-find-if
+                (lambda (w)
+                  (with-current-buffer (window-buffer w)
+                    (not (derived-mode-p 'vterm-mode 'treemacs-mode))))
+                (window-list))))
+      (if win
+          (with-selected-window win (find-file file))
+        (find-file file)))))
+
+;; Make ediff less intrusive: no control frame, plain window setup
+(after! ediff
+  (setq ediff-window-setup-function #'ediff-setup-windows-plain
+        ediff-split-window-function #'split-window-horizontally))
+
+;; Auto-revert buffers when files change on disk (e.g. Claude Code edits)
+(global-auto-revert-mode 1)
+(setq auto-revert-use-notify t          ; use inotify for instant updates
+      auto-revert-interval 1            ; fallback poll every 1s
+      auto-revert-verbose nil           ; don't spam messages
+      auto-revert-avoid-polling t       ; prefer native fs notifications
+      auto-revert-check-vc-info t)      ; also update vc/git info
+
+;; Inline hunk preview at changed lines (SPC g h)
+(map! :leader
+      :desc "Show diff hunk" "g h" #'diff-hl-show-hunk)
+
+;; EmaCode layout: Treemacs (left) + Editor (center) + Claude Code (right)
+(defun my/emacode ()
+  "Open IDE layout: treemacs + editor + claude-code."
+  (interactive)
+  (delete-other-windows)
+  (treemacs)
+  (other-window 1)
+  (claude-code-ide)
+  ;; Make all panes selectable then focus editor
+  (my/make-windows-selectable)
+  (windmove-left))
+
+(map! :leader
+      :desc "EmaCode layout" "z e" #'my/emacode)
+
+(map! :leader
+      :desc "Claude Code menu" "z c" #'claude-code-ide-menu)
+(map! :leader
+      :desc "Claude Code toggle" "z t" #'claude-code-ide-toggle)
+(map! :leader
+      :desc "Claude Code send" "z p" #'claude-code-ide-send-prompt)
 
 (setq org-directory "~/Notes/Org/")
 

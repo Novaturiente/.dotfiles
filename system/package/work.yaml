@@ -7,7 +7,6 @@
 - pgvector
 - google-chrome
 - zoom
-- zapzap
 - wps-office
 - ttf-wps-fonts
 - python-tldextract
@@ -15,3 +14,7 @@
 - dbeaver
 - csvlens
 - rustdesk
+- gemini-cli
+- freerdp
+- thorium-browser-avx2-bin
+- lazysql

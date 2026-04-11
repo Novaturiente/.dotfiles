@@ -28,6 +28,8 @@ text/x-org=emacs.desktop
 inode/directory=ranger.desktop
 x-scheme-handler/about=brave-browser.desktop
 x-scheme-handler/unknown=brave-browser.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
+x-scheme-handler/whatsapp=elecwhat.desktop
 
 [Added Associations]
 image/png=imv-dir.desktop;imv.desktop;

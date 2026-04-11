@@ -43,3 +43,7 @@
 - vulkan-intel
 - alsa-ucm-conf
 - nftables
+- khal
+- at
+- cron
+- powertop

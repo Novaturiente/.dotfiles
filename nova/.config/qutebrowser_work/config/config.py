@@ -4,8 +4,8 @@ config = config  # pyright: ignore
 # Load settings made via the :set command from autoconfig.yml.
 config.load_autoconfig(False)  # Set to True if you want to keep using autoconfig.yml
 
-# Enable JavaScript clipboard access
-c.content.javascript.clipboard = "access-paste"
+# Enable full JavaScript clipboard access (copy + paste)
+c.content.javascript.clipboard = "access"
 
 # Theme
 # config.source("onedark.py")
@@ -35,25 +35,11 @@ c.auto_save.session = True
 
 
 # ============================================================================
-# Dark Mode Settings
+# Dark Mode Settings (disabled for maximum compatibility)
 # ============================================================================
 c.colors.webpage.bg = "#282828"
-c.colors.webpage.darkmode.enabled = True
-c.colors.webpage.preferred_color_scheme = "dark"
-c.colors.webpage.darkmode.policy.images = "never"
-
-# Load darkmode exclusions
-import os
-
-exclude_file = os.path.expanduser("~/.config/qutebrowser_work/config/darkmode_excludes")
-if os.path.exists(exclude_file):
-    with open(exclude_file, "r") as f:
-        c.colors.webpage.darkmode.enabled = True
-        for line in f:
-            domain = line.strip()
-            if domain:
-                with config.pattern(f"*://{domain}/*") as p:
-                    p.colors.webpage.darkmode.enabled = False
+c.colors.webpage.darkmode.enabled = False
+c.colors.webpage.preferred_color_scheme = "auto"
 
 # Toggle dark mode binding
 # Toggle dark mode binding (Moved to Aliases section below)
@@ -76,31 +62,33 @@ c.scrolling.smooth = True
 # Performance & GPU Acceleration
 # ============================================================================
 c.qt.args = [
+    # Use Vulkan backend — OpenGL causes GPU context loss + SIGTRAP on Intel Meteor Lake + Mesa 26
+    "use-vulkan",
     "enable-gpu-rasterization",
+    # Hardware video decode (Intel VAAPI) + Wayland screen sharing
     "enable-accelerated-video-decode",
-    "ignore-gpu-blocklist",
-    "enable-zero-copy",
-    # Allow WS:// form HTTPS (Mixed Content)
+    "enable-features=Vulkan,VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,WebRTCPipeWireCapturer",
+    # Allow WS:// from HTTPS (Mixed Content)
     "allow-running-insecure-content",
 ]
+c.qt.chromium.low_end_device_mode = "never"
 
 
 # ============================================================================
 # Privacy and Blocking Settings
 # ============================================================================
-c.content.headers.user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+c.content.headers.user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
 # Mimic Firefox for Google Login to bypass "Browser not supported"
 config.set(
     "content.headers.user_agent",
-    "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0",
+    "Mozilla/5.0 (X11; Linux x86_64; rv:139.0) Gecko/20100101 Firefox/139.0",
     "https://accounts.google.com/*",
 )
-# c.content.javascript.enabled = False
-c.content.headers.accept_language = "en-US,en;q=0.5"
-c.content.headers.referer = "same-domain"
+c.content.headers.accept_language = "en-US,en;q=0.9"
+c.content.headers.referer = "always"
 c.content.headers.custom = {}
 c.content.cookies.accept = "all"
-c.content.headers.do_not_track = True
+c.content.headers.do_not_track = None
 
 c.content.blocking.enabled = True
 c.content.blocking.method = "adblock"
@@ -108,22 +96,48 @@ c.content.blocking.adblock.lists = [
     "https://easylist.to/easylist/easylist.txt",
     "https://easylist.to/easylist/easyprivacy.txt",
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt",
-    "https://secure.fanboy.co.nz/fanboy-annoyance.txt",  # Blocks social widgets, popups, annoyances
-    "https://secure.fanboy.co.nz/fanboy-cookiemonster.txt",  # Blocks cookie consent banners
+    "https://secure.fanboy.co.nz/fanboy-annoyance.txt",
+    "https://secure.fanboy.co.nz/fanboy-cookiemonster.txt",
 ]
-c.content.canvas_reading = True  # Crucial for Cloudflare verification
+c.content.canvas_reading = True
 c.content.dns_prefetch = True
 c.content.autoplay = True
 c.content.geolocation = True
 
+# ============================================================================
+# Web Feature Permissions (Chrome-like defaults)
+# ============================================================================
+c.content.notifications.enabled = True
+c.content.media.audio_capture = True
+c.content.media.video_capture = True
+c.content.desktop_capture = True
+c.content.persistent_storage = True
+c.content.register_protocol_handler = True
+c.content.fullscreen.window = True
+c.content.pdfjs = True
+c.content.webrtc_ip_handling_policy = "all-interfaces"
+c.content.webgl = True
+c.content.local_storage = True
+c.content.mouse_lock = True
+c.content.javascript.can_open_tabs_automatically = True
+c.content.site_specific_quirks.enabled = True
+c.content.prefers_reduced_motion = False
+c.content.default_encoding = "utf-8"
+c.content.local_content_can_access_file_urls = True
+c.content.unknown_url_scheme_policy = "allow-from-user-interaction"
+
 # Allow Local Sync Bridge (ws://localhost) from HTTPS pages
 c.content.local_content_can_access_remote_urls = True
-# c.content.javascript.can_access_clipboard = True # Already set above
 
+# ============================================================================
+# Download & External App Settings
+# ============================================================================
 config.bind("o", "cmd-set-text -s :open")
 config.bind("O", "cmd-set-text -s :open -t")
 
 c.downloads.location.directory = "~/Downloads/"
+c.downloads.location.prompt = False
+c.new_instance_open_target = "tab"
 
 # ============================================================================
 # Hint Selection Settings
@@ -166,7 +180,6 @@ c.tabs.show = "always"
 config.bind("<Alt-Right>", "tab-next")
 config.bind("<Alt-Left>", "tab-prev")
 config.bind("<Ctrl-Shift-Right>", "open -t {url}")
-config.bind("<Ctrl-Shift-Right>", "open -t {url}")
 # config.bind("tt", "config-cycle tabs.show always never ;; message-info 'Toggled Tabs'") # Replaced by Space+tt for position
 
 # External browser
@@ -186,22 +199,13 @@ config.bind(
 # We do not need to explicitly unbind it if it causes errors.
 
 # Define meaningful aliases so they show up in the menu properly
-c.aliases["login-choose"] = (
-    'spawn --userscript qute-pass --dmenu-invocation "rofi -dmenu -p Login"'
-)
-c.aliases["login-username"] = (
-    'spawn --userscript qute-pass --username-only --dmenu-invocation "rofi -dmenu -p Login"'
-)
-c.aliases["login-password"] = (
-    'spawn --userscript qute-pass --password-only --dmenu-invocation "rofi -dmenu -p Login"'
-)
-c.aliases["password-add"] = "spawn --userscript qute-pass-add"
-c.aliases["password-fill-auto"] = "spawn --userscript password_fill"
 c.aliases["toggle-adblock"] = (
     "config-cycle content.blocking.enabled true false ;; message-info 'Toggled Adblock'"
 )
 c.aliases["toggle-mobile-view"] = "spawn --userscript toggle_mobile_view"
-c.aliases["toggle-dark-mode"] = "spawn --userscript toggle_darkmode.py"
+c.aliases["toggle-dark-mode"] = (
+    "config-cycle colors.webpage.darkmode.enabled true false ;; reload ;; message-info 'Toggled Dark Mode'"
+)
 c.aliases["bookmarks-search"] = "spawn --userscript rofi_bookmarks"
 c.aliases["window-clone"] = "spawn --userscript open_cloned_window"
 c.aliases["sync-toggle"] = "spawn --userscript sync_bridge.py"
@@ -212,12 +216,6 @@ c.aliases["toggle-tabs-layout"] = (
 # ============================================================================
 
 # Bind to the aliases
-config.bind("<Space>pl", "login-choose")
-config.bind("<Space>pu", "login-username")
-config.bind("<Space>pp", "login-password")
-config.bind("<Space>pa", "password-add")
-config.bind("<Space>pf", "password-fill-auto")
-
 config.bind("<Space>tg", "toggle-adblock")
 config.bind("<Space>td", "toggle-dark-mode")
 config.bind("<Space>tm", "toggle-mobile-view")
@@ -232,6 +230,15 @@ config.bind("<Ctrl-Shift-n>", "window-clone")  # Clone Window Size
 # Mode Exits
 config.bind("<Alt-Backspace>", "mode-leave", mode="insert")
 config.bind("<Alt-Backspace>", "mode-leave", mode="passthrough")
+
+# DevTools (web testing)
+config.bind("<F12>", "devtools")
+config.bind("<Ctrl-Shift-i>", "devtools")
+
+# ============================================================================
+# Spellcheck
+# ============================================================================
+c.spellcheck.languages = ["en-US"]
 
 # ============================================================================
 # Theme Overrides
