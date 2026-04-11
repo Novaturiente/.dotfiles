@@ -24,9 +24,6 @@ export __GLX_VENDOR_LIBRARY_NAME=mesa
 
 . "$HOME/.local/share/../bin/env"
 
-export NVAPI_KEY="REDACTED"
-
-export OPENROUTER_API_KEY="REDACTED"
-export ANTHROPIC_BASE_URL="https://openrouter.ai/api"
-export ANTHROPIC_AUTH_TOKEN="$OPENROUTER_API_KEY"
-export ANTHROPIC_API_KEY=""
+# export ANTHROPIC_BASE_URL="https://openrouter.ai/api"
+# export ANTHROPIC_AUTH_TOKEN="$OPENROUTER_API_KEY"
+# export ANTHROPIC_API_KEY=""

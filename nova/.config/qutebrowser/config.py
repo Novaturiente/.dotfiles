@@ -12,6 +12,64 @@ config = config  # pyright: ignore
 config.load_autoconfig(False)
 
 # ============================================================================
+# URL Interceptors (tracking param stripping + privacy redirects)
+# ============================================================================
+
+import operator
+from qutebrowser.api import interceptor
+from qutebrowser.qt.core import QUrl, QUrlQuery
+
+# --- Redirect to privacy-friendly frontends ---
+REDIRECT_MAP = {
+    "www.reddit.com": operator.methodcaller("setHost", "old.reddit.com"),
+    "reddit.com": operator.methodcaller("setHost", "old.reddit.com"),
+    "www.fandom.com": operator.methodcaller("setHost", "breezewiki.com"),
+    "fandom.com": operator.methodcaller("setHost", "breezewiki.com"),
+    "medium.com": operator.methodcaller("setHost", "freedium.cfd"),
+}
+
+def _redirect(info: interceptor.Request):
+    if info.resource_type != interceptor.ResourceType.main_frame:
+        return
+    url = info.request_url
+    redir = REDIRECT_MAP.get(url.host())
+    if redir is not None and redir(url) is not False:
+        info.redirect(url)
+
+interceptor.register(_redirect)
+
+# --- Strip tracking parameters from all URLs ---
+TRACKING_PARAMS = {
+    "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "utm_id",
+    "fbclid", "fb_action_ids", "fb_action_types", "fb_source", "fb_ref",
+    "gclid", "gclsrc", "dclid",
+    "msclkid",
+    "ysclid", "yclid",
+    "_hsenc", "_hsmi", "__hstc", "__hsfp", "hsCtaTracking",
+    "mc_cid", "mc_eid",
+}
+
+def _strip_tracking(info: interceptor.Request):
+    url = info.request_url
+    if not url.hasQuery():
+        return
+    query = QUrlQuery(url.query())
+    items = query.queryItems()
+    stripped = [(k, v) for k, v in items if k not in TRACKING_PARAMS]
+    if len(stripped) < len(items):
+        new_url = QUrl(url)
+        new_query = QUrlQuery()
+        for k, v in stripped:
+            new_query.addQueryItem(k, v)
+        new_url.setQuery(new_query)
+        try:
+            info.redirect(new_url)
+        except Exception:
+            pass
+
+interceptor.register(_strip_tracking)
+
+# ============================================================================
 # Theme
 # ============================================================================
 
@@ -23,10 +81,14 @@ config.source("themes/city-lights-theme.py")
 # ============================================================================
 
 # Dark mode settings
-c.colors.webpage.bg = "#282828"
+c.colors.webpage.bg = "#1D252C"
 c.colors.webpage.darkmode.enabled = True
 c.colors.webpage.preferred_color_scheme = "dark"
 c.colors.webpage.darkmode.policy.images = "never"
+c.colors.webpage.darkmode.algorithm = "lightness-cielab"
+c.colors.webpage.darkmode.contrast = 0.0
+c.colors.webpage.darkmode.threshold.foreground = 150
+c.colors.webpage.darkmode.threshold.background = 205
 
 # ============================================================================
 # Tabs Configuration
@@ -58,6 +120,7 @@ c.session.lazy_restore = True
 # ============================================================================
 
 c.downloads.position = "bottom"
+c.downloads.location.directory = "~/Downloads/"
 c.downloads.remove_finished = 3000  # milliseconds
 
 # ============================================================================
@@ -67,10 +130,10 @@ c.downloads.remove_finished = 3000  # milliseconds
 # Default to insert mode for input fields
 c.input.insert_mode.auto_enter = True
 c.input.insert_mode.auto_load = True
-c.input.insert_mode.leave_on_load = True
+c.input.insert_mode.leave_on_load = False
 
 # ============================================================================
-# Mic
+# Scrolling & Search
 # ============================================================================
 
 c.scrolling.smooth = True
@@ -82,10 +145,13 @@ c.search.wrap = True
 # ============================================================================
 
 c.qt.args = [
+    # Vulkan backend — OpenGL causes GPU context loss on Intel Meteor Lake + Mesa 26
+    "use-vulkan",
     "enable-gpu-rasterization",
     "enable-accelerated-video-decode",
-    "enable-quic",
+    "enable-features=Vulkan,VaapiVideoDecodeLinuxGL,VaapiVideoEncoder",
 ]
+c.qt.chromium.low_end_device_mode = "never"
 
 # ============================================================================
 # Privacy & Security
@@ -96,19 +162,17 @@ c.qt.args = [
 
 # JavaScript settings
 c.content.javascript.clipboard = "access-paste"
-# c.content.javascript.enabled = False
+c.content.javascript.can_open_tabs_automatically = False
 
-# Canvas and WebGL (disabled for fingerprinting protection)
-c.content.canvas_reading = False
+# Canvas reading enabled (required for Cloudflare challenges), WebGL disabled (fingerprinting)
+c.content.canvas_reading = True
 c.content.webgl = False
 
 # Header privacy settings
 c.content.headers.accept_language = "en-US,en;q=0.5"
 c.content.headers.referer = "same-domain"
 c.content.headers.do_not_track = True
-c.content.headers.custom = {
-    "Permissions-Policy": "geolocation=(), microphone=(), camera=(), interest-cohort=()"
-}
+c.content.headers.custom = {}
 
 # Cookie settings
 c.content.cookies.accept = "no-3rdparty"
@@ -117,18 +181,37 @@ c.content.cookies.accept = "no-3rdparty"
 c.content.hyperlink_auditing = False
 c.content.dns_prefetch = True
 
-# Content blocking
+# Content blocking (both = adblock engine + hosts file simultaneously)
 c.content.blocking.enabled = True
-c.content.blocking.method = "auto"
+c.content.blocking.method = "both"
 c.content.blocking.adblock.lists = [
     "https://easylist.to/easylist/easylist.txt",
     "https://easylist.to/easylist/easyprivacy.txt",
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/annoyances-cookies.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/annoyances-others.txt",
+    "https://secure.fanboy.co.nz/fanboy-annoyance.txt",
+    "https://secure.fanboy.co.nz/fanboy-cookiemonster.txt",
+    "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=adblockplus&showintro=1&mimetype=plaintext",
+]
+c.content.blocking.hosts.lists = [
+    "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
 ]
 
 # Media and location permissions
 c.content.autoplay = False
 c.content.geolocation = False
+c.content.notifications.enabled = False
+c.content.media.audio_capture = False
+c.content.media.video_capture = False
+c.content.desktop_capture = False
+c.content.mouse_lock = False
+c.content.persistent_storage = False
+c.content.register_protocol_handler = False
+c.content.pdfjs = True
+c.content.webrtc_ip_handling_policy = "disable-non-proxied-udp"
+c.content.local_content_can_access_remote_urls = False
+c.content.tls.certificate_errors = "block"
 
 # Site compatibility
 c.content.site_specific_quirks.enabled = True
@@ -144,15 +227,29 @@ with config.pattern("*://accounts.google.com/*") as p:
     p.content.blocking.enabled = False
     p.content.cookies.accept = "all"
 
-    p.content.headers.user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0"
+    p.content.headers.user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:139.0) Gecko/20100101 Firefox/139.0"
 
 # Google Services (General)
 with config.pattern("*://*.google.com/*") as p:
     p.content.geolocation = True
 
 # ============================================================================
+# External Editor
+# ============================================================================
+
+# Ctrl+E in insert mode opens the field in neovide
+c.editor.command = ["neovide", "--nofork", "+{line}:{column}", "{file}"]
+
+# ============================================================================
 # Hint Selection & Navigation
 # ============================================================================
+
+# Home row hint characters (faster to type than default)
+c.hints.chars = "asdfghjkl"
+c.hints.uppercase = True
+c.fonts.hints = "bold 13px default_family"
+c.hints.border = "2px solid #cba6f7"
+c.hints.radius = 3
 
 # Enhanced hint selectors for better element detection
 c.hints.selectors["all"].extend(
@@ -160,6 +257,9 @@ c.hints.selectors["all"].extend(
         "[aria-haspopup]",  # Dropdown elements
         '[role="link"]',
         '[role="button"]',
+        "[onclick]",
+        "[data-action]",
+        "summary",
     ]
 )
 
@@ -181,8 +281,9 @@ c.completion.open_categories = [
 
 # Search engines
 c.url.searchengines = {
-    "DEFAULT": "https://duckduckgo.com/?q={}",
+    "DEFAULT": "https://www.startpage.com/do/dsearch?query={}",
     "g": "https://www.google.com/search?q={}",
+    "d": "https://duckduckgo.com/?q={}",
     "yt": "https://www.youtube.com/results?search_query={}",
 }
 
@@ -190,7 +291,14 @@ c.url.searchengines = {
 c.url.auto_search = "naive"
 
 # Start page
-c.url.start_pages = ["https://www.perplexity.ai/"]
+c.url.start_pages = ["https://www.startpage.com/"]
+c.url.default_page = "https://www.startpage.com/"
+
+# ============================================================================
+# Spellcheck
+# ============================================================================
+
+c.spellcheck.languages = ["en-US"]
 
 # ============================================================================
 # Key Bindings
@@ -204,7 +312,8 @@ config.bind(
     "<Escape>", "mode-leave ;; jseval -q document.activeElement.blur()", mode="insert"
 )
 
-# Hint mode bindings
+# Focus first visible input field and auto-enter insert mode (via auto_enter setting)
+config.bind("i", "jseval -q (function(){var inputs=document.querySelectorAll('input:not([type=hidden]):not([type=submit]):not([type=button]):not([type=checkbox]):not([type=radio]):not([disabled]),textarea:not([disabled]),[contenteditable=true]');for(var i=0;i<inputs.length;i++){var r=inputs[i].getBoundingClientRect();if(r.width>0&&r.height>0&&r.top>=0&&r.top<window.innerHeight){inputs[i].focus();return}}})() ;; later 50 enter-mode insert")
 config.bind("I", "hint inputs")
 config.bind("h", "hint all hover")
 config.bind(";f", "hint links run open {hint-url}")
@@ -222,30 +331,18 @@ if os.path.exists(exclude_file):
                 with config.pattern(f"*://{domain}/*") as p:
                     p.colors.webpage.darkmode.enabled = False
 
-# Toggle dark mode binding
-
-
+# Dark mode toggles
 config.bind("<Space>dm", "spawn --userscript toggle_darkmode.py")
+config.bind("<Space>dM", "config-cycle colors.webpage.darkmode.enabled true false ;; reload ;; message-info 'Toggled global dark mode'")
+
 config.bind(
     "<Space>b",
     "spawn ~/.dotfiles/scripts/rofi/bookmarks.sh {url} ;; message-info 'Bookmark added'",
 )
 
-
-# Password Manager (Pass + Rofi)
-config.bind(
-    "<Space>pl",
-    'spawn --userscript qute-pass --dmenu-invocation "rofi -dmenu -p Login"',
-)
-config.bind(
-    "<Space>pu",
-    'spawn --userscript qute-pass --username-only --dmenu-invocation "rofi -dmenu -p Login"',
-)
-config.bind(
-    "<Space>pp",
-    'spawn --userscript qute-pass --password-only --dmenu-invocation "rofi -dmenu -p Login"',
-)
-config.bind("<Space>pa", "spawn --userscript qute-pass-add")
+# Wayback Machine
+config.bind("<Space>wa", "open --tab https://web.archive.org/save/{url} ;; message-info 'Archiving page...'")
+config.bind("<Space>wv", "open --tab https://web.archive.org/web/*/{url}")
 
 # Tab navigation
 config.bind("<Alt-Right>", "tab-next")
@@ -257,5 +354,6 @@ config.bind("<Ctrl+Alt+t>", "spawn -d zen-browser {url} ;; tab-close")
 
 # Media and video bindings
 config.bind("<Space>c", "hint links spawn --userscript cast.sh {hint-url}")
-config.bind("<Space>m", "hint links spawn mpv {hint-url}")
+config.bind("<Space>m", "hint links spawn mpv --script-opts=sponsorblock_minimal-categories=sponsor {hint-url}")
+config.bind("<Space>mp", "spawn --detach mpv --script-opts=sponsorblock_minimal-categories=sponsor --force-window=immediate {url}")
 config.bind("<Space>v", "spawn --userscript vibrance.sh")

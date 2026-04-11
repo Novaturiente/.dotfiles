@@ -2,6 +2,7 @@
 - xorg-xwayland
 - xwayland-satellite
 - niri-git
+- nirinit
 - swayidle
 - ly
 - terminus-font
@@ -30,6 +31,7 @@
 - whitesur-icon-theme-git
 - nwg-look
 - wf-recorder
+- wl-screenrec
 - dms-shell-git
 
 - ydotool
