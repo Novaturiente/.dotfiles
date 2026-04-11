@@ -125,7 +125,7 @@ window-rule {
     block-out-from "screencast"
 }
 window-rule {
-    match title="ZapZap"
+    match title="WasIstLos"
     draw-border-with-background false
     block-out-from "screencast"
 }
@@ -134,8 +134,6 @@ window-rule {
     open-floating true
 }
 window-rule {
-    // This catches the standard IBus bar
-    // match app-id="ibus-ui-gtk3"
     match app-id=r"ibus.*"
     open-floating true
     draw-border-with-background false
@@ -143,6 +141,20 @@ window-rule {
     default-column-width { fixed 200; }
     default-window-height { fixed 300; }
 }
+window-rule {
+    match app-id="claude-gui"
+    open-floating true
+    draw-border-with-background false
+    open-focused true
+    focus-ring {
+        off
+    }
+}
+// window-rule {
+//     background-effect {
+//         blur true
+//     }
+// }
 
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // ENVIRONMENT VARIABLES
@@ -166,6 +178,7 @@ spawn-at-startup "swayidle"
 spawn-at-startup "ibus-daemon" "-drx"
 spawn-at-startup "~/.dotfiles/scripts/wallpaper.sh"
 // Background services
+spawn-sh-at-startup "emacs --daemon"
 spawn-sh-at-startup "kdeconnectd"
 spawn-sh-at-startup "blueman-applet"
 spawn-sh-at-startup "kdeconnect-indicator"
@@ -195,11 +208,14 @@ binds {
     Mod+Ctrl+Space hotkey-overlay-title="Open tmux sessions" {
         spawn "~/.dotfiles/scripts/rofi/tmux.sh"
     }
+    Alt+Space hotkey-overlay-title="Claude GUI" {
+        spawn "claude-gui"
+    }
     Mod+W hotkey-overlay-title="Qutebrowser" {
-        spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"
+        spawn "qutebrowser"
     }
     Mod+Ctrl+W hotkey-overlay-title="Qutebrowser work" {
-        spawn "qutebrowser"
+        spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"
     }
     Mod+Return hotkey-overlay-title="Open tmux" {
         spawn-sh "ghostty -e ~/.dotfiles/scripts/start_tmux.sh"
@@ -269,6 +285,15 @@ binds {
     }
     Alt+Print {
         screenshot-window
+    }
+    // ┌─────────────────────────────────────────────────────────────────────────────────────┐
+    // │ SCREEN RECORDING                                                                    │
+    // └─────────────────────────────────────────────────────────────────────────────────────┘
+    Mod+Ctrl+R hotkey-overlay-title="Record screen / Stop" {
+        spawn-sh "~/.dotfiles/scripts/record-script.sh"
+    }
+    Mod+Ctrl+Shift+R hotkey-overlay-title="Record region / Stop" {
+        spawn-sh "~/.dotfiles/scripts/record-script.sh --region"
     }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ SYSTEM CONTROLS                                                                     │
@@ -572,7 +597,7 @@ binds {
     Mod+Shift+R {
         switch-preset-window-height
     }
-    Mod+Ctrl+R {
+    Mod+Alt+R {
         reset-window-height
     }
     Mod+F {

@@ -1,1 +1,9 @@
-- gemini-cli
+- gtk-layer-shell
+- jdk17-openjdk
+- gperf
+- ninja
+- yasm
+- winboat
+- gobang-bin
+- duf
+- simple-whatsapp-git

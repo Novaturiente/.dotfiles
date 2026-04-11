@@ -8,6 +8,22 @@ alias anova="sudo novarch add"
 alias rnova="sudo novarch remove"
 
 alias cedit="nvim -c 'enew | put + | setlocal buftype=nofile bufhidden=wipe noswapfile'"
+alias emacode='emacs -nw --eval "(run-with-idle-timer 1 nil #'\''my/emacode)"'
+neocode() {
+    if [ -z "$TMUX" ]; then
+        echo "neocode requires tmux"
+        return 1
+    fi
+    local tmpdir=$(mktemp -d)
+    ln -sf ~/.config/yazi/* "$tmpdir/" 2>/dev/null
+    printf '[mgr]\nratio = [0, 1, 0]\n' > "$tmpdir/yazi.toml"
+    local cpane=$(tmux split-window -h -d -l 75% -P -F '#{pane_id}')
+    tmux set-option -p -t "$cpane" allow-passthrough off
+    sleep 1
+    tmux send-keys -t "$cpane" 'claude' Enter
+    YAZI_CONFIG_HOME="$tmpdir" yazi
+    rm -rf "$tmpdir"
+}
 
 # ---- ls Aliases (with eza) ----
 alias la='eza -a --color=always --group-directories-first --icons=always "$@"'

@@ -106,3 +106,19 @@ bindkey "$terminfo[kcbt]" menu-select
 bindkey -M menuselect              '^I'         menu-complete
 bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 bindkey '^I' menu-select
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/nova/google-cloud-sdk/path.zsh.inc' ]; then . '/home/nova/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/nova/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/nova/google-cloud-sdk/completion.zsh.inc'; fi
+export PATH=~/.npm-global/bin:$PATH
+
+# bun completions
+[ -s "/home/nova/.bun/_bun" ] && source "/home/nova/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+alias claude-mem='/home/nova/.bun/bin/bun "/home/nova/.claude/plugins/cache/thedotmack/claude-mem/12.0.1/scripts/worker-service.cjs"'

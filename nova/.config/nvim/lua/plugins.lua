@@ -765,184 +765,69 @@ return {
 	},
 
 	-- ============================================================================
-	-- CURSOR CONFIGURATION
+	-- CLAUDE CODE CONFIGURATION
 	-- ============================================================================
 	{
-		"suiramdev/cursorcli.nvim",
+		"Novaturiente/claudecode.nvim",
+		dependencies = {
+			"folke/snacks.nvim",
+		},
 		config = function()
-			require("cursorcli").setup({
-				-- By default this runs `agent` in the current working directory.
-				command = { "agent" },
-				-- Optional tweaks:
-				-- auto_insert = true, -- jump into insert mode after opening
-				-- notify = true,      -- use vim.notify for status messages
-				-- path = { relative_to_cwd = true },
-				-- float = { width = 0.9, height = 0.8, border = "rounded" },
+			require("claudecode").setup({
+				diff_opts = {
+					layout = "inline",
+				},
 			})
 		end,
+		cmd = { "ClaudeCode", "ClaudeCodeFocus", "ClaudeCodeSend", "ClaudeCodeAdd", "ClaudeCodeTreeAdd", "ClaudeCodeDiffAccept", "ClaudeCodeDiffDeny", "ClaudeCodeSelectModel" },
 		keys = {
-			{
-				"<leader>af",
-				"<Cmd>CursorCliOpenWithLayout float<CR>",
-				desc = "Open Cursor CLI (floating window)",
-				mode = "n",
-			},
-			{
-				"<leader>av",
-				"<Cmd>CursorCliOpenWithLayout vsplit<CR>",
-				desc = "Open Cursor CLI (vertical split)",
-				mode = "n",
-			},
-			{
-				"<leader>ah",
-				"<Cmd>CursorCliOpenWithLayout hsplit<CR>",
-				desc = "Open Cursor CLI (horizontal split)",
-				mode = "n",
-			},
-			{
-				"<leader>ac",
-				function()
-					require("cursorcli").close()
-				end,
-				desc = "Close Cursor CLI terminal",
-				mode = "n",
-			},
-			{
-				"<leader>an",
-				function()
-					require("cursorcli").new_chat()
-				end,
-				desc = "New Cursor CLI chat",
-				mode = "n",
-			},
+			{ "<leader>a", nil, desc = "AI/Claude Code" },
+			{ "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
+			{ "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
+			{ "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
+			{ "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
+			{ "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
+			{ "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
+			{ "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
 			{
 				"<leader>as",
-				function()
-					require("cursorcli").select_chat()
-				end,
-				desc = "Select chat (fuzzy finder with preview)",
-				mode = "n",
+				"<cmd>ClaudeCodeTreeAdd<cr>",
+				desc = "Add file",
+				ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw" },
 			},
-			{
-				"<leader>ar",
-				function()
-					require("cursorcli").rename_chat()
-				end,
-				desc = "Rename current Cursor CLI chat",
-				mode = "n",
-			},
-			{
-				"<leader>aR",
-				function()
-					require("cursorcli").resume()
-				end,
-				desc = "Resume last Cursor CLI chat",
-				mode = "n",
-			},
-			{
-				"<leader>ax",
-				function()
-					require("cursorcli").restart()
-				end,
-				desc = "Restart Cursor CLI (new session in current chat)",
-				mode = "n",
-			},
-			{
-				"<leader>al",
-				function()
-					require("cursorcli").list_sessions()
-				end,
-				desc = "List Cursor CLI sessions (agent ls)",
-				mode = "n",
-			},
-			{
-				"<leader>aa",
-				function()
-					require("cursorcli").add_visual_selection()
-				end,
-				desc = "Add visual selection to Cursor CLI chat",
-				mode = "x",
-			},
-			{
-				"<leader>aA",
-				function()
-					require("cursorcli").request_fix_error_at_cursor_in_new_session()
-				end,
-				desc = "New session: send error at cursor",
-				mode = "n",
-			},
-			{
-				"<leader>aA",
-				function()
-					require("cursorcli").add_visual_selection_to_new_session()
-				end,
-				desc = "New session: send visual selection",
-				mode = "x",
-			},
+			{ "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
+			{ "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
 		},
 	},
+
 	-- ============================================================================
-	-- OPENCODE CONFIGURATION
+	-- NVIM-TREE FILE EXPLORER (for NeoCode layout)
 	-- ============================================================================
 	{
-		"nickjvandyke/opencode.nvim",
-		version = "*", -- Latest stable release
-		dependencies = {
-			{
-				-- `snacks.nvim` integration is recommended, but optional
-				---@module "snacks" <- Loads `snacks.nvim` types for configuration intellisense
-				"folke/snacks.nvim",
-				optional = true,
-				opts = {
-					input = {}, -- Enhances `ask()`
-					picker = { -- Enhances `select()`
-						actions = {
-							opencode_send = function(...)
-								return require("opencode").snacks_picker_send(...)
-							end,
-						},
-						win = {
-							input = {
-								keys = {
-									["<a-a>"] = { "opencode_send", mode = { "n", "i" } },
-								},
-							},
-						},
+		"nvim-tree/nvim-tree.lua",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		opts = {
+			view = {
+				width = 30,
+				side = "left",
+			},
+			filters = {
+				dotfiles = false,
+			},
+			git = {
+				enable = true,
+			},
+			renderer = {
+				group_empty = true,
+				icons = {
+					show = {
+						file = true,
+						folder = true,
+						folder_arrow = true,
+						git = true,
 					},
 				},
 			},
 		},
-		config = function()
-			---@type opencode.Opts
-			vim.g.opencode_opts = {
-				-- Your configuration, if any; goto definition on the type or field for details
-			}
-			vim.o.autoread = true -- Required for `opts.events.reload`
-			-- Recommended/example keymaps
-			vim.keymap.set({ "n", "x" }, "<C-a>", function()
-				require("opencode").ask("@this: ", { submit = true })
-			end, { desc = "Ask opencode…" })
-			vim.keymap.set({ "n", "x" }, "<C-x>", function()
-				require("opencode").select()
-			end, { desc = "Execute opencode action…" })
-			vim.keymap.set({ "n", "t" }, "<C-.>", function()
-				require("opencode").toggle()
-			end, { desc = "Toggle opencode" })
-			vim.keymap.set({ "n", "x" }, "go", function()
-				return require("opencode").operator("@this ")
-			end, { desc = "Add range to opencode", expr = true })
-			vim.keymap.set("n", "goo", function()
-				return require("opencode").operator("@this ") .. "_"
-			end, { desc = "Add line to opencode", expr = true })
-			vim.keymap.set("n", "<S-C-u>", function()
-				require("opencode").command("session.half.page.up")
-			end, { desc = "Scroll opencode up" })
-			vim.keymap.set("n", "<S-C-d>", function()
-				require("opencode").command("session.half.page.down")
-			end, { desc = "Scroll opencode down" })
-			-- You may want these if you use the opinionated `<C-a>` and `<C-x>` keymaps above — otherwise consider `<leader>o…` (and remove terminal mode from the `toggle` keymap)
-			vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
-			vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })
-		end,
 	},
 }
