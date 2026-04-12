@@ -250,6 +250,9 @@ binds {
     Mod+G hotkey-overlay-title="Grammar fix" {
         spawn-sh "~/.dotfiles/scripts/fix_grammar.sh"
     }
+    Mod+V hotkey-overlay-title="Voice input toggle" {
+        spawn "pkill" "-USR1" "-f" "nova-voice.sh";
+    }
     Mod+Shift+N hotkey-overlay-title="Notepad" {
       spawn "dms" "ipc" "call" "notepad" "toggle";  
     }
