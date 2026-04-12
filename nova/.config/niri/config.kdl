@@ -250,20 +250,17 @@ binds {
     Mod+G hotkey-overlay-title="Grammar fix" {
         spawn-sh "~/.dotfiles/scripts/fix_grammar.sh"
     }
-    Mod+V hotkey-overlay-title="Voice input toggle" {
+    Mod+Shift+V hotkey-overlay-title="Voice input toggle" {
         spawn "pkill" "-USR1" "-f" "nova-voice.sh";
     }
     Mod+Shift+N hotkey-overlay-title="Notepad" {
-      spawn "dms" "ipc" "call" "notepad" "toggle";  
+      spawn "dms" "ipc" "call" "notepad" "toggle";
     }
-    Mod+Shift+Space hotkey-overlay-title="Application Launcher" { 
-        spawn "dms" "ipc" "call" "spotlight" "toggle"; 
+    Mod+Shift+Space hotkey-overlay-title="Application Launcher" {
+        spawn "dms" "ipc" "call" "spotlight" "toggle";
     }
-    // Mod+V hotkey-overlay-title="Clipboard" {
-    //     spawn-sh "~/.dotfiles/scripts/rofi/clipboard.sh"
-    // }
-    Mod+V hotkey-overlay-title="Clipboard Manager" { 
-        spawn "dms" "ipc" "call" "clipboard" "toggle"; 
+    Mod+V hotkey-overlay-title="Clipboard Manager" {
+        spawn "dms" "ipc" "call" "clipboard" "toggle";
     }
     Mod+Shift+X hotkey-overlay-title="Tools" {
         spawn-sh "~/.dotfiles/scripts/rofi/tools.sh"
