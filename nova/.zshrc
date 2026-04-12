@@ -8,20 +8,10 @@ source ~/.profile
 # -------------------------------------------------------------------
 source $XDG_CONFIG_HOME/zsh/variables.zsh
 
-if [ -f ~/.env.zsh ]; then
-  source ~/.env.zsh
-fi
+[ -f ~/.env.zsh ] && source ~/.env.zsh
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
-if [ -f ~/.env ]; then
-  source ~/.env
-fi
-if [ -f "$HOME/.local/share/../bin/env" ]; then
-  . "$HOME/.local/share/../bin/env"
-fi
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-export PATH=~/.npm-global/bin:$PATH
-export PATH=/home/nova/.local/share/gem/ruby/3.4.0/bin:$PATH
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.npm-global/bin:$PATH"
 
 # -------------------------------------------------------------------
 # Shell Options
@@ -37,11 +27,6 @@ setopt auto_pushd pushd_ignore_dups
 # Terminal Setup
 # -------------------------------------------------------------------
 autoload -U colors && colors
-
-# Change cursor to vertical bar when inside tmux
-if [ -n "$TMUX" ]; then
-  echo -ne "\e[3 q"
-fi
 
 # -------------------------------------------------------------------
 # Key Bindings
@@ -75,50 +60,39 @@ source $XDG_CONFIG_HOME/zsh/aliases.zsh
 source $XDG_CONFIG_HOME/zsh/functions.zsh
 
 # -------------------------------------------------------------------
-# -------------------------------------------------------------------
 # External Tools & Plugins
 # -------------------------------------------------------------------
 source $XDG_CONFIG_HOME/zsh/pluginload.zsh
-# Initialize Zoxide
 eval "$(zoxide init zsh --cmd cd)"
-
-# FZF Configuration
 source <(fzf --zsh)
-
-# Initialize Atuin
 eval "$(atuin init zsh)"
 
-
-#Sesh session manager
+# -------------------------------------------------------------------
+# Completions
+# -------------------------------------------------------------------
 fpath=(~/.config/zsh/completions $fpath)
 autoload -U compinit && compinit
 
-# Completion Configuration
-# -------------------------------------------------------------------
 zstyle ':completion:*:default' list-colors \
   'di=34:fi=31:ln=36:ex=32' \
   'ma=48;5;17;38;5;255'
 zstyle ':completion:*' list-columns 2
 zstyle ':completion:*' list-packed yes
 
-# Autosuggestions & Menu Selection
 bindkey "$terminfo[kcbt]" menu-select
 bindkey -M menuselect              '^I'         menu-complete
 bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
 bindkey '^I' menu-select
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/nova/google-cloud-sdk/path.zsh.inc' ]; then . '/home/nova/google-cloud-sdk/path.zsh.inc'; fi
+# -------------------------------------------------------------------
+# Google Cloud SDK
+# -------------------------------------------------------------------
+[ -f "$HOME/google-cloud-sdk/path.zsh.inc" ] && . "$HOME/google-cloud-sdk/path.zsh.inc"
+[ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ] && . "$HOME/google-cloud-sdk/completion.zsh.inc"
 
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/nova/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/nova/google-cloud-sdk/completion.zsh.inc'; fi
-export PATH=~/.npm-global/bin:$PATH
-
-# bun completions
-[ -s "/home/nova/.bun/_bun" ] && source "/home/nova/.bun/_bun"
-
-# bun
+# -------------------------------------------------------------------
+# Bun
+# -------------------------------------------------------------------
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
-alias claude-mem='/home/nova/.bun/bin/bun "/home/nova/.claude/plugins/cache/thedotmack/claude-mem/12.0.1/scripts/worker-service.cjs"'

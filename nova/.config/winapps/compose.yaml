@@ -11,7 +11,7 @@ services:
       CPU_CORES: "12" # CPU cores allocated to the Windows VM.
       DISK_SIZE: "100G" # Size of the primary hard disk.
       USERNAME: "Nova" # Edit here to set a custom Windows username. The default is 'MyWindowsUser'.
-      PASSWORD: "novarch" # Edit here to set a password for the Windows user. The default is 'MyWindowsPassword'.
+      PASSWORD: "${WINAPPS_PASSWORD:-MyWindowsPassword}" # Set WINAPPS_PASSWORD in ~/.env
       HOME: "${HOME}" # Set path to Linux user home folder.
     # Rest of your config remains the same
     ports:
