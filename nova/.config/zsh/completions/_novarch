@@ -1,0 +1,421 @@
+#compdef novarch
+
+autoload -U is-at-least
+
+_novarch() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" : \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+'-V[Print version]' \
+'--version[Print version]' \
+":: :_novarch_commands" \
+"*::: :->novarch" \
+&& ret=0
+    case $state in
+    (novarch)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:novarch-command-$line[1]:"
+        case $line[1] in
+            (init)
+_arguments "${_arguments_options[@]}" : \
+'-f+[Path to the packages folder (skips interactive prompt)]:FOLDER:_default' \
+'--folder=[Path to the packages folder (skips interactive prompt)]:FOLDER:_default' \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(install)
+_arguments "${_arguments_options[@]}" : \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(update)
+_arguments "${_arguments_options[@]}" : \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(info)
+_arguments "${_arguments_options[@]}" : \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(add)
+_arguments "${_arguments_options[@]}" : \
+'-t+[Target YAML file (e.g., development.yaml). Defaults to manual-install.yaml]:TO:_default' \
+'--to=[Target YAML file (e.g., development.yaml). Defaults to manual-install.yaml]:TO:_default' \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+'*::packages -- Package names to install:_default' \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" : \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+'*::packages -- Package names to remove:_default' \
+&& ret=0
+;;
+(search)
+_arguments "${_arguments_options[@]}" : \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+':query -- Search query:_default' \
+&& ret=0
+;;
+(diff)
+_arguments "${_arguments_options[@]}" : \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" : \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(which)
+_arguments "${_arguments_options[@]}" : \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+':package -- Package name to look up:_default' \
+&& ret=0
+;;
+(export)
+_arguments "${_arguments_options[@]}" : \
+'-o+[Output directory for generated YAML files (default\: current directory)]:OUTPUT:_default' \
+'--output=[Output directory for generated YAML files (default\: current directory)]:OUTPUT:_default' \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(completions)
+_arguments "${_arguments_options[@]}" : \
+'--install[Install completions to the appropriate system directory]' \
+'--dry-run[Show what would be done without making changes]' \
+'-v[Increase output detail]' \
+'--verbose[Increase output detail]' \
+'-q[Suppress non-error output]' \
+'--quiet[Suppress non-error output]' \
+'-h[Print help]' \
+'--help[Print help]' \
+':shell -- Shell to generate completions for:(bash zsh fish)' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_novarch__subcmd__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:novarch-help-command-$line[1]:"
+        case $line[1] in
+            (init)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(install)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(update)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(info)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(add)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(search)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(diff)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(which)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(export)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(completions)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_novarch_commands] )) ||
+_novarch_commands() {
+    local commands; commands=(
+'init:First-time setup\: configure packages folder, AUR helper, and system repos' \
+'install:Sync packages\: install declared packages, remove undeclared ones' \
+'update:Update system\: refresh mirrors, upgrade packages, sync, clean orphans' \
+'info:Show current configuration and package counts' \
+'add:Install and track new packages' \
+'remove:Uninstall and untrack packages' \
+'search:Search for packages in repositories with YAML cross-reference' \
+'diff:Preview what would be installed or removed (no changes made)' \
+'list:List all declared packages grouped by YAML file' \
+'which:Find which YAML file(s) contain a package' \
+'export:Export currently installed packages to YAML files' \
+'completions:Generate shell completions' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'novarch commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__add_commands] )) ||
+_novarch__subcmd__add_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch add commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__completions_commands] )) ||
+_novarch__subcmd__completions_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch completions commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__diff_commands] )) ||
+_novarch__subcmd__diff_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch diff commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__export_commands] )) ||
+_novarch__subcmd__export_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch export commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help_commands] )) ||
+_novarch__subcmd__help_commands() {
+    local commands; commands=(
+'init:First-time setup\: configure packages folder, AUR helper, and system repos' \
+'install:Sync packages\: install declared packages, remove undeclared ones' \
+'update:Update system\: refresh mirrors, upgrade packages, sync, clean orphans' \
+'info:Show current configuration and package counts' \
+'add:Install and track new packages' \
+'remove:Uninstall and untrack packages' \
+'search:Search for packages in repositories with YAML cross-reference' \
+'diff:Preview what would be installed or removed (no changes made)' \
+'list:List all declared packages grouped by YAML file' \
+'which:Find which YAML file(s) contain a package' \
+'export:Export currently installed packages to YAML files' \
+'completions:Generate shell completions' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'novarch help commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__add_commands] )) ||
+_novarch__subcmd__help__subcmd__add_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help add commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__completions_commands] )) ||
+_novarch__subcmd__help__subcmd__completions_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help completions commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__diff_commands] )) ||
+_novarch__subcmd__help__subcmd__diff_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help diff commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__export_commands] )) ||
+_novarch__subcmd__help__subcmd__export_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help export commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__help_commands] )) ||
+_novarch__subcmd__help__subcmd__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help help commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__info_commands] )) ||
+_novarch__subcmd__help__subcmd__info_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help info commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__init_commands] )) ||
+_novarch__subcmd__help__subcmd__init_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help init commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__install_commands] )) ||
+_novarch__subcmd__help__subcmd__install_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help install commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__list_commands] )) ||
+_novarch__subcmd__help__subcmd__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help list commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__remove_commands] )) ||
+_novarch__subcmd__help__subcmd__remove_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help remove commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__search_commands] )) ||
+_novarch__subcmd__help__subcmd__search_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help search commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__update_commands] )) ||
+_novarch__subcmd__help__subcmd__update_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help update commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__help__subcmd__which_commands] )) ||
+_novarch__subcmd__help__subcmd__which_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch help which commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__info_commands] )) ||
+_novarch__subcmd__info_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch info commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__init_commands] )) ||
+_novarch__subcmd__init_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch init commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__install_commands] )) ||
+_novarch__subcmd__install_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch install commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__list_commands] )) ||
+_novarch__subcmd__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch list commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__remove_commands] )) ||
+_novarch__subcmd__remove_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch remove commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__search_commands] )) ||
+_novarch__subcmd__search_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch search commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__update_commands] )) ||
+_novarch__subcmd__update_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch update commands' commands "$@"
+}
+(( $+functions[_novarch__subcmd__which_commands] )) ||
+_novarch__subcmd__which_commands() {
+    local commands; commands=()
+    _describe -t commands 'novarch which commands' commands "$@"
+}
+
+if [ "$funcstack[1]" = "_novarch" ]; then
+    _novarch "$@"
+else
+    compdef _novarch novarch
+fi
