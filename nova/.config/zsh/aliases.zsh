@@ -49,11 +49,11 @@ alias egrep='egrep --color=auto'
 alias cat='bat --paging=never'
 
 alias gadd='git add . && git commit -m "Update"'
-alias hotspot='nmcli dev wifi hotspot ifname wlp0s20f3 ssid Novapc password "Novarch123"'
+alias hotspot='nmcli dev wifi hotspot ifname wlp0s20f3 ssid Novapc password "$HOTSPOT_PASSWORD"'
 alias fileserver="python3 -m http.server 8080 --directory ~/Share"
 
-alias winsopen="podman-compose -f ~/.config/winapps/compose.yaml start && sleep 5 && xfreerdp3 /u:Nova /p:novarch /v:127.0.0.1 /cert:ignore /sound /microphone +dynamic-resolution /sec:tls /f +span +home-drive"
-alias winrestart="podman-compose -f ~/.config/winapps/compose.yaml restart && sleep 5 && xfreerdp3 /u:Nova /p:novarch /v:127.0.0.1 /cert:ignore /sound /microphone +dynamic-resolution /sec:tls /f +span +home-drive"
+alias winsopen="podman-compose -f ~/.config/winapps/compose.yaml start && sleep 5 && xfreerdp3 /u:Nova /p:\$WINAPPS_PASSWORD /v:127.0.0.1 /cert:ignore /sound /microphone +dynamic-resolution /sec:tls /f +span +home-drive"
+alias winrestart="podman-compose -f ~/.config/winapps/compose.yaml restart && sleep 5 && xfreerdp3 /u:Nova /p:\$WINAPPS_PASSWORD /v:127.0.0.1 /cert:ignore /sound /microphone +dynamic-resolution /sec:tls /f +span +home-drive"
 alias winstop="podman-compose -f ~/.config/winapps/compose.yaml stop"
 alias winstart="podman-compose -f ~/.config/winapps/compose.yaml start"
 
@@ -66,7 +66,7 @@ alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --sa
 
 alias clear-cache="rm -rf ~/.config/qutebrowser_work/cache/* && rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp"
 
-alias eeclogin="ssh -i ~/.ssh/id_eecdev eecdev@139.59.75.32"
+alias eeclogin="ssh -i ~/.ssh/id_eecdev eecdev@$EEC_SERVER_IP"
 
 alias ar="~/.dotfiles/scripts/tmux_agent.sh"
 

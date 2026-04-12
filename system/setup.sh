@@ -14,6 +14,8 @@ sudo cp system/system/etc/ly/config.ini /etc/ly/config.ini
 
 # sudo cp ./system/system/etc/modprobe.d/nvidia-sleep.conf /etc/modprobe.d/nvidia-sleep.conf
 
+sudo cp ./scripts/battery-limit.sh /usr/local/bin/battery-limit.sh
+sudo chmod +x /usr/local/bin/battery-limit.sh
 sudo cp ./system/system/etc/systemd/system/battery-limit.service /etc/systemd/system/battery-limit.service
 sudo cp ./system/system/etc/systemd/system/battery-limit.timer /etc/systemd/system/battery-limit.timer
 
@@ -32,6 +34,7 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 sudo systemctl enable ly
 
 systemctl --user enable batsignal.service
+systemctl --user mask pulseaudio.service pulseaudio.socket
 
 sudo systemctl enable battery-limit.timer
 
