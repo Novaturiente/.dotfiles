@@ -6,6 +6,7 @@ nova/.config/ranger/plugins/ranger-archives/
 .aider*
 temp/
 docs/
+docs/*
 
 # Backup files
 *.bak
