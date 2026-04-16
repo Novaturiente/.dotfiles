@@ -39,23 +39,23 @@ get_field() {
     content=$(pass show "$entry" 2>/dev/null) || return 1
 
     case "$field" in
-        password)
-            echo "$content" | head -1
-            ;;
-        username)
-            echo "$content" | grep -i "^username:" | head -1 | sed 's/^[Uu]sername:[[:space:]]*//'
-            ;;
-        url)
-            echo "$content" | grep -i "^url:" | head -1 | sed 's/^[Uu]rl:[[:space:]]*//'
-            ;;
-        autotype)
-            local seq
-            seq=$(echo "$content" | grep -i "^autotype:" | head -1 | sed 's/^[Aa]utotype:[[:space:]]*//')
-            echo "${seq:-username :tab password :enter}"
-            ;;
-        has_otp)
-            echo "$content" | grep -q "^otpauth://" && echo "yes" || echo "no"
-            ;;
+    password)
+        echo "$content" | head -1
+        ;;
+    username)
+        echo "$content" | grep -i "^username:" | head -1 | sed 's/^[Uu]sername:[[:space:]]*//'
+        ;;
+    url)
+        echo "$content" | grep -i "^url:" | head -1 | sed 's/^[Uu]rl:[[:space:]]*//'
+        ;;
+    autotype)
+        local seq
+        seq=$(echo "$content" | grep -i "^autotype:" | head -1 | sed 's/^[Aa]utotype:[[:space:]]*//')
+        echo "${seq:-username :tab password :enter}"
+        ;;
+    has_otp)
+        echo "$content" | grep -q "^otpauth://" && echo "yes" || echo "no"
+        ;;
     esac
 }
 
@@ -128,40 +128,40 @@ main_menu() {
 
     # Handle action items and separator
     case "$selected" in
-        "+ Add Password")
-            add_password
-            return
-            ;;
-        "+ Add TOTP")
-            add_totp
-            return
-            ;;
-        "──────────────")
-            main_menu
-            return
-            ;;
+    "+ Add Password")
+        add_password
+        return
+        ;;
+    "+ Add TOTP")
+        add_totp
+        return
+        ;;
+    "──────────────")
+        main_menu
+        return
+        ;;
     esac
 
     # Parse selected entry: " domain — username" → "web/domain/username"
-    local stripped="${selected#* }"  # Remove icon prefix
+    local stripped="${selected#* }" # Remove icon prefix
     local domain="${stripped%% — *}"
     local user="${stripped##* — }"
     local entry="web/$domain/$user"
 
     # Handle based on exit code
     case "$exit_code" in
-        0)  # Enter — Copy mode
-            copy_mode "$entry"
-            ;;
-        10) # Alt+1 — Auto-type
-            auto_type "$entry"
-            ;;
-        11) # Alt+2 — Copy TOTP
-            copy_totp "$entry"
-            ;;
-        12) # Alt+3 — Submenu
-            submenu "$entry"
-            ;;
+    0) # Enter — Copy mode
+        copy_mode "$entry"
+        ;;
+    10) # Alt+1 — Auto-type
+        auto_type "$entry"
+        ;;
+    11) # Alt+2 — Copy TOTP
+        copy_totp "$entry"
+        ;;
+    12) # Alt+3 — Submenu
+        submenu "$entry"
+        ;;
     esac
 }
 
@@ -183,21 +183,19 @@ copy_mode() {
 
     # Copy password first
     echo -n "$password" | wl-copy
-    notify " Password copied (username in ${CLIP_SWITCH}s)"
 
     # Background timer: switch to username, then clear
     (
-        sleep "$CLIP_SWITCH"
         if [[ -n "$username" ]]; then
             echo -n "$username" | wl-copy
-            notify-send -a "PassRofi" -t 3000 " Username copied (clearing in $((CLIP_TIMEOUT - CLIP_SWITCH))s)"
+            notify-send -a "PassRofi" -t 3000 " Credentials copied (clearing in $((CLIP_TIMEOUT - CLIP_SWITCH))s)"
         fi
         sleep "$((CLIP_TIMEOUT - CLIP_SWITCH))"
         wl-copy --clear
         notify-send -a "PassRofi" -t 2000 " Clipboard cleared"
         rm -f "$TIMER_PID_FILE"
     ) &
-    echo $! > "$TIMER_PID_FILE"
+    echo $! >"$TIMER_PID_FILE"
 }
 
 # ── Copy TOTP ────────────────────────────────────────────────────────────────
@@ -217,7 +215,7 @@ copy_totp() {
 
     local code remaining
     code=$(pass otp "$entry" 2>/dev/null)
-    remaining=$(( 30 - $(date +%s) % 30 ))
+    remaining=$((30 - $(date +%s) % 30))
     echo -n "$code" | wl-copy
     notify " TOTP copied: $code (expires in ${remaining}s)"
 
@@ -227,7 +225,7 @@ copy_totp() {
         notify-send -a "PassRofi" -t 2000 " Clipboard cleared"
         rm -f "$TIMER_PID_FILE"
     ) &
-    echo $! > "$TIMER_PID_FILE"
+    echo $! >"$TIMER_PID_FILE"
 }
 
 # ── Auto-type ────────────────────────────────────────────────────────────────
@@ -245,41 +243,41 @@ auto_type() {
 
     # Parse and execute autotype sequence
     local IFS=' '
-    read -ra tokens <<< "$sequence"
+    read -ra tokens <<<"$sequence"
 
     local i=0
     while [[ $i -lt ${#tokens[@]} ]]; do
         local token="${tokens[$i]}"
         case "$token" in
-            username)
-                wtype -- "$username"
-                ;;
-            password)
-                wtype -- "$password"
-                ;;
-            otp)
-                local code
-                code=$(pass otp "$entry" 2>/dev/null) || {
-                    notify " TOTP generation failed"
-                    return 1
-                }
-                wtype -- "$code"
-                ;;
-            :tab)
-                wtype -k Tab
-                ;;
-            :enter)
-                wtype -k Return
-                ;;
-            :delay)
-                i=$((i + 1))
-                local secs="${tokens[$i]:-1}"
-                sleep "$secs"
-                ;;
-            *)
-                # Unknown token — type it literally
-                wtype -- "$token"
-                ;;
+        username)
+            wtype -- "$username"
+            ;;
+        password)
+            wtype -- "$password"
+            ;;
+        otp)
+            local code
+            code=$(pass otp "$entry" 2>/dev/null) || {
+                notify " TOTP generation failed"
+                return 1
+            }
+            wtype -- "$code"
+            ;;
+        :tab)
+            wtype -k Tab
+            ;;
+        :enter)
+            wtype -k Return
+            ;;
+        :delay)
+            i=$((i + 1))
+            local secs="${tokens[$i]:-1}"
+            sleep "$secs"
+            ;;
+        *)
+            # Unknown token — type it literally
+            wtype -- "$token"
+            ;;
         esac
         i=$((i + 1))
     done
@@ -305,52 +303,58 @@ submenu() {
     [[ -z "$selected" ]] && return 0
 
     case "$selected" in
-        " Copy Password")
-            local pw
-            pw=$(get_field "$entry" "password")
-            echo -n "$pw" | wl-copy
-            notify " Password copied (clearing in ${CLIP_TIMEOUT}s)"
-            ( sleep "$CLIP_TIMEOUT"; wl-copy --clear ) &
-            ;;
-        " Copy Username")
-            local user
-            user=$(get_field "$entry" "username")
-            echo -n "$user" | wl-copy
-            notify " Username copied (clearing in ${CLIP_TIMEOUT}s)"
-            ( sleep "$CLIP_TIMEOUT"; wl-copy --clear ) &
-            ;;
-        " Copy TOTP")
-            copy_totp "$entry"
-            ;;
-        " Remove TOTP")
-            local confirm
-            confirm=$(printf "Yes\nNo" | rofi -dmenu -p " Remove TOTP from $entry?" -theme power)
-            if [[ "$confirm" == "Yes" ]]; then
-                local content
-                content=$(pass show "$entry" 2>/dev/null)
-                local new_content
-                new_content=$(echo "$content" | grep -v "^otpauth://")
-                echo "$new_content" | pass insert -m -f "$entry"
-                notify " TOTP removed from $entry"
-            fi
-            ;;
-        " Auto-type")
-            auto_type "$entry"
-            ;;
-        " Edit Autotype")
-            edit_autotype "$entry"
-            ;;
-        " Edit")
-            ghostty -e bash -c "pass edit '$entry'"
-            ;;
-        " Delete")
-            local confirm
-            confirm=$(printf "Yes\nNo" | rofi -dmenu -p " Delete $entry?" -theme power)
-            if [[ "$confirm" == "Yes" ]]; then
-                pass rm -f "$entry"
-                notify " Deleted $entry"
-            fi
-            ;;
+    " Copy Password")
+        local pw
+        pw=$(get_field "$entry" "password")
+        echo -n "$pw" | wl-copy
+        notify " Password copied (clearing in ${CLIP_TIMEOUT}s)"
+        (
+            sleep "$CLIP_TIMEOUT"
+            wl-copy --clear
+        ) &
+        ;;
+    " Copy Username")
+        local user
+        user=$(get_field "$entry" "username")
+        echo -n "$user" | wl-copy
+        notify " Username copied (clearing in ${CLIP_TIMEOUT}s)"
+        (
+            sleep "$CLIP_TIMEOUT"
+            wl-copy --clear
+        ) &
+        ;;
+    " Copy TOTP")
+        copy_totp "$entry"
+        ;;
+    " Remove TOTP")
+        local confirm
+        confirm=$(printf "Yes\nNo" | rofi -dmenu -p " Remove TOTP from $entry?" -theme power)
+        if [[ "$confirm" == "Yes" ]]; then
+            local content
+            content=$(pass show "$entry" 2>/dev/null)
+            local new_content
+            new_content=$(echo "$content" | grep -v "^otpauth://")
+            echo "$new_content" | pass insert -m -f "$entry"
+            notify " TOTP removed from $entry"
+        fi
+        ;;
+    " Auto-type")
+        auto_type "$entry"
+        ;;
+    " Edit Autotype")
+        edit_autotype "$entry"
+        ;;
+    " Edit")
+        ghostty -e bash -c "pass edit '$entry'"
+        ;;
+    " Delete")
+        local confirm
+        confirm=$(printf "Yes\nNo" | rofi -dmenu -p " Delete $entry?" -theme power)
+        if [[ "$confirm" == "Yes" ]]; then
+            pass rm -f "$entry"
+            notify " Deleted $entry"
+        fi
+        ;;
     esac
 }
 
@@ -400,7 +404,7 @@ add_password() {
 
     # Generate password if empty
     if [[ -z "$password" ]]; then
-        password=$(tr -dc 'A-Za-z0-9!@#$%^&*' < /dev/urandom | head -c 24)
+        password=$(tr -dc 'A-Za-z0-9!@#$%^&*' </dev/urandom | head -c 24)
         echo -n "$password" | wl-copy
         notify " Password generated and copied to clipboard" 5000
     fi
@@ -424,21 +428,21 @@ add_password() {
 
 add_totp() {
     local method
-    method=$(printf " Scan QR from screen\n Enter URI manually\n Import from file" \
-        | rofi -dmenu -p " Add TOTP" -theme black)
+    method=$(printf " Scan QR from screen\n Enter URI manually\n Import from file" |
+        rofi -dmenu -p " Add TOTP" -theme black)
 
     [[ -z "$method" ]] && return 0
 
     case "$method" in
-        " Scan QR from screen")
-            totp_scan_qr
-            ;;
-        " Enter URI manually")
-            totp_manual
-            ;;
-        " Import from file")
-            totp_import_file
-            ;;
+    " Scan QR from screen")
+        totp_scan_qr
+        ;;
+    " Enter URI manually")
+        totp_manual
+        ;;
+    " Import from file")
+        totp_import_file
+        ;;
     esac
 }
 
@@ -446,7 +450,10 @@ totp_scan_qr() {
     local geometry uri
 
     # Select screen region
-    geometry=$(slurp 2>/dev/null) || { notify " QR scan cancelled"; return 1; }
+    geometry=$(slurp 2>/dev/null) || {
+        notify " QR scan cancelled"
+        return 1
+    }
 
     # Capture and decode
     grim -g "$geometry" /tmp/passrofi-qr.png
@@ -486,7 +493,10 @@ totp_import_file() {
         \( -name "*.txt" -o -name "*.json" -o -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.svg" \) \
         2>/dev/null | sort -t/ -k+5)
 
-    [[ -z "$files" ]] && { notify " No importable files found"; return 1; }
+    [[ -z "$files" ]] && {
+        notify " No importable files found"
+        return 1
+    }
 
     local selected
     selected=$(echo "$files" | rofi -dmenu -p " Select file" -theme black)
@@ -495,39 +505,39 @@ totp_import_file() {
     local ext="${selected##*.}"
 
     case "$ext" in
-        png|jpg|jpeg|svg)
-            # Image file — decode QR
-            local uri
-            uri=$(zbarimg --raw -q "$selected" 2>/dev/null) || {
-                notify " No QR code found in image"
-                return 1
-            }
-            if [[ "$uri" != otpauth://* ]]; then
-                notify " Invalid QR: not an otpauth:// URI"
-                return 1
+    png | jpg | jpeg | svg)
+        # Image file — decode QR
+        local uri
+        uri=$(zbarimg --raw -q "$selected" 2>/dev/null) || {
+            notify " No QR code found in image"
+            return 1
+        }
+        if [[ "$uri" != otpauth://* ]]; then
+            notify " Invalid QR: not an otpauth:// URI"
+            return 1
+        fi
+        totp_attach_uri "$uri"
+        ;;
+    txt)
+        # Text file — read otpauth:// URIs line by line
+        local count=0
+        while IFS= read -r line; do
+            if [[ "$line" == otpauth://* ]]; then
+                totp_attach_uri "$line"
+                count=$((count + 1))
             fi
-            totp_attach_uri "$uri"
-            ;;
-        txt)
-            # Text file — read otpauth:// URIs line by line
-            local count=0
-            while IFS= read -r line; do
-                if [[ "$line" == otpauth://* ]]; then
-                    totp_attach_uri "$line"
-                    count=$((count + 1))
-                fi
-            done < "$selected"
-            if [[ $count -eq 0 ]]; then
-                notify " No otpauth:// URIs found in file"
-            else
-                notify " Imported $count TOTP entries"
-            fi
-            ;;
-        json)
-            # JSON file — extract otpauth:// URIs from authenticator exports
-            # Supports: Aegis, 2FAS, andOTP, and generic {entries[].content.uri} format
-            local uris
-            uris=$(python3 -c "
+        done <"$selected"
+        if [[ $count -eq 0 ]]; then
+            notify " No otpauth:// URIs found in file"
+        else
+            notify " Imported $count TOTP entries"
+        fi
+        ;;
+    json)
+        # JSON file — extract otpauth:// URIs from authenticator exports
+        # Supports: Aegis, 2FAS, andOTP, and generic {entries[].content.uri} format
+        local uris
+        uris=$(python3 -c "
 import json, sys
 with open('$selected') as f:
     data = json.load(f)
@@ -554,17 +564,17 @@ elif isinstance(data, list):
 for u in entries:
     print(u)
 " 2>/dev/null)
-            if [[ -z "$uris" ]]; then
-                notify " No otpauth:// URIs found in JSON"
-                return 1
-            fi
-            local count=0
-            while IFS= read -r uri; do
-                totp_attach_uri "$uri"
-                count=$((count + 1))
-            done <<< "$uris"
-            notify " Imported $count TOTP entries from JSON"
-            ;;
+        if [[ -z "$uris" ]]; then
+            notify " No otpauth:// URIs found in JSON"
+            return 1
+        fi
+        local count=0
+        while IFS= read -r uri; do
+            totp_attach_uri "$uri"
+            count=$((count + 1))
+        done <<<"$uris"
+        notify " Imported $count TOTP entries from JSON"
+        ;;
     esac
 }
 
@@ -603,13 +613,13 @@ totp_attach_uri() {
     local entry
     if [[ "$selected" == "+ Create new entry" ]]; then
         # Use issuer as domain, account as username
-        local domain="${issuer,,}"  # lowercase
+        local domain="${issuer,,}" # lowercase
         domain=$(echo "$domain" | sed 's/ /-/g')
         entry="web/$domain/$account"
 
         # Create a minimal entry
-        printf 'CHANGE_ME\nurl: https://%s\nusername: %s\n' "$domain" "$account" \
-            | pass insert -m -f "$entry"
+        printf 'CHANGE_ME\nurl: https://%s\nusername: %s\n' "$domain" "$account" |
+            pass insert -m -f "$entry"
     else
         local stripped="${selected#* }"
         local domain="${stripped%% — *}"
