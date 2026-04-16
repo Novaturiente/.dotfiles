@@ -5,6 +5,7 @@ nova/.config/ranger/plugins/__pycache__/
 nova/.config/ranger/plugins/ranger-archives/
 .aider*
 temp/
+docs/
 
 # Backup files
 *.bak
