@@ -9,6 +9,9 @@ docs/
 docs/*
 .superpowers/
 
+# Password store (sensitive metadata)
+nova/.password-store/
+
 # Backup files
 *.bak
 *.backup*
