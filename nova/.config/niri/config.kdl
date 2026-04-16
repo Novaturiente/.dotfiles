@@ -265,6 +265,9 @@ binds {
     Mod+Shift+X hotkey-overlay-title="Tools" {
         spawn-sh "~/.dotfiles/scripts/rofi/tools.sh"
     }
+    Mod+Shift+P hotkey-overlay-title="Password Manager" {
+        spawn-sh "~/.dotfiles/scripts/rofi/passrofi.sh"
+    }
     Mod+Shift+B hotkey-overlay-title="Toggle waybar" {
         spawn-sh "killall waybar || waybar"
     }

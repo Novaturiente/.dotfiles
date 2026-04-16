@@ -1,0 +1,103 @@
+<h2>File Tools Widget — Layout</h2>
+<p class="subtitle">The current tools.sh chains 3-4 sequential rofi dialogs. How should eww improve this?</p>
+
+<div class="cards">
+  <!-- Option A: Dual Pane -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#1a1b26;border-radius:8px;padding:16px;font-family:monospace;font-size:12px;color:#c0caf5;">
+        <!-- Top: operation selector -->
+        <div style="display:flex;gap:0;margin-bottom:12px;">
+          <div style="background:#7aa2f7;border-radius:6px 0 0 6px;padding:5px 12px;font-size:10px;color:#1a1b26;font-weight:bold;"> Copy</div>
+          <div style="background:#24283b;padding:5px 12px;font-size:10px;color:#565f89;">󰪹 Move</div>
+          <div style="background:#24283b;padding:5px 12px;font-size:10px;color:#565f89;"> Rename</div>
+          <div style="background:#24283b;padding:5px 12px;font-size:10px;color:#565f89;">󰗨 Delete</div>
+          <div style="background:#24283b;border-radius:0 6px 6px 0;padding:5px 12px;font-size:10px;color:#565f89;">󱀸 Restore</div>
+        </div>
+        <!-- Dual pane -->
+        <div style="display:flex;gap:8px;">
+          <!-- Source -->
+          <div style="flex:1;background:#24283b;border-radius:6px;padding:10px;">
+            <div style="font-size:9px;color:#7aa2f7;margin-bottom:6px;">SOURCE</div>
+            <div style="background:#1a1b26;border-radius:4px;padding:4px 8px;margin-bottom:6px;font-size:10px;color:#565f89;">🔍 Filter...</div>
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <div style="padding:4px 6px;font-size:10px;color:#9ece6a;background:#1a1b26;border-radius:3px;">󰙅 Documents/</div>
+              <div style="padding:4px 6px;font-size:10px;background:#7aa2f7;border-radius:3px;color:#1a1b26;">󱓧 report.pdf</div>
+              <div style="padding:4px 6px;font-size:10px;">󱓧 notes.md</div>
+              <div style="padding:4px 6px;font-size:10px;color:#9ece6a;">󰙅 Projects/</div>
+            </div>
+          </div>
+          <!-- Arrow -->
+          <div style="display:flex;align-items:center;color:#7aa2f7;font-size:18px;">→</div>
+          <!-- Destination -->
+          <div style="flex:1;background:#24283b;border-radius:6px;padding:10px;">
+            <div style="font-size:9px;color:#7aa2f7;margin-bottom:6px;">DESTINATION</div>
+            <div style="background:#1a1b26;border-radius:4px;padding:4px 8px;margin-bottom:6px;font-size:10px;color:#565f89;">🔍 Filter...</div>
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <div style="padding:4px 6px;font-size:10px;color:#9ece6a;">󰙅 Desktop/</div>
+              <div style="padding:4px 6px;font-size:10px;color:#9ece6a;">󰙅 Downloads/</div>
+              <div style="padding:4px 6px;font-size:10px;color:#9ece6a;background:#1a1b26;border-radius:3px;">󰙅 Backup/</div>
+              <div style="padding:4px 6px;font-size:10px;color:#9ece6a;">󰙅 .dotfiles/</div>
+            </div>
+          </div>
+        </div>
+        <!-- Bottom action -->
+        <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:10px;color:#565f89;">report.pdf → Backup/</span>
+          <div style="background:#7aa2f7;border-radius:4px;padding:4px 12px;font-size:10px;color:#1a1b26;font-weight:bold;">Copy</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A: Dual Pane File Manager</h3>
+      <p>Source and destination side-by-side. Select file on left, folder on right, confirm at bottom. All in one view — no sequential dialogs.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Single List + Actions -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#1a1b26;border-radius:8px;padding:16px;font-family:monospace;font-size:12px;color:#c0caf5;">
+        <!-- Search -->
+        <div style="background:#24283b;border-radius:6px;padding:8px 12px;margin-bottom:10px;color:#565f89;font-size:11px;">
+          🔍 Search files...
+        </div>
+        <!-- File list -->
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <div style="background:#24283b;border-radius:4px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="color:#9ece6a;">󰙅</span>
+              <span style="font-size:11px;">Documents/</span>
+            </div>
+            <span style="font-size:9px;color:#565f89;">12 items</span>
+          </div>
+          <div style="background:#7aa2f7;border-radius:4px;padding:8px 10px;color:#1a1b26;display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span>󱓧</span>
+              <span style="font-size:11px;font-weight:bold;">report.pdf</span>
+            </div>
+            <span style="font-size:9px;">2.4 MB</span>
+          </div>
+          <div style="background:#24283b;border-radius:4px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="color:#7aa2f7;">󱓧</span>
+              <span style="font-size:11px;">notes.md</span>
+            </div>
+            <span style="font-size:9px;color:#565f89;">856 B</span>
+          </div>
+        </div>
+        <!-- Action bar for selected -->
+        <div style="margin-top:10px;background:#24283b;border-radius:6px;padding:8px 12px;display:flex;gap:8px;justify-content:center;">
+          <div style="background:#1a1b26;border-radius:4px;padding:4px 10px;font-size:10px;"> Copy</div>
+          <div style="background:#1a1b26;border-radius:4px;padding:4px 10px;font-size:10px;">󰪹 Move</div>
+          <div style="background:#1a1b26;border-radius:4px;padding:4px 10px;font-size:10px;"> Rename</div>
+          <div style="background:#1a1b26;border-radius:4px;padding:4px 10px;font-size:10px;color:#f7768e;">󰗨 Delete</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B: Single List + Action Bar</h3>
+      <p>Browse files, select one, action bar appears at bottom. Clicking an action (copy/move) then shows destination picker. Two-step instead of four.</p>
+    </div>
+  </div>
+</div>
