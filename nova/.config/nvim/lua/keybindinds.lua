@@ -344,8 +344,29 @@ local colorschemes = {
 	"tokyonight-night",
 	"vague",
 }
-local current_scheme_index = 1
-vim.cmd.colorscheme(colorschemes[current_scheme_index])
+local colorscheme_file = vim.fn.stdpath("data") .. "/last-colorscheme"
+
+local function load_saved_colorscheme()
+	local f = io.open(colorscheme_file, "r")
+	if not f then
+		return nil
+	end
+	local name = f:read("*l")
+	f:close()
+	return name
+end
+
+local function save_colorscheme(name)
+	local f = io.open(colorscheme_file, "w")
+	if f then
+		f:write(name)
+		f:close()
+	end
+end
+
+local saved = load_saved_colorscheme()
+vim.cmd.colorscheme(saved or colorschemes[1])
+
 -- Function to cycle through colorschemes
 local function select_colorscheme()
 	vim.ui.select(colorschemes, {
@@ -356,6 +377,7 @@ local function select_colorscheme()
 	}, function(choice)
 		if choice then
 			vim.cmd.colorscheme(choice)
+			save_colorscheme(choice)
 			print("Colorscheme: " .. choice)
 		end
 	end)
