@@ -145,11 +145,9 @@ c.search.wrap = True
 # ============================================================================
 
 c.qt.args = [
-    # Vulkan backend — OpenGL causes GPU context loss on Intel Meteor Lake + Mesa 26
-    "use-vulkan",
+    # GPU compositing on (smooth scroll), video hwdec off (vaapi crashes on Intel Meteor Lake + Mesa 26)
     "enable-gpu-rasterization",
-    "enable-accelerated-video-decode",
-    "enable-features=Vulkan,VaapiVideoDecodeLinuxGL,VaapiVideoEncoder",
+    "disable-features=VaapiVideoDecoder,VaapiVideoEncoder,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxZeroCopyGL,UseChromeOSDirectVideoDecoder",
 ]
 c.qt.chromium.low_end_device_mode = "never"
 
@@ -350,7 +348,7 @@ config.bind("<Alt-Left>", "tab-prev")
 config.bind("<Space>tt", "config-cycle tabs.position left top ;; message-info 'Toggled Tabs Layout'")
 
 # External applications
-config.bind("<Ctrl+Alt+t>", "spawn -d zen-browser {url} ;; tab-close")
+config.bind("<Ctrl+Alt+t>", "spawn -d thorium-browser-avx2 {url} ;; tab-close")
 
 # Media and video bindings
 config.bind("<Space>c", "hint links spawn --userscript cast.sh {hint-url}")

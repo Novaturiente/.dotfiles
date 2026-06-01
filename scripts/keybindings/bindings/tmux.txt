@@ -49,5 +49,5 @@ Prefix t             Clock
 Prefix Up            Select pane up
 Prefix w             Choose window
 Prefix x             Kill pane
-Prefix X             Run shell (sesh/snippet)
+Prefix X             kill-session
 Prefix z             Zoom pane

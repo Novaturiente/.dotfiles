@@ -1,0 +1,68 @@
+// ───────────────────────────────────────────────────────────────────────────────────────────
+// WINDOW RULES
+// ───────────────────────────────────────────────────────────────────────────────────────────
+// General window rules
+window-rule {
+    default-column-width {
+        proportion 0.75
+    }
+    open-focused true
+}
+window-rule {
+    geometry-corner-radius 5
+    clip-to-geometry true
+}
+// Specific window rules
+window-rule {
+    match app-id="scrcpy"
+    open-floating true
+}
+window-rule {
+    match app-id="satty"
+    open-floating true
+}
+window-rule {
+    match app-id="com.mitchellh.ghostty"
+    draw-border-with-background false
+}
+window-rule {
+    match title="Open Files"
+    draw-border-with-background false
+}
+window-rule {
+    match app-id="firefox"
+    draw-border-with-background false
+}
+window-rule {
+    match app-id="zenity"
+    open-floating true
+}
+window-rule {
+    match app-id=r"ibus.*"
+    open-floating true
+    draw-border-with-background false
+    open-focused false
+    default-column-width { fixed 200; }
+    default-window-height { fixed 300; }
+}
+window-rule {
+    match app-id="zen"
+    draw-border-with-background false
+}
+// Blur behind every window's transparent areas (e.g. ghostty 50% opacity).
+// xray defaults to true: niri blurs the wallpaper once and reuses it (cheap),
+// so windows below are ignored. Set `xray false` for true see-through blur of
+// whatever is stacked underneath — prettier, but pricier + experimental.
+// Tune look (passes/offset/noise/saturation) in the global `blur {}` (misc.kdl).
+window-rule {
+    background-effect {
+        blur true
+        // xray false
+    }
+}
+
+// Whatsapp screenshare blocking
+window-rule {
+    match app-id="FFPWA-01KSERG1J9XQTRJF8C0CMC3MS3"
+    block-out-from "screen-capture" 
+}

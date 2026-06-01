@@ -6,10 +6,12 @@
 ;c                  Quickmark load
 <Ctrl+Alt+t>        Open in external browser, close tab
 <Ctrl-n>            New window
+<Ctrl-Shift-i>      devtools
 <Ctrl-Shift-n>      Clone window
 <Ctrl-Shift-Right>  Open URL in new tab
 <<                  Decrease indent
 d                   Scroll half page down
+<F12>               devtools
 f                   Hint links (follow)
 g$                  Tab last
 g0                  Tab first
@@ -55,7 +57,7 @@ q                   Close window
 r                   Reload
 /                   Search
 ?                   Search backwards
-<Space>pa           Add password
+<Space>pa           Add password (qute-pass)
 <Space>pf           Password fill auto
 <Space>pl           Login choose
 <Space>pp           Login password

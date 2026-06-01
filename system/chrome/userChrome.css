@@ -1,0 +1,96 @@
+:root {
+    --dark-purple: #231536;
+    --purple: #392c4b;
+    --light-purple: #3a1864;
+}
+#PlacesToolbarItems {
+    display: flex !important;
+    justify-content: center !important;
+}
+.urlbar-background {
+    border: none !important;
+    outline: none !important;
+}
+#tabbrowser-tabbox,
+.browserContainer {
+    box-shadow: none !important;
+    outline: none !important;
+}
+#alltabs-button,
+#vertical-spacer,
+#private-browsing-indicator-with-label,
+.private-browsing-indicator,
+#sidebar-launcher-splitter,
+#main-window[privatebrowsingmode="temporary"] #fxa-toolbar-menu-button {
+    display: none !important;
+}
+#main-window[privatebrowsingmode="temporary"] #TabsToolbar {
+    appearance: none !important;
+    -moz-appearance: none !important;
+}
+#main-window[privatebrowsingmode="temporary"] .tab-background[selected],
+#main-window[privatebrowsingmode="temporary"] #TabsToolbar,
+#main-window[privatebrowsingmode="temporary"] #titlebar,
+#main-window[privatebrowsingmode="temporary"] #urlbar,
+#main-window[privatebrowsingmode="temporary"] .urlbar-background {
+    background: var(--dark-purple) !important;
+}
+#main-window[privatebrowsingmode="temporary"] #PlacesToolbarItems,
+#main-window[privatebrowsingmode="temporary"] toolbar#nav-bar,
+#main-window[privatebrowsingmode="temporary"] #sidebar-main,
+#main-window[privatebrowsingmode="temporary"] .urlbarView-row[selected],
+#main-window[privatebrowsingmode="temporary"] .panel-viewstack > panelview,
+#main-window[privatebrowsingmode="temporary"] #sidebar-box,
+#main-window[privatebrowsingmode="temporary"] #sidebar-main,
+#main-window[privatebrowsingmode="temporary"] #sidebar {
+    background: var(--purple) !important;
+}
+
+#main-window[privatebrowsingmode="temporary"] #urlbar-searchmode-switcher,
+#main-window[privatebrowsingmode="temporary"] .searchmode-switcher-chicklet {
+    background-color: var(--light-purple) !important;
+}
+#main-window[privatebrowsingmode="temporary"] #PlacesToolbar menupopup[placespopup="true"],
+#main-window[privatebrowsingmode="temporary"] #appMenu-popup,
+#main-window[privatebrowsingmode="temporary"] #PanelUI-popup {
+    --arrowpanel-background: var(--purple) !important;
+}
+#main-window[privatebrowsingmode="temporary"] toolbar#nav-bar {
+    box-shadow: none !important;
+}
+#main-window[privatebrowsingmode="temporary"] .private-browsing-indicator-with-label {
+    order: -1 !important;
+    margin-left: 11px !important;
+}
+#urlbar {
+    text-align: center !important;
+}
+.urlbarView-row {
+    justify-content: start !important;
+}
+.urlbarView-row-inner {
+    max-width: max-content !important;
+}
+.urlbarView-no-wrap {
+    max-width: 100% !important;
+}
+#urlbar[focused="true"],
+#urlbar[breakout][breakout-extend="true"] {
+    position: fixed !important;
+    top: 80px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 600px !important;
+    max-width: 90vw !important;
+    z-index: 9999 !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6) !important;
+    border-radius: 12px !important;
+}
+#urlbar[focused="true"] > .urlbar-input-container,
+#urlbar[breakout][breakout-extend="true"] > .urlbar-input-container {
+    height: 44px !important;
+}
+#urlbar[focused="true"] > .urlbarView,
+#urlbar[breakout][breakout-extend="true"] > .urlbarView {
+    border-radius: 0 0 12px 12px !important;
+}

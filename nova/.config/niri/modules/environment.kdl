@@ -1,0 +1,12 @@
+// ───────────────────────────────────────────────────────────────────────────────────────────
+// ENVIRONMENT VARIABLES
+// ───────────────────────────────────────────────────────────────────────────────────────────
+environment {
+    QT_QPA_PLATFORM "wayland"
+    QT_QPA_PLATFORMTHEME "xdgdesktopportal"
+    WLR_HEADLESS_OUTPUTS "1"
+    GTK_IM_MODULE "ibus"
+    QT_IM_MODULE "ibus"
+    XMODIFIERS "@im=ibus"
+    GLFW_IM_MODULE "ibus"
+}

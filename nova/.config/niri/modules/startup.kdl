@@ -1,0 +1,25 @@
+// ───────────────────────────────────────────────────────────────────────────────────────────
+// STARTUP APPLICATIONS
+// ───────────────────────────────────────────────────────────────────────────────────────────
+// System services
+spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
+// System utilities
+spawn-at-startup "swayidle"
+spawn-at-startup "ibus-daemon" "-drx"
+spawn-at-startup "~/.dotfiles/scripts/wallpaper.sh"
+// Background services
+spawn-sh-at-startup "emacs --daemon"
+spawn-sh-at-startup "kdeconnectd"
+spawn-sh-at-startup "blueman-applet"
+spawn-sh-at-startup "kdeconnect-indicator"
+spawn-sh-at-startup "nm-applet --indicator"
+spawn-sh-at-startup "udiskie --tray --notify"
+spawn-sh-at-startup "wl-paste --watch cliphist store --max-items 100"
+spawn-sh-at-startup "~/.dotfiles/scripts/start_tmux.sh"
+spawn-at-startup "sshfs" "nova@novahome:/home/nova" "/home/nova/server" \
+    "-o" "reconnect,ServerAliveInterval=15,ServerAliveCountMax=3"
+hotkey-overlay {
+    skip-at-startup
+}
+// disabled 2026-06-01: server-side deploy alert system stopped; was spamming "null" notifications from ntfy keepalive events
+// spawn-sh-at-startup "~/.dotfiles/scripts/incoming-notification.sh"
