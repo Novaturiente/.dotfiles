@@ -25,6 +25,60 @@ neocode() {
     rm -rf "$tmpdir"
 }
 
+# Claude project: lazygit (30%) + claude --dangerously-skip-permissions (70%)
+# in a persistent tmux session named after the target dir (default: $PWD).
+# Inside tmux -> switch-client; outside tmux -> start tmux and attach.
+cproj() {
+    local dir="${1:-$PWD}"
+    dir="${dir:A}"
+    [[ -d "$dir" ]] || { echo "cproj: not a directory: $dir" >&2; return 1; }
+
+    local session
+    session="$(basename "$dir")"
+    session="${session#.}"
+    session="${session//:/-}"
+    session="${session//./-}"
+    session="${session// /_}"
+
+    export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.npm-global/bin:$HOME/go/bin:$PATH"
+    tmux set-environment -g PATH "$PATH" 2>/dev/null || true
+
+    local lazygit_bin claude_cmd
+    lazygit_bin="$(command -v lazygit || echo /usr/bin/lazygit)"
+    claude_cmd="$(command -v claude || echo "$HOME/.local/bin/claude") --dangerously-skip-permissions"
+
+    local needs_rebuild=1
+    if tmux has-session -t="$session" 2>/dev/null; then
+        if [[ "$(tmux list-panes -t "$session" 2>/dev/null | wc -l)" -ge 2 ]]; then
+            needs_rebuild=0
+        else
+            tmux kill-session -t "$session" 2>/dev/null
+        fi
+    fi
+
+    if [[ "$needs_rebuild" -eq 1 ]]; then
+        tmux new-session -d -s "$session" -x 200 -y 50 -c "$dir" "CPROJ=1 $lazygit_bin"
+        tmux split-window -h -l 70% -t "$session" -c "$dir" "CPROJ=1 $claude_cmd"
+        tmux select-pane -t "$session" -R
+    fi
+
+    # Remember the project dir on the session (used by the lazygit<->yazi
+    # toggle keybinding to respawn the left pane in the right directory).
+    tmux set-option -t "$session" @cproj_dir "$dir" 2>/dev/null || true
+
+    # Focus the claude pane (rightmost) regardless of rebuild/reuse
+    local claude_pane
+    claude_pane="$(tmux list-panes -t "$session" -F '#{pane_id} #{pane_left}' \
+        | sort -k2 -n | tail -1 | cut -d' ' -f1)"
+    [[ -n "$claude_pane" ]] && tmux select-pane -t "$claude_pane"
+
+    if [[ -n "$TMUX" ]]; then
+        tmux switch-client -t "$session"
+    else
+        tmux attach-session -t "$session"
+    fi
+}
+
 # ---- ls Aliases (with eza) ----
 alias la='eza -a --color=always --group-directories-first --icons=always "$@"'
 alias ls='eza -al --color=always --group-directories-first --icons=always "$@"'
@@ -69,6 +123,11 @@ alias clear-cache="rm -rf ~/.config/qutebrowser_work/cache/* && rm -rf ~/.cache/
 alias eeclogin="ssh -i ~/.ssh/id_eecdev eecdev@$EEC_SERVER_IP"
 
 alias ar="~/.dotfiles/scripts/tmux_agent.sh"
+
+# yazi (full tree + git signs) + claude --dangerously-skip-permissions, 30:70
+alias yproj="~/.dotfiles/scripts/yazi-claude.sh"
+
+alias cld="claude --dangerously-skip-permissions"
 
 # alias ollama="docker exec -it ollama ollama"
 # alias ollamaup="podman-compose -f ~/.dotfiles/docker/ollama.yml up -d"

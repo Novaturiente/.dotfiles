@@ -41,6 +41,7 @@
 - intel-compute-runtime
 - intel-media-driver
 - vulkan-intel
+- libva-utils
 - alsa-ucm-conf
 - nftables
 - khal

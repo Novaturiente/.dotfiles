@@ -22,20 +22,21 @@ i <M-Right>                              <C-W>l
 i <M-Up>                                 <C-W>k
 i <S-Tab>                                vim.snippet.jump if active, otherwise <S-Tab>
 i <Tab>                                  vim.snippet.jump if active, otherwise <Tab>
-n  a+                                    Add File
-n  ab                                    Send Buffer
-n  ac                                    Aider Commands
+n  aa                                    Accept diff
+n  a                                     AI/Claude Code
+n  ab                                    Add current buffer
+n  aC                                    Continue Claude
+n  ac                                    Toggle Claude
 n [                                      Add empty line above cursor
 n ]                                      Add empty line below cursor
-n  a-                                    Drop File
+n  ad                                    Deny diff
+n  af                                    Focus Claude
 n ]A                                     :last
+n  am                                    Select Claude model
 n ]a                                     :next
 n [a                                     :previous
-n  ar                                    Add Read-Only
 n [A                                     :rewind
-n  aR                                    Reset Session
-n  as                                    Send to Aider
-n  a/                                    Toggle Aider
+n  ar                                    Resume Claude
 n ]B                                     :blast
 n ]b                                     :bnext
 n [b                                     :bprevious
@@ -50,7 +51,7 @@ n ]<C-Q>                                 :cnfile
 n [<C-Q>                                 :cpfile
 n  cs                                    Toggle symbols (Trouble)
 n ]<C-T>                                 :ptnext
-n [<C-T>                                  :ptprevious
+n [<C-T>                                 :ptprevious
 n <C-W><C-D>                             Show diagnostics under the cursor
 n <C-W>d                                 Show diagnostics under the cursor
 n [D                                     Jump to the first diagnostic in the current buffer
@@ -82,6 +83,7 @@ n gri                                    vim.lsp.buf.implementation()
 n grn                                    vim.lsp.buf.rename()
 n grr                                    vim.lsp.buf.references()
 n grt                                    vim.lsp.buf.type_definition()
+n grx                                    vim.lsp.codelens.run()
 n gx                                     Opens filepath or URI under cursor with the system handle...
 n &                                      :help &-default
 n JJ                                     Move line down
@@ -180,7 +182,14 @@ o [%                                     <Plug>(MatchitOperationMultiBackward)
 o <Plug>(MatchitOperationMultiBackward)  :<C-U>call matchit#MultiMatch("bW", "o")<CR>
 o ]%                                     <Plug>(MatchitOperationMultiForward)
 o <Plug>(MatchitOperationMultiForward)   :<C-U>call matchit#MultiMatch("W",  "o")<CR>
-s  as                                    Send to Aider
+o s                                      
+o sF                                     Find left surrounding
+o sf                                     Find right surrounding
+o sFl                                    Find previous left surrounding
+o sfl                                    Find previous right surrounding
+o sFn                                    Find next left surrounding
+o sfn                                    Find next right surrounding
+s  as                                    Send to Claude
 s c                                      "_c
 s C                                      "_C
 s <C-S>                                  vim.lsp.buf.signature_help()
@@ -191,19 +200,19 @@ s <Tab>                                  vim.snippet.jump if active, otherwise <
 s x                                      "_x
 s X                                      "_X
 t jk                                     Exit terminal mode
-t <M-Down>                               <C-W>j
-t <M-h>                                  <C-W>h
-t <M-j>                                  <C-W>j
-t <M-k>                                  <C-W>k
-t <M-l>                                  <C-W>l
-t <M-Left>                               <C-W>h
-t <M-Right>                              <C-W>l
-t <M-Up>                                 <C-W>k
+t <M-Down>                               <C-\><C-N><C-W>j
+t <M-h>                                  <C-\><C-N><C-W>h
+t <M-j>                                  <C-\><C-N><C-W>j
+t <M-k>                                  <C-\><C-N><C-W>k
+t <M-l>                                  <C-\><C-N><C-W>l
+t <M-Left>                               <C-\><C-N><C-W>h
+t <M-Right>                              <C-\><C-N><C-W>l
+t <M-Up>                                 <C-\><C-N><C-W>k
 v a                                      Around textobject
 v al                                     Around last textobject
 v an                                     Around next textobject
 v a%                                     <Plug>(MatchitVisualTextObject)
-v  as                                    Send to Aider
+v  as                                    Send to Claude
 v c                                      "_c
 v C                                      "_C
 v <C-S>                                  vim.lsp.buf.signature_help()
@@ -221,6 +230,8 @@ v il                                     Inside last textobject
 v in                                     Inside next textobject
 v JJ                                     Move selection down
 v KK                                     Move selection up
+v ]n                                     Select next node
+v [n                                     Select previous node
 v <Plug>(MatchitVisualBackward)          :<C-U>call matchit#Match_wrapper('',0,'v')<CR>m'gv``
 v %                                      <Plug>(MatchitVisualForward)
 v <Plug>(MatchitVisualForward)           :<C-U>call matchit#Match_wrapper('',1,'v')<CR>:if col("''...
@@ -232,6 +243,12 @@ v <Plug>(MatchitVisualTextObject)        <Plug>(MatchitVisualMultiBackward)o<Plu
 v Q                                      :help v_Q-default
 v s                                      
 v sa                                     Add surrounding to selection
+v sF                                     Find left surrounding
+v sf                                     Find right surrounding
+v sFl                                    Find previous left surrounding
+v sfl                                    Find previous right surrounding
+v sFn                                    Find next left surrounding
+v sfn                                    Find next right surrounding
 v <S-Tab>                                vim.snippet.jump if active, otherwise <S-Tab>
 v <Tab>                                  vim.snippet.jump if active, otherwise <Tab>
 v x                                      "_x
@@ -240,7 +257,7 @@ x a                                      Around textobject
 x al                                     Around last textobject
 x an                                     Around next textobject
 x a%                                     <Plug>(MatchitVisualTextObject)
-x  as                                    Send to Aider
+x  as                                    Send to Claude
 x c                                      "_c
 x C                                      "_C
 x gc                                     Toggle comment
@@ -257,6 +274,8 @@ x il                                     Inside last textobject
 x in                                     Inside next textobject
 x JJ                                     Move selection down
 x KK                                     Move selection up
+x ]n                                     Select next node
+x [n                                     Select previous node
 x <Plug>(MatchitVisualBackward)          :<C-U>call matchit#Match_wrapper('',0,'v')<CR>m'gv``
 x %                                      <Plug>(MatchitVisualForward)
 x <Plug>(MatchitVisualForward)           :<C-U>call matchit#Match_wrapper('',1,'v')<CR>:if col("''...
@@ -268,5 +287,11 @@ x <Plug>(MatchitVisualTextObject)        <Plug>(MatchitVisualMultiBackward)o<Plu
 x Q                                      :help v_Q-default
 x s                                      
 x sa                                     Add surrounding to selection
+x sF                                     Find left surrounding
+x sf                                     Find right surrounding
+x sFl                                    Find previous left surrounding
+x sfl                                    Find previous right surrounding
+x sFn                                    Find next left surrounding
+x sfn                                    Find next right surrounding
 x x                                      "_x
 x X                                      "_X

@@ -1,0 +1,30 @@
+// ───────────────────────────────────────────────────────────────────────────────────────────
+// MISCELLANEOUS SETTINGS
+// ───────────────────────────────────────────────────────────────────────────────────────────
+screenshot-path "~/Desktop/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+switch-events {
+    lid-close {
+        spawn "systemctl suspend-then-hibernate"
+    }
+}
+cursor {
+    xcursor-theme "Bibata-Modern-Classic"
+}
+// Global background-blur tuning (niri 26.04+). This only sets HOW blur looks;
+// blur is turned ON per-window/layer via `background-effect { blur true }`.
+//   passes     - downsample/upsample passes. More = smoother+larger, more GPU. (def 3)
+//   offset     - pixel offset per pass. Bigger = smoother, no extra GPU, but
+//                artifacts if too big. Raise this first, then passes. (def 3)
+//   noise      - grain over blur, hides color banding. (def 0.02)
+//   saturation - color of blurred bg; >1 boosts, <1 mutes. (def 1.5)
+//   off        - add this flag to kill all blur globally.
+blur {
+    passes 3
+    offset 3
+    noise 0.02
+    saturation 1.5
+}
+layer-rule {
+    match namespace="^$"
+    baba-is-float true
+}
