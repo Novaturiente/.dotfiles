@@ -1,4 +1,5 @@
 Alt+Print                       screenshot-window
+Alt+Space                       Claude GUI
 Alt+Tab                         toggle-overview
 Ctrl+Alt+Delete                 quit
 Ctrl+Print                      screenshot-screen
@@ -11,6 +12,7 @@ Mod+6                           focus-workspace 6
 Mod+7                           focus-workspace 7
 Mod+8                           focus-workspace 8
 Mod+9                           focus-workspace 9
+Mod+Alt+R                       reset-window-height
 Mod+B                           Bookmarks
 Mod+BracketLeft                 consume-or-expel-window-left
 Mod+BracketRight                consume-or-expel-window-right
@@ -34,12 +36,14 @@ Mod+Ctrl+J                      move-window-down
 Mod+Ctrl+K                      move-window-up
 Mod+Ctrl+Left                   move-column-left
 Mod+Ctrl+L                      move-column-right
+Mod+Ctrl+N                      Claude project (broot + claude)
 Mod+Ctrl+Page_Down              move-column-to-workspace-down
 Mod+Ctrl+Page_Up                move-column-to-workspace-up
 Mod+Ctrl+P                      Phone mirror
 Mod+Ctrl+Right                  move-column-right
-Mod+Ctrl+R                      reset-window-height
+Mod+Ctrl+R                      Record screen / Stop
 Mod+Ctrl+Shift+P                Turn off monitor
+Mod+Ctrl+Shift+R                Record region / Stop
 Mod+Ctrl+Shift+WheelScrollDown  move-column-right
 Mod+Ctrl+Shift+WheelScrollUp    move-column-left
 Mod+Ctrl+Shift+W                Windows
@@ -83,7 +87,7 @@ Mod+Shift+Ctrl+Left             move-column-to-monitor-left
 Mod+Shift+Ctrl+L                move-column-to-monitor-right
 Mod+Shift+Ctrl+Right            move-column-to-monitor-right
 Mod+Shift+Ctrl+Up               move-column-to-monitor-up
-Mod+Shift+D                     Application launcher
+Mod+Shift+D                     File search
 Mod+Shift+E                     Power menu
 Mod+Shift+Equal                 set-window-height "+10%"
 Mod+Shift+F                     fullscreen-window
@@ -95,6 +99,7 @@ Mod+Shift+N                     Notepad
 Mod+Shift+O                     Text extractor
 Mod+Shift+Page_Down             move-workspace-down
 Mod+Shift+Page_Up               move-workspace-up
+Mod+Shift+P                     Password Manager
 Mod+Shift+Right                 focus-monitor-right
 Mod+Shift+R                     switch-preset-window-height
 Mod+Shift+S                     grim -g \
@@ -106,7 +111,7 @@ Mod+Shift+WheelScrollDown       focus-column-right
 Mod+Shift+WheelScrollUp         focus-column-left
 Mod+Shift+X                     Tools
 Mod+Space                       Open ghostty
-Mod+Tab                         focus-workspace-previous
+Mod+Tab                         Window switcher
 Mod+Up                          focus-workspace-up
 Mod+V                           Clipboard Manager
 Mod+WheelScrollDown             focus-column-right

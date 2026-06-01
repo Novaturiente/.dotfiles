@@ -62,12 +62,14 @@ c.scrolling.smooth = True
 # Performance & GPU Acceleration
 # ============================================================================
 c.qt.args = [
-    # Use Vulkan backend — OpenGL causes GPU context loss + SIGTRAP on Intel Meteor Lake + Mesa 26
-    "use-vulkan",
+    # GPU compositing on (smooth scroll), video hwdec off (vaapi crashes on Intel Meteor Lake + Mesa 26)
     "enable-gpu-rasterization",
-    # Hardware video decode (Intel VAAPI) + Wayland screen sharing
-    "enable-accelerated-video-decode",
-    "enable-features=Vulkan,VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,WebRTCPipeWireCapturer",
+    "enable-zero-copy",
+    "ignore-gpu-blocklist",
+    "num-raster-threads=4",
+    "enable-quic",
+    "disable-features=VaapiVideoDecoder,VaapiVideoEncoder,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxZeroCopyGL,UseChromeOSDirectVideoDecoder",
+    "enable-features=WebRTCPipeWireCapturer,CanvasOopRasterization,ParallelDownloading",
     # Allow WS:// from HTTPS (Mixed Content)
     "allow-running-insecure-content",
 ]
@@ -183,7 +185,7 @@ config.bind("<Ctrl-Shift-Right>", "open -t {url}")
 # config.bind("tt", "config-cycle tabs.show always never ;; message-info 'Toggled Tabs'") # Replaced by Space+tt for position
 
 # External browser
-config.bind("<Ctrl+Alt+t>", "spawn -d zen-browser {url} ;; tab-close")
+config.bind("<Ctrl+Alt+t>", "spawn -d thorium-browser-avx2 {url} ;; tab-close")
 
 config.bind(
     ",b",

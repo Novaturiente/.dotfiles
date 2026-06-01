@@ -1,0 +1,25 @@
+# lazygit config
+gui:
+  # Accordion: only the focused side section is expanded; all others
+  # collapse to a single title line (one expanded at a time).
+  expandFocusedSidePanel: true
+  expandedSidePanelWeight: 2
+  # Files panel shows a collapsible file tree by default.
+  showFileTree: true
+  # Shrink the right main/diff panel to a sliver (lazygit has no option to
+  # fully hide it). Side list gets the space; review real diffs in nvim
+  # via `e`. Default sidePanelWidth is 0.3333.
+  sidePanelWidth: 0.85
+  # Hide the bottom command log / extras panel by default
+  showCommandLog: false
+
+os:
+  # Open files in nvim in a NEW tmux window (lazygit stays in its pane),
+  # with CPROJ=1 so nvim auto-enables the inline git diff. editInTerminal
+  # false = lazygit does not grab the terminal; the wrapper returns at once
+  # after spawning the tmux window. `o` uses the same handler (plain
+  # `open`/xdg-open ran nvim without a TTY -> lazygit froze).
+  edit: '~/.dotfiles/scripts/lazygit-edit.sh "{{filename}}"'
+  editAtLine: '~/.dotfiles/scripts/lazygit-edit.sh "{{filename}}" {{line}}'
+  editInTerminal: false
+  open: '~/.dotfiles/scripts/lazygit-edit.sh "{{filename}}"'

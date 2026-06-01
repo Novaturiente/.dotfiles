@@ -277,6 +277,108 @@ vim.keymap.set("n", "<leader>gg", function()
 end, { desc = "Open Neogit in current project's git root" })
 
 -- ============================================================================
+-- GIT DIFF (VSCode/Cursor-style side-by-side) — diffview.nvim + gitsigns
+-- ============================================================================
+-- Changed-files panel + side-by-side OLD | NEW per file (like VSCode SCM)
+vim.keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Diffview: open side-by-side git diff" })
+vim.keymap.set("n", "<leader>gc", "<cmd>DiffviewClose<cr>", { desc = "Diffview: close" })
+-- Full history of the current file, side-by-side
+vim.keymap.set("n", "<leader>gf", "<cmd>DiffviewFileHistory %<cr>", { desc = "Diffview: current file history" })
+-- Quick side-by-side diff of just the current file
+vim.keymap.set("n", "<leader>gv", function()
+	require("gitsigns").diffthis()
+end, { desc = "Gitsigns: diff current file vs index" })
+vim.keymap.set("n", "<leader>gV", function()
+	require("gitsigns").diffthis("~")
+end, { desc = "Gitsigns: diff current file vs last commit" })
+
+-- Inline unified diff IN the file: removed lines red, added/changed green
+-- (per-hunk expand — like VSCode inline diff)
+vim.keymap.set("n", "<leader>gp", function()
+	require("gitsigns").preview_hunk_inline()
+end, { desc = "Gitsigns: inline hunk diff (red/green in file)" })
+-- Toggle whole-file inline diff: highlight added/changed lines + show
+-- removed lines as red virtual lines + word-level red/green
+vim.keymap.set("n", "<leader>gi", function()
+	local gs = require("gitsigns")
+	gs.toggle_linehl()
+	gs.toggle_deleted()
+	gs.toggle_word_diff()
+end, { desc = "Gitsigns: toggle whole-file inline diff (red/green)" })
+
+-- Launched from a cproj/yproj session ($CPROJ=1): default to whole-file
+-- inline git diff (gi mode) once gitsigns attaches.
+if vim.env.CPROJ == "1" then
+	vim.api.nvim_create_autocmd("User", {
+		pattern = "GitSignsUpdate",
+		once = true,
+		callback = function()
+			local ok, gs = pcall(require, "gitsigns")
+			if not ok then
+				return
+			end
+			gs.toggle_linehl(true)
+			gs.toggle_deleted(true)
+			gs.toggle_word_diff(true)
+		end,
+	})
+end
+
+-- Toggle: hide everything except changed hunks (+/- 3 context lines).
+-- Folds all unchanged regions; press again to restore.
+local only_changes = {}
+vim.keymap.set("n", "<leader>gz", function()
+	local buf = vim.api.nvim_get_current_buf()
+	if only_changes[buf] then
+		vim.wo.foldenable = false
+		vim.cmd("normal! zE")
+		vim.wo.foldmethod = "manual"
+		only_changes[buf] = nil
+		return
+	end
+	local ok, gs = pcall(require, "gitsigns")
+	if not ok then
+		return
+	end
+	local hunks = gs.get_hunks(buf)
+	if not hunks or #hunks == 0 then
+		vim.notify("No git changes in this file", vim.log.levels.INFO)
+		return
+	end
+	local ctx = 3
+	local total = vim.api.nvim_buf_line_count(buf)
+	local keep = {}
+	for _, h in ipairs(hunks) do
+		local start = h.added.start or 1
+		local cnt = h.added.count
+		if cnt == 0 then
+			cnt = 1
+		end -- pure deletion: keep the anchor line
+		for l = math.max(1, start - ctx), math.min(total, start + cnt - 1 + ctx) do
+			keep[l] = true
+		end
+	end
+	vim.wo.foldmethod = "manual"
+	vim.cmd("normal! zE")
+	local l = 1
+	while l <= total do
+		if not keep[l] then
+			local j = l
+			while j <= total and not keep[j] do
+				j = j + 1
+			end
+			vim.cmd(string.format("%d,%dfold", l, j - 1))
+			l = j
+		else
+			l = l + 1
+		end
+	end
+	vim.wo.foldenable = true
+	vim.wo.foldlevel = 0
+	only_changes[buf] = true
+end, { desc = "Gitsigns: fold all but changed lines (toggle)" })
+
+-- ============================================================================
 -- MESSAGE MANAGEMENT KEYMAPS
 -- ============================================================================
 -- Show messages in a new buffer (native method)

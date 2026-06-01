@@ -96,3 +96,5 @@ bindkey '^I' menu-select
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+source /home/nova/.config/broot/launcher/bash/br
