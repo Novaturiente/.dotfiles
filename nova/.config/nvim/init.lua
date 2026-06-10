@@ -31,6 +31,10 @@ vim.g.maplocalleader = " "
 
 vim.g.have_nerd_font = true
 
+-- Disable netrw (nvim-tree replaces it)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- Make line numbers default
 vim.o.number = true
 vim.o.relativenumber = true
@@ -73,6 +77,11 @@ vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 -- Preview substitutions live, as you type!
 vim.o.inccommand = "split"
 
+-- Command-line completion (native wildmenu, popup style)
+vim.o.wildmenu = true
+vim.o.wildmode = "longest:full,full"
+vim.opt.wildoptions = "pum"
+
 -- Show which line your cursor is on
 vim.o.cursorline = true
 
@@ -104,12 +113,9 @@ end
 vim.env.PATH = "/home/nova/.local/bin:" .. vim.env.PATH
 
 vim.opt.rtp:prepend(lazypath)
--- Load plugins from plugins module and setup lazy with options
-local plugins = require("plugins")
-require("lazy").setup(plugins)
 
-require("autostart")
-require("keybindinds")
-require("ui")
-require("coding")
-require("orgsetup")
+-- Non-plugin keymaps
+require("config.keymaps")
+
+-- Plugins: auto-import every spec under lua/plugins/
+require("lazy").setup({ import = "plugins" })
