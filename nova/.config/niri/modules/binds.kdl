@@ -33,8 +33,11 @@ binds {
     Mod+D hotkey-overlay-title="Application launcher" {
         spawn-sh "rofi -show drun -theme spotlight"
     }
+    Mod+P hotkey-overlay-title="Phone (calls + SMS)" {
+        spawn "~/.local/bin/ac-phone"
+    }
     Mod+Shift+D hotkey-overlay-title="File search" {
-        spawn "~/.dotfiles/scripts/rofi/find.sh";
+        spawn "~/.dotfiles/scripts/rofi/tv-edit.sh";
     }
     Mod+N hotkey-overlay-title="Neovim" {
         spawn-sh "neovide"
@@ -65,6 +68,9 @@ binds {
     }
     Mod+G hotkey-overlay-title="Grammar fix" {
         spawn-sh "~/.dotfiles/scripts/fix_grammar.sh"
+    }
+    Mod+Shift+C hotkey-overlay-title="Calendar" {
+        spawn-sh "~/.dotfiles/scripts/rofi/calendar.sh"
     }
     Mod+Shift+N hotkey-overlay-title="Notepad" {
       spawn "dms" "ipc" "call" "notepad" "toggle";
@@ -152,8 +158,19 @@ binds {
     XF86AudioLowerVolume allow-when-locked=true {
         spawn-sh "dms ipc call audio decrement 5"
     }
+    // Shift+wheel = brightness
+    Shift+XF86AudioRaiseVolume allow-when-locked=true {
+        spawn-sh "~/.dotfiles/scripts/brightness.sh up"
+    }
+    Shift+XF86AudioLowerVolume allow-when-locked=true {
+        spawn-sh "~/.dotfiles/scripts/brightness.sh down"
+    }
     XF86AudioMute allow-when-locked=true {
         spawn-sh "dms ipc call audio mute"
+    }
+    // Shift+wheel-press = toggle idle/sleep inhibit (same as Mod+I)
+    Shift+XF86AudioMute allow-when-locked=true {
+        spawn-sh "~/.dotfiles/scripts/idle.sh"
     }
     XF86AudioMicMute allow-when-locked=true {
         spawn-sh "dms ipc call audio micmute"

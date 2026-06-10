@@ -10,9 +10,10 @@ font-style-bold = ExtraBold
 
 # Theme and Appearance
 # theme = yourumi-abbys
-theme = Adventure
+# theme = Adventure
 # theme = Rose Pine
-background-opacity = 0.5
+theme = Catppuccin Mocha
+background-opacity = 0.8
 background-blur = true
 
 # Window Settings
