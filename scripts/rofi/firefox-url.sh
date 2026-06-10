@@ -144,4 +144,37 @@ else
     fi
 fi
 
+# ── focus the firefox window the tab landed in ──────────────────────────────
+# Niri doesn't auto-focus on Firefox's activation request, so do it over IPC.
+#  - firefox already running -> tab reuses an existing window: focus the most
+#    recently used firefox window right away.
+#  - cold start / new-window  -> poll until a brand-new firefox window appears,
+#    then focus that one.
+focus_firefox() {
+    local before now new id
+    before=$(niri msg --json windows 2>/dev/null \
+        | jq -c '[.[] | select(.app_id=="firefox") | .id]' 2>/dev/null || echo '[]')
+    for _ in $(seq 1 50); do                       # up to ~5s, exits early
+        now=$(niri msg --json windows 2>/dev/null || true)
+        [[ -z "$now" ]] && { sleep 0.1; continue; }
+        new=$(jq -r --argjson b "$before" \
+            '[.[] | select(.app_id=="firefox")]
+             | map(select((.id as $i | $b | index($i)) | not))
+             | sort_by(.id) | last | .id // empty' <<<"$now" 2>/dev/null || true)
+        if [[ -n "$new" ]]; then
+            niri msg action focus-window --id "$new" >/dev/null 2>&1 || true
+            return
+        fi
+        if [[ "$before" != "[]" ]]; then           # reused an existing window
+            id=$(jq -r '[.[] | select(.app_id=="firefox")]
+                 | sort_by(.focus_timestamp.secs) | last | .id // empty' \
+                 <<<"$now" 2>/dev/null || true)
+            [[ -n "$id" ]] && niri msg action focus-window --id "$id" >/dev/null 2>&1 || true
+            return
+        fi
+        sleep 0.1
+    done
+}
+
 setsid "$BROWSER" "$URL" >/dev/null 2>&1 &
+focus_firefox
