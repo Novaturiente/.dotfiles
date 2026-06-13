@@ -12,6 +12,7 @@
 - python-pynvim
 - python-ruff
 - tree-sitter
+- tree-sitter-cli
 - shfmt
 - shellcheck
 - prettier

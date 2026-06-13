@@ -12,7 +12,8 @@ font-style-bold = ExtraBold
 # theme = yourumi-abbys
 # theme = Adventure
 # theme = Rose Pine
-theme = Catppuccin Mocha
+# theme = Catppuccin Mocha
+theme = TokyoNight Night
 background-opacity = 0.8
 background-blur = true
 

@@ -30,6 +30,19 @@ map("n", "<leader>m", function()
 	vim.notify("Messages copied to clipboard")
 end, { desc = "Messages -> buffer + clipboard" })
 
+-- Copy current file path to system clipboard
+map("n", "<leader>yp", function()
+	local p = vim.fn.expand("%:p")
+	vim.fn.setreg("+", p)
+	vim.notify("Copied: " .. p)
+end, { desc = "Yank absolute file path" })
+
+map("n", "<leader>yr", function()
+	local p = vim.fn.fnamemodify(vim.fn.expand("%:p"), ":~:.")
+	vim.fn.setreg("+", p)
+	vim.notify("Copied: " .. p)
+end, { desc = "Yank relative file path" })
+
 -- Window navigation
 map("n", "<C-h>", "<C-w>h", { desc = "Window left" })
 map("n", "<C-j>", "<C-w>j", { desc = "Window down" })
