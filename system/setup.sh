@@ -40,7 +40,15 @@ sudo systemctl enable battery-limit.timer
 
 # sudo systemctl enable nvidia-resume.service
 
+# Set fish as default login shell
 chsh "$(whoami)" -s "$(which zsh)"
+
+# pkgfile: command-not-found handler + package/binary completion database
+sudo pkgfile --update
+sudo systemctl enable --now pkgfile-update.timer
+
+# fish: generate completions from installed man pages (Gap 1)
+fish -c 'fish_update_completions'
 
 sudo mkinitcpio -P
 
