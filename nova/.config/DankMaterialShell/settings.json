@@ -10,7 +10,7 @@
   "popupTransparency": 1,
   "dockTransparency": 1,
   "widgetBackgroundColor": "sch",
-  "widgetColorMode": "default",
+  "widgetColorMode": "colorful",
   "controlCenterTileColorMode": "primary",
   "buttonColorMode": "primary",
   "cornerRadius": 12,
@@ -27,9 +27,9 @@
   "mangoTrackpadNaturalScrolling": true,
   "firstDayOfWeek": -1,
   "showWeekNumber": false,
-  "use24HourClock": true,
+  "use24HourClock": false,
   "showSeconds": false,
-  "padHours12Hour": false,
+  "padHours12Hour": true,
   "useFahrenheit": false,
   "windSpeedUnit": "kmh",
   "nightModeEnabled": false,
@@ -41,8 +41,8 @@
   "modalAnimationSpeed": 1,
   "modalCustomAnimationDuration": 150,
   "enableRippleEffects": true,
-  "animationVariant": 0,
-  "motionEffect": 0,
+  "animationVariant": 1,
+  "motionEffect": 2,
   "m3ElevationEnabled": true,
   "m3ElevationIntensity": 12,
   "m3ElevationOpacity": 30,
@@ -132,17 +132,7 @@
       "width": 50
     },
     {
-      "id": "nightMode",
-      "enabled": true,
-      "width": 50
-    },
-    {
       "id": "darkMode",
-      "enabled": true,
-      "width": 50
-    },
-    {
-      "id": "idleInhibitor",
       "enabled": true,
       "width": 50
     }
@@ -164,7 +154,7 @@
   "workspaceActiveAppHighlightEnabled": false,
   "workspaceColorMode": "default",
   "workspaceOccupiedColorMode": "none",
-  "workspaceUnfocusedColorMode": "default",
+  "workspaceUnfocusedColorMode": "s",
   "workspaceUrgentColorMode": "default",
   "workspaceFocusedBorderEnabled": false,
   "workspaceFocusedBorderColor": "primary",
@@ -176,6 +166,7 @@
   "audioVisualizerEnabled": true,
   "audioScrollMode": "volume",
   "audioWheelScrollAmount": 5,
+  "audioDeviceScrollVolumeEnabled": false,
   "clockCompactMode": false,
   "focusedWindowCompactMode": false,
   "focusedWindowSize": 1,
@@ -265,7 +256,7 @@
   "launcherStyle": "full",
   "spotlightBarShowModeChips": false,
   "useAutoLocation": false,
-  "weatherEnabled": true,
+  "weatherEnabled": false,
   "networkPreference": "wifi",
   "iconTheme": "System Default",
   "cursorSettings": {
@@ -300,9 +291,16 @@
   "notepadUseMonospace": true,
   "notepadFontFamily": "",
   "notepadFontSize": 15,
+  "notificationSummaryFontSize": 0,
+  "notificationBodyFontSize": 0,
   "notepadShowLineNumbers": false,
+  "notepadAutoSave": false,
+  "notepadSlideoutSide": "right",
+  "notepadDefaultMode": "slideout",
   "notepadTransparencyOverride": 0.75,
   "notepadLastCustomTransparency": 0.75,
+  "notepadUseCompositorGap": false,
+  "notepadEdgeGap": 0,
   "soundsEnabled": true,
   "useSystemSoundTheme": false,
   "soundLogin": false,
@@ -436,6 +434,7 @@
   "notificationTimeoutNormal": 5000,
   "notificationTimeoutCritical": 0,
   "notificationCompactMode": true,
+  "notificationShowTimeoutBar": false,
   "notificationDedupeEnabled": true,
   "notificationPopupPosition": 0,
   "notificationAnimationSpeed": 1,
@@ -572,7 +571,7 @@
       "innerPadding": 4,
       "bottomGap": -5,
       "transparency": 0,
-      "widgetTransparency": 1,
+      "widgetTransparency": 0.64,
       "squareCorners": false,
       "noBackground": false,
       "gothCornersEnabled": false,
@@ -730,9 +729,17 @@
   "builtInPluginSettings": {
     "dms_settings_search": {
       "trigger": "?"
+    },
+    "dms_clipboard_search": {
+      "trigger": "cb"
     }
   },
   "clipboardEnterToPaste": false,
+  "clipboardVisibleEntryActions": [
+    "pin",
+    "edit",
+    "delete"
+  ],
   "launcherPluginVisibility": {},
   "launcherPluginOrder": [],
   "frameEnabled": false,

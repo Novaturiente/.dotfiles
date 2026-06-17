@@ -79,8 +79,10 @@ function get_runtime_indicator() {
 function right_prompt() {
     local rprompt=""
     if [ -n "$VIRTUAL_ENV" ]; then
-        local venv_name=$(basename "$(dirname "$VIRTUAL_ENV")")
-        local py_version=$(python -c "import platform; print(platform.python_version())" 2>/dev/null)
+        local venv_name=${VIRTUAL_ENV:h:t}
+        local py_version
+        local _pylib=($VIRTUAL_ENV/lib/python*(/N:t))
+        [[ -n $_pylib ]] && py_version=${_pylib[1]#python}
         rprompt+="$POWERLINE_COLOR_STATUS_FG($venv_name; $py_version) %{%f%} "
     fi
     rprompt+="%{$POWERLINE_COLOR_TIME_FG%}🕐 $(date '+%H:%M:%S')%{%f%}"

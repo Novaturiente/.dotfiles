@@ -80,8 +80,8 @@ cproj() {
 }
 
 # ---- ls Aliases (with eza) ----
-alias la='eza -a --color=always --group-directories-first --icons=always "$@"'
-alias ls='eza -al --color=always --group-directories-first --icons=always "$@"'
+alias la='eza -al --color=always --group-directories-first --icons=always "$@"'
+alias ls='eza -a --color=always --group-directories-first --icons=always "$@"'
 alias ll='eza -l --color=always --group-directories-first --icons=always "$@"'
 alias lt='eza -aT --color=always --group-directories-first --icons=always "$@"'
 alias l.="eza -a | grep -e '^\.'"

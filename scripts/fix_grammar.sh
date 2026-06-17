@@ -1,9 +1,17 @@
 #!/bin/bash
 
 # --- CONFIGURATION ---
-# NVIDIA API key (use env NVAPI_KEY to override)
-invoke_url='https://integrate.api.nvidia.com/v1/chat/completions'
-NVAPI_KEY="${NVAPI_KEY:-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}"
+# Load env (GEMINI_API_KEY) since niri-spawned scripts may not inherit login env
+[ -f ~/.env ] && set -a && . ~/.env && set +a
+
+# Gemini API (use env GEMINI_API_KEY; override model via GEMINI_MODEL)
+GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.5-flash}"
+invoke_url="https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent"
+
+if [ -z "$GEMINI_API_KEY" ]; then
+	notify-send "AI Fix" "GEMINI_API_KEY not set in ~/.env"
+	exit 1
+fi
 # Save raw API response (before <answer> extraction) for testing; set empty to disable
 DEBUG_OUTPUT_FILE="${DEBUG_OUTPUT_FILE:-/tmp/fix_grammar_response.txt}"
 # Ensure ydotool knows where to look
@@ -41,25 +49,21 @@ PROMPT="You are a grammar correction tool.
 Fix this text: $PROMPT_SAFE
 "
 
-# Build JSON body with jq so content is safely escaped
+# Build JSON body with jq so content is safely escaped (Gemini generateContent)
 payload=$(jq -n \
 	--arg content "$PROMPT" \
 	'{
-		model: "openai/gpt-oss-120b",
-		messages: [{ role: "user", content: $content }],
-		temperature: 1,
-		top_p: 1,
-		frequency_penalty: 0,
-		presence_penalty: 0,
-		max_tokens: 4096,
-		stream: false,
-		reasoning_effort: "medium"
+		contents: [{ parts: [{ text: $content }] }],
+		generationConfig: {
+			temperature: 0.3,
+			maxOutputTokens: 4096,
+			thinkingConfig: { thinkingBudget: 0 }
+		}
 	}')
 
 response=$(curl -s -w "\n%{http_code}" --request POST \
 	--url "$invoke_url" \
-	--header "Authorization: Bearer $NVAPI_KEY" \
-	--header "Accept: application/json" \
+	--header "x-goog-api-key: $GEMINI_API_KEY" \
 	--header "Content-Type: application/json" \
 	--data "$payload")
 
@@ -71,7 +75,7 @@ if [ "$http_code" != "200" ]; then
 	exit 1
 fi
 
-FIXED_TEXT=$(echo "$body" | jq -r '.choices[0].message.content // empty')
+FIXED_TEXT=$(echo "$body" | jq -r '.candidates[0].content.parts[0].text // empty')
 
 # Save raw fixed text before <answer> extraction (for testing)
 if [ -n "$DEBUG_OUTPUT_FILE" ]; then
