@@ -72,7 +72,7 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 
 | Tool | Details |
 |------|---------|
-| **Shell** | zsh (primary), fish (also configured) |
+| **Shell** | fish (primary, default login shell), zsh (also configured) |
 | **Terminal** | Ghostty (IosevkaTerm Nerd Font, size 13, Catppuccin Mocha, 50% opacity) |
 | **Multiplexer** | tmux (prefix: backtick `` ` ``, vi mode, sesh session manager) |
 | **History** | atuin (synced) |
@@ -90,6 +90,7 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
    - `aliases.zsh` — 80+ aliases (eza, trash, git, podman, ssh)
    - `pluginload.zsh` — zsh plugins (autopair, syntax-highlighting, autosuggestions, autocomplete)
    - `prompt.zsh` — powerline-style prompt with git/language detection
+4. **fish** (default login shell) — `~/.config/fish/config.fish` re-declares the same env/PATH, then auto-loads `conf.d/*.fish` (aliases, autopair, auto-venv). Completions: carapace bridge + native fish + man-page-generated (`fish_update_completions`). Plugins via fisher (`fish_plugins`). Inline autosuggestions read `~/.local/share/fish/fish_history` (not atuin's DB).
 
 ### Notable Aliases
 - `rm` → `trash-put` (safe delete)
