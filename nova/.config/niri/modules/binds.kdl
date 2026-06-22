@@ -78,6 +78,9 @@ binds {
     Mod+Ctrl+P hotkey-overlay-title="Phone mirror" {
         spawn-sh "scrcpy --max-fps 60 -Sw"
     }
+	Alt+Space {
+		spawn-sh "handy --toggle-transcription"
+	}
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ SCREENSHOTS                                                                         │
     // └─────────────────────────────────────────────────────────────────────────────────────┘

@@ -161,3 +161,6 @@ _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/carapace.zsh" carapace _carapac
 # zoxide — MUST be initialized last (zoxide doctor requirement)
 # -------------------------------------------------------------------
 _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zoxide.zsh" zoxide init zsh --cmd cd
+
+# bun completions
+[ -s "/home/nova/.bun/_bun" ] && source "/home/nova/.bun/_bun"
