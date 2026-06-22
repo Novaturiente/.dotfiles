@@ -23,3 +23,5 @@ hotkey-overlay {
 }
 // disabled 2026-06-01: server-side deploy alert system stopped; was spamming "null" notifications from ntfy keepalive events
 // spawn-sh-at-startup "~/.dotfiles/scripts/incoming-notification.sh"
+//Handy startup
+spawn-sh-at-startup "handy --start-hidden"

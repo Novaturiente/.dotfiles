@@ -10,8 +10,9 @@ export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # ---- Custom PATH Configuration ----
 
 
-if [ -d "$HOME/go/bin" ] && [[ ":$PATH:" != *":$HOME/go/bin:"* ]]; then
-  export PATH="$HOME/go/bin:$PATH"
+gobin="${GOPATH:-$HOME/go}/bin"
+if [ -d "$gobin" ] && [[ ":$PATH:" != *":$gobin:"* ]]; then
+  export PATH="$gobin:$PATH"
 fi
 # Add depot_tools to PATH if not already present
 if [ -d "$HOME/Applications/depot_tools" ] && [[ ":$PATH:" != *":$HOME/Applications/depot_tools:"* ]]; then

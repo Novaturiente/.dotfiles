@@ -10,6 +10,10 @@
 
 set -euo pipefail
 
+# Spawned from niri (non-login shell) so .profile isn't sourced — set the
+# gnupg home explicitly or gpg falls back to ~/.gnupg and can't find the key.
+export GNUPGHOME="${GNUPGHOME:-${XDG_DATA_HOME:-$HOME/.local/share}/gnupg}"
+
 STORE_DIR="${PASSWORD_STORE_DIR:-$HOME/.password-store}"
 WEB_DIR="$STORE_DIR/web"
 CLIP_TIMEOUT=45
@@ -78,6 +82,13 @@ list_entries() {
 get_focused_domain() {
     local win_info
     win_info=$(niri msg focused-window 2>/dev/null) || return 1
+
+    # Only autofill from browser windows — otherwise titles like
+    # "start_tmux.sh" get mistaken for a domain and prefill the search.
+    local app_id
+    app_id=$(echo "$win_info" | grep "App ID:" | sed 's/.*App ID: "\(.*\)"/\1/')
+    echo "$app_id" | grep -qiE 'zen|chrom|firefox|qutebrowser|thorium|brave|browser' || return 0
+
     local title
     title=$(echo "$win_info" | grep "Title:" | sed 's/.*Title: "\(.*\)"/\1/')
 
@@ -181,16 +192,14 @@ copy_mode() {
         return 1
     fi
 
-    # Copy password first
+    # Copy password then username (both land in clipboard history)
     echo -n "$password" | wl-copy
+    [[ -n "$username" ]] && echo -n "$username" | wl-copy
+    notify-send -a "PassRofi" -t 3000 " Password & username copied (clearing in ${CLIP_TIMEOUT}s)"
 
-    # Background timer: switch to username, then clear
+    # Background timer: clear clipboard
     (
-        if [[ -n "$username" ]]; then
-            echo -n "$username" | wl-copy
-            notify-send -a "PassRofi" -t 3000 " Credentials copied (clearing in $((CLIP_TIMEOUT - CLIP_SWITCH))s)"
-        fi
-        sleep "$((CLIP_TIMEOUT - CLIP_SWITCH))"
+        sleep "$CLIP_TIMEOUT"
         wl-copy --clear
         notify-send -a "PassRofi" -t 2000 " Clipboard cleared"
         rm -f "$TIMER_PID_FILE"

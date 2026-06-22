@@ -12,7 +12,6 @@
 - dms-shell-git
 - cachyos-firefox-settings
 - firefoxpwa
-- antigravity-ide
 - xdg-desktop-portal-wlr
 - zathura
 - libreoffice-fresh
@@ -25,3 +24,6 @@
 - tuxedo
 - carapace-bin
 - nodejs-inshellisense
+- antigravity-cli
+- handy-bin
+- bun
