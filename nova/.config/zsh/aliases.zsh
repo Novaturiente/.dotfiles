@@ -40,7 +40,7 @@ cproj() {
     session="${session//./-}"
     session="${session// /_}"
 
-    export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.npm-global/bin:$HOME/go/bin:$PATH"
+    export PATH="$HOME/.local/bin:${CARGO_HOME:-$HOME/.cargo}/bin:$HOME/.npm-global/bin:${GOPATH:-$HOME/go}/bin:$PATH"
     tmux set-environment -g PATH "$PATH" 2>/dev/null || true
 
     local lazygit_bin claude_cmd
@@ -129,11 +129,4 @@ alias yproj="~/.dotfiles/scripts/yazi-claude.sh"
 
 alias cld="claude --dangerously-skip-permissions"
 
-# alias ollama="docker exec -it ollama ollama"
-# alias ollamaup="podman-compose -f ~/.dotfiles/docker/ollama.yml up -d"
-# alias ollamadown="podman-compose -f ~/.dotfiles/docker/ollama.yml down"
-
-# alias nixup="sudo systemctl enable --now nix-daemon"
-# alias homeup="nix run github:nix-community/home-manager -- init --switch"
-# alias serviceup="cd ~/.config/home-manager/ && sudo nix run 'github:numtide/system-manager' -- switch --flake '.'"
-# alias editpackages="nvim ~/.config/home-manager/packages.nix"
+alias lsql="lazysql"

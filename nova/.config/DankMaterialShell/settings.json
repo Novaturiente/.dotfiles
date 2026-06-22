@@ -130,11 +130,6 @@
       "id": "audioInput",
       "enabled": true,
       "width": 50
-    },
-    {
-      "id": "darkMode",
-      "enabled": true,
-      "width": 50
     }
   ],
   "showWorkspaceIndex": true,
@@ -508,11 +503,15 @@
       "leftWidgets": [
         {
           "id": "cpuUsage",
-          "enabled": true
+          "enabled": true,
+          "minimumWidth": false
         },
         {
           "id": "memUsage",
-          "enabled": true
+          "enabled": true,
+          "minimumWidth": true,
+          "showSwap": false,
+          "showInGb": false
         },
         {
           "id": "network_speed_monitor",
@@ -520,17 +519,28 @@
         },
         {
           "id": "focusedWindow",
-          "enabled": true
+          "enabled": true,
+          "focusedWindowSize": 0,
+          "focusedWindowCompactMode": true
         }
       ],
       "centerWidgets": [
-        "clock",
+        {
+          "id": "clock",
+          "enabled": true,
+          "clockCompactMode": false
+        },
         {
           "id": "workspaceSwitcher",
           "enabled": true
         },
         {
           "id": "music",
+          "enabled": true,
+          "mediaSize": 0
+        },
+        {
+          "id": "colorPicker",
           "enabled": true
         }
       ],
@@ -549,7 +559,8 @@
         },
         {
           "id": "systemTray",
-          "enabled": true
+          "enabled": true,
+          "trayUseInlineExpansion": true
         },
         {
           "id": "controlCenterButton",
@@ -558,7 +569,7 @@
           "showBluetoothIcon": true,
           "showAudioIcon": true,
           "showAudioPercent": false,
-          "showVpnIcon": false,
+          "showVpnIcon": true,
           "showBrightnessIcon": false,
           "showBrightnessPercent": false,
           "showMicIcon": false,
@@ -571,7 +582,7 @@
       "innerPadding": 4,
       "bottomGap": -5,
       "transparency": 0,
-      "widgetTransparency": 0.64,
+      "widgetTransparency": 0.9,
       "squareCorners": false,
       "noBackground": false,
       "gothCornersEnabled": false,

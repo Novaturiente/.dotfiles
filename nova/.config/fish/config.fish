@@ -51,16 +51,29 @@ set -gx __GLX_VENDOR_LIBRARY_NAME mesa
 set -gx RUSTUP_DIST_SERVER https://mirrors.tuna.tsinghua.edu.cn/rustup
 set -gx RUSTUP_UPDATE_ROOT https://mirrors.tuna.tsinghua.edu.cn/rustup/rustup
 
+# ---- Per-app XDG overrides (relocate dirs out of $HOME) ----
+set -gx CARGO_HOME $XDG_DATA_HOME/cargo
+set -gx RUSTUP_HOME $XDG_DATA_HOME/rustup
+set -gx GOPATH $XDG_DATA_HOME/go
+set -gx BUN_INSTALL $XDG_DATA_HOME/bun
+set -gx NPM_CONFIG_CACHE $XDG_CACHE_HOME/npm
+set -gx ANDROID_HOME $HOME/Android/Sdk
+set -gx ANDROID_USER_HOME $XDG_DATA_HOME/android
+set -gx ANDROID_SDK_HOME $XDG_DATA_HOME/android
+set -gx ADB_VENDOR_KEYS $XDG_DATA_HOME/android
+set -gx _JAVA_OPTIONS "-Djava.util.prefs.userRoot=$XDG_CONFIG_HOME/java"
+set -gx MAVEN_OPTS "-Dmaven.repo.local=$XDG_DATA_HOME/maven/repository"
+set -gx RBENV_ROOT $XDG_DATA_HOME/rbenv
+set -gx GNUPGHOME $XDG_DATA_HOME/gnupg
+set -gx WGETRC $XDG_CONFIG_HOME/wget/wgetrc
+
 # ---- PATH (fish_add_path dedupes + persists order) ----
 fish_add_path -g $HOME/.local/bin
-fish_add_path -g $HOME/.cargo/bin
+fish_add_path -g $CARGO_HOME/bin
 fish_add_path -g $HOME/.npm-global/bin
-test -d $HOME/go/bin;                    and fish_add_path -g $HOME/go/bin
+test -d $GOPATH/bin;                     and fish_add_path -g $GOPATH/bin
 test -d $HOME/Applications/depot_tools;  and fish_add_path -g $HOME/Applications/depot_tools
-if test -d $HOME/.bun/bin
-    fish_add_path -g $HOME/.bun/bin
-    set -gx BUN_INSTALL $HOME/.bun
-end
+test -d $BUN_INSTALL/bin;                and fish_add_path -g $BUN_INSTALL/bin
 
 # ===================================================================
 # Secrets & POSIX-only env files (via fenv -> foreign-env plugin)
