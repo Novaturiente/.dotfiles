@@ -21,6 +21,9 @@ binds {
     Mod+Ctrl+W hotkey-overlay-title="Qutebrowser work" {
         spawn-sh "qutebrowser --basedir ~/.config/qutebrowser_work"
     }
+    Mod+Shift+W hotkey-overlay-title="Qutebrowser (VPN)" {
+        spawn-sh "vpn-run qutebrowser"
+    }
     Mod+Return hotkey-overlay-title="Open tmux" {
         spawn-sh "ghostty -e ~/.dotfiles/scripts/start_tmux.sh"
     }

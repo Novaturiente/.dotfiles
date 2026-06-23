@@ -1,0 +1,3 @@
+# Let nova launch apps into the Mullvad vpn netns without a password prompt,
+# so `vpn-run` works from a niri keybind. Scoped to the one root-owned script.
+nova ALL=(root) NOPASSWD: /usr/local/bin/vpn-run
