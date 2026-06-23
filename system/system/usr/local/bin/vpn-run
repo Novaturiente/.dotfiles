@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# vpn-run <command...> — launch a command inside the Mullvad "vpn" netns so its
+# traffic goes through the tunnel. Everything not launched this way stays on the
+# normal connection.
+#
+# GUI apps work: a network namespace isolates networking only, so the Wayland
+# socket and user runtime dir stay accessible — we just forward the env vars a
+# Wayland/X11 client needs. A NOPASSWD sudoers rule (see /etc/sudoers.d/vpn-run)
+# lets this run without a password prompt, so it works from a niri keybind.
+set -euo pipefail
+
+SELF=/usr/local/bin/vpn-run   # absolute, so the sudo re-exec works from any PATH
+
+if [[ $EUID -ne 0 ]]; then
+    exec sudo "$SELF" \
+        "$USER" \
+        "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" \
+        "${WAYLAND_DISPLAY:-}" \
+        "${DISPLAY:-}" \
+        "$@"
+fi
+
+user=$1 runtime=$2 wld=$3 dpy=$4; shift 4
+exec ip netns exec vpn runuser -u "$user" -- \
+    env XDG_RUNTIME_DIR="$runtime" WAYLAND_DISPLAY="$wld" DISPLAY="$dpy" \
+        QT_QPA_PLATFORM=wayland "$@"
