@@ -1,0 +1,13 @@
+[Unit]
+Description=Mullvad WireGuard network namespace (vpn)
+After=network-online.target nss-lookup.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/mullvad-netns up
+ExecStop=/usr/local/bin/mullvad-netns down
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# mullvad-netns — run a Mullvad WireGuard tunnel inside an isolated network
+# namespace called "vpn". Only processes launched with `vpn-run` (i.e.
+# `ip netns exec vpn ...`) use the tunnel; every other process uses the normal
+# connection. The namespace has no route except wg0, so if the tunnel drops no
+# traffic can leak out — a built-in kill switch.
+#
+# The wg interface is created in the ROOT namespace (so its encrypted UDP
+# socket can reach the internet) and then moved into the vpn namespace.
+set -euo pipefail
+
+NS=vpn
+IF=wg0
+CONF=/etc/wireguard/mullvad.conf
+
+[[ -r "$CONF" ]] || { echo "missing $CONF" >&2; exit 1; }
+
+# Pull the wg-quick-only keys that `wg` itself does not understand.
+addr=$(awk -F= '/^[[:space:]]*Address/{gsub(/[[:space:]]/,"",$2);print $2}' "$CONF")
+dns=$(awk  -F= '/^[[:space:]]*DNS/{gsub(/[[:space:]]/,"",$2);print $2}' "$CONF")
+mtu=$(awk  -F= '/^[[:space:]]*MTU/{gsub(/[[:space:]]/,"",$2);print $2}' "$CONF")
+mtu=${mtu:-1380}   # Mullvad's recommended WireGuard MTU
+
+up() {
+    ip netns add "$NS"
+    ip netns exec "$NS" ip link set lo up
+
+    ip link add "$IF" type wireguard
+    ip link set "$IF" netns "$NS"
+
+    # Load keys + peer only (strip the wg-quick extension lines).
+    tmp=$(mktemp)
+    trap 'rm -f "$tmp"' RETURN
+    grep -vE '^[[:space:]]*(Address|DNS|MTU)[[:space:]]*=' "$CONF" > "$tmp"
+    ip netns exec "$NS" wg setconf "$IF" "$tmp"
+
+    IFS=',' read -ra addrs <<< "$addr"
+    for a in "${addrs[@]}"; do ip -n "$NS" addr add "$a" dev "$IF"; done
+
+    ip -n "$NS" link set "$IF" mtu "$mtu" up
+    ip -n "$NS" route add default dev "$IF"
+    ip -n "$NS" -6 route add default dev "$IF" 2>/dev/null || true
+
+    # DNS for processes inside the namespace: `ip netns exec` bind-mounts this
+    # over /etc/resolv.conf automatically. The address is reachable only through
+    # the tunnel, so DNS can't leak to the host resolver either.
+    mkdir -p "/etc/netns/$NS"
+    printf 'nameserver %s\n' "$dns" > "/etc/netns/$NS/resolv.conf"
+}
+
+down() {
+    ip netns del "$NS" 2>/dev/null || true   # also destroys wg0
+    rm -rf "/etc/netns/$NS"
+}
+
+case "${1:-}" in
+    up)   up ;;
+    down) down ;;
+    *)    echo "usage: $0 {up|down}" >&2; exit 1 ;;
+esac
