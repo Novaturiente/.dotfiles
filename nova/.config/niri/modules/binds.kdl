@@ -25,14 +25,15 @@ binds {
         spawn-sh "vpn-run qutebrowser"
     }
     Mod+Return hotkey-overlay-title="Open tmux" {
-        spawn-sh "ghostty -e ~/.dotfiles/scripts/start_tmux.sh"
+        // spawn-sh "ghostty -e ~/.dotfiles/scripts/start_tmux.sh"
+		spawn-sh "ghostty --title='herdr' -e herdr"
     }
     Mod+D hotkey-overlay-title="Application launcher" {
         spawn-sh "rofi -show drun -theme spotlight"
     }
-    Mod+P hotkey-overlay-title="Phone (calls + SMS)" {
-        spawn "~/.local/bin/ac-phone"
-    }
+    // Mod+P hotkey-overlay-title="Phone (calls + SMS)" {
+    //     spawn "~/.local/bin/ac-phone"
+    // }
     Mod+Shift+D hotkey-overlay-title="File search" {
         spawn "~/.dotfiles/scripts/rofi/tv-edit.sh";
     }
@@ -78,8 +79,11 @@ binds {
     Mod+Shift+P hotkey-overlay-title="Password Manager" {
         spawn-sh "~/.dotfiles/scripts/rofi/passrofi.sh"
     }
+    Mod+P hotkey-overlay-title="Phone mirror" {
+        spawn-sh "scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --window-height=1150"
+    }
     Mod+Ctrl+P hotkey-overlay-title="Phone mirror" {
-        spawn-sh "scrcpy --max-fps 60 -Sw"
+        spawn-sh "scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --new-display=1920x1080 --window-title 'dexmode'"
     }
 	Alt+Space {
 		spawn-sh "handy --toggle-transcription"

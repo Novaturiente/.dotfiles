@@ -1,0 +1,16 @@
+# Place this file at ~/.config/herdr/config.toml
+# Deployed via stow from ~/.dotfiles. Reload running server with:
+#   herdr server reload-config
+
+[keys]
+# herdr supports a single prefix key only (no array).
+prefix = "ctrl+b"
+
+# Pane focus — direct alt chords, no prefix needed
+focus_pane_left = "alt+h"
+focus_pane_down = "alt+j"
+focus_pane_up = "alt+k"
+focus_pane_right = "alt+l"
+
+# Workspace picker (workspace navigation)
+workspace_picker = "alt+w"
