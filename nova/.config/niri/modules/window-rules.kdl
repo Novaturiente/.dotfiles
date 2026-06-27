@@ -15,12 +15,26 @@ window-rule {
 // Specific window rules
 window-rule {
     match app-id="scrcpy"
-    open-floating true
+    open-floating false
+    default-column-width {
+        fixed 540
+    }
+    open-on-workspace "Main"
+}
+window-rule {
+    match title="dexmode"
+    open-maximized true
+    open-on-workspace "Main"
+}
+window-rule {
+    match title="herdr"
+    open-maximized true
 }
 // Screenshot editor
 window-rule {
     match app-id="satty"
     open-floating true
+    draw-border-with-background false
 }
 //ghostty terminal
 window-rule {
