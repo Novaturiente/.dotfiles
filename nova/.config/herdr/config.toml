@@ -4,7 +4,7 @@
 
 [keys]
 # herdr supports a single prefix key only (no array).
-prefix = "ctrl+b"
+prefix = "ctrl+x"
 
 # Pane focus — direct alt chords, no prefix needed
 focus_pane_left = "alt+h"
@@ -13,4 +13,4 @@ focus_pane_up = "alt+k"
 focus_pane_right = "alt+l"
 
 # Workspace picker (workspace navigation)
-workspace_picker = "alt+w"
+workspace_picker = "prefix+w"
