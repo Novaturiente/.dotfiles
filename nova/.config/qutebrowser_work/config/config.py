@@ -116,7 +116,9 @@ c.content.desktop_capture = True
 c.content.persistent_storage = True
 c.content.register_protocol_handler = True
 c.content.fullscreen.window = True
-c.content.pdfjs = True
+c.content.pdfjs = False
+# Open downloaded PDFs (and other files via :download-open) in zathura
+c.downloads.open_dispatcher = "zathura"
 c.content.webrtc_ip_handling_policy = "all-interfaces"
 c.content.webgl = True
 c.content.local_storage = True
@@ -224,6 +226,8 @@ config.bind("<Space>tm", "toggle-mobile-view")
 config.bind("<Space>sb", "bookmarks-search")
 config.bind("<Space>ts", "sync-toggle")
 config.bind("<Space>tt", "toggle-tabs-layout")
+# Open most recent download (PDF) in zathura via downloads.open_dispatcher
+config.bind("<Space>z", "download-open")
 
 # Window Management
 config.bind("<Ctrl-n>", "open -w")  # Standard New Window

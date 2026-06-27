@@ -206,7 +206,9 @@ c.content.desktop_capture = False
 c.content.mouse_lock = False
 c.content.persistent_storage = False
 c.content.register_protocol_handler = False
-c.content.pdfjs = True
+c.content.pdfjs = False
+# Open downloaded PDFs (and other files via :download-open) in zathura
+c.downloads.open_dispatcher = "zathura"
 c.content.webrtc_ip_handling_policy = "disable-non-proxied-udp"
 c.content.local_content_can_access_remote_urls = False
 c.content.tls.certificate_errors = "block"
@@ -355,3 +357,5 @@ config.bind("<Space>c", "hint links spawn --userscript cast.sh {hint-url}")
 config.bind("<Space>m", "hint links spawn mpv --script-opts=sponsorblock_minimal-categories=sponsor {hint-url}")
 config.bind("<Space>mp", "spawn --detach mpv --script-opts=sponsorblock_minimal-categories=sponsor --force-window=immediate {url}")
 config.bind("<Space>v", "spawn --userscript vibrance.sh")
+# Open most recent download (PDF) in zathura via downloads.open_dispatcher
+config.bind("<Space>z", "download-open")
