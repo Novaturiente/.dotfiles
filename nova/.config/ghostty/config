@@ -13,9 +13,31 @@ font-style-bold = SemiBold
 # theme = Adventure
 # theme = Rose Pine
 # theme = Catppuccin Mocha
-theme = TokyoNight Night
+# theme = TokyoNight Night
 background-opacity = 0.8
 background-blur = true
+
+# Deep Space Theme Override
+background = 06060c
+foreground = e6e6fa
+
+# Cosmic Palette Overrides (Mocha-based hues adjusted for space)
+palette = 0=#181825
+palette = 1=#F38BA8
+palette = 2=#A6E3A1
+palette = 3=#F9E2AF
+palette = 4=#89B4FA
+palette = 5=#CBA6F7
+palette = 6=#89DCEB
+palette = 7=#BAC2DE
+palette = 8=#313244
+palette = 9=#F38BA8
+palette = 10=#A6E3A1
+palette = 11=#F9E2AF
+palette = 12=#89B4FA
+palette = 13=#F5C2E7
+palette = 14=#94E2D5
+palette = 15=#A6ADC8
 
 # Window Settings
 window-padding-x = 5
