@@ -9,6 +9,14 @@ return {
 	opts = {
 		flavour = "mocha", -- latte, frappe, macchiato, mocha
 		transparent_background = false,
+		color_overrides = {
+			mocha = {
+				base = "#06060c",   -- Deep space black
+				mantle = "#030307", -- Darker background elements
+				crust = "#000000",
+				text = "#e6e6fa",   -- Lavender/Starlight white
+			},
+		},
 		integrations = {
 			treesitter = true,
 			native_lsp = { enabled = true },

@@ -19,8 +19,8 @@ layout {
     // Focus ring styling
     focus-ring {
         width 2
-        inactive-color "#505050"
-        active-gradient from="green" to="violet" angle=45
+        inactive-color "#181825"
+        active-gradient from="#FF007F" to="#8C52FF" to="#00E5FF" angle=45
     }
     // Window border styling
     border {
