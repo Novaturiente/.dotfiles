@@ -54,6 +54,7 @@ ShellRoot {
         target: "kb"
         function toggle(): void {
             if (win.visible) { win.visible = false; return; }
+            curApp = 0; search.text = "";        // reset to first app tab + clear filter
             loadFast(); refresh(); win.visible = true;
         }
     }

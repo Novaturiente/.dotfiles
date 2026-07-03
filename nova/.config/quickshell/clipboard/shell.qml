@@ -41,7 +41,7 @@ ShellRoot {
         target: "clipboard"
         function toggle(): void {
             if (win.visible) { win.visible = false; return; }
-            search.text = ""; reload(); win.visible = true;
+            search.text = ""; clipList.currentIndex = 0; reload(); win.visible = true;
         }
     }
     Component.onCompleted: reload()

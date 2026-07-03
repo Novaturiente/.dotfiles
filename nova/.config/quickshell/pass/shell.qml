@@ -63,6 +63,7 @@ ShellRoot {
             if (win.visible) { win.visible = false; return; }
             prefill = domain || "";
             view = "main";
+            mainSearch.text = "";        // clear stale filter (onTextChanged resets currentIndex)
             reload();
             win.visible = true;
         }
