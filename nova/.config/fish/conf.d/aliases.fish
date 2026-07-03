@@ -26,6 +26,7 @@ alias l. "eza -a | grep -e '^\.'"
 # ---- safer / nicer coreutils ----
 alias rm   'trash'
 alias cp   'rsync -ah --info=progress2 --inplace --no-whole-file'
+complete -c cp -e  # drop inherited rsync host/user completions; want plain file paths
 alias cat  'bat --paging=never'
 alias dir  'dir --color=auto'
 alias vdir 'vdir --color=auto'

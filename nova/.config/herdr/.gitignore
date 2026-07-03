@@ -1,0 +1,15 @@
+# herdr writes runtime state here (sockets, logs, session, plugins).
+# Only config.toml is tracked.
+*
+!.gitignore
+!config.toml
+
+# Track herdr-plus quick actions (re-include the path chain, keep siblings ignored)
+!plugins/
+plugins/*
+!plugins/config/
+plugins/config/*
+!plugins/config/cloudmanic.herdr-plus/
+plugins/config/cloudmanic.herdr-plus/*
+!plugins/config/cloudmanic.herdr-plus/quick-actions/
+!plugins/config/cloudmanic.herdr-plus/quick-actions/*.toml

@@ -1,5 +1,5 @@
 Alt+Print                       screenshot-window
-Alt+Space                       Claude GUI
+Alt+Space                       handy --toggle-transcription
 Alt+Tab                         toggle-overview
 Ctrl+Alt+Delete                 quit
 Ctrl+Print                      screenshot-screen
@@ -13,7 +13,7 @@ Mod+7                           focus-workspace 7
 Mod+8                           focus-workspace 8
 Mod+9                           focus-workspace 9
 Mod+Alt+R                       reset-window-height
-Mod+B                           Bookmarks
+Mod+BackSpace                   close-window
 Mod+BracketLeft                 consume-or-expel-window-left
 Mod+BracketRight                consume-or-expel-window-right
 Mod+C                           center-column
@@ -36,7 +36,6 @@ Mod+Ctrl+J                      move-window-down
 Mod+Ctrl+K                      move-window-up
 Mod+Ctrl+Left                   move-column-left
 Mod+Ctrl+L                      move-column-right
-Mod+Ctrl+N                      Claude project (broot + claude)
 Mod+Ctrl+Page_Down              move-column-to-workspace-down
 Mod+Ctrl+Page_Up                move-column-to-workspace-up
 Mod+Ctrl+P                      Phone mirror
@@ -46,8 +45,6 @@ Mod+Ctrl+Shift+P                Turn off monitor
 Mod+Ctrl+Shift+R                Record region / Stop
 Mod+Ctrl+Shift+WheelScrollDown  move-column-right
 Mod+Ctrl+Shift+WheelScrollUp    move-column-left
-Mod+Ctrl+Shift+W                Windows
-Mod+Ctrl+Space                  Open tmux sessions
 Mod+Ctrl+U                      move-column-to-workspace-down
 Mod+Ctrl+Up                     move-window-up
 Mod+Ctrl+WheelScrollDown        focus-workspace-down
@@ -74,11 +71,13 @@ Mod+O                           File picker
 Mod+Page_Down                   focus-workspace-down
 Mod+Page_Up                     focus-workspace-up
 Mod+Period                      expel-window-from-column
+Mod+P                           Phone mirror
 Mod+Q                           close-window
 Mod+Return                      Open tmux
 Mod+Right                       focus-column-right
 Mod+R                           switch-preset-column-width
-Mod+Shift+B                     Toggle waybar
+Mod+S                           Firefox URL bar
+Mod+Shift+C                     Calendar
 Mod+Shift+Ctrl+Down             move-column-to-monitor-down
 Mod+Shift+Ctrl+H                move-column-to-monitor-left
 Mod+Shift+Ctrl+J                move-column-to-monitor-down
@@ -104,25 +103,27 @@ Mod+Shift+Right                 focus-monitor-right
 Mod+Shift+R                     switch-preset-window-height
 Mod+Shift+S                     grim -g \
 Mod+Shift+Slash                 keybindings.sh
-Mod+Shift+Space                 Application Launcher
 Mod+Shift+Tab                   switch-focus-between-floating-and-tiling
 Mod+Shift+U                     move-workspace-down
 Mod+Shift+WheelScrollDown       focus-column-right
 Mod+Shift+WheelScrollUp         focus-column-left
-Mod+Shift+X                     Tools
+Mod+Shift+W                     Qutebrowser (VPN)
 Mod+Space                       Open ghostty
 Mod+Tab                         Window switcher
 Mod+Up                          focus-workspace-up
 Mod+V                           Clipboard Manager
+Mod+W                           Browser
 Mod+WheelScrollDown             focus-column-right
 Mod+WheelScrollLeft             move-column-to-workspace-up
 Mod+WheelScrollRight            move-column-to-workspace-down
 Mod+WheelScrollUp               focus-column-left
-Mod+W                           Qutebrowser
 Num_Lock                        sleep 0.3 && swayosd-client --num-lock
 Print                           screenshot
+Shift+XF86AudioLowerVolume      brightness.sh down
+Shift+XF86AudioMute             idle.sh
+Shift+XF86AudioRaiseVolume      brightness.sh up
 XF86AudioLowerVolume            dms ipc call audio decrement 5
-XF86AudioMicMute                swayosd-client --input-volume mute-toggle
+XF86AudioMicMute                dms ipc call audio micmute
 XF86AudioMute                   dms ipc call audio mute
 XF86AudioRaiseVolume            dms ipc call audio increment 5
 XF86MonBrightnessDown           brightness.sh down

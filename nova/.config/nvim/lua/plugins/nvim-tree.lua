@@ -4,9 +4,9 @@
 return {
 	"nvim-tree/nvim-tree.lua",
 	dependencies = { "nvim-tree/nvim-web-devicons" },
-	cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeFindFile" },
+	cmd = { "NvimTreeToggle", "NvimTreeFocus", "NvimTreeFindFile", "NvimTreeFindFileToggle" },
 	keys = {
-		{ "<leader>e", "<cmd>NvimTreeToggle<cr>", desc = "File explorer" },
+		{ "<leader>e", "<cmd>NvimTreeFindFileToggle<cr>", desc = "File explorer (reveal current file)" },
 		{ "<leader>fe", "<cmd>NvimTreeFindFile<cr>", desc = "Reveal file in tree" },
 	},
 	opts = {

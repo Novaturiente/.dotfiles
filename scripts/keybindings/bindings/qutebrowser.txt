@@ -1,10 +1,9 @@
 <Alt-Backspace>     Leave insert/passthrough mode
 <Alt-Left>          Previous tab
 <Alt-Right>         Next tab
-,b                  Add bookmark (rofi)
 :                   Command mode
 ;c                  Quickmark load
-<Ctrl+Alt+t>        Open in external browser, close tab
+<Ctrl+Alt+t>        spawn -d thorium-browser-avx2 {url} ;; tab-cl
 <Ctrl-n>            New window
 <Ctrl-Shift-i>      devtools
 <Ctrl-Shift-n>      Clone window
@@ -68,6 +67,7 @@ r                   Reload
 <Space>tm           Toggle mobile view
 <Space>ts           Sync toggle
 <Space>tt           Toggle tabs layout
+<Space>z            download-open
 s                   Search (prompt)
 t                   Open tab (prompt)
 u                   Scroll half page up / Undo close tab

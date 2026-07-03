@@ -4,16 +4,13 @@
 binds {
     // Help
     Mod+Shift+Slash {
-        spawn "~/.dotfiles/scripts/keybindings/keybindings.sh"
+        spawn "~/.dotfiles/scripts/quickshell/keybindings.sh"
     }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ APPLICATIONS                                                                        │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+Space hotkey-overlay-title="Open ghostty" {
         spawn "ghostty"
-    }
-    Mod+Ctrl+Space hotkey-overlay-title="Open tmux sessions" {
-        spawn "~/.dotfiles/scripts/rofi/tmux.sh"
     }
     Mod+W hotkey-overlay-title="Browser" {
         spawn "firefox"
@@ -29,7 +26,7 @@ binds {
 		spawn-sh "ghostty --title='herdr' -e herdr"
     }
     Mod+D hotkey-overlay-title="Application launcher" {
-        spawn-sh "rofi -show drun -theme spotlight"
+        spawn "~/.dotfiles/scripts/quickshell/launcher.sh"
     }
     // Mod+P hotkey-overlay-title="Phone (calls + SMS)" {
     //     spawn "~/.local/bin/ac-phone"
@@ -39,9 +36,6 @@ binds {
     }
     Mod+N hotkey-overlay-title="Neovim" {
         spawn-sh "ghostty -e nvim"
-    }
-    Mod+Ctrl+N hotkey-overlay-title="Claude project (lazygit + claude)" {
-        spawn-sh "~/.dotfiles/scripts/rofi/projects.sh"
     }
     Mod+E hotkey-overlay-title="File manager" {
         spawn-sh "ghostty -e explorenova"
@@ -55,29 +49,23 @@ binds {
     Mod+Shift+O hotkey-overlay-title="Text extractor" {
         spawn-sh "~/.dotfiles/scripts/ocr_select.sh"
     }
-    // Mod+B hotkey-overlay-title="Bookmarks" {
-    //     spawn-sh "~/.dotfiles/scripts/rofi/bookmarks.sh"
-    // }
     Mod+S hotkey-overlay-title="Firefox URL bar" {
-        spawn-sh "~/.dotfiles/scripts/rofi/firefox-url.sh"
+        spawn "~/.dotfiles/scripts/quickshell/firefox-url.sh"
     }
     Mod+G hotkey-overlay-title="Grammar fix" {
         spawn-sh "~/.dotfiles/scripts/fix_grammar.sh"
     }
     Mod+Shift+C hotkey-overlay-title="Calendar" {
-        spawn-sh "~/.dotfiles/scripts/rofi/calendar.sh"
+        spawn "~/.dotfiles/scripts/quickshell/cal.sh"
     }
     Mod+Shift+N hotkey-overlay-title="Notepad" {
       spawn "dms" "ipc" "call" "notepad" "toggle";
     }
     Mod+V hotkey-overlay-title="Clipboard Manager" {
-        spawn "dms" "ipc" "call" "clipboard" "toggle";
-    }
-    Mod+Shift+X hotkey-overlay-title="Tools" {
-        spawn-sh "~/.dotfiles/scripts/rofi/tools.sh"
+        spawn "~/.dotfiles/scripts/quickshell/clipboard.sh";
     }
     Mod+Shift+P hotkey-overlay-title="Password Manager" {
-        spawn-sh "~/.dotfiles/scripts/rofi/passrofi.sh"
+        spawn "~/.dotfiles/scripts/quickshell/pass.sh"
     }
     Mod+P hotkey-overlay-title="Phone mirror" {
         spawn-sh "scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --window-height=1150"
@@ -280,7 +268,7 @@ binds {
         focus-workspace-up
     }
     Mod+Tab hotkey-overlay-title="Window switcher" {
-        spawn-sh "~/.dotfiles/scripts/rofi/windows.sh"
+        spawn "~/.dotfiles/scripts/quickshell/switcher.sh"
     }
     Mod+Ctrl+Page_Down {
         move-column-to-workspace-down

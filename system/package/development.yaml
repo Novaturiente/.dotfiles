@@ -23,10 +23,10 @@
 - gnu-netcat
 - fuse
 - intel-gpu-tools
-- sesh-bin
 - lazygit
-- gst-plugins-bad
 - go
 - gperf
 - ninja
 - yasm
+- llama.cpp
+- bash-language-server

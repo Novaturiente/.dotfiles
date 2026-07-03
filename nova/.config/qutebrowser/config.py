@@ -335,11 +335,6 @@ if os.path.exists(exclude_file):
 config.bind("<Space>dm", "spawn --userscript toggle_darkmode.py")
 config.bind("<Space>dM", "config-cycle colors.webpage.darkmode.enabled true false ;; reload ;; message-info 'Toggled global dark mode'")
 
-config.bind(
-    "<Space>b",
-    "spawn ~/.dotfiles/scripts/rofi/bookmarks.sh {url} ;; message-info 'Bookmark added'",
-)
-
 # Wayback Machine
 config.bind("<Space>wa", "open --tab https://web.archive.org/save/{url} ;; message-info 'Archiving page...'")
 config.bind("<Space>wv", "open --tab https://web.archive.org/web/*/{url}")
