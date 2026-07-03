@@ -14,8 +14,8 @@
 - fd
 - bat
 - jq
-- bash-language-server
 - trash-cli
 - wget
 - sshfs
 - dialog
+- sesh-bin

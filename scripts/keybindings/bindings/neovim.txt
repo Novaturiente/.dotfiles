@@ -1,55 +1,34 @@
-c <C-A>                                  Move to start of line
-c <C-BS>                                 Delete word backward
-c <C-E>                                  Move to end of line
-c <Plug>(TelescopeFuzzyCommandSearch)    <C-\>e "lua require('telescope.builtin').command_history ...
-i <C-H>                                  Move left in insert mode
-i <C-J>                                  Move down in insert mode
-i <C-K><C-K>                             Move up in insert mode
-i <C-L>                                  
-i <C-S-H>                                Backspace
-i <C-S-L>                                Delete forward
 i <C-S>                                  vim.lsp.buf.signature_help()
 i <C-U>                                  :help i_CTRL-U-default
 i <C-W>                                  :help i_CTRL-W-default
-i jk                                     <Esc>
-i <M-Down>                               <C-W>j
-i <M-h>                                  <C-W>h
-i <M-j>                                  <C-W>j
-i <M-k>                                  <C-W>k
-i <M-l>                                  <C-W>l
-i <M-Left>                               <C-W>h
-i <M-Right>                              <C-W>l
-i <M-Up>                                 <C-W>k
+i jk                                     Exit insert mode
 i <S-Tab>                                vim.snippet.jump if active, otherwise <S-Tab>
 i <Tab>                                  vim.snippet.jump if active, otherwise <Tab>
-n  aa                                    Accept diff
-n  a                                     AI/Claude Code
-n  ab                                    Add current buffer
-n  aC                                    Continue Claude
 n  ac                                    Toggle Claude
 n [                                      Add empty line above cursor
 n ]                                      Add empty line below cursor
-n  ad                                    Deny diff
 n  af                                    Focus Claude
 n ]A                                     :last
-n  am                                    Select Claude model
 n ]a                                     :next
 n [a                                     :previous
 n [A                                     :rewind
-n  ar                                    Resume Claude
+n  at                                    Toggle Supermaven (AI)
 n ]B                                     :blast
 n ]b                                     :bnext
 n [b                                     :bprevious
 n [B                                     :brewind
-n c                                      "_c
-n C                                      "_C
-n <C-L>                                  :help CTRL-L-default
+n  bd                                    Delete buffer (keep layout)
+n  bp                                    Pick buffer
+n  ?                                     Buffer keymaps
+n  cf                                    Format buffer
+n <C-H>                                  Window left
+n <C-J>                                  Window down
+n <C-K>                                  Window up
 n ]<C-L>                                 :lnfile
 n [<C-L>                                 :lpfile
-n  cl                                    Toggle LSP definitions/references
+n <C-L>                                  Window right
 n ]<C-Q>                                 :cnfile
 n [<C-Q>                                 :cpfile
-n  cs                                    Toggle symbols (Trouble)
 n ]<C-T>                                 :ptnext
 n [<C-T>                                 :ptprevious
 n <C-W><C-D>                             Show diagnostics under the cursor
@@ -58,24 +37,20 @@ n [D                                     Jump to the first diagnostic in the cur
 n ]D                                     Jump to the last diagnostic in the current buffer
 n ]d                                     Jump to the next diagnostic in the current buffer
 n [d                                     Jump to the previous diagnostic in the current buffer
+n  e                                     File explorer (reveal current file)
 n <Esc>                                  Clear search highlights
-n  e                                     Toggle Oil
-n ev                                     
-n  fd                                    [D]iagnostics
-n  ff                                    [S]earch [F]iles
-n  fg                                    [S]earch by [G]rep
-n  fh                                    [S]earch [H]elp
-n                                        Find existing buffers
-n  fk                                    [S]earch [K]eymaps
-n  fn                                    [S]earch [N]eovim files
-n  =                                     Format buffer
-n  fr                                    Recent Files ("." for repeat)
-n  fs                                    [S]earch [S]elect Telescope
+n  fb                                    Buffers
+n  fd                                    Diagnostics
+n  fe                                    Reveal file in tree
+n  ff                                    Find files
+n  fg                                    Live grep
+n  fh                                    Help tags
+n  fk                                    Keymaps
+n  fr                                    Recent files
 n gcc                                    Toggle comment line
 n gc                                     Toggle comment
-n  gg                                    Open Neogit in current project's git root
-n g[                                     Move to left "around"
-n g]                                     Move to right "around"
+n  gg                                    Lazygit
+n  gl                                    Lazygit log
 n gO                                     vim.lsp.buf.document_symbol()
 n g%                                     <Plug>(MatchitNormalBackward)
 n gra                                    vim.lsp.buf.code_action()
@@ -86,39 +61,16 @@ n grt                                    vim.lsp.buf.type_definition()
 n grx                                    vim.lsp.codelens.run()
 n gx                                     Opens filepath or URI under cursor with the system handle...
 n &                                      :help &-default
-n JJ                                     Move line down
-n KK                                     Move line up
+n H                                      Previous buffer
 n ]L                                     :llast
 n ]l                                     :lnext
 n [l                                     :lprevious
 n [L                                     :lrewind
-n <M-a>                                  
-n <M-C-C>                                Cycle through colorschemes
-n <M-C-H>                                Previous buffer
-n <M-C-Left>                             Previous buffer
-n <M-C-L>                                Next buffer
-n <M-C-Right>                            Next buffer
-n <M-Down>                               <C-W>j
-n <M-h>                                  <C-W>h
-n <M-H>                                  Move window to far left
-n <M-j>                                  <C-W>j
-n <M-J>                                  Move window to far bottom
-n <M-k>                                  <C-W>k
-n <M-K>                                  Move window to far top
-n <M-l>                                  <C-W>l
-n <M-Left>                               <C-W>h
-n <M-L>                                  Move window to far right
-n  mm                                    Toggle outline
-n <M-o>                                  
-n <M-q>                                  Force Delete current buffer
-n <M-Right>                              <C-W>l
-n <M-S-Down>                             Move window to far bottom
-n <M-S-Left>                             Move window to far left
-n <M-S-Right>                            Move window to far right
-n  ms                                    Show messages
-n <M-S-Up>                               Move window to far top
-n <M-Up>                                 <C-W>k
-n  .                                     Open file
+n L                                      Next buffer
+n  m                                     Messages -> buffer + clipboard
+n  nd                                    Dismiss notifications
+n ]]                                     Next reference
+n  nh                                    Notification history
 n <Plug>(MatchitNormalBackward)          :<C-U>call matchit#Match_wrapper('',0,'n')<CR>
 n %                                      <Plug>(MatchitNormalForward)
 n <Plug>(MatchitNormalForward)           :<C-U>call matchit#Match_wrapper('',1,'n')<CR>
@@ -126,55 +78,28 @@ n [%                                     <Plug>(MatchitNormalMultiBackward)
 n <Plug>(MatchitNormalMultiBackward)     :<C-U>call matchit#MultiMatch("bW", "n")<CR>
 n ]%                                     <Plug>(MatchitNormalMultiForward)
 n <Plug>(MatchitNormalMultiForward)      :<C-U>call matchit#MultiMatch("W",  "n")<CR>
-n <Plug>PlenaryTestFile                  :lua require('plenary.test_harness').test_file(vim.fn.exp...
+n [[                                     Prev reference
 n ]Q                                     :clast
+n  q                                     Close buffer
 n ]q                                     :cnext
 n [q                                     :cprevious
 n [Q                                     :crewind
-n  qq                                    Close current buffer
-n  qw                                    Exit Neovim
-n s                                      
-n sa                                     Add surrounding
-n sd                                     Delete surrounding
-n sdl                                    Delete previous surrounding
-n sdn                                    Delete next surrounding
-n  /                                     Search in current buffer
-n sF                                     Find left surrounding
-n sf                                     Find right surrounding
-n sFl                                    Find previous left surrounding
-n sfl                                    Find previous right surrounding
-n sFn                                    Find next left surrounding
-n sfn                                    Find next right surrounding
-n sh                                     Highlight surrounding
-n shl                                    Highlight previous surrounding
-n shn                                    Highlight next surrounding
-n srl                                    Replace previous surrounding
-n srn                                    Replace next surrounding
-n sr                                     Replace surrounding
-n  th                                    Open horizontal terminal
+n  Q                                     Quit all
+n  /                                     Search buffer
+n  .                                     Toggle scratch buffer
 n ]T                                     :tlast
 n ]t                                     :tnext
-n  tt                                    Open vertical terminal
 n [t                                     :tprevious
 n [T                                     :trewind
-n  ww                                    Save file
-n  xL                                    Toggle location list
-n  xQ                                    Toggle quickfix list
-n x                                      "_x
-n X                                      "_X
-n  xX                                    Toggle buffer diagnostics
-n  xx                                    Toggle Trouble diagnostics
+n  tt                                    Terminal
+n  w                                     Save file
 n Y                                      :help Y-default
-o a                                      Around textobject
-o al                                     Around last textobject
-o an                                     Around next textobject
+n  yp                                    Yank absolute file path
+n  yr                                    Yank relative file path
+o an                                     Select parent (outer) node
 o gc                                     Comment textobject
-o g[                                     Move to left "around"
-o g]                                     Move to right "around"
 o g%                                     <Plug>(MatchitOperationBackward)
-o i                                      Inside textobject
-o il                                     Inside last textobject
-o in                                     Inside next textobject
+o in                                     Select child (inner) node
 o <Plug>(MatchitOperationBackward)       :<C-U>call matchit#Match_wrapper('',0,'o')<CR>
 o %                                      <Plug>(MatchitOperationForward)
 o <Plug>(MatchitOperationForward)        :<C-U>call matchit#Match_wrapper('',1,'o')<CR>
@@ -182,56 +107,27 @@ o [%                                     <Plug>(MatchitOperationMultiBackward)
 o <Plug>(MatchitOperationMultiBackward)  :<C-U>call matchit#MultiMatch("bW", "o")<CR>
 o ]%                                     <Plug>(MatchitOperationMultiForward)
 o <Plug>(MatchitOperationMultiForward)   :<C-U>call matchit#MultiMatch("W",  "o")<CR>
-o s                                      
-o sF                                     Find left surrounding
-o sf                                     Find right surrounding
-o sFl                                    Find previous left surrounding
-o sfl                                    Find previous right surrounding
-o sFn                                    Find next left surrounding
-o sfn                                    Find next right surrounding
-s  as                                    Send to Claude
-s c                                      "_c
-s C                                      "_C
+s  as                                    Send selection to Claude
 s <C-S>                                  vim.lsp.buf.signature_help()
-s JJ                                     Move selection down
-s KK                                     Move selection up
 s <S-Tab>                                vim.snippet.jump if active, otherwise <S-Tab>
 s <Tab>                                  vim.snippet.jump if active, otherwise <Tab>
-s x                                      "_x
-s X                                      "_X
-t jk                                     Exit terminal mode
-t <M-Down>                               <C-\><C-N><C-W>j
-t <M-h>                                  <C-\><C-N><C-W>h
-t <M-j>                                  <C-\><C-N><C-W>j
-t <M-k>                                  <C-\><C-N><C-W>k
-t <M-l>                                  <C-\><C-N><C-W>l
-t <M-Left>                               <C-\><C-N><C-W>h
-t <M-Right>                              <C-\><C-N><C-W>l
-t <M-Up>                                 <C-\><C-N><C-W>k
-v a                                      Around textobject
-v al                                     Around last textobject
-v an                                     Around next textobject
+t  tt                                    Terminal
+v an                                     Select parent (outer) node
 v a%                                     <Plug>(MatchitVisualTextObject)
-v  as                                    Send to Claude
-v c                                      "_c
-v C                                      "_C
+v  as                                    Send selection to Claude
 v <C-S>                                  vim.lsp.buf.signature_help()
 v gc                                     Toggle comment
-v g[                                     Move to left "around"
-v g]                                     Move to right "around"
 v g%                                     <Plug>(MatchitVisualBackward)
 v gra                                    vim.lsp.buf.code_action()
 v gx                                     Opens filepath or URI under cursor with the system handle...
 v #                                      :help v_#-default
 v @                                      :help v_@-default
 v *                                      :help v_star-default
-v i                                      Inside textobject
-v il                                     Inside last textobject
-v in                                     Inside next textobject
-v JJ                                     Move selection down
-v KK                                     Move selection up
+v in                                     Select child (inner) node
 v ]n                                     Select next node
+v ]N                                     Select next sibling node
 v [n                                     Select previous node
+v [N                                     Select previous sibling node
 v <Plug>(MatchitVisualBackward)          :<C-U>call matchit#Match_wrapper('',0,'v')<CR>m'gv``
 v %                                      <Plug>(MatchitVisualForward)
 v <Plug>(MatchitVisualForward)           :<C-U>call matchit#Match_wrapper('',1,'v')<CR>:if col("''...
@@ -241,41 +137,23 @@ v ]%                                     <Plug>(MatchitVisualMultiForward)
 v <Plug>(MatchitVisualMultiForward)      :<C-U>call matchit#MultiMatch("W",  "n")<CR>m'gv``
 v <Plug>(MatchitVisualTextObject)        <Plug>(MatchitVisualMultiBackward)o<Plug>(MatchitVisualMu...
 v Q                                      :help v_Q-default
-v s                                      
-v sa                                     Add surrounding to selection
-v sF                                     Find left surrounding
-v sf                                     Find right surrounding
-v sFl                                    Find previous left surrounding
-v sfl                                    Find previous right surrounding
-v sFn                                    Find next left surrounding
-v sfn                                    Find next right surrounding
 v <S-Tab>                                vim.snippet.jump if active, otherwise <S-Tab>
 v <Tab>                                  vim.snippet.jump if active, otherwise <Tab>
-v x                                      "_x
-v X                                      "_X
-x a                                      Around textobject
-x al                                     Around last textobject
-x an                                     Around next textobject
+x an                                     Select parent (outer) node
 x a%                                     <Plug>(MatchitVisualTextObject)
-x  as                                    Send to Claude
-x c                                      "_c
-x C                                      "_C
+x  as                                    Send selection to Claude
 x gc                                     Toggle comment
-x g[                                     Move to left "around"
-x g]                                     Move to right "around"
 x g%                                     <Plug>(MatchitVisualBackward)
 x gra                                    vim.lsp.buf.code_action()
 x gx                                     Opens filepath or URI under cursor with the system handle...
 x #                                      :help v_#-default
 x @                                      :help v_@-default
 x *                                      :help v_star-default
-x i                                      Inside textobject
-x il                                     Inside last textobject
-x in                                     Inside next textobject
-x JJ                                     Move selection down
-x KK                                     Move selection up
+x in                                     Select child (inner) node
 x ]n                                     Select next node
+x ]N                                     Select next sibling node
 x [n                                     Select previous node
+x [N                                     Select previous sibling node
 x <Plug>(MatchitVisualBackward)          :<C-U>call matchit#Match_wrapper('',0,'v')<CR>m'gv``
 x %                                      <Plug>(MatchitVisualForward)
 x <Plug>(MatchitVisualForward)           :<C-U>call matchit#Match_wrapper('',1,'v')<CR>:if col("''...
@@ -285,13 +163,3 @@ x ]%                                     <Plug>(MatchitVisualMultiForward)
 x <Plug>(MatchitVisualMultiForward)      :<C-U>call matchit#MultiMatch("W",  "n")<CR>m'gv``
 x <Plug>(MatchitVisualTextObject)        <Plug>(MatchitVisualMultiBackward)o<Plug>(MatchitVisualMu...
 x Q                                      :help v_Q-default
-x s                                      
-x sa                                     Add surrounding to selection
-x sF                                     Find left surrounding
-x sf                                     Find right surrounding
-x sFl                                    Find previous left surrounding
-x sfl                                    Find previous right surrounding
-x sFn                                    Find next left surrounding
-x sfn                                    Find next right surrounding
-x x                                      "_x
-x X                                      "_X

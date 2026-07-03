@@ -12,10 +12,12 @@ Prefix c             New window
 Prefix C-n           Next window
 Prefix :             Command prompt
 Prefix C-p           Previous window
+Prefix C-x           Send prefix
 Prefix C-z           Suspend client
 Prefix d             Detach client
 Prefix Down          Select pane down
 Prefix [             Enter copy mode
+Prefix e             Run shell (sesh/snippet)
 Prefix f             Find window
 Prefix H             Select pane left
 Prefix i             Display pane info
@@ -41,8 +43,9 @@ Prefix r             Redraw client
 Prefix R             Reload config
 Prefix `             Send prefix
 Prefix "             Split pane horizontal
-Prefix %             Split pane vertical
+Prefix %             Split window
 Prefix s             Run shell (sesh/snippet)
+Prefix S             Run shell (sesh/snippet)
 Prefix }             Swap pane down
 Prefix {             Swap pane up
 Prefix t             Clock

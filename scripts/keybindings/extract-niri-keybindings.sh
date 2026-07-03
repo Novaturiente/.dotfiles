@@ -11,7 +11,9 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BINDINGS_DIR="${SCRIPT_DIR}/bindings"
 OUT_FILE="${BINDINGS_DIR}/niri.txt"
-CONFIG="${1:-${NIRI_CONFIG:-$HOME/.config/niri/config.kdl}}"
+# Binds live in the included modules/binds.kdl (not config.kdl, which only has
+# `include` lines) — default there so extraction isn't empty.
+CONFIG="${1:-${NIRI_CONFIG:-$HOME/.config/niri/modules/binds.kdl}}"
 
 if [[ ! -f "$CONFIG" ]]; then
     echo "Error: config not found: $CONFIG" >&2

@@ -1,3 +1,4 @@
+onboarding = false
 # Place this file at ~/.config/herdr/config.toml
 # Deployed via stow from ~/.dotfiles. Reload running server with:
 #   herdr server reload-config
@@ -14,3 +15,22 @@ focus_pane_right = "alt+l"
 
 # Workspace picker (workspace navigation)
 workspace_picker = "prefix+w"
+
+# Move between workspaces
+next_workspace = "prefix+j"
+previous_workspace = "prefix+k"
+
+[[keys.command]]
+key = "prefix+O"
+type = "plugin_action"
+command = "cloudmanic.herdr-plus.projects"
+description = "herdr-plus: projects"
+
+[[keys.command]]
+key = "prefix+y"
+type = "plugin_action"
+command = "cloudmanic.herdr-plus.quick-actions"
+description = "herdr-plus: quick actions"
+
+[ui.toast]
+delivery = "herdr"

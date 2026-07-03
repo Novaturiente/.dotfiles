@@ -16,7 +16,6 @@
 <Space>tm                    Toggle mobile view
 <Space>ts                    Sync toggle
 <Space>tt                    Toggle tabs layout
-,b                           Add bookmark (rofi)
 :                            Command mode
 ;c                           Quickmark load
 ;m                           Quickmark save
