@@ -42,7 +42,8 @@ ShellRoot {
         target: "switcher"
         function toggle(): void {
             if (win.visible) { win.visible = false; return; }
-            filter = ""; sel = (rows.length > 1 ? 1 : 0);   // preselect previous window
+            search.text = "";                               // clear stale filter text (onTextChanged resets filter+sel)
+            sel = (rows.length > 1 ? 1 : 0);                // preselect previous window
             win.visible = true;
         }
     }

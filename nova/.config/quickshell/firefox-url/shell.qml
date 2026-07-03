@@ -66,7 +66,7 @@ ShellRoot {
         target: "menu"
         function toggle(): void {
             if (win.visible) { win.visible = false; }
-            else { input.text = ""; loader.running = true; win.visible = true; }
+            else { input.text = ""; selected = 0; loader.running = true; win.visible = true; }
         }
     }
 
