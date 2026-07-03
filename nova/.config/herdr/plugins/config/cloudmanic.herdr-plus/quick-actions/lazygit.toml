@@ -1,0 +1,5 @@
+# Open the explorenova terminal file manager in the directory you launched from.
+name = "Lazygit"
+description = "Open lazygit"
+type = "command"
+command = "lazygit"
