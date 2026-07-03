@@ -1,0 +1,5 @@
+# Open the explorenova terminal file manager in the directory you launched from.
+name = "Explorenova"
+description = "Open the terminal file explorer in the launch directory"
+type = "command"
+command = "explorenova {{.WorkDir}}"

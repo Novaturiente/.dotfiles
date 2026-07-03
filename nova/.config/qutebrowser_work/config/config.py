@@ -189,11 +189,6 @@ config.bind("<Ctrl-Shift-Right>", "open -t {url}")
 # External browser
 config.bind("<Ctrl+Alt+t>", "spawn -d thorium-browser-avx2 {url} ;; tab-close")
 
-config.bind(
-    ",b",
-    "spawn ~/.dotfiles/scripts/rofi/bookmarks.sh {url} ;; message-info 'Bookmark added'",
-)
-
 # ============================================================================
 # Key Bindings & Aliases
 # ============================================================================

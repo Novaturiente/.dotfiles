@@ -16,7 +16,6 @@
 - sof-firmware
 - btrfs-progs
 - exfatprogs
-- iptables-nft
 - blueman
 - bluez-utils
 - 7zip
@@ -43,8 +42,8 @@
 - vulkan-intel
 - libva-utils
 - alsa-ucm-conf
-- nftables
 - khal
 - at
 - cron
 - powertop
+- ufw
