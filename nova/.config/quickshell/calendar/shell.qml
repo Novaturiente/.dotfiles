@@ -56,7 +56,7 @@ ShellRoot {
         target: "cal"
         function toggle(): void {
             if (win.visible) { win.visible = false; return; }
-            view = "main"; reload(); win.visible = true;
+            view = "main"; mainSearch.text = ""; reload(); win.visible = true;
         }
     }
     Component.onCompleted: reload()
