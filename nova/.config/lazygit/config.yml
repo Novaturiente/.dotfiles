@@ -9,7 +9,7 @@ gui:
   # Shrink the right main/diff panel to a sliver (lazygit has no option to
   # fully hide it). Side list gets the space; review real diffs in nvim
   # via `e`. Default sidePanelWidth is 0.3333.
-  sidePanelWidth: 0.85
+  sidePanelWidth: 0.5
   # Hide the bottom command log / extras panel by default
   showCommandLog: false
 
