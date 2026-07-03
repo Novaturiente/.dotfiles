@@ -48,8 +48,10 @@ alias gadd 'git add . && git commit -m "Update"'
 alias fileserver 'python3 -m http.server 8080 --directory ~/Share'
 alias macup   'podman-compose -f ~/.dotfiles/docker/macos.yaml up -d'
 alias macdown 'podman-compose -f ~/.dotfiles/docker/macos.yaml down'
-alias winstop  'podman-compose -f ~/.config/winapps/compose.yaml stop'
-alias winstart 'podman-compose -f ~/.config/winapps/compose.yaml start'
+alias winstart 'ssh nova@novahome docker start windows'
+alias winstop  'ssh nova@novahome docker stop windows'
+alias winrestart 'ssh nova@novahome docker restart windows'
+alias winsopen 'ssh nova@novahome docker start windows && winapps windows'
 
 # ---- tmux / claude helpers ----
 alias ar    '~/.dotfiles/scripts/tmux_agent.sh'

@@ -106,10 +106,10 @@ alias gadd='git add . && git commit -m "Update"'
 alias hotspot='nmcli dev wifi hotspot ifname wlp0s20f3 ssid Novapc password "$HOTSPOT_PASSWORD"'
 alias fileserver="python3 -m http.server 8080 --directory ~/Share"
 
-alias winsopen="podman-compose -f ~/.config/winapps/compose.yaml start && sleep 5 && xfreerdp3 /u:Nova /p:\$WINAPPS_PASSWORD /v:127.0.0.1 /cert:ignore /sound /microphone +dynamic-resolution /sec:tls /f +span +home-drive"
-alias winrestart="podman-compose -f ~/.config/winapps/compose.yaml restart && sleep 5 && xfreerdp3 /u:Nova /p:\$WINAPPS_PASSWORD /v:127.0.0.1 /cert:ignore /sound /microphone +dynamic-resolution /sec:tls /f +span +home-drive"
-alias winstop="podman-compose -f ~/.config/winapps/compose.yaml stop"
-alias winstart="podman-compose -f ~/.config/winapps/compose.yaml start"
+alias winstart="ssh nova@novahome docker start windows"
+alias winstop="ssh nova@novahome docker stop windows"
+alias winrestart="ssh nova@novahome docker restart windows"
+alias winsopen="ssh nova@novahome docker start windows && winapps windows"
 
 alias macup="podman-compose -f ~/.dotfiles/docker/macos.yaml up -d"
 alias macdown="podman-compose -f ~/.dotfiles/docker/macos.yaml down"
