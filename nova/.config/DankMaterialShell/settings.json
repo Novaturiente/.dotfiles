@@ -418,7 +418,6 @@
   "maxFprintTries": 3,
   "enableU2f": false,
   "u2fMode": "or",
-  "lockScreenActiveMonitor": "all",
   "lockScreenInactiveColor": "#000000",
   "lockScreenNotificationMode": 0,
   "lockScreenVideoEnabled": false,
@@ -768,5 +767,5 @@
   "frameLauncherEmergeSide": "bottom",
   "frameLauncherArcExtender": false,
   "frameMode": "separate",
-  "configVersion": 11
+  "configVersion": 12
 }
