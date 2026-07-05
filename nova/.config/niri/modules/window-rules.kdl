@@ -56,6 +56,12 @@ window-rule {
     match app-id="zenity"
     open-floating true
 }
+// WinApps RemoteApp windows (app-ids all start with "Microsoft "):
+// must float — tiling them fights RAIL geometry and dialogs resize-loop
+// window-rule {
+//     match app-id="^Microsoft"
+//     open-floating true
+// }
 window-rule {
     background-effect {
         blur true
