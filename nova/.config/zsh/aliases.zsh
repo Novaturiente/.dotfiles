@@ -122,8 +122,6 @@ alias clear-cache="rm -rf ~/.config/qutebrowser_work/cache/* && rm -rf ~/.cache/
 
 alias eeclogin="ssh -i ~/.ssh/id_eecdev eecdev@$EEC_SERVER_IP"
 
-alias ar="~/.dotfiles/scripts/tmux_agent.sh"
-
 # yazi (full tree + git signs) + claude --dangerously-skip-permissions, 30:70
 alias yproj="~/.dotfiles/scripts/yazi-claude.sh"
 

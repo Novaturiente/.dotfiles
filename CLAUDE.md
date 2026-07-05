@@ -18,10 +18,10 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 │   ├── .profile           # Base env vars, XDG dirs, API keys
 │   ├── .zprofile          # Login shell overrides
 │   ├── .zshrc             # Main shell config (vi mode, zoxide, fzf, atuin)
-│   └── .tmux.conf         # Tmux config (backtick prefix, vi mode, sesh)
+│   └── .tmux.conf         # Tmux config (backtick prefix, vi mode)
 ├── scripts/               # Custom utility scripts
-│   ├── rofi/              # Rofi launcher scripts (bookmarks, clipboard, power, tmux, tools)
-│   └── keybindings/       # Auto-extract keybindings from niri/nvim/qutebrowser/tmux
+│   ├── rofi/              # Rofi launcher scripts (bookmarks, clipboard, power, tools)
+│   └── keybindings/       # Auto-extract keybindings from niri/nvim/qutebrowser
 ├── system/
 │   ├── novarch            # Compiled Rust binary - declarative package manager
 │   ├── novarch.back       # Backup of previous novarch version
@@ -74,7 +74,7 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 |------|---------|
 | **Shell** | fish (primary, default login shell), zsh (also configured) |
 | **Terminal** | Ghostty (IosevkaTerm Nerd Font, size 13, Catppuccin Mocha, 50% opacity) |
-| **Multiplexer** | tmux (prefix: backtick `` ` ``, vi mode, sesh session manager) |
+| **Multiplexer** | tmux (prefix: backtick `` ` ``, vi mode) |
 | **History** | atuin (synced) |
 | **Navigation** | zoxide (cd replacement), fzf (fuzzy finder) |
 | **ls replacement** | eza (with icons and color) |
@@ -139,7 +139,6 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 | `file_picker.sh` | Zenity file dialog → wl-copy → ydotool paste |
 | `calendar-notify.sh` | Parse khal events → schedule 10min-before notifications via `at` |
 | `record-script.sh` | wl-screenrec wrapper (full/region/audio modes) |
-| `llm.sh` | Toggle Ollama server |
 
 ### Rofi Menus (`scripts/rofi/`)
 | Script | Purpose |
@@ -148,11 +147,10 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 | `clipboard.sh` | Clipboard history with image preview |
 | `find.sh` | File finder → open in neovide |
 | `power.sh` | Logout/shutdown/reboot with confirmation |
-| `tmux.sh` | Tmux session switcher/creator |
 | `tools.sh` | File operations (copy, move, rename, delete, restore) |
 
 ### Keybinding Extractors (`scripts/keybindings/`)
-Auto-extract and display keybindings from niri, neovim, qutebrowser, and tmux configs into a unified rofi menu.
+Auto-extract and display keybindings from niri, neovim, and qutebrowser configs into a unified rofi menu.
 
 ## System Configuration
 
@@ -175,7 +173,6 @@ Auto-extract and display keybindings from niri, neovim, qutebrowser, and tmux co
 ### Systemd Services
 - `battery-limit.timer` — runs battery limit script every 5 min
 - `batsignal.service` — battery notifications (critical: 10%, warning: 30%, full: 95%)
-- `tmux-default.service` — persistent default tmux session
 
 ## Theming & Fonts
 
