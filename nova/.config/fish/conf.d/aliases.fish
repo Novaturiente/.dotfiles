@@ -53,7 +53,6 @@ alias winstop  'ssh nova@novahome docker stop windows'
 alias winrestart 'ssh nova@novahome docker restart windows'
 alias winsopen 'ssh nova@novahome docker start windows && winapps windows'
 
-# ---- tmux / claude helpers ----
-alias ar    '~/.dotfiles/scripts/tmux_agent.sh'
+# ---- claude helpers ----
 alias yproj '~/.dotfiles/scripts/yazi-claude.sh'
 alias cld   'claude --dangerously-skip-permissions'

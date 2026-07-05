@@ -21,8 +21,7 @@ binds {
     Mod+Shift+W hotkey-overlay-title="Qutebrowser (VPN)" {
         spawn-sh "vpn-run qutebrowser"
     }
-    Mod+Return hotkey-overlay-title="Open tmux" {
-        // spawn-sh "ghostty -e ~/.dotfiles/scripts/start_tmux.sh"
+    Mod+Return hotkey-overlay-title="Terminal (herdr)" {
 		spawn-sh "ghostty --title='herdr' -e herdr"
     }
     Mod+D hotkey-overlay-title="Application launcher" {

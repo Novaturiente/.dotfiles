@@ -29,8 +29,6 @@ mkdir -p ~/.config
 
 stow -d ~/.dotfiles -t ~ nova
 
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
 sudo systemctl enable ly
 
 systemctl --user enable batsignal.service

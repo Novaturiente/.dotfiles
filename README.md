@@ -43,7 +43,6 @@ cd ~/.dotfiles/system
 - Copy `novarch` to `/usr/bin/` and run `novarch init`
 - Deploy system configs (TLP, Ly, systemd services) to `/etc/`
 - Symlink home directory configs via `stow -d ~/.dotfiles -t ~ nova`
-- Clone tmux plugin manager (tpm)
 - Enable systemd services (Ly display manager, batsignal, battery-limit timer)
 - Set zsh as default shell
 - Configure iptables firewall
@@ -88,7 +87,7 @@ stow -d ~/.dotfiles -t ~ -D nova
 |------|---------|
 | Shell | **zsh** (vi mode, custom powerline prompt) |
 | Terminal | **Ghostty** (Catppuccin Mocha, 50% opacity, blur) |
-| Multiplexer | **tmux** (prefix: backtick `` ` ``, vi mode, sesh session manager) |
+| Multiplexer | **tmux** (prefix: backtick `` ` ``, vi mode) |
 | History | **atuin** (synced) |
 | Navigation | **zoxide**, **fzf** |
 | ls | **eza** (icons, color) |
@@ -145,7 +144,7 @@ Packages are organized into YAML files in `system/package/`. Each file is a simp
 |------|----------|
 | `base-system.yaml` | Kernel, firmware, networking, audio (pipewire), filesystems, power (TLP) |
 | `terminal-tools.yaml` | zsh, ghostty, tmux, neovim, yazi, CLI tools (bat, fd, ripgrep, fzf, eza) |
-| `windowmanager.yaml` | Niri, Ly, Waybar, Rofi, fonts, themes, screenshot/recording tools, llama.cpp |
+| `windowmanager.yaml` | Niri, Ly, Waybar, Rofi, fonts, themes, screenshot/recording tools |
 | `development.yaml` | Build tools, Rust/Python/Node/Go/Lua, LSPs, linters, lazygit, tesseract OCR |
 | `work.yaml` | Java, Docker, databases (PostgreSQL, MySQL), Chrome, WPS Office, Zoom |
 | `internet.yaml` | Qutebrowser, Zen Browser, KDE Connect, LocalSend |
@@ -187,8 +186,6 @@ novarch init    # Bootstrap — install all packages from all YAML files
 | `file_picker.sh` | Zenity file dialog → clipboard → ydotool paste |
 | `calendar-notify.sh` | Parse khal events → schedule 10min-before notifications via `at` |
 | `record-script.sh` | wl-screenrec wrapper (full/region/audio modes) |
-| `llm.sh` | Toggle Ollama server |
-| `tmux_agent.sh` | Split tmux pane for AI coding agent |
 
 ### Rofi Menus (`scripts/rofi/`)
 
@@ -198,12 +195,11 @@ novarch init    # Bootstrap — install all packages from all YAML files
 | `clipboard.sh` | Clipboard history with image preview via cliphist |
 | `find.sh` | File finder in dotfiles → open in neovide |
 | `power.sh` | Logout/shutdown/reboot with confirmation |
-| `tmux.sh` | Tmux session switcher/creator |
 | `tools.sh` | File operations (copy, move, rename, delete, restore via trash) |
 
 ### Keybinding Extractors (`scripts/keybindings/`)
 
-Auto-extracts keybindings from niri, neovim, qutebrowser, and tmux configs into a unified rofi menu via `keybindings.sh`.
+Auto-extracts keybindings from niri, neovim, and qutebrowser configs into a unified rofi menu via `keybindings.sh`.
 
 ## System Configuration
 
@@ -230,7 +226,6 @@ Auto-extracts keybindings from niri, neovim, qutebrowser, and tmux configs into 
 |---------|---------|
 | `battery-limit.timer` | Runs battery limit script every 5 min |
 | `batsignal.service` | Battery notifications (critical: 10%, warning: 30%, full: 95%) |
-| `tmux-default.service` | Persistent default tmux session |
 
 ### Firewall (iptables)
 

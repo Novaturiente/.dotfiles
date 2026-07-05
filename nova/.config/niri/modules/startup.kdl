@@ -15,7 +15,6 @@ spawn-sh-at-startup "kdeconnect-indicator"
 spawn-sh-at-startup "nm-applet --indicator"
 spawn-sh-at-startup "udiskie --tray --notify"
 spawn-sh-at-startup "wl-paste --watch cliphist store --max-items 100"
-spawn-sh-at-startup "~/.dotfiles/scripts/start_tmux.sh"
 spawn-at-startup "sshfs" "nova@novahome:/home/nova" "/home/nova/server" \
     "-o" "reconnect,ServerAliveInterval=15,ServerAliveCountMax=3"
 hotkey-overlay {

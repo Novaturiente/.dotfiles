@@ -73,7 +73,7 @@ Mod+Page_Up                     focus-workspace-up
 Mod+Period                      expel-window-from-column
 Mod+P                           Phone mirror
 Mod+Q                           close-window
-Mod+Return                      Open tmux
+Mod+Return                      Terminal (herdr)
 Mod+Right                       focus-column-right
 Mod+R                           switch-preset-column-width
 Mod+S                           Firefox URL bar
