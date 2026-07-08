@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Manage WinApps application launchers on this PC.
 #   winapps-apps.sh          list current launchers
-#   winapps-apps.sh add      scan the VM and pick new apps to add (interactive)
+#   winapps-apps.sh add      scan the VM and pick new apps to add (interactive), then boxify
 #   winapps-apps.sh remove   pick launchers to remove (fzf multi-select with Tab)
+#   winapps-apps.sh boxify   re-route app .desktop entries through the labwc container
 set -euo pipefail
 
 APPS_DIR="$HOME/.local/share/applications"
@@ -15,6 +16,11 @@ winapps_entries() {
 case "${1:-list}" in
     add)
         bash "$HOME/.local/src/winapps/setup.sh" --user --add-apps
+        # Route new app entries through the labwc container (dodges RAIL bugs).
+        bash "$HOME/.dotfiles/scripts/winapps-boxify.sh"
+        ;;
+    boxify)
+        bash "$HOME/.dotfiles/scripts/winapps-boxify.sh"
         ;;
     remove)
         sel=$(winapps_entries | fzf --multi --prompt="remove launcher> ") || exit 0
