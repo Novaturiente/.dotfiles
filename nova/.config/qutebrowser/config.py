@@ -258,9 +258,7 @@ c.url.auto_search = "naive"
 # Key Bindings
 # ============================================================================
 # Tab navigation
-# "multiple" is per-window: the main window keeps its tab bar, while a one-tab
-# web app window (qute-webapp.sh) has no chrome at all.
-c.tabs.show = "multiple"
+c.tabs.show = "always"
 config.bind("<Alt-Right>", "tab-next")
 config.bind("<Alt-Left>", "tab-prev")
 config.bind("<Alt-h>", "tab-prev")
