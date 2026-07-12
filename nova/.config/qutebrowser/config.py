@@ -166,38 +166,15 @@ c.content.tls.certificate_errors = "ask-block-thirdparty"
 # ============================================================================
 # HTTPS-only mode (qutebrowser has no built-in setting for this)
 # ============================================================================
-import ipaddress
+# Loopback, RFC1918, Tailscale CGNAT and dotless LAN names are exempt already.
+# Anything else that must stay on http goes in https_excludes: <Space>th toggles
+# the current site and re-sources this file.
+import https_only
 
-from qutebrowser.api import interceptor
-from qutebrowser.qt.core import QUrl
-
-
-# Tailscale hands out 100.64.0.0/10 (CGNAT), which ipaddress does not call private
-_TAILSCALE_NET = ipaddress.ip_network("100.64.0.0/10")
-
-
-def _is_local(host: str) -> bool:
-    """Private/loopback hosts stay on http: routers, captive portals, Tailscale."""
-    if not host or host == "localhost" or host.endswith((".local", ".lan", ".internal")):
-        return True
-    try:
-        addr = ipaddress.ip_address(host)
-    except ValueError:
-        return False
-    return addr.is_private or addr.is_loopback or addr in _TAILSCALE_NET
-
-
-def _upgrade_to_https(info: interceptor.Request) -> None:
-    url = info.request_url
-    if url.scheme() != "http" or _is_local(url.host()):
-        return
-    https_url = QUrl(url)
-    https_url.setScheme("https")
-    # ignore_unsupported: POST and friends can't be redirected; let them through
-    info.redirect(https_url, ignore_unsupported=True)
-
-
-interceptor.register(_upgrade_to_https)
+_https_excludes = config.configdir / "https_excludes"
+https_only.setup(
+    _https_excludes.read_text().split() if _https_excludes.exists() else []
+)
 
 # ============================================================================
 # Web Feature Permissions
@@ -284,6 +261,10 @@ c.url.auto_search = "naive"
 c.tabs.show = "always"
 config.bind("<Alt-Right>", "tab-next")
 config.bind("<Alt-Left>", "tab-prev")
+config.bind("<Alt-h>", "tab-prev")
+config.bind("<Alt-l>", "tab-next")
+config.bind("<Alt-k>", "tab-prev")
+config.bind("<Alt-j>", "tab-next")
 config.bind("<Ctrl-Shift-Right>", "open -t {url}")
 # config.bind("tt", "config-cycle tabs.show always never ;; message-info 'Toggled Tabs'") # Replaced by Space+tt for position
 
@@ -304,6 +285,8 @@ c.aliases["toggle-adblock"] = (
 )
 # Per-domain: records the choice in darkmode_excludes so it survives a restart
 c.aliases["toggle-dark-mode"] = "spawn --userscript toggle_darkmode.py"
+# Per-host: records the choice in https_excludes, then re-sources the config
+c.aliases["toggle-https"] = "spawn --userscript toggle_https.py"
 c.aliases["toggle-tabs-layout"] = (
     "config-cycle tabs.position left top ;; message-info 'Toggled Tabs Layout'"
 )
@@ -314,6 +297,7 @@ c.aliases["toggle-tabs-layout"] = (
 config.bind("<Space>tg", "toggle-adblock")
 config.bind("<Space>td", "toggle-dark-mode")
 config.bind("<Space>tt", "toggle-tabs-layout")
+config.bind("<Space>th", "toggle-https")
 # Open most recent download (PDF) in zathura via downloads.open_dispatcher
 config.bind("<Space>z", "download-open")
 
@@ -330,6 +314,11 @@ config.bind("<Ctrl-n>", "open -w")
 # Mode Exits
 config.bind("<Alt-Backspace>", "mode-leave", mode="insert")
 config.bind("<Alt-Backspace>", "mode-leave", mode="passthrough")
+# No "jk" here: a partial keychain match is filtered out (modeman.py:297) and
+# qutebrowser never replays it, so binding it would eat every literal "j" you
+# type - "jam" would come out as "am". Single keys only.
+config.bind("<Ctrl-[>", "mode-leave", mode="insert")
+config.bind("<Ctrl-[>", "mode-leave", mode="passthrough")
 
 # DevTools (web testing)
 config.bind("<F12>", "devtools")
