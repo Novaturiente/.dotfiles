@@ -311,6 +311,11 @@ config.bind("<Space>pa", "spawn --userscript qute-pass-add")
 # Window Management
 config.bind("<Ctrl-n>", "open -w")
 
+# Passthrough: <Ctrl-p> instead of the default <Ctrl-v>, which is muscle-memory
+# paste everywhere else. Costs the default <Ctrl-p> (tab-pin); use :tab-pin.
+config.unbind("<Ctrl-v>")
+config.bind("<Ctrl-p>", "mode-enter passthrough")
+
 # Mode Exits
 config.bind("<Alt-Backspace>", "mode-leave", mode="insert")
 config.bind("<Alt-Backspace>", "mode-leave", mode="passthrough")
