@@ -3,7 +3,7 @@ import os
 import sys
 from urllib.parse import urlparse
 
-# Constants - Standard Profile
+# Constants - Updated for Work Profile
 EXCLUDE_FILE = os.path.expanduser("~/.config/qutebrowser/darkmode_excludes")
 QUTE_FIFO = os.environ.get("QUTE_FIFO")
 QUTE_URL = os.environ.get("QUTE_URL")

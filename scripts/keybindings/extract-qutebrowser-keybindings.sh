@@ -7,7 +7,7 @@
 # Output: one file bindings/qutebrowser.txt (default + your overrides and new bindings).
 #
 # Usage: extract-qutebrowser-keybindings.sh [config.py]
-#   Default: $QUTEBROWSER_CONFIG or $HOME/.config/qutebrowser_work/config/config.py
+#   Default: $QUTEBROWSER_CONFIG or $HOME/.config/qutebrowser/config.py
 
 set -e
 
@@ -15,7 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BINDINGS_DIR="${SCRIPT_DIR}/bindings"
 DEFAULT_FILE="${BINDINGS_DIR}/qutebrowser-default.txt"
 OUT_FILE="${BINDINGS_DIR}/qutebrowser.txt"
-CONFIG="${1:-${QUTEBROWSER_CONFIG:-$HOME/.config/qutebrowser_work/config/config.py}}"
+CONFIG="${1:-${QUTEBROWSER_CONFIG:-$HOME/.config/qutebrowser/config.py}}"
 
 # Short description from command string
 cmd_to_desc() {

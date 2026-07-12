@@ -118,7 +118,7 @@ alias macdown="podman-compose -f ~/.dotfiles/docker/macos.yaml down"
 alias editsystem="nvim ~/.dotfiles/novarch"
 alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && paru -Syu"
 
-alias clear-cache="rm -rf ~/.config/qutebrowser_work/cache/* && rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp"
+alias clear-cache="rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp"
 
 alias eeclogin="ssh -i ~/.ssh/id_eecdev eecdev@$EEC_SERVER_IP"
 
