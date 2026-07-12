@@ -1,6 +1,4 @@
-nova/.config/qutebrowser_work/data/
-nova/.config/qutebrowser_work/cache/
-nova/.config/qutebrowser_work/runtime/
+nova/.config/qutebrowser/__pycache__/
 nova/.config/ranger/plugins/__pycache__/
 nova/.config/ranger/plugins/ranger-archives/
 .aider*
