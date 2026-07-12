@@ -2,7 +2,10 @@ c = c  # pyright: ignore
 config = config  # pyright: ignore
 
 # Load settings made via the :set command from autoconfig.yml.
-config.load_autoconfig(False)  # Set to True if you want to keep using autoconfig.yml
+# Must be True, otherwise "Always"/"Never" on a permission prompt is written to
+# autoconfig.yml and then never read back, so every site re-asks on each restart.
+# Globals set below still win over autoconfig; per-domain answers are what persist.
+config.load_autoconfig(True)
 
 # Theme
 # config.source("onedark.py")
