@@ -4,9 +4,6 @@ config = config  # pyright: ignore
 # Load settings made via the :set command from autoconfig.yml.
 config.load_autoconfig(False)  # Set to True if you want to keep using autoconfig.yml
 
-# Enable full JavaScript clipboard access (copy + paste)
-c.content.javascript.clipboard = "access"
-
 # Theme
 # config.source("onedark.py")
 # import everforest
@@ -19,7 +16,7 @@ modern_dark.setup(c)
 # ============================================================================
 # Tab Settings
 # ============================================================================
-c.url.start_pages = "https://google.com"
+c.url.start_pages = "https://search.novarch.site"
 c.tabs.position = "top"
 c.tabs.title.format = "{current_title}"
 c.tabs.padding = {"top": 5, "bottom": 5, "left": 5, "right": 5}
@@ -62,16 +59,12 @@ c.scrolling.smooth = True
 # Performance & GPU Acceleration
 # ============================================================================
 c.qt.args = [
-    # GPU compositing on (smooth scroll), video hwdec off (vaapi crashes on Intel Meteor Lake + Mesa 26)
     "enable-gpu-rasterization",
     "enable-zero-copy",
-    "ignore-gpu-blocklist",
-    "num-raster-threads=4",
-    "enable-quic",
+    # vaapi crashes on Intel Meteor Lake + Mesa 26, so video hwdec stays off
     "disable-features=VaapiVideoDecoder,VaapiVideoEncoder,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxZeroCopyGL,UseChromeOSDirectVideoDecoder",
+    # WebRTCPipeWireCapturer: required for screen sharing on Wayland
     "enable-features=WebRTCPipeWireCapturer,CanvasOopRasterization,ParallelDownloading",
-    # Allow WS:// from HTTPS (Mixed Content)
-    "allow-running-insecure-content",
 ]
 c.qt.chromium.low_end_device_mode = "never"
 
@@ -79,17 +72,12 @@ c.qt.chromium.low_end_device_mode = "never"
 # ============================================================================
 # Privacy and Blocking Settings
 # ============================================================================
-c.content.headers.user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
-# Mimic Firefox for Google Login to bypass "Browser not supported"
-config.set(
-    "content.headers.user_agent",
-    "Mozilla/5.0 (X11; Linux x86_64; rv:139.0) Gecko/20100101 Firefox/139.0",
-    "https://accounts.google.com/*",
-)
+# User agent is left at the default: it tracks the running Chromium version and
+# already hides the QtWebEngine part. The site-specific quirks below send a
+# Firefox UA to accounts.google.com on their own.
 c.content.headers.accept_language = "en-US,en;q=0.9"
-c.content.headers.referer = "always"
-c.content.headers.custom = {}
-c.content.cookies.accept = "all"
+c.content.headers.custom = {"Sec-GPC": "1"}  # DNT is dead; GPC is enforceable
+c.content.cookies.accept = "all"  # no-3rdparty breaks GMail and OAuth/SSO
 c.content.headers.do_not_track = None
 
 c.content.blocking.enabled = True
@@ -98,40 +86,83 @@ c.content.blocking.adblock.lists = [
     "https://easylist.to/easylist/easylist.txt",
     "https://easylist.to/easylist/easyprivacy.txt",
     "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/filters.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/privacy.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/badware.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/unbreak.txt",
+    "https://raw.githubusercontent.com/uBlockOrigin/uAssets/master/filters/quick-fixes.txt",
     "https://secure.fanboy.co.nz/fanboy-annoyance.txt",
     "https://secure.fanboy.co.nz/fanboy-cookiemonster.txt",
 ]
-c.content.canvas_reading = True
-c.content.dns_prefetch = True
-c.content.autoplay = True
-c.content.geolocation = True
+c.content.canvas_reading = True  # off breaks reCAPTCHA and Google sign-in
+c.content.dns_prefetch = False
+c.content.autoplay = False
+c.content.tls.certificate_errors = "ask-block-thirdparty"
+
 
 # ============================================================================
-# Web Feature Permissions (Chrome-like defaults)
+# HTTPS-only mode (qutebrowser has no built-in setting for this)
 # ============================================================================
-c.content.notifications.enabled = True
-c.content.media.audio_capture = True
-c.content.media.video_capture = True
-c.content.desktop_capture = True
-c.content.persistent_storage = True
-c.content.register_protocol_handler = True
+import ipaddress
+
+from qutebrowser.api import interceptor
+from qutebrowser.qt.core import QUrl
+
+
+# Tailscale hands out 100.64.0.0/10 (CGNAT), which ipaddress does not call private
+_TAILSCALE_NET = ipaddress.ip_network("100.64.0.0/10")
+
+
+def _is_local(host: str) -> bool:
+    """Private/loopback hosts stay on http: routers, captive portals, Tailscale."""
+    if not host or host == "localhost" or host.endswith((".local", ".lan", ".internal")):
+        return True
+    try:
+        addr = ipaddress.ip_address(host)
+    except ValueError:
+        return False
+    return addr.is_private or addr.is_loopback or addr in _TAILSCALE_NET
+
+
+def _upgrade_to_https(info: interceptor.Request) -> None:
+    url = info.request_url
+    if url.scheme() != "http" or _is_local(url.host()):
+        return
+    https_url = QUrl(url)
+    https_url.setScheme("https")
+    # ignore_unsupported: POST and friends can't be redirected; let them through
+    info.redirect(https_url, ignore_unsupported=True)
+
+
+interceptor.register(_upgrade_to_https)
+
+# ============================================================================
+# Web Feature Permissions
+# ============================================================================
+# "ask" prompts per site. True auto-grants to every site with no prompt.
+c.content.geolocation = False
+c.content.notifications.enabled = "ask"
+c.content.media.audio_capture = "ask"
+c.content.media.video_capture = "ask"
+c.content.desktop_capture = "ask"
+c.content.persistent_storage = "ask"
+c.content.register_protocol_handler = "ask"
+c.content.javascript.clipboard = "ask"
+c.content.mouse_lock = "ask"
+c.content.javascript.can_open_tabs_automatically = False
+
 c.content.fullscreen.window = True
 c.content.pdfjs = False
 # Open downloaded PDFs (and other files via :download-open) in zathura
 c.downloads.open_dispatcher = "zathura"
-c.content.webrtc_ip_handling_policy = "all-interfaces"
-c.content.webgl = True
+# all-interfaces leaks every NIC (incl. Tailscale) to any page's JS
+c.content.webrtc_ip_handling_policy = "default-public-interface-only"
+c.content.webgl = True  # off breaks Meet, Maps, Jira dashboards
 c.content.local_storage = True
-c.content.mouse_lock = True
-c.content.javascript.can_open_tabs_automatically = True
-c.content.site_specific_quirks.enabled = True
+c.content.site_specific_quirks.enabled = True  # required for Google login
 c.content.prefers_reduced_motion = False
 c.content.default_encoding = "utf-8"
 c.content.local_content_can_access_file_urls = True
 c.content.unknown_url_scheme_policy = "allow-from-user-interaction"
-
-# Allow Local Sync Bridge (ws://localhost) from HTTPS pages
-c.content.local_content_can_access_remote_urls = True
 
 # ============================================================================
 # Download & External App Settings
@@ -146,16 +177,7 @@ c.new_instance_open_target = "tab"
 # ============================================================================
 # Hint Selection Settings
 # ============================================================================
-# Add more elements to hinting for clickable areas (e.g. dropdowns/forms)
-c.hints.selectors["all"].extend(
-    [
-        "[aria-haspopup]",  # dropdown elements (Keeper, etc.)
-        '[role="link"]',
-        '[role="button"]',
-    ]
-)
-
-# For focusing scrollable frames (e.g. Jira, Confluence)
+# For focusing scrollable frames (e.g. Jira, Confluence) via :hint frame
 c.hints.selectors["frame"] = ["div", "header", "section", "nav"]
 
 
@@ -202,13 +224,9 @@ config.bind("<Ctrl+Alt+t>", "spawn -d thorium-browser-avx2 {url} ;; tab-close")
 c.aliases["toggle-adblock"] = (
     "config-cycle content.blocking.enabled true false ;; message-info 'Toggled Adblock'"
 )
-c.aliases["toggle-mobile-view"] = "spawn --userscript toggle_mobile_view"
 c.aliases["toggle-dark-mode"] = (
     "config-cycle colors.webpage.darkmode.enabled true false ;; reload ;; message-info 'Toggled Dark Mode'"
 )
-c.aliases["bookmarks-search"] = "spawn --userscript rofi_bookmarks"
-c.aliases["window-clone"] = "spawn --userscript open_cloned_window"
-c.aliases["sync-toggle"] = "spawn --userscript sync_bridge.py"
 c.aliases["toggle-tabs-layout"] = (
     "config-cycle tabs.position left top ;; message-info 'Toggled Tabs Layout'"
 )
@@ -218,16 +236,12 @@ c.aliases["toggle-tabs-layout"] = (
 # Bind to the aliases
 config.bind("<Space>tg", "toggle-adblock")
 config.bind("<Space>td", "toggle-dark-mode")
-config.bind("<Space>tm", "toggle-mobile-view")
-config.bind("<Space>sb", "bookmarks-search")
-config.bind("<Space>ts", "sync-toggle")
 config.bind("<Space>tt", "toggle-tabs-layout")
 # Open most recent download (PDF) in zathura via downloads.open_dispatcher
 config.bind("<Space>z", "download-open")
 
 # Window Management
-config.bind("<Ctrl-n>", "open -w")  # Standard New Window
-config.bind("<Ctrl-Shift-n>", "window-clone")  # Clone Window Size
+config.bind("<Ctrl-n>", "open -w")
 
 # Mode Exits
 config.bind("<Alt-Backspace>", "mode-leave", mode="insert")
