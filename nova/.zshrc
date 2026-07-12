@@ -164,3 +164,6 @@ _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zoxide.zsh" zoxide init zsh --c
 
 # bun completions
 [ -s "/home/nova/.bun/_bun" ] && source "/home/nova/.bun/_bun"
+
+# zoxide: suppress the init-order doctor warning (noise in every command output)
+export _ZO_DOCTOR=0
