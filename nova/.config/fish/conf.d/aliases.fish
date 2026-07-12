@@ -39,7 +39,7 @@ alias untar  'tar -zxvf'
 # ---- system control ----
 alias grubup 'sudo grub-mkconfig -o /boot/grub/grub.cfg'
 alias jctl   'journalctl -p 3 -xb'
-alias clear-cache 'rm -rf ~/.config/qutebrowser_work/cache/* && rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp'
+alias clear-cache 'rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp'
 
 # ---- git ----
 alias gadd 'git add . && git commit -m "Update"'

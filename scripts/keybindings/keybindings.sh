@@ -54,7 +54,7 @@ main() {
     # Refresh keybindings from configs so they stay in sync
     "${SCRIPT_DIR}/extract-niri-keybindings.sh" "${NIRI_CONFIG:-$HOME/.config/niri/config.kdl}" >/dev/null 2>&1 || true
     "${SCRIPT_DIR}/extract-neovim-keybindings.sh" >/dev/null 2>&1 || true
-    "${SCRIPT_DIR}/extract-qutebrowser-keybindings.sh" "${QUTEBROWSER_CONFIG:-$HOME/.config/qutebrowser_work/config/config.py}" >/dev/null 2>&1 || true
+    "${SCRIPT_DIR}/extract-qutebrowser-keybindings.sh" "${QUTEBROWSER_CONFIG:-$HOME/.config/qutebrowser/config.py}" >/dev/null 2>&1 || true
 
     local programs
     programs=$(get_programs)

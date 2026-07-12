@@ -18,9 +18,7 @@ def send_notification(message):
     fifo = os.environ.get("QUTE_FIFO")
     if fifo:
         with open(fifo, "w") as f:
-            # Sanitize message: escape single quotes and replace newlines
-            safe_message = message.replace("'", "'\\''").replace("\n", " ").strip()
-            f.write(f"message-info '{safe_message}'\n")
+            f.write(f"message-info '{message}'\n")
 
 def main():
     url = os.environ.get("QUTE_URL")
@@ -54,6 +52,10 @@ def main():
     # Insert into pass (piping password twice for confirmation)
     try:
         # pass insert -f (force) to overwrite if exists, reads from stdin
+        # We need to send password twice separated by newline if using standard insert,
+        # but 'insert -m' (multiline) might be better?
+        # Actually 'pass insert -e' opens editor.
+        # 'pass insert <name>' reads from stdin. 
         
         proc = subprocess.Popen(
             ["pass", "insert", "-f", "-m", pass_path],
