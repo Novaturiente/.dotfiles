@@ -77,8 +77,15 @@ c.qt.chromium.low_end_device_mode = "never"
 # Firefox UA to accounts.google.com on their own.
 c.content.headers.accept_language = "en-US,en;q=0.9"
 c.content.headers.custom = {"Sec-GPC": "1"}  # DNT is dead; GPC is enforceable
-c.content.cookies.accept = "all"  # no-3rdparty breaks GMail and OAuth/SSO
 c.content.headers.do_not_track = None
+
+# Block third-party cookies. The pattern below is matched against the FIRST-PARTY
+# url (the page in the address bar), not the cookie's origin, so redirect-based
+# SSO still works: you physically land on accounts.google.com during the
+# handshake. Only silent-refresh flows in hidden iframes need an exception here.
+c.content.cookies.accept = "no-3rdparty"
+with config.pattern("*://*.google.com/*") as p:
+    p.content.cookies.accept = "all"
 
 c.content.blocking.enabled = True
 c.content.blocking.method = "adblock"
