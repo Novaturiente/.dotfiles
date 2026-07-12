@@ -8,12 +8,26 @@ config = config  # pyright: ignore
 config.load_autoconfig(True)
 
 # Theme
-# config.source("onedark.py")
-# import everforest
-# everforest.set(c, scheme="dark", intensity="hard")
-import modern_dark
+import catppuccin_mocha
 
-modern_dark.setup(c)
+catppuccin_mocha.setup(c)
+
+
+# ============================================================================
+# Fonts / UI legibility
+# ============================================================================
+# One family, one size, set in one place. 11pt beats the 10pt default on a
+# 1080p 14" panel without eating vertical space.
+c.fonts.default_family = "JetBrainsMonoNL Nerd Font"
+c.fonts.default_size = "11pt"
+c.fonts.web.family.standard = "SF Pro Display"
+c.fonts.web.family.sans_serif = "SF Pro Display"
+c.fonts.web.family.serif = "Noto Serif"
+c.fonts.web.family.fixed = "JetBrainsMonoNL Nerd Font"
+c.fonts.web.size.default = 16
+c.fonts.web.size.minimum = 12  # kill unreadable 8px small print
+c.fonts.hints = "bold 12pt JetBrainsMonoNL Nerd Font"
+c.fonts.statusbar = "11pt JetBrainsMonoNL Nerd Font"
 
 
 # ============================================================================
@@ -21,11 +35,35 @@ modern_dark.setup(c)
 # ============================================================================
 c.url.start_pages = "https://search.novarch.site"
 c.tabs.position = "top"
-c.tabs.title.format = "{current_title}"
-c.tabs.padding = {"top": 5, "bottom": 5, "left": 5, "right": 5}
+c.tabs.title.format = "{audio}{index}: {current_title}"  # {audio} shows 🔊/🔇
+c.tabs.title.format_pinned = "{audio}{index}"
+c.tabs.padding = {"top": 5, "bottom": 5, "left": 8, "right": 8}
 c.tabs.title.alignment = "left"
 c.tabs.favicons.scale = 1
 c.tabs.last_close = "startpage"
+c.tabs.indicator.width = 3
+c.tabs.min_width = 140  # stop tabs collapsing to unreadable slivers
+c.tabs.max_width = 320
+c.tabs.mousewheel_switching = False  # no more accidental tab changes on scroll
+
+
+# ============================================================================
+# Statusbar / window
+# ============================================================================
+c.statusbar.widgets = ["keypress", "url", "scroll", "history", "progress"]
+c.statusbar.padding = {"top": 4, "bottom": 4, "left": 6, "right": 6}
+c.window.title_format = "{current_title} — qutebrowser"
+c.messages.timeout = 4000  # 2s default is too quick to actually read
+
+
+# ============================================================================
+# Zoom
+# ============================================================================
+c.zoom.default = "100%"
+c.zoom.levels = [
+    "25%", "33%", "50%", "67%", "75%", "90%",
+    "100%", "110%", "125%", "150%", "175%", "200%", "250%", "300%",
+]
 
 
 # ============================================================================
@@ -35,10 +73,8 @@ c.auto_save.session = True
 
 
 # ============================================================================
-# Dark Mode Settings (disabled for maximum compatibility)
+# Dark Mode Settings
 # ============================================================================
-c.colors.webpage.bg = "#282828"
-
 # Ask sites for their own dark theme first. Sites that have one (github, etc.)
 # use it as-is: Chromium's smart page policy skips force-darkening them.
 c.colors.webpage.preferred_color_scheme = "dark"
@@ -204,7 +240,13 @@ c.new_instance_open_target = "tab"
 
 # ============================================================================
 # Hint Selection Settings
-# ============================================================================
+# Home-row only: no reaching, and uppercase reads better on the yellow chip.
+c.hints.chars = "asdfghjkl"
+c.hints.uppercase = True
+c.hints.radius = 3
+c.hints.border = "1px solid #11111b"
+c.hints.min_chars = 1
+
 # For focusing scrollable frames (e.g. Jira, Confluence) via :hint frame
 c.hints.selectors["frame"] = ["div", "header", "section", "nav"]
 
@@ -214,13 +256,21 @@ c.hints.selectors["frame"] = ["div", "header", "section", "nav"]
 # ============================================================================
 c.completion.open_categories = [
     "searchengines",
+    "quickmarks",
+    "bookmarks",
     "history",
 ]
+c.completion.height = "40%"
+c.completion.scrollbar.width = 10
+c.completion.timestamp_format = "%Y-%m-%d"
 
 # Custom quick keyword-based search engines
 c.url.searchengines = {
     "DEFAULT": "https://search.novarch.site/search?q={}",
     "g": "https://www.google.com/search?q={}",
+    "gh": "https://github.com/search?q={}",
+    "aw": "https://wiki.archlinux.org/index.php?search={}",
+    "yt": "https://www.youtube.com/results?search_query={}",
 }
 
 # Always search if input isn't a URL
@@ -266,6 +316,13 @@ config.bind("<Space>td", "toggle-dark-mode")
 config.bind("<Space>tt", "toggle-tabs-layout")
 # Open most recent download (PDF) in zathura via downloads.open_dispatcher
 config.bind("<Space>z", "download-open")
+
+# pass integration: fills credentials into the form directly, so secrets never
+# pass through the clipboard (which sites can no longer read anyway).
+config.bind("<Space>pp", "spawn --userscript qute-pass")
+config.bind("<Space>pu", "spawn --userscript qute-pass --username-only")
+config.bind("<Space>pw", "spawn --userscript qute-pass --password-only")
+config.bind("<Space>pa", "spawn --userscript qute-pass-add")
 
 # Window Management
 config.bind("<Ctrl-n>", "open -w")
