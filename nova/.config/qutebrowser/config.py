@@ -35,8 +35,26 @@ c.auto_save.session = True
 # Dark Mode Settings (disabled for maximum compatibility)
 # ============================================================================
 c.colors.webpage.bg = "#282828"
-c.colors.webpage.darkmode.enabled = False
-c.colors.webpage.preferred_color_scheme = "auto"
+
+# Ask sites for their own dark theme first. Sites that have one (github, etc.)
+# use it as-is: Chromium's smart page policy skips force-darkening them.
+c.colors.webpage.preferred_color_scheme = "dark"
+
+# Force-dark the rest. lightness-cielab inverts lightness in CIELAB space, which
+# keeps hues intact; smart image policy leaves photos alone but darkens diagrams.
+c.colors.webpage.darkmode.enabled = True
+c.colors.webpage.darkmode.algorithm = "lightness-cielab"
+c.colors.webpage.darkmode.policy.page = "smart"
+c.colors.webpage.darkmode.policy.images = "smart"
+
+# Sites that look wrong force-darkened. Toggle with <Space>td (toggle_darkmode.py
+# userscript), which rewrites this file; we re-apply it here on every start
+# because runtime ":set -u" only reaches autoconfig.yml, which is not loaded.
+_darkmode_excludes = config.configdir / "darkmode_excludes"
+if _darkmode_excludes.exists():
+    for _domain in _darkmode_excludes.read_text().split():
+        with config.pattern(f"*://{_domain}/*") as p:
+            p.colors.webpage.darkmode.enabled = False
 
 # Toggle dark mode binding
 # Toggle dark mode binding (Moved to Aliases section below)
@@ -231,9 +249,8 @@ config.bind("<Ctrl+Alt+t>", "spawn -d thorium-browser-avx2 {url} ;; tab-close")
 c.aliases["toggle-adblock"] = (
     "config-cycle content.blocking.enabled true false ;; message-info 'Toggled Adblock'"
 )
-c.aliases["toggle-dark-mode"] = (
-    "config-cycle colors.webpage.darkmode.enabled true false ;; reload ;; message-info 'Toggled Dark Mode'"
-)
+# Per-domain: records the choice in darkmode_excludes so it survives a restart
+c.aliases["toggle-dark-mode"] = "spawn --userscript toggle_darkmode.py"
 c.aliases["toggle-tabs-layout"] = (
     "config-cycle tabs.position left top ;; message-info 'Toggled Tabs Layout'"
 )
