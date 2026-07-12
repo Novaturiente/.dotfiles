@@ -5,7 +5,7 @@ onboarding = false
 
 [keys]
 # herdr supports a single prefix key only (no array).
-prefix = "ctrl+x"
+prefix = "ctrl+b"
 
 # Pane focus — direct alt chords, no prefix needed
 focus_pane_left = "alt+h"
@@ -34,3 +34,6 @@ description = "herdr-plus: quick actions"
 
 [ui.toast]
 delivery = "herdr"
+
+[ui]
+agent_panel_sort = "spaces"

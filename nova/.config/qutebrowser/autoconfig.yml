@@ -7,6 +7,9 @@
 config_version: 2
 settings:
   colors.webpage.darkmode.enabled:
+    '*://dash.cloudflare.com/*': true
     '*://mail.google.com/*': true
+  content.notifications.enabled:
+    https://web.whatsapp.com: true
   content.register_protocol_handler:
     https://mail.google.com?extsrc=mailto&url=%25s: true

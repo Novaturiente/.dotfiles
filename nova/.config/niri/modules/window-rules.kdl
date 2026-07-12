@@ -30,6 +30,13 @@ window-rule {
     match title="herdr"
     open-maximized true
 }
+// Task scratchpad
+window-rule {
+    match title="tasks-scratchpad"
+    open-floating true
+    default-column-width { fixed 1200; }
+    default-window-height { fixed 850; }
+}
 // Screenshot editor
 window-rule {
     match app-id="satty"

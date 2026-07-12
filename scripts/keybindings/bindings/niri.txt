@@ -110,6 +110,7 @@ Mod+Shift+WheelScrollUp         focus-column-left
 Mod+Shift+W                     Qutebrowser (VPN)
 Mod+Space                       Open ghostty
 Mod+Tab                         Window switcher
+Mod+T                           Task scratchpad
 Mod+Up                          focus-workspace-up
 Mod+V                           Clipboard Manager
 Mod+W                           Browser
