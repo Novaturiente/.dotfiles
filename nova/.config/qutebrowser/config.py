@@ -95,25 +95,8 @@ if _darkmode_excludes.exists():
         with config.pattern(f"*://{_domain}/*") as p:
             p.colors.webpage.darkmode.enabled = False
 
-# ----------------------------------------------------------------------------
-# Transparent page background (blurred by niri)
-# ----------------------------------------------------------------------------
-# Real alpha in the page's background colour, so text and images stay fully
-# opaque - unlike a compositor opacity rule, which fades the whole window.
-# niri blurs what shows through: window-rule background-effect { blur true }.
-#
-# This alone changes nothing on real sites, which paint their own opaque body
-# background. greasemonkey/transparent.js strips that on the hosts listed in
-# transparent_sites; <Space>tb toggles the current host and regenerates it.
-# (content.user_stylesheets would be the obvious tool, but it takes no URL
-# pattern - it is every site or none.)
-#
-# Only flat pages survive this (startpage, search, docs). App-like sites go
-# patchy: their inner elements keep their own opaque backgrounds.
-c.colors.webpage.bg = "transparent"
-# Without this the Qt window stays opaque and eats the page's alpha before the
-# compositor ever sees it. Only affects windows opened after it is set.
-c.window.transparent = True
+# Toggle dark mode binding
+# Toggle dark mode binding (Moved to Aliases section below)
 
 # ============================================================================
 # Input Mode Settings
@@ -306,8 +289,6 @@ c.aliases["toggle-adblock"] = (
 c.aliases["toggle-dark-mode"] = "spawn --userscript toggle_darkmode.py"
 # Per-host: records the choice in https_excludes, then re-sources the config
 c.aliases["toggle-https"] = "spawn --userscript toggle_https.py"
-# Per-host: records the choice in transparent_sites (needs the niri blur rule)
-c.aliases["toggle-transparent"] = "spawn --userscript toggle_transparent.py"
 c.aliases["toggle-tabs-layout"] = (
     "config-cycle tabs.position left top ;; message-info 'Toggled Tabs Layout'"
 )
@@ -319,7 +300,6 @@ config.bind("<Space>tg", "toggle-adblock")
 config.bind("<Space>td", "toggle-dark-mode")
 config.bind("<Space>tt", "toggle-tabs-layout")
 config.bind("<Space>th", "toggle-https")
-config.bind("<Space>tb", "toggle-transparent")
 # Open most recent download (PDF) in zathura via downloads.open_dispatcher
 config.bind("<Space>z", "download-open")
 
