@@ -1,12 +1,18 @@
 <Alt-Backspace>     Leave insert/passthrough mode
+<Alt-h>             Previous tab
+<Alt-j>             Next tab
+<Alt-k>             Previous tab
 <Alt-Left>          Previous tab
+<Alt-l>             Next tab
 <Alt-Right>         Next tab
 :                   Command mode
 ;c                  Quickmark load
 <Ctrl+Alt+t>        spawn -d thorium-browser-avx2 {url} ;; tab-cl
+<Ctrl-[>            Leave insert/passthrough mode
 <Ctrl-n>            New window
+<Ctrl-p>            mode-enter passthrough
 <Ctrl-Shift-i>      devtools
-<Ctrl-Shift-n>      Clone window
+<Ctrl-Shift-n>      New window (clone)
 <Ctrl-Shift-Right>  Open URL in new tab
 <<                  Decrease indent
 d                   Scroll half page down
@@ -56,14 +62,16 @@ q                   Close window
 r                   Reload
 /                   Search
 ?                   Search backwards
-<Space>pa           Add password (qute-pass)
+<Space>pa           spawn --userscript qute-pass-add
 <Space>pf           Password fill auto
 <Space>pl           Login choose
-<Space>pp           Login password
-<Space>pu           Login username
+<Space>pp           spawn --userscript qute-pass
+<Space>pu           spawn --userscript qute-pass --username-only
+<Space>pw           spawn --userscript qute-pass --password-only
 <Space>sb           Bookmarks search
 <Space>td           Toggle dark mode
 <Space>tg           Toggle adblock
+<Space>th           toggle-https
 <Space>tm           Toggle mobile view
 <Space>ts           Sync toggle
 <Space>tt           Toggle tabs layout

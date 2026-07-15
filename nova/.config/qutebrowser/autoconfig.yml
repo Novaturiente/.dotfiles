@@ -9,7 +9,11 @@ settings:
   colors.webpage.darkmode.enabled:
     '*://dash.cloudflare.com/*': true
     '*://mail.google.com/*': true
+  content.javascript.clipboard:
+    https://gemini.google.com: access-paste
   content.notifications.enabled:
+    https://mail.proton.me: true
     https://web.whatsapp.com: true
   content.register_protocol_handler:
     https://mail.google.com?extsrc=mailto&url=%25s: true
+    https://mail.proton.me#mailto=%25s: true

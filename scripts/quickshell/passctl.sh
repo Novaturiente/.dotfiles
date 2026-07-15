@@ -1,20 +1,27 @@
 #!/usr/bin/env bash
-# passctl — headless backend for the Quickshell pass manager.
-# All pass/gpg/clipboard/wtype/otp work lives here; the QML frontend only shows
-# entry NAMES and dispatches these subcommands. Secrets never touch the UI.
-# Adapted from scripts/rofi/passrofi.sh (same behaviour, no rofi prompts).
+# passctl — headless backend for the Quickshell password manager.
+# Backed by rbw (Bitwarden CLI, self-hosted vault). The rbw agent holds the
+# unlocked vault and prompts via pinentry, so no session juggling here.
+# The QML frontend only ever sees entry UUIDs; secrets stay in this script.
+#
+# Entry key = Bitwarden item UUID (rbw accepts it as a needle everywhere).
+# Autotype sequences live in the item's notes as an "autotype: ..." line.
 set -euo pipefail
 
-# Spawned from niri (non-login shell) — set gnupg home explicitly or gpg falls
-# back to ~/.gnupg and can't find the key.
-export GNUPGHOME="${GNUPGHOME:-${XDG_DATA_HOME:-$HOME/.local/share}/gnupg}"
-
-STORE_DIR="${PASSWORD_STORE_DIR:-$HOME/.password-store}"
-WEB_DIR="$STORE_DIR/web"
 CLIP_TIMEOUT=45
-TIMER_PID_FILE="/tmp/passrofi-timer.pid"
+TIMER_PID_FILE="/tmp/passctl-timer.pid"
+UNLOCK_LOCK="/tmp/passctl-unlock.lock"
+DEFAULT_SEQ="username :tab password :enter"
 
 notify() { notify-send -a "Pass" -t "${2:-3000}" "$1"; }
+
+# Serialize the vault unlock across concurrent passctl processes. rbw-agent spawns
+# a separate pinentry per locked client and never coalesces, so two rbw commands
+# racing a locked vault = two PIN prompts + a TPM unseal race (which fails and
+# falls back to the master password). flock funnels them: the first prompts once,
+# the rest block, then find the vault already open. rbw unlock is a no-op when
+# unlocked, so this is cheap on the warm path.
+ensure_unlocked() { ( flock 9; rbw unlock >/dev/null 2>&1 || true ) 9>"$UNLOCK_LOCK"; }
 
 kill_timer() {
     if [[ -f "$TIMER_PID_FILE" ]]; then
@@ -32,27 +39,22 @@ start_clear_timer() {
     echo $! >"$TIMER_PID_FILE"
 }
 
-get_field() {
-    local entry="$1" field="$2" content
-    content=$(pass show "$entry" 2>/dev/null) || return 1
-    case "$field" in
-    password) echo "$content" | head -1 ;;
-    username) echo "$content" | grep -i "^username:" | head -1 | sed 's/^[Uu]sername:[[:space:]]*//' ;;
-    url)      echo "$content" | grep -i "^url:" | head -1 | sed 's/^[Uu]rl:[[:space:]]*//' ;;
-    autotype)
-        local seq
-        seq=$(echo "$content" | grep -i "^autotype:" | head -1 | sed 's/^[Aa]utotype:[[:space:]]*//')
-        echo "${seq:-username :tab password :enter}" ;;
-    has_otp) echo "$content" | grep -q "^otpauth://" && echo "yes" || echo "no" ;;
-    esac
-}
+# rbw add/edit read the new item from stdin when stdin is not a tty:
+#   line 1 = password, remaining lines = notes. No editor, no secrets on disk.
+
+item() { rbw get --raw "$1" 2>/dev/null; }   # full item JSON by uuid
+
+# <uuid> <jq-filter> -> field value ('' when null)
+field() { item "$1" | jq -r "$2 // empty"; }
 
 # ── subcommands ─────────────────────────────────────────────────────────────
+# entry = uuid; domain = the item's first URI host (so a browser-title prefill like
+# "github.com" matches), falling back to the item name when it has no URI.
 cmd_list() {   # JSON: [{entry,domain,user}]
-    [[ -d "$WEB_DIR" ]] || { echo "[]"; return; }
-    find "$WEB_DIR" -name "*.gpg" -type f | sort | while read -r f; do
-        local rel="${f#"$WEB_DIR"/}"; rel="${rel%.gpg}"
-        printf '%s\t%s\t%s\n' "web/$rel" "${rel%%/*}" "${rel#*/}"
+    rbw list --fields id,name,user 2>/dev/null | while IFS=$'\t' read -r id name user; do
+        local host
+        host=$(item "$id" | jq -r '.data.uris[0].uri // empty' | sed -E 's|https?://||; s|www\.||; s|[/:?].*||')
+        printf '%s\t%s\t%s\n' "$id" "${host:-$name}" "$user"
     done | jq -Rn '[inputs | split("\t") | {entry:.[0], domain:.[1], user:.[2]}]'
 }
 
@@ -65,13 +67,14 @@ cmd_focused_domain() {
     echo "$title" | grep -oP '[a-zA-Z0-9][-a-zA-Z0-9]*\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?' | head -1
 }
 
-cmd_has_otp() { get_field "$1" has_otp; }
+cmd_has_otp() { [[ -n "$(field "$1" '.data.totp')" ]] && echo yes || echo no; }
 
 cmd_copy() {    # password + username -> clipboard, auto-clear
-    local entry="$1" pw user
-    pw=$(get_field "$entry" password)
-    user=$(get_field "$entry" username)
-    [[ -z "$pw" ]] && { notify "No password for $entry"; return 1; }
+    local uuid="$1" json pw user
+    json=$(item "$uuid")
+    pw=$(jq -r '.data.password // empty' <<<"$json")
+    user=$(jq -r '.data.username // empty' <<<"$json")
+    [[ -z "$pw" ]] && { notify "No password for this entry"; return 1; }
     kill_timer
     printf '%s' "$pw" | wl-copy
     [[ -n "$user" ]] && printf '%s' "$user" | wl-copy
@@ -79,21 +82,20 @@ cmd_copy() {    # password + username -> clipboard, auto-clear
     start_clear_timer
 }
 
-cmd_copy_field() {  # <entry> <password|username>
-    local entry="$1" field="$2" val
-    val=$(get_field "$entry" "$field")
-    [[ -z "$val" ]] && { notify "No $field for $entry"; return 1; }
+cmd_copy_field() {  # <uuid> <password|username>
+    local uuid="$1" f="$2" val
+    val=$(field "$uuid" ".data.$f")
+    [[ -z "$val" ]] && { notify "No $f for this entry"; return 1; }
     kill_timer
     printf '%s' "$val" | wl-copy
-    notify "${field^} copied (clears in ${CLIP_TIMEOUT}s)"
+    notify "${f^} copied (clears in ${CLIP_TIMEOUT}s)"
     start_clear_timer
 }
 
 cmd_totp() {
-    local entry="$1" code rem
-    [[ "$(get_field "$entry" has_otp)" == "yes" ]] || { notify "No TOTP for this entry"; return 1; }
+    local uuid="$1" code rem
+    code=$(rbw code "$uuid" 2>/dev/null) || { notify "No TOTP for this entry"; return 1; }
     kill_timer
-    code=$(pass otp "$entry" 2>/dev/null)
     rem=$((30 - $(date +%s) % 30))
     printf '%s' "$code" | wl-copy
     notify "TOTP copied: $code (expires ${rem}s)"
@@ -101,10 +103,11 @@ cmd_totp() {
 }
 
 cmd_autotype() {
-    local entry="$1" pw user seq
-    pw=$(get_field "$entry" password)
-    user=$(get_field "$entry" username)
-    seq=$(get_field "$entry" autotype)
+    local uuid="$1" json pw user seq
+    json=$(item "$uuid")
+    pw=$(jq -r '.data.password // empty' <<<"$json")
+    user=$(jq -r '.data.username // empty' <<<"$json")
+    seq=$(cmd_get_autotype "$uuid")
     sleep 0.15                        # let focus return to the target window
     local IFS=' '; read -ra toks <<<"$seq"
     local i=0
@@ -112,7 +115,7 @@ cmd_autotype() {
         case "${toks[$i]}" in
         username) wtype -- "$user" ;;
         password) wtype -- "$pw" ;;
-        otp)      wtype -- "$(pass otp "$entry" 2>/dev/null)" ;;
+        otp)      wtype -- "$(rbw code "$uuid" 2>/dev/null)" ;;
         :tab)     wtype -k Tab ;;
         :enter)   wtype -k Return ;;
         :delay)   i=$((i+1)); sleep "${toks[$i]:-1}" ;;
@@ -122,127 +125,74 @@ cmd_autotype() {
     done
 }
 
-cmd_get_autotype() { get_field "$1" autotype; }
+# autotype sequence lives in the notes as "autotype: <seq>"
+cmd_get_autotype() {
+    local seq
+    seq=$(field "$1" '.notes' | grep -i '^autotype:' | head -1 | sed 's/^[Aa]utotype:[[:space:]]*//')
+    echo "${seq:-$DEFAULT_SEQ}"
+}
 
-cmd_set_autotype() {
-    local entry="$1" seq="$2" content new
-    content=$(pass show "$entry" 2>/dev/null)
-    new=$(echo "$content" | grep -iv "^autotype:")
-    new="$new
-autotype: $seq"
-    echo "$new" | pass insert -m -f "$entry"
+cmd_set_autotype() {   # <uuid> <seq>
+    local uuid="$1" seq="$2" json pw notes
+    json=$(item "$uuid")
+    pw=$(jq -r '.data.password // empty' <<<"$json")
+    notes=$(jq -r '.notes // empty' <<<"$json" | grep -iv '^autotype:' || true)
+    { printf '%s\n' "$pw"
+      [[ -n "$notes" ]] && printf '%s\n' "$notes"
+      printf 'autotype: %s\n' "$seq"
+    } | rbw edit "$uuid"
     notify "Autotype updated"
 }
 
-cmd_remove_totp() {
-    local entry="$1" content new
-    content=$(pass show "$entry" 2>/dev/null)
-    new=$(echo "$content" | grep -v "^otpauth://")
-    echo "$new" | pass insert -m -f "$entry"
-    notify "TOTP removed from $entry"
+cmd_delete() { rbw remove "$1"; notify "Entry deleted"; }
+
+cmd_edit() { setsid ghostty -e rbw edit "$1" >/dev/null 2>&1 & }
+
+cmd_exists() {   # <name> <user>
+    rbw list --fields name,user | grep -qxF "$1"$'\t'"$2" && echo yes || echo no
 }
 
-cmd_delete() { pass rm -f "$1"; notify "Deleted $1"; }
-
-cmd_edit() { setsid ghostty -e bash -c "pass edit '$1'" >/dev/null 2>&1 & }
-
-cmd_exists() { pass show "$1" &>/dev/null && echo yes || echo no; }
-
-cmd_add() {     # <url> <username> <password|''>  ('' = generate); prints entry
-    local url="$1" user="$2" pw="${3:-}" domain entry
-    domain=$(echo "$url" | sed -E 's|https?://||; s|www\.||; s|/.*||')
-    entry="web/$domain/$user"
+cmd_add() {     # <url> <username> <password|''>  ('' = generate); prints uuid
+    local url="$1" user="$2" pw="${3:-}" name
+    name=$(sed -E 's|https?://||; s|www\.||; s|/.*||' <<<"$url")
     if [[ -z "$pw" ]]; then
         pw=$(tr -dc 'A-Za-z0-9!@#$%^&*' </dev/urandom | head -c 24)
         printf '%s' "$pw" | wl-copy
         notify "Password generated and copied" 5000
     fi
-    printf '%s\nurl: %s\nusername: %s\n' "$pw" "$url" "$user" | pass insert -m -f "$entry"
-    notify "Added $entry"
-    echo "$entry"
-}
-
-cmd_scan_qr() {     # prints otpauth:// uri or ERR:
-    local geo uri
-    geo=$(slurp 2>/dev/null) || { echo "ERR:cancelled"; return; }
-    grim -g "$geo" /tmp/passctl-qr.png
-    uri=$(zbarimg --raw -q /tmp/passctl-qr.png 2>/dev/null) || { rm -f /tmp/passctl-qr.png; echo "ERR:no-qr"; return; }
-    rm -f /tmp/passctl-qr.png
-    [[ "$uri" == otpauth://* ]] && echo "$uri" || echo "ERR:not-otpauth"
-}
-
-cmd_import_file() {  # <path> -> otpauth uris, one per line
-    local file="$1" ext="${1##*.}"
-    case "$ext" in
-    png|jpg|jpeg|svg) zbarimg --raw -q "$file" 2>/dev/null | grep '^otpauth://' || true ;;
-    txt)              grep '^otpauth://' "$file" 2>/dev/null || true ;;
-    json)
-        python3 -c "
-import json,sys
-d=json.load(open(sys.argv[1])); out=[]
-if 'entries' in d:
-    for e in d['entries']:
-        u=e.get('content',{}).get('uri') or e.get('info',{}).get('uri') or e.get('uri','')
-        if u.startswith('otpauth://'): out.append(u)
-elif 'services' in d:
-    for s in d['services']:
-        u=s.get('otp',{}).get('link','') or s.get('secret','')
-        if u.startswith('otpauth://'): out.append(u)
-elif isinstance(d,list):
-    for e in d:
-        u=e.get('uri','')
-        if u.startswith('otpauth://'): out.append(u)
-print('\n'.join(out))
-" "$file" 2>/dev/null || true ;;
-    esac
-}
-
-cmd_attach_totp() {  # <uri> <target>   target = existing 'web/..' OR '--new <issuer> <account>'
-    local uri="$1" target="$2" entry
-    [[ "$uri" == otpauth://* ]] || { notify "Invalid URI"; return 1; }
-    if [[ "$target" == "--new" ]]; then
-        local issuer="$3" account="$4" domain
-        domain=$(echo "${issuer,,}" | sed 's/ /-/g')
-        entry="web/$domain/$account"
-        printf 'CHANGE_ME\nurl: https://%s\nusername: %s\n' "$domain" "$account" | pass insert -m -f "$entry"
+    if [[ "$(cmd_exists "$name" "$user")" == yes ]]; then
+        printf '%s\n' "$pw" | rbw edit "$name" "$user"
     else
-        entry="$target"
+        printf '%s\n' "$pw" | rbw add --uri "$url" "$name" "$user"
     fi
-    echo "$uri" | pass otp append -s "$entry" 2>/dev/null \
-        || echo "$uri" | pass otp insert -s -f "$entry" 2>/dev/null \
-        || { notify "Failed to add TOTP to $entry"; return 1; }
-    local code; code=$(pass otp "$entry" 2>/dev/null) || { notify "TOTP added, verify failed"; return 1; }
-    notify "TOTP added to $entry (code: $code)" 5000
+    notify "Added $name ($user)"
+    rbw list --fields id,name,user | awk -F'\t' -v n="$name" -v u="$user" '$2==n && $3==u {print $1; exit}'
 }
 
-# parse otpauth uri -> "issuer\taccount" (for the attach picker)
-cmd_parse_uri() {
-    local uri="$1" label issuer account
-    label=$(echo "$uri" | sed -E 's|otpauth://[a-z]+/||; s|\?.*||')
-    if [[ "$label" == *:* ]]; then issuer="${label%%:*}"; account="${label#*:}"; else issuer="$label"; account="$label"; fi
-    issuer=$(printf '%b' "${issuer//%/\\x}"); account=$(printf '%b' "${account//%/\\x}")
-    printf '%s\t%s\n' "$issuer" "$account"
-}
+cmd_sync() { rbw sync; }
 
 cmd="${1:-}"; shift || true
+# Every vault-touching command unlocks first, serialized, so concurrent invocations
+# (e.g. list + sync on open) share a single pinentry prompt. focused-domain reads
+# the window title only — no vault, no prompt.
 case "$cmd" in
-list)          cmd_list ;;
+list|has-otp|copy|copy-field|totp|autotype|get-autotype|set-autotype|delete|edit|exists|add|sync|unlock) ensure_unlocked ;;
+esac
+case "$cmd" in
+unlock)         : ;;   # ensure_unlocked already ran — prompt PIN before the UI opens
+list)           cmd_list ;;
 focused-domain) cmd_focused_domain ;;
-has-otp)       cmd_has_otp "$@" ;;
-copy)          cmd_copy "$@" ;;
-copy-field)    cmd_copy_field "$@" ;;
-totp)          cmd_totp "$@" ;;
-autotype)      cmd_autotype "$@" ;;
-get-autotype)  cmd_get_autotype "$@" ;;
-set-autotype)  cmd_set_autotype "$@" ;;
-remove-totp)   cmd_remove_totp "$@" ;;
-delete)        cmd_delete "$@" ;;
-edit)          cmd_edit "$@" ;;
-exists)        cmd_exists "$@" ;;
-add)           cmd_add "$@" ;;
-scan-qr)       cmd_scan_qr ;;
-import-file)   cmd_import_file "$@" ;;
-attach-totp)   cmd_attach_totp "$@" ;;
-parse-uri)     cmd_parse_uri "$@" ;;
-*) echo "usage: passctl {list|focused-domain|has-otp|copy|copy-field|totp|autotype|get-autotype|set-autotype|remove-totp|delete|edit|exists|add|scan-qr|import-file|attach-totp|parse-uri}" >&2; exit 2 ;;
+has-otp)        cmd_has_otp "$@" ;;
+copy)           cmd_copy "$@" ;;
+copy-field)     cmd_copy_field "$@" ;;
+totp)           cmd_totp "$@" ;;
+autotype)       cmd_autotype "$@" ;;
+get-autotype)   cmd_get_autotype "$@" ;;
+set-autotype)   cmd_set_autotype "$@" ;;
+delete)         cmd_delete "$@" ;;
+edit)           cmd_edit "$@" ;;
+exists)         cmd_exists "$@" ;;
+add)            cmd_add "$@" ;;
+sync)           cmd_sync ;;
+*) echo "usage: passctl {list|focused-domain|has-otp|copy|copy-field|totp|autotype|get-autotype|set-autotype|delete|edit|exists|add|sync|unlock}" >&2; exit 2 ;;
 esac
