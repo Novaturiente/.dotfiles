@@ -8,6 +8,11 @@ CTL="$HOME/.dotfiles/scripts/quickshell/passctl.sh"
 
 domain=$(bash "$CTL" focused-domain 2>/dev/null || true)
 
+# Unlock BEFORE opening the UI: the pass overlay + DMS layer render on top of the
+# pinentry dialog, hiding the PIN prompt. Do it here so pinentry is visible; the
+# vault is then unlocked when the window opens (list/sync no-op on the unlock).
+bash "$CTL" unlock 2>/dev/null || true
+
 # daemon up -> open with prefill
 if qs -c "$CFG" ipc call pass open "$domain" 2>/dev/null; then
     exit 0
