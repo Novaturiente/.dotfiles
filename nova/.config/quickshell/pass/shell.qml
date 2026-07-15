@@ -1,12 +1,15 @@
 //@ pragma UseQApplication
-// Password manager — Quickshell frontend for `pass`. Replaces scripts/rofi/passrofi.sh.
+// Password manager — Quickshell frontend for the Bitwarden vault (via rbw).
 // Bound to Mod+Shift+P. Resident daemon toggled over IPC.
 //
-// SECURITY: this UI only ever sees entry NAMES. Every secret (password, TOTP,
-// autotype) flows through scripts/quickshell/passctl.sh -> clipboard / wtype,
-// never through QML. Views here just pick a name and dispatch a subcommand.
+// SECURITY: this UI only ever sees entry UUIDs and labels. Every secret (password,
+// TOTP, autotype) flows through scripts/quickshell/passctl.sh -> clipboard / wtype,
+// never through QML. Views here just pick an entry and dispatch a subcommand.
 //
-// Views: main | submenu | add | addtotp | attach | editseq | confirm
+// TOTP codes are readable here; adding/removing a TOTP is done in the Bitwarden
+// web vault — rbw cannot write the totp field.
+//
+// Views: main | submenu | add | editseq | confirm
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
@@ -29,14 +32,12 @@ ShellRoot {
     readonly property string uiFont: "JetBrainsMono Nerd Font"
 
     // ── state ───────────────────────────────────────────────────────────────
-    property var    entries: []          // [{entry,domain,user}]
+    property var    entries: []          // [{entry(uuid),domain,user}]
     property string view: "main"
-    property string curEntry: ""         // entry under action (submenu/confirm)
+    property string curEntry: ""         // uuid under action (submenu/confirm)
+    property string curLabel: ""         // human label for the same entry
     property bool   curHasOtp: false
     property string prefill: ""
-    // add-totp flow
-    property var    uriQueue: []         // otpauth uris pending attach
-    property string curUri: ""
     // confirm flow
     property string confirmLabel: ""
     property var    confirmAction: null  // function to run on Yes
@@ -64,13 +65,15 @@ ShellRoot {
             prefill = domain || "";
             view = "main";
             mainSearch.text = "";        // clear stale filter (onTextChanged resets currentIndex)
-            reload();
+            reload();                    // passctl serializes the vault unlock (flock), so
+            run(["sync"]);               // firing these concurrently prompts pinentry only once
             win.visible = true;
         }
     }
 
     Process { id: opener }
-    Component.onCompleted: reload()      // prime at daemon boot
+    // No boot-time reload: it would fire rbw at login (vault locked) and pop a
+    // pinentry no one asked for. open() reloads anyway, after pass.sh unlocks.
 
     // ── actions (all dispatch to passctl; window hides so focus returns) ──────
     function hide() { win.visible = false; }
@@ -79,16 +82,16 @@ ShellRoot {
     function totp(e)        { run(["totp", e]); hide(); }
     function autotype(e)    { hide(); run(["autotype", e]); }   // hide first, then type
     function del(e)         { run(["delete", e]); reload(); }
-    function removeTotp(e)  { run(["remove-totp", e]); }
     function editEntry(e)   { run(["edit", e]); hide(); }
 
     property var subModel: []
-    function openSubmenu(e) {
+    function openSubmenu(e, label) {
         curEntry = e;
+        curLabel = label;
         query(["has-otp", e], function (t) {
             curHasOtp = (t === "yes");
             var m = [{ id: "cp", t: "Copy Password" }, { id: "cu", t: "Copy Username" }];
-            if (curHasOtp) { m.push({ id: "ct", t: "Copy TOTP" }); m.push({ id: "rt", t: "Remove TOTP" }); }
+            if (curHasOtp) m.push({ id: "ct", t: "Copy TOTP" });
             m.push({ id: "at", t: "Auto-type" }, { id: "ea", t: "Edit Autotype" },
                    { id: "ed", t: "Edit" }, { id: "de", t: "Delete" });
             subModel = m;
@@ -100,23 +103,20 @@ ShellRoot {
         case "cp": copyField(curEntry, "password"); break;
         case "cu": copyField(curEntry, "username"); break;
         case "ct": totp(curEntry); break;
-        case "rt": confirmLabel = "Remove TOTP from " + curEntry + "?";
-                   confirmAction = function () { removeTotp(curEntry); view = "main"; }; view = "confirm"; break;
         case "at": autotype(curEntry); break;
         case "ea": query(["get-autotype", curEntry], function (t) { seqField.text = t; view = "editseq"; }); break;
         case "ed": editEntry(curEntry); break;
-        case "de": confirmLabel = "Delete " + curEntry + "?";
+        case "de": confirmLabel = "Delete " + curLabel + "?";
                    confirmAction = function () { del(curEntry); view = "main"; }; view = "confirm"; break;
         }
     }
 
     function submitAdd(url, user, pw) {
         if (url.trim() === "" || user.trim() === "") return;
-        var domain = url.replace(/https?:\/\//, "").replace(/www\./, "").replace(/\/.*/, "");
-        var entry = "web/" + domain + "/" + user;
-        query(["exists", entry], function (t) {
+        var name = url.replace(/https?:\/\//, "").replace(/www\./, "").replace(/\/.*/, "");
+        query(["exists", name, user], function (t) {
             if (t === "yes") {
-                confirmLabel = "Entry " + entry + " exists. Overwrite?";
+                confirmLabel = name + " (" + user + ") exists. Overwrite password?";
                 confirmAction = function () { run(["add", url, user, pw]); reload(); view = "main"; };
                 view = "confirm";
             } else {
@@ -124,35 +124,6 @@ ShellRoot {
             }
         });
     }
-
-    // add-totp: after we have a uri, go to attach picker (queue supports multi-import)
-    function pushUris(uris) {
-        uriQueue = uris.filter(function (u) { return u.indexOf("otpauth://") === 0; });
-        nextUri();
-    }
-    function nextUri() {
-        if (uriQueue.length === 0) { view = "main"; reload(); return; }
-        curUri = uriQueue[0];
-        uriQueue = uriQueue.slice(1);
-        view = "attach";
-    }
-    function attachTo(target) {   // target = "web/..." or "" for new
-        if (target === "") {
-            query(["parse-uri", curUri], function (t) {
-                var p = t.split("\t");
-                run(["attach-totp", curUri, "--new", p[0] || "new", p[1] || "acct"]);
-                nextUri();
-            });
-        } else {
-            run(["attach-totp", curUri, target]);
-            nextUri();
-        }
-    }
-
-    function scanQr()  { hide(); query(["scan-qr"], function (t) {
-        win.visible = true;
-        if (t.indexOf("otpauth://") === 0) pushUris([t]); else view = "addtotp";
-    }); }
 
     // ── window ────────────────────────────────────────────────────────────────
     PanelWindow {
@@ -188,7 +159,6 @@ ShellRoot {
                 // global Esc handling per view
                 Keys.onEscapePressed: {
                     if (view === "main") hide();
-                    else if (view === "attach") nextUri();   // skip this uri
                     else view = "main";
                 }
 
@@ -217,16 +187,15 @@ ShellRoot {
                                     if (e.key === Qt.Key_Down)      { mainList.incrementCurrentIndex(); e.accepted = true; }
                                     else if (e.key === Qt.Key_Up)   { mainList.decrementCurrentIndex(); e.accepted = true; }
                                     else if ((e.key === Qt.Key_Return || e.key === Qt.Key_Enter) && (e.modifiers & Qt.ShiftModifier)) {
-                                        if (m && !m.action) openSubmenu(m.entry);   // Shift+Enter -> more options
+                                        if (m && !m.action) openSubmenu(m.entry, m.label);   // Shift+Enter -> more options
                                         e.accepted = true;
                                     } else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) {
                                         if (m) { if (m.action === "add-pw") view = "add";
-                                                 else if (m.action === "add-totp") view = "addtotp";
                                                  else copyEntry(m.entry); }
                                         e.accepted = true;
                                     } else if (e.key === Qt.Key_1 && (e.modifiers & Qt.AltModifier)) { if (m && !m.action) autotype(m.entry); e.accepted = true; }
                                     else if (e.key === Qt.Key_2 && (e.modifiers & Qt.AltModifier))   { if (m && !m.action) totp(m.entry); e.accepted = true; }
-                                    else if (e.key === Qt.Key_3 && (e.modifiers & Qt.AltModifier))   { if (m && !m.action) openSubmenu(m.entry); e.accepted = true; }
+                                    else if (e.key === Qt.Key_3 && (e.modifiers & Qt.AltModifier))   { if (m && !m.action) openSubmenu(m.entry, m.label); e.accepted = true; }
                                 }
                             }
                         }
@@ -238,8 +207,7 @@ ShellRoot {
                         boundsBehavior: Flickable.StopAtBounds
                         model: {
                             var q = mainSearch.text.toLowerCase();
-                            var rows = [{ action: "add-pw", label: "+ Add Password" },
-                                        { action: "add-totp", label: "+ Add TOTP" }];
+                            var rows = [{ action: "add-pw", label: "+ Add Password" }];
                             for (var i = 0; i < entries.length; i++) {
                                 var e = entries[i];
                                 var lbl = e.domain + " — " + e.user;
@@ -270,7 +238,6 @@ ShellRoot {
                                 onEntered: mainList.currentIndex = index
                                 onClicked: {
                                     if (modelData.action === "add-pw") view = "add";
-                                    else if (modelData.action === "add-totp") view = "addtotp";
                                     else copyEntry(modelData.entry);
                                 }
                             }
@@ -282,7 +249,7 @@ ShellRoot {
                 ColumnLayout {
                     anchors.fill: parent; spacing: 6; visible: view === "submenu"
                     onVisibleChanged: if (visible) Qt.callLater(function () { subList.currentIndex = 0; subList.forceActiveFocus(); })
-                    Text { text: "  " + curEntry; color: accent; font.family: uiFont; font.pixelSize: 15; font.bold: true; Layout.bottomMargin: 6 }
+                    Text { text: "  " + curLabel; color: accent; font.family: uiFont; font.pixelSize: 15; font.bold: true; Layout.bottomMargin: 6 }
                     ListView {
                         id: subList
                         Layout.fillWidth: true; Layout.fillHeight: true; clip: true
@@ -325,106 +292,10 @@ ShellRoot {
                     onVisibleChanged: if (visible) Qt.callLater(function () { fUrl.value = ""; fUser.value = ""; fPw.value = ""; fUrl.focusInput(); })
                 }
 
-                // ═══ ADD TOTP (method) ══════════════════════════════════════
-                ColumnLayout {
-                    anchors.fill: parent; spacing: 8; visible: view === "addtotp"
-                    Text { text: "Add TOTP"; color: accent; font.family: uiFont; font.pixelSize: 15; font.bold: true; Layout.bottomMargin: 4 }
-                    Repeater {
-                        model: [{ id: "qr", t: " Scan QR from screen" },
-                                { id: "uri", t: " Enter URI manually" },
-                                { id: "file", t: " Import from file" }]
-                        delegate: Rectangle {
-                            required property var modelData
-                            Layout.fillWidth: true; implicitHeight: 44; radius: 0
-                            color: tma.containsMouse ? selBg : "transparent"
-                            Text { anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 12
-                                   text: modelData.t; color: fg; font.family: uiFont; font.pixelSize: 14 }
-                            MouseArea {
-                                id: tma; anchors.fill: parent; hoverEnabled: true
-                                onClicked: {
-                                    if (modelData.id === "qr") scanQr();
-                                    else if (modelData.id === "uri") view = "uri";
-                                    else fileLoader.running = true;   // list importable files
-                                }
-                            }
-                        }
-                    }
-                    Item { Layout.fillHeight: true }
-                    Text { text: "Esc — back"; color: subtext; font.family: uiFont; font.pixelSize: 11 }
-                }
-
-                // ═══ MANUAL URI ═════════════════════════════════════════════
-                ColumnLayout {
-                    anchors.fill: parent; spacing: 10; visible: view === "uri"
-                    Text { text: "otpauth:// URI"; color: accent; font.family: uiFont; font.pixelSize: 15; font.bold: true }
-                    PassField { id: fUri; label: "otpauth://…"
-                                onAccepted: { if (fUri.value.indexOf("otpauth://") === 0) pushUris([fUri.value]); } }
-                    Item { Layout.fillHeight: true }
-                    onVisibleChanged: if (visible) Qt.callLater(function () { fUri.value = ""; fUri.focusInput(); })
-                }
-
-                // ═══ IMPORT FILE (pick) ═════════════════════════════════════
-                ColumnLayout {
-                    anchors.fill: parent; spacing: 6; visible: view === "file"
-                    Text { text: "Import TOTP from file"; color: accent; font.family: uiFont; font.pixelSize: 15; font.bold: true; Layout.bottomMargin: 4 }
-                    ListView {
-                        id: fileList
-                        Layout.fillWidth: true; Layout.fillHeight: true; clip: true
-                        model: root.fileChoices
-                        delegate: Rectangle {
-                            required property int index
-                            required property var modelData
-                            width: ListView.view.width; height: 38; radius: 0
-                            color: index === fileList.currentIndex ? selBg : "transparent"
-                            Text { anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 10
-                                   text: modelData; color: fg; font.family: uiFont; font.pixelSize: 13; elide: Text.ElideLeft; width: parent.width - 20 }
-                            MouseArea { anchors.fill: parent; hoverEnabled: true
-                                onEntered: fileList.currentIndex = index
-                                onClicked: query(["import-file", modelData], function (t) { pushUris(t.length ? t.split("\n") : []); }) }
-                        }
-                    }
-                    Text { text: "Esc — back"; color: subtext; font.family: uiFont; font.pixelSize: 11 }
-                }
-
-                // ═══ ATTACH picker ══════════════════════════════════════════
-                ColumnLayout {
-                    anchors.fill: parent; spacing: 6; visible: view === "attach"
-                    Text { text: "Attach TOTP to…"; color: accent; font.family: uiFont; font.pixelSize: 15; font.bold: true; Layout.bottomMargin: 4 }
-                    TextField {
-                        id: attachSearch; Layout.fillWidth: true; color: fg; font.family: uiFont; font.pixelSize: 14; background: null
-                        placeholderText: "filter…"; placeholderTextColor: subtext
-                    }
-                    ListView {
-                        id: attachList
-                        Layout.fillWidth: true; Layout.fillHeight: true; clip: true
-                        model: {
-                            var q = attachSearch.text.toLowerCase();
-                            var rows = [{ entry: "", label: "+ Create new entry" }];
-                            for (var i = 0; i < entries.length; i++) {
-                                var lbl = entries[i].domain + " — " + entries[i].user;
-                                if (q === "" || lbl.toLowerCase().indexOf(q) !== -1) rows.push({ entry: entries[i].entry, label: lbl });
-                            }
-                            return rows;
-                        }
-                        delegate: Rectangle {
-                            required property int index
-                            required property var modelData
-                            width: ListView.view.width; height: 38; radius: 0
-                            color: index === attachList.currentIndex ? selBg : "transparent"
-                            Text { anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 10
-                                   text: modelData.label; color: fg; font.family: uiFont; font.pixelSize: 13; elide: Text.ElideRight; width: parent.width - 20 }
-                            MouseArea { anchors.fill: parent; hoverEnabled: true
-                                onEntered: attachList.currentIndex = index
-                                onClicked: attachTo(modelData.entry) }
-                        }
-                    }
-                    Text { text: "Esc — skip"; color: subtext; font.family: uiFont; font.pixelSize: 11 }
-                }
-
                 // ═══ EDIT AUTOTYPE ══════════════════════════════════════════
                 ColumnLayout {
                     anchors.fill: parent; spacing: 10; visible: view === "editseq"
-                    Text { text: "Autotype sequence — " + curEntry; color: accent; font.family: uiFont; font.pixelSize: 14; font.bold: true }
+                    Text { text: "Autotype sequence — " + curLabel; color: accent; font.family: uiFont; font.pixelSize: 14; font.bold: true }
                     Rectangle {
                         Layout.fillWidth: true; implicitHeight: 44; radius: 0
                         color: inputBg; border.color: accent; border.width: 1
@@ -460,20 +331,7 @@ ShellRoot {
         }
     }
 
-    // list importable files (Desktop/Downloads) for the import-file view
-    property var fileChoices: []
-    Process {
-        id: fileLoader
-        command: ["bash", "-c",
-            "find \"$HOME/Desktop\" \"$HOME/Downloads\" -maxdepth 2 -type f " +
-            "\\( -name '*.txt' -o -name '*.json' -o -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' -o -name '*.svg' \\) 2>/dev/null | sort"]
-        stdout: StdioCollector { onStreamFinished: {
-            fileChoices = text.trim().length ? text.trim().split("\n") : [];
-            view = "file";
-        } }
-    }
-
-    // reusable labeled input used by the add/uri forms
+    // reusable labeled input used by the add form
     component PassField: ColumnLayout {
         id: pf
         property string label: ""
