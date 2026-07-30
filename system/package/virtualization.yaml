@@ -1,0 +1,11 @@
+- qemu-base
+- qemu-img
+- qemu-system-x86
+- qemu-system-x86-firmware
+- qemu-ui-gtk
+- qemu-hw-display-virtio-vga
+# virtio-vga instantiates a virtio-gpu-device child; without this module qemu segfaults.
+- qemu-hw-display-virtio-gpu
+- edk2-ovmf
+# ponytail: no libvirt/virt-manager - scripts/vm.sh drives qemu directly.
+# Add libvirt + virt-manager if you need snapshots, autostart, or bridged networking.
