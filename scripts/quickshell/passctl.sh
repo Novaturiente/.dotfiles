@@ -21,7 +21,13 @@ notify() { notify-send -a "Pass" -t "${2:-3000}" "$1"; }
 # falls back to the master password). flock funnels them: the first prompts once,
 # the rest block, then find the vault already open. rbw unlock is a no-op when
 # unlocked, so this is cheap on the warm path.
-ensure_unlocked() { ( flock 9; rbw unlock >/dev/null 2>&1 || true ) 9>"$UNLOCK_LOCK"; }
+#
+# 9>&- closes the lock fd for rbw: `rbw unlock` may fork a daemonized rbw-agent,
+# which would inherit fd 9 and hold the flock for its whole life — every later
+# unlock then blocks forever and Mod+Shift+P silently does nothing.
+# -w 5 is the backstop: a leaked lock costs a 5s delay (and at worst a second PIN
+# prompt), never a permanent hang.
+ensure_unlocked() { ( flock -w 5 9 || true; rbw unlock 9>&- >/dev/null 2>&1 || true ) 9>"$UNLOCK_LOCK"; }
 
 kill_timer() {
     if [[ -f "$TIMER_PID_FILE" ]]; then

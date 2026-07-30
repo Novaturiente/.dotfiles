@@ -11,6 +11,7 @@ settings:
     '*://mail.google.com/*': true
   content.javascript.clipboard:
     https://gemini.google.com: access-paste
+    https://github.com: access-paste
   content.notifications.enabled:
     https://mail.proton.me: true
     https://web.whatsapp.com: true
