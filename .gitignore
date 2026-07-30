@@ -14,3 +14,8 @@ nova/.password-store/
 *.bak
 *.backup*
 *.back[0-9]*
+
+# Zen profile — track only user.js, never profile data (cookies, history, keys)
+nova/.config/zen/**
+!nova/.config/zen/**/
+!nova/.config/zen/**/user.js

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Emit Firefox bookmarks + history as a JSON array for the Quickshell url menu.
+# Emit Zen bookmarks + history as a JSON array for the Quickshell url menu.
 # Each element: {"title":..., "url":..., "icon":..., "bookmark":bool}
-# Data comes from the LIVE default Firefox profile only (matches Firefox's own
+# Data comes from the LIVE default Zen profile only (matches Zen's own
 # suggestions). Favicons are extracted to a cache dir; "icon" is a file path
 # (empty string when none). Adapted from scripts/rofi/firefox-url.sh.
 set -euo pipefail
 
 DELIM=$'\t'
-FF_ROOTS=("$HOME/.config/mozilla/firefox" "$HOME/.mozilla/firefox")
+ZEN_ROOTS=("$HOME/.config/zen" "$HOME/.zen")
 
 # Bookmarks first (★, curated titles), then history (url only). Frecency order.
 SQL="
@@ -25,20 +25,20 @@ ORDER BY p.frecency DESC LIMIT 500;
 "
 
 # ── locate live default profile's places.sqlite ────────────────────────────
-FF_ROOT=""
-for r in "${FF_ROOTS[@]}"; do
-    [[ -f "$r/profiles.ini" ]] && { FF_ROOT="$r"; break; }
+ZEN_ROOT=""
+for r in "${ZEN_ROOTS[@]}"; do
+    [[ -f "$r/profiles.ini" ]] && { ZEN_ROOT="$r"; break; }
 done
 DB=""
-if [[ -n "$FF_ROOT" ]]; then
+if [[ -n "$ZEN_ROOT" ]]; then
     prof=$(awk -F= '
         /^\[Install/{inst=1; next}
         /^\[/{inst=0}
         inst && /^Default=/{print $2; exit}
-    ' "$FF_ROOT/profiles.ini")
-    [[ -n "${prof:-}" && -f "$FF_ROOT/$prof/places.sqlite" ]] && DB="$FF_ROOT/$prof/places.sqlite"
+    ' "$ZEN_ROOT/profiles.ini")
+    [[ -n "${prof:-}" && -f "$ZEN_ROOT/$prof/places.sqlite" ]] && DB="$ZEN_ROOT/$prof/places.sqlite"
     if [[ -z "$DB" ]]; then
-        DB=$( { find "$FF_ROOT" -maxdepth 2 -name places.sqlite -printf '%T@ %p\n' 2>/dev/null \
+        DB=$( { find "$ZEN_ROOT" -maxdepth 2 -name places.sqlite -printf '%T@ %p\n' 2>/dev/null \
             || true; } | sort -rn | head -1 | cut -d' ' -f2-)
     fi
 fi
@@ -57,7 +57,7 @@ if [[ -n "$DB" && -f "$DB" ]]; then
 fi
 
 # ── favicons: host -> best icon (root/large wins) ───────────────────────────
-ICON_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/firefox-url-icons"
+ICON_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zen-url-icons"
 mkdir -p "$ICON_DIR"
 FAV="${DB%/places.sqlite}/favicons.sqlite"
 declare -A HOST_ICON
