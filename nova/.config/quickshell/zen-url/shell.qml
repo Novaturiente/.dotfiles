@@ -1,11 +1,11 @@
 //@ pragma UseQApplication
-// Firefox URL bar — triggered by Mod+S (niri). Replaces scripts/rofi/firefox-url.sh.
-// Shows Firefox bookmarks + history (with favicons) as you type; opens the pick
-// or the typed text in Firefox, then focuses the window. Run: `qs -c firefox-url`.
+// Zen URL bar — triggered by Mod+S (niri). Replaces the older rofi url menu.
+// Shows Zen bookmarks + history (with favicons) as you type; opens the pick
+// or the typed text in Zen, then focuses the window. Run: `qs -c zen-url`.
 //
 // Data + launch reuse the bash helpers (sqlite/favicon/niri-focus live there):
-//   scripts/quickshell/firefox-urls.sh  -> JSON list on stdout
-//   scripts/quickshell/firefox-open.sh  -> resolve+open+focus a url/typed text
+//   scripts/quickshell/zen-urls.sh  -> JSON list on stdout
+//   scripts/quickshell/zen-open.sh  -> resolve+open+focus a url/typed text
 // ponytail: inline theme; extract to a shared module when a 2nd menu migrates.
 import Quickshell
 import Quickshell.Wayland
@@ -28,7 +28,7 @@ ShellRoot {
     readonly property color subtext: "#8a8f98"    // dim stardust (urls/count)
     readonly property string uiFont: "JetBrainsMono Nerd Font"
 
-    // full list (from firefox-urls.sh) and the current filtered view
+    // full list (from zen-urls.sh) and the current filtered view
     property var allRows: []
     property var rows: []
     property int selected: 0
@@ -55,13 +55,13 @@ ShellRoot {
             ? rows[selected].url
             : input.text;
         if (choice.trim() === "") { win.visible = false; return; }
-        opener.command = ["bash", scriptDir + "/firefox-open.sh", choice];
+        opener.command = ["bash", scriptDir + "/zen-open.sh", choice];
         opener.running = true;
         win.visible = false;
     }
 
     // Resident daemon: stay running, toggle the window via IPC (engine boot is
-    // paid once at login, so Mod+S is instant). Bind: qs -c firefox-url ipc call menu toggle
+    // paid once at login, so Mod+S is instant). Bind: qs -c zen-url ipc call menu toggle
     IpcHandler {
         target: "menu"
         function toggle(): void {
@@ -74,7 +74,7 @@ ShellRoot {
     Process {
         id: loader
         running: true
-        command: ["bash", scriptDir + "/firefox-urls.sh"]
+        command: ["bash", scriptDir + "/zen-urls.sh"]
         stdout: StdioCollector {
             onStreamFinished: {
                 try { allRows = JSON.parse(text); }
@@ -97,7 +97,7 @@ ShellRoot {
 
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-        WlrLayershell.namespace: "quickshell-firefox-url"
+        WlrLayershell.namespace: "quickshell-zen-url"
 
         onVisibleChanged: if (visible) input.forceActiveFocus()
 
@@ -129,7 +129,7 @@ ShellRoot {
                         spacing: 10
 
                         Text {
-                            text: ""            // firefox glyph
+                            text: ""            // globe glyph (browser)
                             color: accent
                             
                             font.family: uiFont; font.pixelSize: 18

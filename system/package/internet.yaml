@@ -1,11 +1,12 @@
 - python-adblock
 - qutebrowser
+- zen-browser-bin
 - wireguard-tools
 - kdeconnect
 - localsend
 - thunderbird
 - browserpass
-- cachyos-firefox-settings
+#- cachyos-firefox-settings   # disabled: only consumer of the firefox package
 - firefoxpwa
 - cryptomator
 - cryptomator-cli

@@ -39,7 +39,6 @@ cmd_to_desc() {
     elif [[ "$cmd" =~ window-clone ]]; then echo "Clone window"
     elif [[ "$cmd" =~ cmd-set-text.*:open[[:space:]]+-t ]]; then echo "Open URL in new tab (prompt)"
     elif [[ "$cmd" =~ cmd-set-text.*:open ]]; then echo "Open URL (prompt)"
-    elif [[ "$cmd" =~ zen-browser ]]; then echo "Open in external browser, close tab"
     elif [[ "$cmd" =~ ^tab-next ]]; then echo "Next tab"
     elif [[ "$cmd" =~ ^tab-prev ]]; then echo "Previous tab"
     elif [[ "$cmd" =~ open[[:space:]]+-t ]]; then echo "Open URL in new tab"

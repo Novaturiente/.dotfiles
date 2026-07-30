@@ -55,13 +55,17 @@ window-rule {
     open-floating true
 }
 window-rule {
-    match app-id="firefox"
+    match app-id="zen"
     draw-border-with-background false
     open-on-workspace "Main"
 }
 window-rule {
     match app-id="zenity"
     open-floating true
+}
+window-rule {
+    match app-id="labwc"
+    open-maximized true
 }
 // WinApps RemoteApp windows (app-ids all start with "Microsoft "):
 // must float — tiling them fights RAIL geometry and dialogs resize-loop
@@ -75,9 +79,12 @@ window-rule {
     }
 }
 
-// Whatsapp 
+// Whatsapp — opened as its own Zen window by zen-whatsapp.desktop (--new-window).
+// Matched on title, not app-id: it is an ordinary Zen window, and niri re-evaluates
+// title matches as the title changes, so block-out follows the WhatsApp tab.
+// No open-on-workspace here — open-* rules apply once at map time, when the title
+// is still empty. The app-id="zen" rule above already pins it to "Main".
 window-rule {
-    match app-id="FFPWA-01KSERG1J9XQTRJF8C0CMC3MS3"
-    block-out-from "screen-capture" 
-    open-on-workspace "Main"
+    match app-id="zen" title="WhatsApp"
+    block-out-from "screen-capture"
 }

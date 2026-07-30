@@ -13,7 +13,7 @@ binds {
         spawn "ghostty"
     }
     Mod+W hotkey-overlay-title="Browser" {
-        spawn "firefox"
+        spawn "zen-browser"
     }
     Mod+Ctrl+W hotkey-overlay-title="Qutebrowser work" {
         spawn-sh "qutebrowser"
@@ -51,8 +51,8 @@ binds {
     Mod+Shift+O hotkey-overlay-title="Text extractor" {
         spawn-sh "~/.dotfiles/scripts/ocr_select.sh"
     }
-    Mod+S hotkey-overlay-title="Firefox URL bar" {
-        spawn "~/.dotfiles/scripts/quickshell/firefox-url.sh"
+    Mod+S hotkey-overlay-title="Zen URL bar" {
+        spawn "~/.dotfiles/scripts/quickshell/zen-url.sh"
     }
     Mod+G hotkey-overlay-title="Grammar fix" {
         spawn-sh "~/.dotfiles/scripts/fix_grammar.sh"

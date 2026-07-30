@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Zoom
+Comment=Zoom Web (Zen app window)
+Exec=zen-browser --new-window https://app.zoom.us/wc/home
+Icon=/home/nova/.local/share/icons/zen-app-zoom.png
+Terminal=false
+Categories=Network;AudioVideo;

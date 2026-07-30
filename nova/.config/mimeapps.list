@@ -1,7 +1,7 @@
 [Default Applications]
-x-scheme-handler/http=firefox.desktop
-x-scheme-handler/https=firefox.desktop
-text/html=firefox.desktop
+x-scheme-handler/http=zen.desktop
+x-scheme-handler/https=zen.desktop
+text/html=zen.desktop
 application/pdf=org.pwmt.zathura.desktop
 image/png=imv-dir.desktop
 image/jpeg=imv-dir.desktop
@@ -26,8 +26,8 @@ application/x-ms-shortcut=LuxWine.desktop
 text/x-ms-regedit=LuxWine.desktop
 text/x-org=emacs.desktop
 inode/directory=pcmanfm.desktop
-x-scheme-handler/about=firefox.desktop
-x-scheme-handler/unknown=firefox.desktop
+x-scheme-handler/about=zen.desktop
+x-scheme-handler/unknown=zen.desktop
 x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 x-scheme-handler/whatsapp=elecwhat.desktop
 x-scheme-handler/antigravity=antigravity.desktop
