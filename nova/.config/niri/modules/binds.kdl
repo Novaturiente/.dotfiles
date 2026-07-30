@@ -136,6 +136,9 @@ binds {
     Mod+I hotkey-overlay-title="Toggle idle" {
         spawn-sh "~/.dotfiles/scripts/idle.sh"
     }
+    Mod+B hotkey-overlay-title="Toggle bar auto-hide" {
+        spawn-sh "dms ipc call bar toggleAutoHide id default"
+    }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ MEDIA KEYS                                                                          │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
