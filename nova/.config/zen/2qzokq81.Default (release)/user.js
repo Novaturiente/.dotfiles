@@ -154,7 +154,7 @@ user_pref("browser.shell.checkDefaultBrowser", false);
 // Zen mirrors a workspace's tabs into every window of that workspace, so a tab
 // opened with --new-window also appears in the tab strip of the existing window
 // (same zenSyncId, one logical tab shown twice). Disabling this restores
-// conventional per-window tab sets, which is what zen-whatsapp.desktop needs.
+// conventional per-window tab sets.
 // Checked on every sync path in modules/zen/ZenWindowSync.sys.mjs.
 user_pref("zen.window-sync.enabled", false);
 
