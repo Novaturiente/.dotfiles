@@ -60,6 +60,11 @@ window-rule {
     open-on-workspace "Main"
 }
 window-rule {
+    match app-id="linwa.py"
+    draw-border-with-background false
+    open-on-workspace "Main"
+}
+window-rule {
     match app-id="zenity"
     open-floating true
 }
