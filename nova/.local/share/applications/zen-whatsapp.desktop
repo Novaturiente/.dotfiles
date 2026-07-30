@@ -2,7 +2,7 @@
 Type=Application
 Name=WhatsApp
 Comment=WhatsApp Web (Zen app window)
-Exec=zen-browser --new-window https://web.whatsapp.com
+Exec=/home/nova/.dotfiles/scripts/zen-webapp.sh WhatsApp https://web.whatsapp.com
 Icon=/home/nova/.local/share/icons/zen-app-whatsapp.png
 Terminal=false
 Categories=Network;InstantMessaging;
