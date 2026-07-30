@@ -2,7 +2,7 @@
 Type=Application
 Name=Zoom
 Comment=Zoom Web (Zen app window)
-Exec=zen-browser --new-window https://app.zoom.us/wc/home
+Exec=/home/nova/.dotfiles/scripts/zen-webapp.sh Zoom https://app.zoom.us/wc/home
 Icon=/home/nova/.local/share/icons/zen-app-zoom.png
 Terminal=false
 Categories=Network;AudioVideo;
