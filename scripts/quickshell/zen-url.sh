@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Toggle the Firefox URL bar (quickshell). If its daemon isn't running yet,
+# Toggle the Zen URL bar (quickshell). If its daemon isn't running yet,
 # start it, then show the window. Makes Mod+S work even before login autostart.
 set -euo pipefail
-CFG="firefox-url"
+CFG="zen-url"
 
 # daemon already up -> just toggle
 if qs -c "$CFG" ipc call menu toggle 2>/dev/null; then

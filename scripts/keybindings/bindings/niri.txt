@@ -76,7 +76,7 @@ Mod+Q                           close-window
 Mod+Return                      Terminal (herdr)
 Mod+Right                       focus-column-right
 Mod+R                           switch-preset-column-width
-Mod+S                           Firefox URL bar
+Mod+S                           Zen URL bar
 Mod+Shift+C                     Calendar
 Mod+Shift+Ctrl+Down             move-column-to-monitor-down
 Mod+Shift+Ctrl+H                move-column-to-monitor-left

@@ -8,7 +8,7 @@ get_app_name() {
     local app_id="$1"
     case "$app_id" in
         com.mitchellh.ghostty)       echo "Ghostty" ;;
-        zen-browser)                 echo "Zen Browser" ;;
+        zen)                         echo "Zen Browser" ;;
         org.qutebrowser.qutebrowser) echo "Qutebrowser" ;;
         google-chrome)               echo "Chrome" ;;
         thorium-browser)             echo "Thorium" ;;

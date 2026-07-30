@@ -24,8 +24,8 @@ hotkey-overlay {
 // spawn-sh-at-startup "~/.dotfiles/scripts/incoming-notification.sh"
 //Handy startup
 spawn-sh-at-startup "handy --start-hidden"
-// Firefox URL bar menu — resident quickshell daemon, toggled by Mod+S over IPC
-spawn-at-startup "qs" "-c" "firefox-url" "-d"
+// Zen URL bar menu — resident quickshell daemon, toggled by Mod+S over IPC
+spawn-at-startup "qs" "-c" "zen-url" "-d"
 // Password manager menu — resident quickshell daemon, toggled by Mod+Shift+P
 spawn-at-startup "qs" "-c" "pass" "-d"
 // Calendar menu — resident quickshell daemon, toggled by Mod+Shift+C

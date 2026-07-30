@@ -147,7 +147,7 @@ Packages are organized into YAML files in `system/package/`. Each file is a simp
 | `windowmanager.yaml` | Niri, Ly, Waybar, Rofi, fonts, themes, screenshot/recording tools |
 | `development.yaml` | Build tools, Rust/Python/Node/Go/Lua, LSPs, linters, lazygit, tesseract OCR |
 | `work.yaml` | Java, Docker, databases (PostgreSQL, MySQL), Chrome, WPS Office, Zoom |
-| `internet.yaml` | Qutebrowser, Zen Browser, KDE Connect, LocalSend |
+| `internet.yaml` | Qutebrowser, Zen Browser, KDE Connect, LocalSend, Thunderbird |
 | `media.yaml` | mpv, playerctl, imv, imagemagick, easyeffects |
 | `gaming.yaml` | Wine/Proton/GameMode (currently all disabled) |
 | `nvidia.yaml` | NVIDIA drivers (currently all disabled — Intel iGPU only) |
