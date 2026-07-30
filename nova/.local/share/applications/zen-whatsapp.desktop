@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=WhatsApp
-Comment=WhatsApp Web (Zen app window)
-Exec=/home/nova/.dotfiles/scripts/zen-webapp.sh WhatsApp https://web.whatsapp.com
-Icon=/home/nova/.local/share/icons/zen-app-whatsapp.png
-Terminal=false
-Categories=Network;InstantMessaging;

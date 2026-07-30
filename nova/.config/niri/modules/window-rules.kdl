@@ -78,13 +78,3 @@ window-rule {
         blur true
     }
 }
-
-// Whatsapp — opened as its own Zen window by zen-whatsapp.desktop (--new-window).
-// Matched on title, not app-id: it is an ordinary Zen window, and niri re-evaluates
-// title matches as the title changes, so block-out follows the WhatsApp tab.
-// No open-on-workspace here — open-* rules apply once at map time, when the title
-// is still empty. The app-id="zen" rule above already pins it to "Main".
-window-rule {
-    match app-id="zen" title="WhatsApp"
-    block-out-from "screen-capture"
-}
