@@ -16,3 +16,4 @@ include "modules/misc.kdl"
 // DankMaterialShell-managed includes (auto-generated — do not hand-edit)
 include "dms/cursor.kdl"
 include "dms/windowrules.kdl"
+include "dms/outputs.kdl"

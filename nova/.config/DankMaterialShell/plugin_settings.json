@@ -16,5 +16,9 @@
   "dankLauncherKeys": {
     "enabled": true,
     "noTrigger": false
+  },
+  "dankKDEConnect": {
+    "enabled": true,
+    "selectedDeviceId": "26c8de68f3c2433aa3e43f50ce6dadfa"
   }
 }
