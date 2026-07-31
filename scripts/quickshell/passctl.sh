@@ -27,7 +27,23 @@ notify() { notify-send -a "Pass" -t "${2:-3000}" "$1"; }
 # unlock then blocks forever and Mod+Shift+P silently does nothing.
 # -w 5 is the backstop: a leaked lock costs a 5s delay (and at worst a second PIN
 # prompt), never a permanent hang.
-ensure_unlocked() { ( flock -w 5 9 || true; rbw unlock 9>&- >/dev/null 2>&1 || true ) 9>"$UNLOCK_LOCK"; }
+#
+# Two guards learned the hard way (every Mod+Shift+P cost a flat 5s):
+#  1. Warm path: `rbw unlocked` is a cheap agent ping — when the vault is already
+#     open there is nothing to serialize, so skip the lock entirely.
+#  2. Self-heal: a leaked fd (dead process, or an rbw-agent that inherited fd 9
+#     before the 9>&- fix) pins the flock on that INODE forever. Unlinking the
+#     lock file on timeout orphans the stale inode so the next run starts clean,
+#     instead of paying 5s on every single invocation until reboot.
+ensure_unlocked() {
+    rbw unlocked >/dev/null 2>&1 && return 0
+    (
+        if ! flock -w 5 9; then
+            rm -f "$UNLOCK_LOCK"      # stale holder: drop the poisoned inode
+        fi
+        rbw unlock 9>&- >/dev/null 2>&1 || true
+    ) 9>"$UNLOCK_LOCK"
+}
 
 kill_timer() {
     if [[ -f "$TIMER_PID_FILE" ]]; then
@@ -56,12 +72,16 @@ field() { item "$1" | jq -r "$2 // empty"; }
 # ── subcommands ─────────────────────────────────────────────────────────────
 # entry = uuid; domain = the item's first URI host (so a browser-title prefill like
 # "github.com" matches), falling back to the item name when it has no URI.
+# `rbw list --raw` returns id/name/user/uris for every item in ONE decrypt pass.
+# (The old loop ran `rbw get` per entry: 40+ subprocesses, ~5s to open the menu.)
 cmd_list() {   # JSON: [{entry,domain,user}]
-    rbw list --fields id,name,user 2>/dev/null | while IFS=$'\t' read -r id name user; do
-        local host
-        host=$(item "$id" | jq -r '.data.uris[0].uri // empty' | sed -E 's|https?://||; s|www\.||; s|[/:?].*||')
-        printf '%s\t%s\t%s\n' "$id" "${host:-$name}" "$user"
-    done | jq -Rn '[inputs | split("\t") | {entry:.[0], domain:.[1], user:.[2]}]'
+    rbw list --raw 2>/dev/null | jq '[ .[] | {
+        entry: .id,
+        domain: (((.uris // [])[0] // "" | sub("^https?://";"") | sub("^www\\.";"")
+                  | capture("^(?<h>[^/:?]*)").h
+                  | if . == "" then null else . end) // .name),
+        user: (.user // "")
+    } ]'
 }
 
 cmd_focused_domain() {
