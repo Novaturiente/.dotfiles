@@ -102,6 +102,12 @@ binds {
     Mod+Ctrl+Shift+R hotkey-overlay-title="Record region / Stop" {
         spawn-sh "~/.dotfiles/scripts/record-script.sh --region"
     }
+    Mod+Ctrl+Alt+R hotkey-overlay-title="Record screen + system + mic / Stop" {
+        spawn-sh "~/.dotfiles/scripts/record-script.sh --fullscreen-both"
+    }
+    Mod+Ctrl+Alt+Shift+R hotkey-overlay-title="Record region + system + mic / Stop" {
+        spawn-sh "~/.dotfiles/scripts/record-script.sh --region-both"
+    }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ SYSTEM CONTROLS                                                                     │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
