@@ -16,9 +16,9 @@ focus_pane_right = "alt+l"
 # Workspace picker (workspace navigation)
 workspace_picker = "prefix+w"
 
-# Move between workspaces
-next_workspace = "prefix+j"
-previous_workspace = "prefix+k"
+# Move between agents
+next_agent = "prefix+j"
+previous_agent = "prefix+k"
 
 [[keys.command]]
 key = "prefix+O"
@@ -37,3 +37,8 @@ delivery = "herdr"
 
 [ui]
 agent_panel_sort = "spaces"
+
+# Client-side: enables local Kitty graphics, required for clipboard image paste
+# into a remote session. remote_image_paste already defaults to ctrl+v.
+[experimental]
+kitty_graphics = true

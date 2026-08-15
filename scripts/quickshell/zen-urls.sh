@@ -24,24 +24,16 @@ WHERE p.url LIKE 'http%' AND p.hidden = 0 AND p.visit_count > 0
 ORDER BY p.frecency DESC LIMIT 500;
 "
 
-# ── locate live default profile's places.sqlite ────────────────────────────
-ZEN_ROOT=""
-for r in "${ZEN_ROOTS[@]}"; do
-    [[ -f "$r/profiles.ini" ]] && { ZEN_ROOT="$r"; break; }
-done
-DB=""
-if [[ -n "$ZEN_ROOT" ]]; then
-    prof=$(awk -F= '
-        /^\[Install/{inst=1; next}
-        /^\[/{inst=0}
-        inst && /^Default=/{print $2; exit}
-    ' "$ZEN_ROOT/profiles.ini")
-    [[ -n "${prof:-}" && -f "$ZEN_ROOT/$prof/places.sqlite" ]] && DB="$ZEN_ROOT/$prof/places.sqlite"
-    if [[ -z "$DB" ]]; then
-        DB=$( { find "$ZEN_ROOT" -maxdepth 2 -name places.sqlite -printf '%T@ %p\n' 2>/dev/null \
-            || true; } | sort -rn | head -1 | cut -d' ' -f2-)
-    fi
-fi
+# ── locate live profile's places.sqlite ─────────────────────────────────────
+# profiles.ini can have multiple [InstallXXXX] blocks (multiple Zen installs);
+# picking the first one's Default= often points at a stale/unused profile.
+# The actively-used profile is whichever places.sqlite was written to most
+# recently, so just take the newest one across all roots.
+DB=$( { for r in "${ZEN_ROOTS[@]}"; do
+            [[ -d "$r" ]] || continue
+            find "$r" -maxdepth 2 -name places.sqlite -printf '%T@ %p\n' 2>/dev/null
+        done
+    } | sort -rn | head -1 | cut -d' ' -f2-)
 
 # ── query that profile (copy db+wal so latest committed rows are visible) ────
 LIST=""

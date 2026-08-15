@@ -17,11 +17,3 @@ include "modules/misc.kdl"
 include "dms/cursor.kdl"
 include "dms/windowrules.kdl"
 include "dms/outputs.kdl"
-
-binds {
-    // >>> jcode launch hotkeys (managed) >>>
-    Super+Semicolon hotkey-overlay-title="jcode: home" { spawn "sh" "-c" "if [ -d '/home/nova' ]; then cd '/home/nova'; else cd \"$HOME\"; fi; exec 'ghostty' '/home/nova/.local/bin/jcode' --spawn-hotkey 'cmd+;'"; }
-    Super+Apostrophe hotkey-overlay-title="jcode: last project" { spawn "sh" "-c" "if [ -d '/home/nova' ]; then cd '/home/nova'; else cd \"$HOME\"; fi; exec 'ghostty' '/home/nova/.local/bin/jcode' --spawn-hotkey 'cmd+'\\'''"; }
-    Super+Shift+Apostrophe hotkey-overlay-title="jcode: self-dev (self-dev)" { spawn "sh" "-c" "if [ -d '/home/nova' ]; then cd '/home/nova'; else cd \"$HOME\"; fi; exec 'ghostty' '/home/nova/.local/bin/jcode' --spawn-hotkey 'cmd+shift+'\\''' self-dev"; }
-    // <<< jcode launch hotkeys (managed) <<<
-}

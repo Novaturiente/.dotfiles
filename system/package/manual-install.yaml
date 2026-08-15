@@ -7,7 +7,12 @@
 - unrar
 - tigervnc
 - openblas
-- claude-desktop
-- handy-bin
-- pi-bin
 - zen-browser-bin
+- jcode
+- gst-plugins-good
+- gst-libav
+- earlyoom
+- handy-bin
+- brave-bin
+- qemu-hw-display-virtio-vga-gl
+- qemu-hw-display-virtio-gpu-gl

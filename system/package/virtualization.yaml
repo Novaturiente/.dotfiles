@@ -6,6 +6,10 @@
 - qemu-hw-display-virtio-vga
 # virtio-vga instantiates a virtio-gpu-device child; without this module qemu segfaults.
 - qemu-hw-display-virtio-gpu
+# virtio-vga-gl (virgl) is required by Wayland compositors: niri refuses to run
+# on a software EGL renderer, so plain virtio-vga gives a black screen.
+- qemu-hw-display-virtio-vga-gl
+- qemu-hw-display-virtio-gpu-gl
 - edk2-ovmf
 # ponytail: no libvirt/virt-manager - scripts/vm.sh drives qemu directly.
 # Add libvirt + virt-manager if you need snapshots, autostart, or bridged networking.
