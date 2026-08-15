@@ -16,6 +16,7 @@ Mod+Alt+R                       reset-window-height
 Mod+BackSpace                   close-window
 Mod+BracketLeft                 consume-or-expel-window-left
 Mod+BracketRight                consume-or-expel-window-right
+Mod+B                           Toggle bar auto-hide
 Mod+C                           center-column
 Mod+Comma                       consume-window-into-column
 Mod+Ctrl+1                      move-column-to-workspace 1
@@ -27,6 +28,8 @@ Mod+Ctrl+6                      move-column-to-workspace 6
 Mod+Ctrl+7                      move-column-to-workspace 7
 Mod+Ctrl+8                      move-column-to-workspace 8
 Mod+Ctrl+9                      move-column-to-workspace 9
+Mod+Ctrl+Alt+R                  Record screen + system + mic / Stop
+Mod+Ctrl+Alt+Shift+R            Record region + system + mic / Stop
 Mod+Ctrl+C                      center-visible-columns
 Mod+Ctrl+Down                   move-window-down
 Mod+Ctrl+F                      toggle-window-floating
@@ -76,7 +79,6 @@ Mod+Q                           close-window
 Mod+Return                      Terminal (herdr)
 Mod+Right                       focus-column-right
 Mod+R                           switch-preset-column-width
-Mod+S                           Zen URL bar
 Mod+Shift+C                     Calendar
 Mod+Shift+Ctrl+Down             move-column-to-monitor-down
 Mod+Shift+Ctrl+H                move-column-to-monitor-left
@@ -109,6 +111,7 @@ Mod+Shift+WheelScrollDown       focus-column-right
 Mod+Shift+WheelScrollUp         focus-column-left
 Mod+Shift+W                     Qutebrowser (VPN)
 Mod+Space                       Open ghostty
+Mod+S                           Zen URL bar
 Mod+Tab                         Window switcher
 Mod+T                           Task scratchpad
 Mod+Up                          focus-workspace-up

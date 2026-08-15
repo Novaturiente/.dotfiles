@@ -167,3 +167,7 @@ _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zoxide.zsh" zoxide init zsh --c
 
 # zoxide: suppress the init-order doctor warning (noise in every command output)
 export _ZO_DOCTOR=0
+
+
+# Added by tnr installer
+export PATH="$HOME/.tnr/bin:$PATH"

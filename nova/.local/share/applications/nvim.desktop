@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Name=Neovim
+GenericName=Text Editor
+Comment=Edit text files
+Icon=nvim
+TryExec=ghostty
+Exec=ghostty -e nvim %F
+Terminal=false
+NoDisplay=true
+StartupNotify=false
+Categories=Utility;TextEditor;Development;
+Keywords=Text;editor;vim;
+# ponytail: overrides /usr/share/applications/nvim.desktop (Terminal=true).
+# glib picks the terminal for Terminal=true entries and ghostty is not in its
+# built-in list, so under niri the stock entry silently fails to open anything.
+MimeType=text/plain;text/markdown;text/csv;text/css;text/xml;text/javascript;text/troff;text/x-log;text/x-diff;text/x-patch;text/x-readme;text/x-makefile;text/x-cmake;text/x-tex;text/x-org;text/x-ini;text/x-csrc;text/x-chdr;text/x-c++src;text/x-c++hdr;text/x-c;text/x-c++;text/x-java;text/x-java-source;text/x-python;text/x-python3;text/x-lua;text/x-go;text/x-perl;text/x-ruby;text/x-php;text/x-sql;text/x-scala;text/x-kotlin;text/x-haskell;text/x-dart;text/x-nim;text/x-zig;text/x-vala;text/x-objcsrc;text/x-pascal;text/x-tcl;text/x-scheme;text/x-common-lisp;text/x-erlang;text/x-elixir;text/x-clojure;text/x-svelte;text/x-vue;text/x-qml;text/x-typescript;text/x-scss;text/x-sass;text/x-less;text/x-gherkin;text/x-dockerfile;text/x-nix;text/x-modelica;text/vnd.graphviz;text/rust;text/english;application/json;application/schema+json;application/ld+json;application/yaml;application/x-yaml;application/toml;application/xml;application/xhtml+xml;application/sql;application/javascript;application/x-javascript;application/typescript;application/x-shellscript;application/x-perl;application/x-ruby;application/x-php;application/x-awk;application/x-m4;application/x-desktop;application/x-subrip;application/x-ipynb+json;application/x-cmake;application/x-gettext-translation;application/x-gettext;application/xslt+xml;application/rss+xml;application/atom+xml;

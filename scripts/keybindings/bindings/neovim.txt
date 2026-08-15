@@ -4,14 +4,18 @@ i <C-W>                                  :help i_CTRL-W-default
 i jk                                     Exit insert mode
 i <S-Tab>                                vim.snippet.jump if active, otherwise <S-Tab>
 i <Tab>                                  vim.snippet.jump if active, otherwise <Tab>
-n  ac                                    Toggle Claude
+n  aa                                    Add file/selection to context
+n  ac                                    Toggle Agentic chat
+n  aD                                    Add buffer diagnostics to Agentic
+n  ad                                    Add line diagnostic to Agentic
 n [                                      Add empty line above cursor
 n ]                                      Add empty line below cursor
-n  af                                    Focus Claude
 n ]A                                     :last
 n ]a                                     :next
+n  an                                    New Agentic session
 n [a                                     :previous
 n [A                                     :rewind
+n  ar                                    Restore Agentic session
 n  at                                    Toggle Supermaven (AI)
 n ]B                                     :blast
 n ]b                                     :bnext
@@ -107,14 +111,20 @@ o [%                                     <Plug>(MatchitOperationMultiBackward)
 o <Plug>(MatchitOperationMultiBackward)  :<C-U>call matchit#MultiMatch("bW", "o")<CR>
 o ]%                                     <Plug>(MatchitOperationMultiForward)
 o <Plug>(MatchitOperationMultiForward)   :<C-U>call matchit#MultiMatch("W",  "o")<CR>
-s  as                                    Send selection to Claude
+s  aa                                    Add file/selection to context
+s  ac                                    Toggle Agentic chat
+s  an                                    New Agentic session
+s  ar                                    Restore Agentic session
 s <C-S>                                  vim.lsp.buf.signature_help()
 s <S-Tab>                                vim.snippet.jump if active, otherwise <S-Tab>
 s <Tab>                                  vim.snippet.jump if active, otherwise <Tab>
 t  tt                                    Terminal
+v  aa                                    Add file/selection to context
+v  ac                                    Toggle Agentic chat
+v  an                                    New Agentic session
 v an                                     Select parent (outer) node
 v a%                                     <Plug>(MatchitVisualTextObject)
-v  as                                    Send selection to Claude
+v  ar                                    Restore Agentic session
 v <C-S>                                  vim.lsp.buf.signature_help()
 v gc                                     Toggle comment
 v g%                                     <Plug>(MatchitVisualBackward)
@@ -139,9 +149,12 @@ v <Plug>(MatchitVisualTextObject)        <Plug>(MatchitVisualMultiBackward)o<Plu
 v Q                                      :help v_Q-default
 v <S-Tab>                                vim.snippet.jump if active, otherwise <S-Tab>
 v <Tab>                                  vim.snippet.jump if active, otherwise <Tab>
+x  aa                                    Add file/selection to context
+x  ac                                    Toggle Agentic chat
+x  an                                    New Agentic session
 x an                                     Select parent (outer) node
 x a%                                     <Plug>(MatchitVisualTextObject)
-x  as                                    Send selection to Claude
+x  ar                                    Restore Agentic session
 x gc                                     Toggle comment
 x g%                                     <Plug>(MatchitVisualBackward)
 x gra                                    vim.lsp.buf.code_action()
