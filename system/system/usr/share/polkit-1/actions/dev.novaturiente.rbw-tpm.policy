@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>Novaturiente dotfiles</vendor>
+  <vendor_url>https://github.com/Novaturiente/.dotfiles</vendor_url>
+
+  <!-- auth_self, not auth_self_keep: every unlock re-authenticates. The whole
+       point is that releasing the master password requires a live face match
+       (or the login password), so caching the grant would defeat it. -->
+  <action id="dev.novaturiente.rbw-tpm.unseal">
+    <description>Unlock Bitwarden vault</description>
+    <message>Authenticate to unlock your Bitwarden vault</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_self</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/libexec/rbw-tpm-face-unseal</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+</policyconfig>

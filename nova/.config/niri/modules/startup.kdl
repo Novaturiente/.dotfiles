@@ -2,7 +2,7 @@
 // STARTUP APPLICATIONS
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // System services
-spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
+spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 // System utilities
 spawn-at-startup "swayidle"
 spawn-at-startup "ibus-daemon" "-drx"
