@@ -1,0 +1,2 @@
+# Bison/SunplusIT IR camera: block USB autosuspend so the UVC emitter control persists
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="5986", ATTR{idProduct}=="2169", TEST=="power/control", ATTR{power/control}="on"

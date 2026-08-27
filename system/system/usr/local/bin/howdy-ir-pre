@@ -1,0 +1,4 @@
+#!/bin/sh
+# Re-apply the IR emitter UVC control immediately before a Howdy face scan.
+# The camera drops this control on its own; without it every scan sees a dark frame.
+HOME=/root exec /usr/bin/linux-enable-ir-emitter run >/dev/null 2>&1
