@@ -96,10 +96,17 @@ authenticates.
 **polkit needs a running authentication agent.** Without one, `pkexec` from a
 non-terminal process fails outright. See HOWDY-FACE-AUTH.md.
 
-**The pre-scan IR script must go through systemd.** `polkit-agent-helper` runs
-with `ProtectHome=yes`, so a direct `linux-enable-ir-emitter` call cannot read
-its config in `/root` and the scan sees a dark frame. Covered in
-HOWDY-FACE-AUTH.md.
+**A polkit dialog on every sudo means `howdy-ir-pre` has its routes the wrong
+way round.** `pam_exec` runs its command with the REAL user ID unless given
+`seteuid`, so under `sudo` the script runs as your user, and `systemctl start`
+on a system unit then needs polkit authorization. The script must try the
+direct call first and fall back to `systemctl` only when it cannot read the
+emitter config — which is the signal that it is inside polkit's `ProtectHome`
+sandbox, where the caller is root and `systemctl` does not prompt. Full
+reasoning in HOWDY-FACE-AUTH.md.
+
+Treat a stray polkit prompt as urgent rather than cosmetic: three cancelled or
+failed dialogs faillock the account for 10 minutes.
 
 ---
 
@@ -125,3 +132,98 @@ what sets the flag. Any other caller — `rbw` in a terminal, or the agent lock
 expiring during other use — gets the normal PIN prompt. To make it apply
 everywhere, set the flag from a wrapper around `rbw` instead, or have the shim
 attempt the face path unconditionally and fall through on failure.
+
+---
+
+## File contents
+
+Reproduced so this document is self-sufficient without the repo.
+
+### `/usr/local/libexec/rbw-tpm-face-unseal` (mode 755, root:root)
+
+```sh
+#!/bin/sh
+# Release the Bitwarden master password from the TPM using a root-only auth value.
+#
+# Invoked through pkexec; polkit does the actual authentication, which on this
+# machine means face (pam_howdy) with the login password as fallback. The auth
+# value lives at /etc/rbw-tpm/auth (root, 0600) precisely so a process running
+# as the user cannot unseal without passing that polkit check.
+#
+# Takes no arguments and reads only fixed paths — nothing here is caller-controlled.
+set -eu
+
+DIR=/etc/rbw-tpm
+
+[ -r "$DIR/auth" ] && [ -r "$DIR/seal.priv" ] || {
+    echo "rbw-tpm: not configured — run scripts/rbw-tpm-face-setup.sh" >&2
+    exit 1
+}
+
+pctx=$(mktemp) || exit 1
+ctx=$(mktemp) || { rm -f "$pctx"; exit 1; }
+trap 'rm -f "$pctx" "$ctx"' EXIT
+
+# Recreate the deterministic owner-hierarchy primary rather than loading a saved
+# context: a stored primary fails its integrity check after a TPM reset or reboot.
+# Same reasoning as the user-side PIN wrapper.
+tpm2_createprimary -C o -g sha256 -G ecc -c "$pctx" >/dev/null 2>&1 || {
+    echo "rbw-tpm: createprimary failed" >&2; exit 1; }
+tpm2_load -C "$pctx" -u "$DIR/seal.pub" -r "$DIR/seal.priv" -c "$ctx" >/dev/null 2>&1 || {
+    echo "rbw-tpm: load failed" >&2; exit 1; }
+
+# Raw bytes, no trailing newline — the caller feeds this straight to rbw.
+tpm2_unseal -c "$ctx" -p "file:$DIR/auth"
+```
+
+### `/usr/share/polkit-1/actions/dev.novaturiente.rbw-tpm.policy` (mode 644)
+
+`auth_self` rather than `auth_self_keep`: every unlock re-authenticates, since
+caching the grant would defeat the point of requiring a live face match.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <vendor>Novaturiente dotfiles</vendor>
+  <vendor_url>https://github.com/Novaturiente/.dotfiles</vendor_url>
+
+  <!-- auth_self, not auth_self_keep: every unlock re-authenticates. The whole
+       point is that releasing the master password requires a live face match
+       (or the login password), so caching the grant would defeat it. -->
+  <action id="dev.novaturiente.rbw-tpm.unseal">
+    <description>Unlock Bitwarden vault</description>
+    <message>Authenticate to unlock your Bitwarden vault</message>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_self</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/local/libexec/rbw-tpm-face-unseal</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+</policyconfig>
+```
+
+### Changes to existing scripts
+
+`scripts/quickshell/pass.sh` drops the request flag before unlocking, ahead of
+opening the UI so the polkit dialog is not rendered underneath it:
+
+```sh
+: > "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/rbw-face-request" 2>/dev/null || true
+```
+
+`scripts/rbw-pinentry.sh` gains a `try_face` step ahead of the PIN path. It
+consumes the flag before attempting, so a failure falls through to the PIN
+instead of looping:
+
+```sh
+try_face() {
+    [[ -e "$FACE_FLAG" ]] || return 1
+    rm -f "$FACE_FLAG"
+    [[ -x "$FACE_UNSEAL" ]] && command -v pkexec >/dev/null || return 1
+    pkexec "$FACE_UNSEAL" 2>/dev/null
+}
+```
