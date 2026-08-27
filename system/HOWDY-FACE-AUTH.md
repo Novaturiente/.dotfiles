@@ -179,16 +179,44 @@ from stock:
 | `device_path` | `none` | IR `by-path` | Point at the IR camera, not RGB |
 | `dark_threshold` | `75` | `95` | IR frames are dim; this only gates which frames are *attempted*, not how strict the match is |
 | `timeout` | `4` | `6` | More frames to work with on a marginal sensor |
-| `detection_notice` | `false` | `true` | Shows "Starting face verification" on the lock screen — useful feedback, keep it |
-| `end_report` | `false` | `true` | Timing details in the journal; set back to `false` to quieten logs |
+| `no_confirmation` | `false` | `true` | Suppresses "Face matched user nova" on every sudo |
 
-`detection_notice` and `end_report` were enabled while debugging. The first is
-worth keeping for user feedback; the second is pure diagnostics:
+Stock howdy is chatty on a terminal. A plain `sudo ls` prints a verification
+notice, a timing report, and a match confirmation. To keep sudo clean:
 
 ```sh
-sudo sed -i -e 's/^detection_notice = .*/detection_notice = true/' \
-            -e 's/^end_report = .*/end_report = true/' /etc/howdy/config.ini
+sudo sed -i -e 's/^detection_notice = .*/detection_notice = false/' \
+            -e 's/^no_confirmation = .*/no_confirmation = true/' \
+            -e 's/^end_report = .*/end_report = false/' /etc/howdy/config.ini
 ```
+
+`detection_notice` and `end_report` are the diagnostics to turn back **on**
+when something misbehaves — they report frames searched, dark frames ignored,
+and the winning match score.
+
+### The OpenCV warnings cannot be suppressed
+
+Every face auth prints two lines to the terminal, sharing the `Password:` line:
+
+```
+[ WARN:0@0.004] global net_impl_backend.cpp:345 setPreferableTarget Targets are not supported by the new graph engine for now
+```
+
+They come from OpenCV 5's DNN engine inside `howdy-auth-helper`, not from
+howdy, so no howdy setting affects them. Do not spend time on this — these
+were all tried and all failed:
+
+- `OPENCV_LOG_LEVEL=SILENT` exported in the shell: `sudo` sanitizes its own
+  environment before PAM runs, so it never arrives. (The variable *is*
+  correct — `sudo env OPENCV_LOG_LEVEL=SILENT howdy test` silences the CLI.)
+- `OPENCV_FORCE_DNN_ENGINE=classic`: no effect, wrong value or unsupported.
+- `pam_env.so conffile=...` ahead of `pam_howdy`: `pam_howdy` reads PAM's
+  environment for its own use but does not forward it to the setuid helper it
+  spawns.
+- Wrapping the helper: impossible, it is setuid and Linux ignores setuid on
+  scripts.
+
+The fix belongs upstream. The lines are cosmetic and harmless.
 
 `sface_threshold` (the actual face-match strictness) is left at its default of
 `0.6942`. Loosening *that* would be the setting that weakens security.
