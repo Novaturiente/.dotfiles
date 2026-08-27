@@ -4,6 +4,10 @@ Windows-Hello-style face authentication on this laptop, using the built-in
 **infrared** camera — not the RGB one. Covers `sudo`, the `ly` greeter, the
 `dms` lock screen, and polkit prompts.
 
+Three of those four work from one edit to `/etc/pam.d/system-auth`. The `dms`
+lock screen needs its own config and its own `pam_howdy` options — that is the
+single most surprising part of this setup and has its own section below.
+
 Set up 2026-08-27 on CachyOS. An earlier attempt (Jan 2026) failed and this
 document exists mainly to record *why*, because the failure modes are silent
 and cost hours to rediscover.
@@ -181,13 +185,18 @@ Models are stored in `/etc/howdy/models/`. Manage with `howdy list`,
 **Open a second terminal with `sudo -i` and leave it there before editing PAM.**
 A mistake here can lock you out of authentication entirely.
 
-Every relevant service funnels into a single file, so one edit covers all four
-targets:
+Three of the four targets funnel into a single file:
 
 - `sudo` → `system-auth`
 - `ly` → `login` → `system-local-login` → `system-login` → `system-auth`
-- `dms` lock screen → `system-auth` directly
 - polkit → `/usr/lib/pam.d/polkit-1` → `system-auth`
+
+**The `dms` lock screen does not.** It needs separate handling — see
+"DMS lock screen" below. Do not assume `system-auth` covers it; `strings`
+on the `dms` binary mentions `system-auth`, which is misleading.
+
+`ly` needs no extra setup beyond this file. It is a TTY greeter, so
+`pam_howdy`'s native mode has the real terminal it requires.
 
 Back up, then insert two lines directly after faillock's `preauth` line:
 
@@ -233,6 +242,95 @@ cp /etc/pam.d/system-auth.bak /etc/pam.d/system-auth
 
 ---
 
+## DMS lock screen
+
+The lock screen is the one target that needs its own configuration, and it
+took the longest to get right. Two independent problems.
+
+### Problem 1: dms does not use `/etc/pam.d/system-auth`
+
+The lock screen runs through quickshell, which calls `pam_start_confdir()`
+rather than using the standard PAM path. By default dms **generates** a
+flattened, self-contained copy of the system auth stack at
+`~/.local/state/DankMaterialShell/pam/dankshell` and points PAM at that
+directory. It regenerates on each lock, so editing that file by hand is
+pointless.
+
+Confirm which config is actually in use — the journal states it outright:
+
+```
+quickshell.service.pam.subprocess: Starting pam session for user "nova"
+  with config "dankshell" in dir "/home/nova/.local/state/DankMaterialShell/pam"
+```
+
+To use a real file instead, set dms's `lockPamPath`. There is a UI control
+under Settings ("Which PAM service the lock screen uses to authenticate" →
+Custom...), or set it directly:
+
+```sh
+jq '.lockPamPath = "/etc/pam.d/dankshell"' \
+   ~/.config/DankMaterialShell/settings.json > /tmp/s.json \
+  && mv /tmp/s.json ~/.config/DankMaterialShell/settings.json
+dms restart
+```
+
+After restarting, the journal line must read `in dir "/etc/pam.d"`. If it
+still names the state directory, the setting did not take.
+
+Note `dms auth sync` is the official way to write `/etc/pam.d/dankshell`, but
+it refuses to run under `sudo` ("This program should not be run as root") and
+hangs on an internal privilege prompt when run with `-y`. Writing the file
+directly, as below, works fine.
+
+### Problem 2: the `input` workaround prevents the scan
+
+**`workaround=native-input` must NOT be used for the lock screen.** It breaks
+face auth there completely, in a way that looks like a camera fault: the IR
+emitter never fires and the prompt rejects you instantly.
+
+What happens is that native mode is unavailable (no real terminal in a Wayland
+GUI), so howdy falls back to `input`, which installs a uinput observer, waits
+for a hidden-input prompt that never arrives in a GUI conversation, and
+returns immediately without ever scanning. The journal signature:
+
+```
+pam_howdy: Native prompt conversation unavailable, falling back to input workaround
+kernel: input: Howdy virtual keyboard as /devices/virtual/input/input109
+pam_howdy: pam_unix(dankshell:auth): authentication failure
+```
+
+Note the total absence of any verdict line, and that failure lands in the same
+second — far too fast for a scan.
+
+The fix is to omit `workaround=` entirely in the lock-screen config. Because
+`pam_howdy` is `sufficient`, a successful match short-circuits the stack and
+`pam_unix` never prompts, so there is nothing for the workaround to submit.
+It is needed under `sudo` and not here.
+
+### Install the lock-screen config
+
+`/etc/pam.d/dankshell` is identical to the generated stack except the
+`pam_howdy.so` line carries no `workaround=` option:
+
+```sh
+sudo install -m 644 -o root -g root \
+  system/etc/pam.d/dankshell /etc/pam.d/dankshell
+```
+
+Working journal output looks like this:
+
+```
+quickshell.service.pam.subprocess: Starting pam session for user "nova"
+  with config "dankshell" in dir "/etc/pam.d"
+pam_howdy: Face verification succeeded
+```
+
+If dms's own auth sync ever rewrites this file, re-apply the workaround
+removal. The `# BEGIN DMS LOCKSCREEN AUTH` marker comments are retained so
+dms recognizes the file as managed rather than custom.
+
+---
+
 ## Verify
 
 ```sh
@@ -241,11 +339,17 @@ sudo -k && sudo true        # expect: "Face matched user nova"
 
 Then, at the machine:
 
-- Lock with `dms ipc call lock lock` and look at the camera. Leave the password
-  field **empty** — the injected Enter only submits an empty prompt.
+- Lock with `dms ipc call lock lock` and look at the camera without pressing
+  anything. The scan takes a few seconds and needs no keypress.
 - Reboot and wait at the `ly` greeter instead of typing. This doubles as the
   reboot-persistence test for the udev rule and the emitter service.
 - Trigger any GUI privilege prompt for polkit.
+
+Useful during any of these — howdy logs every verdict:
+
+```sh
+journalctl --since "-3min" | grep -iE "howdy|dankshell|pam_"
+```
 
 Recovery if the greeter misbehaves: `Ctrl+Alt+F2` to a TTY, log in with your
 password, restore the backup.
@@ -259,7 +363,9 @@ password, restore the backup.
 | `All frames were too dark`, darkness 85+ | Emitter not firing, or you are backlit | Check `power/control` is `on`; run `linux-enable-ir-emitter run` manually and re-test |
 | Works once, fails after | The `pam_exec` pre-scan hook is missing or not executable | `sudo /usr/local/bin/howdy-ir-pre` should exit 0 silently |
 | `failed to expend shell variable` | `HOME` unset | Confirm `Environment=HOME=/root` in the unit, `HOME=/root` in the script |
-| Face matches but lock screen hangs | `workaround=native` instead of `native-input` | Change the `pam_howdy.so` line |
+| Lock screen: instant reject, IR never fires, no verdict in journal | `workaround=` present in the lock-screen config | Remove the option from `/etc/pam.d/dankshell` |
+| Lock screen: edits to `/etc/pam.d/dankshell` have no effect | dms is using its generated state-dir copy | Set `lockPamPath`, then `dms restart`; journal must say `in dir "/etc/pam.d"` |
+| `dms auth sync` hangs or refuses to run | Known: rejects root, hangs on internal prompt with `-y` | Write `/etc/pam.d/dankshell` directly |
 | Emitter never found by `configure` | Wrong device picked | Re-run and choose the `GREY` device |
 | SSH sessions trying to use the camera | — | Already prevented: `abort_if_ssh = true` is Howdy's default |
 
