@@ -2,12 +2,22 @@
 # Re-apply the IR emitter UVC control immediately before a Howdy face scan.
 # The camera drops this control on its own; without it every scan sees a dark frame.
 #
-# Prefer asking systemd to run the oneshot unit. PAM callers are not all equal:
-# polkit-agent-helper@.service runs under ProtectHome=yes, so /root/.config —
-# where linux-enable-ir-emitter keeps its config — simply is not there, and a
-# direct call silently does nothing. The unit runs outside that sandbox.
+# PAM callers differ in what they can see, and pam_exec runs us with the REAL uid
+# (nova under sudo, root under polkit-agent-helper), so pick the route per caller:
 #
-# Fall back to calling the tool directly if systemd is unavailable.
-systemctl start linux-enable-ir-emitter.service >/dev/null 2>&1 && exit 0
+#   config readable  -> call the tool directly. Works unprivileged: the config is
+#                       world-readable and nova is in the video group.
+#   config invisible -> polkit-agent-helper@.service runs with ProtectHome=yes, so
+#                       /root is not there. Ask systemd, which runs the unit outside
+#                       the sandbox. Only reached with a root real uid, so this does
+#                       not trigger a polkit prompt of its own.
+#
+# Do NOT reorder these. Calling systemctl first pops a polkit authentication dialog
+# on every sudo, because starting a system unit as nova needs authorization.
+CONF=/root/.config/linux-enable-ir-emitter.toml
 
-HOME=/root exec /usr/bin/linux-enable-ir-emitter run >/dev/null 2>&1
+if [ -r "$CONF" ]; then
+    HOME=/root exec /usr/bin/linux-enable-ir-emitter run >/dev/null 2>&1
+fi
+
+exec systemctl start linux-enable-ir-emitter.service >/dev/null 2>&1

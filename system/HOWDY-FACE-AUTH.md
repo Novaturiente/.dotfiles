@@ -66,14 +66,32 @@ at boot. This is done with `pam_exec` in the auth stack.
 that binary is setuid, and Linux ignores the setuid bit on scripts. `pam_exec`
 is the correct hook; it runs as root inside the auth stack.
 
-**The pre-scan script must go through systemd, not call the tool directly.**
-Not every PAM caller has the same view of the filesystem:
-`polkit-agent-helper@.service` runs with `ProtectHome=yes`, so `/root/.config`
-— where `linux-enable-ir-emitter` keeps its config — does not exist there. A
-direct call silently does nothing and the face scan sees a dark frame, while
-the identical code works fine under `sudo`, which has no sandbox. Starting
-`linux-enable-ir-emitter.service` instead runs it in systemd's own context,
-outside the sandbox. That is why `howdy-ir-pre` prefers `systemctl start`.
+**The pre-scan script needs two routes, and their order matters.** PAM callers
+differ in two independent ways, and getting either wrong produces a confusing
+failure:
+
+*What they can see.* `polkit-agent-helper@.service` runs with
+`ProtectHome=yes`, so `/root/.config` — where `linux-enable-ir-emitter` keeps
+its config — does not exist there. A direct call silently does nothing and the
+scan sees a dark frame, while identical code works fine under `sudo`, which has
+no sandbox.
+
+*Who they run as.* **`pam_exec` runs its command with the REAL user ID**, not
+the effective one, unless you pass `seteuid`. Under `sudo` that is `nova`;
+under `polkit-agent-helper` it is `root`. So `systemctl start` on a system unit
+is unprivileged under `sudo` and needs polkit authorization — which pops an
+authentication dialog **on every single sudo**. That is dangerous, not just
+annoying: three cancelled or failed dialogs faillock the account.
+
+So `howdy-ir-pre` branches on whether it can read the config:
+
+- **readable** → call the tool directly. Fine unprivileged, because the config
+  is world-readable and the user is in the `video` group.
+- **unreadable** → inside polkit's sandbox, where the caller is root, so
+  `systemctl start` runs the unit outside the sandbox without prompting.
+
+Do not branch on the tool's exit code: `linux-enable-ir-emitter run` returns 0
+even when its config is missing.
 
 ### Bonus gotcha: `HOME` must be set
 
@@ -86,8 +104,12 @@ Caused by: error looking key 'HOME' up: environment variable not found
 ```
 
 Neither systemd units nor PAM provide `HOME`. That is why both the service
-and the pre-scan script set `HOME=/root` explicitly. Its config also lives at
-`/root/.config/linux-enable-ir-emitter.toml`, so it must run as root.
+and the pre-scan script set `HOME=/root` explicitly.
+
+Its config lives at `/root/.config/linux-enable-ir-emitter.toml`, but note that
+`/root`, `/root/.config` and the file itself are all world-readable on this
+system, which is what lets the pre-scan script apply the control unprivileged.
+Only *writing* the config needs root.
 
 ---
 
@@ -547,20 +569,33 @@ WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target s
 
 ### `/usr/local/bin/howdy-ir-pre` (mode 755)
 
+Note the route order — see "The pre-scan script needs two routes" above. Putting
+`systemctl` first pops a polkit dialog on every sudo.
+
 ```sh
 #!/bin/sh
 # Re-apply the IR emitter UVC control immediately before a Howdy face scan.
 # The camera drops this control on its own; without it every scan sees a dark frame.
 #
-# Prefer asking systemd to run the oneshot unit. PAM callers are not all equal:
-# polkit-agent-helper@.service runs under ProtectHome=yes, so /root/.config —
-# where linux-enable-ir-emitter keeps its config — simply is not there, and a
-# direct call silently does nothing. The unit runs outside that sandbox.
+# PAM callers differ in what they can see, and pam_exec runs us with the REAL uid
+# (nova under sudo, root under polkit-agent-helper), so pick the route per caller:
 #
-# Fall back to calling the tool directly if systemd is unavailable.
-systemctl start linux-enable-ir-emitter.service >/dev/null 2>&1 && exit 0
+#   config readable  -> call the tool directly. Works unprivileged: the config is
+#                       world-readable and nova is in the video group.
+#   config invisible -> polkit-agent-helper@.service runs with ProtectHome=yes, so
+#                       /root is not there. Ask systemd, which runs the unit outside
+#                       the sandbox. Only reached with a root real uid, so this does
+#                       not trigger a polkit prompt of its own.
+#
+# Do NOT reorder these. Calling systemctl first pops a polkit authentication dialog
+# on every sudo, because starting a system unit as nova needs authorization.
+CONF=/root/.config/linux-enable-ir-emitter.toml
 
-HOME=/root exec /usr/bin/linux-enable-ir-emitter run >/dev/null 2>&1
+if [ -r "$CONF" ]; then
+    HOME=/root exec /usr/bin/linux-enable-ir-emitter run >/dev/null 2>&1
+fi
+
+exec systemctl start linux-enable-ir-emitter.service >/dev/null 2>&1
 ```
 
 ### `/etc/pam.d/dankshell` (mode 644, root:root)
