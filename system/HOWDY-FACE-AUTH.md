@@ -66,6 +66,15 @@ at boot. This is done with `pam_exec` in the auth stack.
 that binary is setuid, and Linux ignores the setuid bit on scripts. `pam_exec`
 is the correct hook; it runs as root inside the auth stack.
 
+**The pre-scan script must go through systemd, not call the tool directly.**
+Not every PAM caller has the same view of the filesystem:
+`polkit-agent-helper@.service` runs with `ProtectHome=yes`, so `/root/.config`
+— where `linux-enable-ir-emitter` keeps its config — does not exist there. A
+direct call silently does nothing and the face scan sees a dark frame, while
+the identical code works fine under `sudo`, which has no sandbox. Starting
+`linux-enable-ir-emitter.service` instead runs it in systemd's own context,
+outside the sandbox. That is why `howdy-ir-pre` prefers `systemctl start`.
+
 ### Bonus gotcha: `HOME` must be set
 
 `linux-enable-ir-emitter` expands `$HOME` when building its log file path and
@@ -241,6 +250,36 @@ on the `dms` binary mentions `system-auth`, which is misleading.
 
 `ly` needs no extra setup beyond this file. It is a TTY greeter, so
 `pam_howdy`'s native mode has the real terminal it requires.
+
+**polkit needs a running authentication agent**, or nothing prompts at all and
+`pkexec` from a non-terminal process just fails. `startup.kdl` used to spawn
+`mate-polkit`, which is not installed, so the spawn failed silently and there
+was no agent for months. It now spawns the installed one:
+
+```
+spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+```
+
+Check with `busctl` or simply run the agent by hand — "An authentication agent
+already exists for the given subject" means one is registered.
+
+### Careful: faillock
+
+`pam_faillock preauth` is `required` and sits **above** `pam_howdy` in the
+stack. Three failed password attempts at any polkit or sudo prompt lock the
+account for 10 minutes, and **face auth cannot rescue you** — PAM treats the
+stack as failed once a `required` module fails, no matter what a later
+`sufficient` module returns.
+
+Inspect and clear from a root shell:
+
+```sh
+faillock --user nova
+faillock --user nova --reset
+```
+
+Keep a root shell open when experimenting with auth. This is the failure mode
+that actually bites.
 
 Back up, then insert two lines directly after faillock's `preauth` line:
 
@@ -512,6 +551,15 @@ WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target s
 #!/bin/sh
 # Re-apply the IR emitter UVC control immediately before a Howdy face scan.
 # The camera drops this control on its own; without it every scan sees a dark frame.
+#
+# Prefer asking systemd to run the oneshot unit. PAM callers are not all equal:
+# polkit-agent-helper@.service runs under ProtectHome=yes, so /root/.config —
+# where linux-enable-ir-emitter keeps its config — simply is not there, and a
+# direct call silently does nothing. The unit runs outside that sandbox.
+#
+# Fall back to calling the tool directly if systemd is unavailable.
+systemctl start linux-enable-ir-emitter.service >/dev/null 2>&1 && exit 0
+
 HOME=/root exec /usr/bin/linux-enable-ir-emitter run >/dev/null 2>&1
 ```
 
