@@ -3,12 +3,9 @@
 - rbw
 - pinentry
 - tpm2-tools
-- pi
 - unrar
-- tigervnc
 - openblas
 - zen-browser-bin
-- jcode
 - gst-plugins-good
 - gst-libav
 - earlyoom
@@ -16,3 +13,7 @@
 - brave-bin
 - qemu-hw-display-virtio-vga-gl
 - qemu-hw-display-virtio-gpu-gl
+- wf-recorder
+- pnpm
+- linux-enable-ir-emitter-git
+- howdy-next-git

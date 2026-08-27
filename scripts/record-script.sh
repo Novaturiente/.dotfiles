@@ -55,34 +55,34 @@ case "$1" in
     --region)
         GEOMETRY=$(slurp)
         [ -z "$GEOMETRY" ] && exit 1
-        notify-send "Recording Region" "$FILENAME" -a 'wl-screenrec'
-        wl-screenrec -g "$GEOMETRY" -f "$FILENAME" &
+        notify-send "Recording Region" "$FILENAME" -a 'wf-recorder'
+        wf-recorder -g "$GEOMETRY" -f "$FILENAME" &
         ;;
     --region-audio)
         GEOMETRY=$(slurp)
         [ -z "$GEOMETRY" ] && exit 1
-        notify-send "Recording Region + Audio" "$FILENAME" -a 'wl-screenrec'
-        wl-screenrec -g "$GEOMETRY" --audio -f "$FILENAME" &
+        notify-send "Recording Region + Audio" "$FILENAME" -a 'wf-recorder'
+        wf-recorder -g "$GEOMETRY" -a -f "$FILENAME" &
         ;;
     --region-both)
         GEOMETRY=$(slurp)
         [ -z "$GEOMETRY" ] && exit 1
         setup_mix || exit 1
-        notify-send "Recording Region + System + Mic" "$FILENAME" -a 'wl-screenrec'
-        wl-screenrec -g "$GEOMETRY" --audio --audio-device recmix.monitor -f "$FILENAME" &
+        notify-send "Recording Region + System + Mic" "$FILENAME" -a 'wf-recorder'
+        wf-recorder -g "$GEOMETRY" -a recmix.monitor -f "$FILENAME" &
         ;;
     --fullscreen-both)
         setup_mix || exit 1
-        notify-send "Recording Screen + System + Mic" "$FILENAME" -a 'wl-screenrec'
-        wl-screenrec --audio --audio-device recmix.monitor -f "$FILENAME" &
+        notify-send "Recording Screen + System + Mic" "$FILENAME" -a 'wf-recorder'
+        wf-recorder -a recmix.monitor -f "$FILENAME" &
         ;;
     --fullscreen-audio)
-        notify-send "Recording Screen + Audio" "$FILENAME" -a 'wl-screenrec'
-        wl-screenrec --audio -f "$FILENAME" &
+        notify-send "Recording Screen + Audio" "$FILENAME" -a 'wf-recorder'
+        wf-recorder -a -f "$FILENAME" &
         ;;
     *)
-        notify-send "Recording Screen" "$FILENAME" -a 'wl-screenrec'
-        wl-screenrec -f "$FILENAME" &
+        notify-send "Recording Screen" "$FILENAME" -a 'wf-recorder'
+        wf-recorder -f "$FILENAME" &
         ;;
 esac
 
