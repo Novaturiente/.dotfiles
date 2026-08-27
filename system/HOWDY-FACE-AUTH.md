@@ -131,7 +131,13 @@ A black or ~1KB PNG means the emitter is not firing.
 
 ### 3. Drop in the files from this repo
 
+Run from `~/.dotfiles/system` — the paths below are relative to it. The full
+contents are reproduced under "File contents" at the end, so this works even
+without the repo.
+
 ```sh
+cd ~/.dotfiles/system
+
 sudo cp system/etc/udev/rules.d/99-ir-camera-power.rules /etc/udev/rules.d/
 sudo cp system/etc/systemd/system/linux-enable-ir-emitter.service /etc/systemd/system/
 sudo install -m 755 system/usr/local/bin/howdy-ir-pre /usr/local/bin/howdy-ir-pre
@@ -173,6 +179,16 @@ from stock:
 | `device_path` | `none` | IR `by-path` | Point at the IR camera, not RGB |
 | `dark_threshold` | `75` | `95` | IR frames are dim; this only gates which frames are *attempted*, not how strict the match is |
 | `timeout` | `4` | `6` | More frames to work with on a marginal sensor |
+| `detection_notice` | `false` | `true` | Shows "Starting face verification" on the lock screen — useful feedback, keep it |
+| `end_report` | `false` | `true` | Timing details in the journal; set back to `false` to quieten logs |
+
+`detection_notice` and `end_report` were enabled while debugging. The first is
+worth keeping for user feedback; the second is pure diagnostics:
+
+```sh
+sudo sed -i -e 's/^detection_notice = .*/detection_notice = true/' \
+            -e 's/^end_report = .*/end_report = true/' /etc/howdy/config.ini
+```
 
 `sface_threshold` (the actual face-match strictness) is left at its default of
 `0.6942`. Loosening *that* would be the setting that weakens security.
@@ -313,9 +329,29 @@ It is needed under `sudo` and not here.
 `pam_howdy.so` line carries no `workaround=` option:
 
 ```sh
+cd ~/.dotfiles/system
 sudo install -m 644 -o root -g root \
   system/etc/pam.d/dankshell /etc/pam.d/dankshell
 ```
+
+**Prefer regenerating it on a fresh install.** The committed copy is a
+snapshot of this machine's `system-auth` as flattened by dms; a different
+distro release may have a different stack. Regenerate rather than assume:
+
+```sh
+# dms writes the flattened stack to the user state dir and prints the path
+GEN=$(dms auth resolve-lock --quiet)
+
+# same file, with the workaround option stripped from the pam_howdy line
+sed 's/\(pam_howdy\.so\)\s*workaround=\S*/\1/' "$GEN" > /tmp/dankshell.new
+
+sudo install -m 644 -o root -g root /tmp/dankshell.new /etc/pam.d/dankshell
+dms auth validate --path /etc/pam.d/dankshell --json   # never under sudo
+```
+
+`validate` should report `"valid": true` with empty `missingModules` and
+`errors`. Do this **after** step 5, so `system-auth` already contains the
+howdy lines that get flattened in.
 
 Working journal output looks like this:
 
@@ -405,3 +441,93 @@ or Python/OpenCV exist. TPM-backed auto-unlock via `systemd-cryptenroll
 - PAM edits live in `/etc/pam.d/system-auth` and are not touched by package
   updates.
 - Delete stale `/etc/pam.d/system-auth.bak*` files once the setup is trusted.
+
+---
+
+## File contents
+
+Reproduced so this document is self-sufficient if the repo is unavailable.
+These are the same files staged under `system/` in this repo.
+
+### `/etc/udev/rules.d/99-ir-camera-power.rules`
+
+Scoped to this camera's USB ID so no other device is affected.
+
+```
+# Bison/SunplusIT IR camera: block USB autosuspend so the UVC emitter control persists
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="5986", ATTR{idProduct}=="2169", TEST=="power/control", ATTR{power/control}="on"
+```
+
+### `/etc/systemd/system/linux-enable-ir-emitter.service`
+
+`Environment=HOME=/root` is required — the tool hard-fails without it.
+The `WantedBy` list covers resume from every sleep type, not just boot.
+
+```ini
+[Unit]
+Description=Enable IR emitter on the integrated camera
+After=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+
+[Service]
+Type=oneshot
+Environment=HOME=/root
+ExecStart=/usr/bin/linux-enable-ir-emitter run
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
+```
+
+### `/usr/local/bin/howdy-ir-pre` (mode 755)
+
+```sh
+#!/bin/sh
+# Re-apply the IR emitter UVC control immediately before a Howdy face scan.
+# The camera drops this control on its own; without it every scan sees a dark frame.
+HOME=/root exec /usr/bin/linux-enable-ir-emitter run >/dev/null 2>&1
+```
+
+### `/etc/pam.d/dankshell` (mode 644, root:root)
+
+Prefer regenerating this rather than copying it verbatim — see the DMS
+section. Note `pam_howdy.so` carries **no** `workaround=` option here,
+unlike in `system-auth`.
+
+```
+#%PAM-1.0
+# BEGIN DMS LOCKSCREEN AUTH (managed by dms greeter sync)
+auth       requisite    pam_nologin.so
+auth       required   pam_shells.so
+auth       requisite  pam_nologin.so
+auth       required                    pam_faillock.so      preauth
+auth       optional                    pam_exec.so          quiet /usr/local/bin/howdy-ir-pre
+auth       sufficient                  pam_howdy.so
+-auth      [success=2 default=ignore]  pam_systemd_home.so
+auth       [success=1 default=bad]     pam_unix.so          try_first_pass nullok
+auth       [default=die]               pam_faillock.so      authfail
+auth       optional                    pam_permit.so
+auth       required                    pam_env.so
+auth       required                    pam_faillock.so      authsucc
+account    required   pam_access.so
+account    required   pam_nologin.so
+-account   [success=1 default=ignore]  pam_systemd_home.so
+account    required                    pam_unix.so
+account    optional                    pam_permit.so
+account    required                    pam_time.so
+session    optional   pam_loginuid.so
+session    optional   pam_keyinit.so       force revoke
+-session   optional                    pam_systemd_home.so
+session    required                    pam_limits.so
+session    required                    pam_unix.so
+session    optional                    pam_permit.so
+session    optional   pam_lastlog2.so      silent
+session    optional   pam_motd.so
+session    optional   pam_mail.so          dir=/var/spool/mail standard quiet
+session    optional   pam_umask.so
+-session   optional   pam_systemd.so
+session    required   pam_env.so
+-password  [success=1 default=ignore]  pam_systemd_home.so
+password   required                    pam_unix.so          try_first_pass nullok shadow
+password   optional                    pam_permit.so
+# END DMS LOCKSCREEN AUTH
+```
