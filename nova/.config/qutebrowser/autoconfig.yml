@@ -8,10 +8,12 @@ config_version: 2
 settings:
   colors.webpage.darkmode.enabled:
     '*://dash.cloudflare.com/*': true
+    '*://dmat-practice.eecglobal.com/*': false
     '*://mail.google.com/*': true
   content.javascript.clipboard:
     https://gemini.google.com: access-paste
     https://github.com: access-paste
+    https://pi.dev: access-paste
   content.notifications.enabled:
     https://mail.proton.me: true
     https://web.whatsapp.com: true

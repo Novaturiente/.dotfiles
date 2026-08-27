@@ -2,6 +2,7 @@
 // VISUAL SETTINGS & LAYOUT
 // ───────────────────────────────────────────────────────────────────────────────────────────
 workspace "Main"
+workspace "Work"
 
 
 layout {
