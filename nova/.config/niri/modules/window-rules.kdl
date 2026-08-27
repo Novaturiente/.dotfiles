@@ -27,6 +27,15 @@ window-rule {
     open-on-workspace "Main"
 }
 window-rule {
+    match app-id="lin-whatsapp"
+    open-on-workspace "Main"
+}
+window-rule {
+    match app-id="zen"
+    draw-border-with-background false
+    open-on-workspace "Main"
+}
+window-rule {
     match title="herdr"
     open-maximized true
 }
@@ -47,22 +56,13 @@ window-rule {
 window-rule {
     match app-id="com.mitchellh.ghostty"
     draw-border-with-background false
+    open-on-workspace "Work"
 }
 //File selector
 window-rule {
     match title="Select File to Attach"
     draw-border-with-background false
     open-floating true
-}
-window-rule {
-    match app-id="zen"
-    draw-border-with-background false
-    open-on-workspace "Main"
-}
-window-rule {
-    match app-id="linwa.py"
-    draw-border-with-background false
-    open-on-workspace "Main"
 }
 window-rule {
     match app-id="zenity"
@@ -72,12 +72,6 @@ window-rule {
     match app-id="labwc"
     open-maximized true
 }
-// WinApps RemoteApp windows (app-ids all start with "Microsoft "):
-// must float — tiling them fights RAIL geometry and dialogs resize-loop
-// window-rule {
-//     match app-id="^Microsoft"
-//     open-floating true
-// }
 window-rule {
     background-effect {
         blur true
