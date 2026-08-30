@@ -192,3 +192,7 @@ user_pref("zen.window-sync.enabled", false);
 //   layout.css.grid-template-masonry-value
 //     -- already handled by Zen, or Firefox-packaging specific.
 // ---------------------------------------------------------------------------
+
+// Catppuccin Mocha (Mauve): userChrome.css / userContent.css live in this
+// profile's chrome/ dir; sources are vendored at system/themes/catppuccin/zen-browser/.
+user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
