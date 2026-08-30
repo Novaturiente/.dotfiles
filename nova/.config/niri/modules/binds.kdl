@@ -112,7 +112,7 @@ binds {
     // │ SYSTEM CONTROLS                                                                     │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     Mod+Shift+L hotkey-overlay-title="Lock" {
-        spawn-sh " dms ipc call lock lock "
+        spawn-sh "swaylock"
     }
     Mod+Shift+E hotkey-overlay-title="Power menu" {
         spawn "dms" "ipc" "call" "powermenu" "toggle";
