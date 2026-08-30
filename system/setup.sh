@@ -12,20 +12,12 @@ sudo cp system/system/etc/ly/config.ini /etc/ly/config.ini
 
 # sudo cp ./system/system/etc/systemd/sleep.conf /etc/systemd/sleep.conf
 
-# sudo cp ./system/system/etc/modprobe.d/nvidia-sleep.conf /etc/modprobe.d/nvidia-sleep.conf
-
 sudo cp ./scripts/battery-limit.sh /usr/local/bin/battery-limit.sh
 sudo chmod +x /usr/local/bin/battery-limit.sh
 sudo cp ./system/system/etc/systemd/system/battery-limit.service /etc/systemd/system/battery-limit.service
 sudo cp ./system/system/etc/systemd/system/battery-limit.timer /etc/systemd/system/battery-limit.timer
 
 mkdir -p ~/.config
-
-# git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
-#
-# ~/.config/emacs/bin/doom install
-
-# rm -rf ~/.config/doom
 
 stow -d ~/.dotfiles -t ~ nova
 
@@ -35,8 +27,6 @@ systemctl --user enable batsignal.service
 systemctl --user mask pulseaudio.service pulseaudio.socket
 
 sudo systemctl enable battery-limit.timer
-
-# sudo systemctl enable nvidia-resume.service
 
 # Set fish as default login shell
 chsh "$(whoami)" -s "$(which zsh)"

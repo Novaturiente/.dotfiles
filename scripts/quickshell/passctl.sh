@@ -88,7 +88,7 @@ cmd_focused_domain() {
     local win app title
     win=$(niri msg focused-window 2>/dev/null) || return 0
     app=$(echo "$win" | grep "App ID:" | sed 's/.*App ID: "\(.*\)"/\1/')
-    echo "$app" | grep -qiE 'zen|chrom|firefox|qutebrowser|thorium|brave|browser' || return 0
+    echo "$app" | grep -qiE 'zen|chrom|qutebrowser|brave|browser' || return 0
     title=$(echo "$win" | grep "Title:" | sed 's/.*Title: "\(.*\)"/\1/')
     echo "$title" | grep -oP '[a-zA-Z0-9][-a-zA-Z0-9]*\.[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?' | head -1
 }

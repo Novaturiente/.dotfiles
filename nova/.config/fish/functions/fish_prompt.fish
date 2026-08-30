@@ -31,7 +31,7 @@ function fish_prompt
     test -f pyproject.toml -o -f requirements.txt -o -f .python-version; and _pl_seg "  py" 32CD32
     test -f Cargo.toml;                                                   and _pl_seg "  rs" 32CD32
     test -f package.json;                                                 and _pl_seg " 󰎙 js" 32CD32
-    test -f Containerfile -o -f podman-compose.yml -o -f Dockerfile;      and _pl_seg " 🐳 podman" 32CD32
+    test -f Containerfile -o -f podman-compose.yml -o -f Dockerfile;      and _pl_seg " 🐳 docker" 32CD32
 
     # --- Exit code (red, only if non-zero) ---
     test $last_status -ne 0; and _pl_seg "  $last_status" FF4500
