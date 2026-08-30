@@ -1,15 +1,16 @@
 #!/bin/bash
 
 # --- CONFIGURATION ---
-# Load env (GEMINI_API_KEY) since niri-spawned scripts may not inherit login env
+# Load env (OMNIROUTE_API_KEY) since niri-spawned scripts may not inherit login env
 [ -f ~/.env ] && set -a && . ~/.env && set +a
 
-# Gemini API (use env GEMINI_API_KEY; override model via GEMINI_MODEL)
-GEMINI_MODEL="${GEMINI_MODEL:-gemini-3.5-flash}"
-invoke_url="https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent"
+# OmniRoute gateway (OpenAI-compatible) on novahome; override with env
+OMNIROUTE_URL="${OMNIROUTE_URL:-http://novahome:20128/v1}"
+OMNIROUTE_MODEL="${OMNIROUTE_MODEL:-antigravity/gemini-3.7-flash-low}"
+invoke_url="${OMNIROUTE_URL}/chat/completions"
 
-if [ -z "$GEMINI_API_KEY" ]; then
-	notify-send "AI Fix" "GEMINI_API_KEY not set in ~/.env"
+if [ -z "$OMNIROUTE_API_KEY" ]; then
+	notify-send "AI Fix" "OMNIROUTE_API_KEY not set in ~/.env"
 	exit 1
 fi
 # Save raw API response (before <answer> extraction) for testing; set empty to disable
@@ -38,7 +39,7 @@ CLEAN_INPUT=$(echo "$INPUT_TEXT" | sed 's/\\/\\\\/g')
 PROMPT_SAFE=$(echo "$CLEAN_INPUT" | sed 's/"/\\"/g')
 notify-send -t 1000 "AI Fix" "Fixing... $CLEAN_INPUT"
 
-# 2. Run AI (NVIDIA chat completions API)
+# 2. Run AI (OmniRoute chat completions API)
 # We keep the tags <answer> in the prompt so we can find the text easily
 PROMPT="You are a grammar correction tool. 
 1. Output ONLY the corrected text. 
@@ -49,21 +50,20 @@ PROMPT="You are a grammar correction tool.
 Fix this text: $PROMPT_SAFE
 "
 
-# Build JSON body with jq so content is safely escaped (Gemini generateContent)
+# Build JSON body with jq so content is safely escaped (OpenAI chat/completions)
 payload=$(jq -n \
 	--arg content "$PROMPT" \
+	--arg model "$OMNIROUTE_MODEL" \
 	'{
-		contents: [{ parts: [{ text: $content }] }],
-		generationConfig: {
-			temperature: 0.3,
-			maxOutputTokens: 4096,
-			thinkingConfig: { thinkingBudget: 0 }
-		}
+		model: $model,
+		messages: [{ role: "user", content: $content }],
+		temperature: 0.3,
+		max_tokens: 4096
 	}')
 
 response=$(curl -s -w "\n%{http_code}" --request POST \
 	--url "$invoke_url" \
-	--header "x-goog-api-key: $GEMINI_API_KEY" \
+	--header "Authorization: Bearer $OMNIROUTE_API_KEY" \
 	--header "Content-Type: application/json" \
 	--data "$payload")
 
@@ -75,7 +75,7 @@ if [ "$http_code" != "200" ]; then
 	exit 1
 fi
 
-FIXED_TEXT=$(echo "$body" | jq -r '.candidates[0].content.parts[0].text // empty')
+FIXED_TEXT=$(echo "$body" | jq -r '.choices[0].message.content // empty')
 
 # Save raw fixed text before <answer> extraction (for testing)
 if [ -n "$DEBUG_OUTPUT_FILE" ]; then
