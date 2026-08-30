@@ -14,12 +14,12 @@ fade-in=0.25
 
 # ---- Indicator block: near the top, centred (screen is 1920x1200) ----
 # y-position is the CENTRE of the indicator, so the smallest usable value is
-# roughly indicator-radius; 95 with a radius of 80 leaves ~15px above the ring.
+# roughly indicator-radius; 100 with a radius of 90 leaves ~10px above the ring.
 indicator
 indicator-idle-visible
 indicator-x-position=960
-indicator-y-position=95
-indicator-radius=80
+indicator-y-position=100
+indicator-radius=90
 indicator-thickness=3
 
 # ---- Clock ----
@@ -27,9 +27,9 @@ clock
 timestr=%H:%M
 datestr=%A, %e %B
 # Steelfish Outline: the condensed display face in nova/.fonts. Hollow
-# letterforms need more size than a solid font to read, hence 40 rather than 26.
+# letterforms need more size than a solid font to read, hence 48 rather than 26.
 font=Steelfish
-font-size=40
+font-size=48
 
 # ---- No box at rest: transparent inside, invisible ring until you type ----
 inside-color=00000000
