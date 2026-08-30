@@ -8,6 +8,10 @@ sudo cp system/system/etc/tlp.conf /etc/tlp.conf
 
 sudo cp system/system/etc/ly/config.ini /etc/ly/config.ini
 
+# Catppuccin Mocha boot splash
+sudo cp -r system/system/usr/share/plymouth/themes/catppuccin-mocha /usr/share/plymouth/themes/
+sudo plymouth-set-default-theme -R catppuccin-mocha
+
 # sudo cp system/system/etc/modules-load/ntsync.conf /etc/modules-load.d/ntsync.conf
 
 # sudo cp ./system/system/etc/systemd/sleep.conf /etc/systemd/sleep.conf

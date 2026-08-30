@@ -25,3 +25,6 @@
 #--map-syntax ".ignore:Git Ignore"
 #
 --plain
+
+# Catppuccin Mocha (themes/Catppuccin Mocha.tmTheme; run `bat cache --build` after changes)
+--theme="Catppuccin Mocha"

@@ -27,6 +27,11 @@ set -gx XDG_STATE_HOME  $HOME/.local/state
 set -gx XDG_DOTFILES_HOME $HOME/.dotfiles
 
 # ---- Editor ----
+# Catppuccin Mocha — built into fish >= 4.4, so no theme file needed.
+# fish_config writes to fish_variables, which this repo gitignores as machine
+# state, so choose it here to keep the theme reproducible.
+fish_config theme choose catppuccin-mocha
+
 set -gx EDITOR nvim
 set -gx VISUAL nvim
 set -gx NVIM_LOG_FILE $HOME/.cache/nvim/my_custom_log.txt
@@ -119,8 +124,8 @@ if status is-interactive
     # autocd, case-insensitive completion, autosuggestions, syntax
     # highlighting: all built-in, no plugins or config needed.
 
-    # ---- Colors (match zsh autosuggest #808080) ----
-    set -g fish_color_autosuggestion 808080
+    # ---- Colors (match zsh autosuggest, Catppuccin Mocha overlay0) ----
+    set -g fish_color_autosuggestion 6c7086
 
     # venv handled by fish_right_prompt, not the activate script
     set -gx VIRTUAL_ENV_DISABLE_PROMPT 1
