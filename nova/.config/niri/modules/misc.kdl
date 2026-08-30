@@ -19,10 +19,10 @@ cursor {
 //   saturation - color of blurred bg; >1 boosts, <1 mutes. (def 1.5)
 //   off        - add this flag to kill all blur globally.
 blur {
-    passes 3
-    offset 3
-    noise 0.02
-    saturation 1.5
+    passes 4
+    offset 0
+    noise 0.00
+    saturation 1.0
 }
 layer-rule {
     match namespace="^$"
