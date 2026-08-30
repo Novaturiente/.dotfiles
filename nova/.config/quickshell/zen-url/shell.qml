@@ -19,13 +19,13 @@ ShellRoot {
 
     // Space-galaxy palette — fixed, matches scripts/rofi/config.rasi (rofi -theme black).
     // Deliberately NOT wallpaper-derived.
-    readonly property color bg:      "#e606060c"  // deep space (≈90% opaque)
-    readonly property color inputBg: "#d04a4a5a"  // starry gray, translucent
-    readonly property color outline: "#4a4a5a"    // starry gray (frame)
-    readonly property color accent:  "#8c52ff"    // cosmic purple (border/glyph/selection)
-    readonly property color selBg:   "#8c52ff"    // selected row = cosmic purple
-    readonly property color fg:      "#ffffff"    // bright starlight
-    readonly property color subtext: "#8a8f98"    // dim stardust (urls/count)
+    readonly property color bg:      "#e61e1e2e"  // deep space (≈90% opaque)
+    readonly property color inputBg: "#d0313244"  // starry gray, translucent
+    readonly property color outline: "#45475a"    // starry gray (frame)
+    readonly property color accent:  "#cba6f7"   // mauve    // cosmic purple (border/glyph/selection)
+    readonly property color selBg:   "#45475a"   // surface1    // selected row = cosmic purple
+    readonly property color fg:      "#cdd6f4"    // bright starlight
+    readonly property color subtext: "#7f849c"    // dim stardust (urls/count)
     readonly property string uiFont: "JetBrainsMono Nerd Font"
 
     // full list (from zen-urls.sh) and the current filtered view

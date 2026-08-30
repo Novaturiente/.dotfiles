@@ -16,13 +16,13 @@ ShellRoot {
     readonly property string clipctl: Quickshell.env("HOME") + "/.dotfiles/scripts/quickshell/clipctl.sh"
 
     // Space-galaxy palette
-    readonly property color bg:      "#e606060c"
-    readonly property color inputBg: "#d04a4a5a"
-    readonly property color outline: "#4a4a5a"
-    readonly property color accent:  "#8c52ff"
-    readonly property color selBg:   "#8c52ff"
-    readonly property color fg:      "#ffffff"
-    readonly property color subtext: "#8a8f98"
+    readonly property color bg:      "#e61e1e2e"
+    readonly property color inputBg: "#d0313244"
+    readonly property color outline: "#45475a"
+    readonly property color accent:  "#cba6f7"   // mauve
+    readonly property color selBg:   "#45475a"   // surface1
+    readonly property color fg:      "#cdd6f4"
+    readonly property color subtext: "#7f849c"
     readonly property string uiFont: "JetBrainsMono Nerd Font"
 
     property var entries: []       // [{id,image,text,thumb}]
@@ -128,7 +128,7 @@ ShellRoot {
                         width: ListView.view.width
                         height: modelData.image ? 104 : 46
                         radius: 0
-                        color: index === clipList.currentIndex ? selBg : (index % 2 ? "#14ffffff" : "transparent")
+                        color: index === clipList.currentIndex ? selBg : (index % 2 ? "#14cdd6f4" : "transparent")
 
                         RowLayout {
                             anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 12; spacing: 12
