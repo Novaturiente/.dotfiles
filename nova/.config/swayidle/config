@@ -1,3 +1,3 @@
 timeout 3600 'systemctl suspend-then-hibernate'
-timeout 300 'swaylock'
-before-sleep 'swaylock'
+timeout 300 '~/.dotfiles/scripts/lock.sh'
+before-sleep '~/.dotfiles/scripts/lock.sh'

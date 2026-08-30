@@ -6,9 +6,10 @@
 # there is no way to split the clock from the password feedback.
 
 # ---- Background ----
-screenshots
-effect-blur=12x3
-effect-vignette=0.35:0.6
+# The image itself is passed by scripts/lock.sh (-i <current wallpaper>).
+# No blur: the point is to see the wallpaper, not the desktop behind it.
+scaling=fill
+effect-vignette=0.25:0.5
 fade-in=0.25
 
 # ---- Indicator block: near the top, centred (screen is 1920x1200) ----
@@ -61,6 +62,5 @@ layout-border-color=45475aff
 layout-text-color=cdd6f4ff
 
 # ---- Behaviour ----
-ignore-empty-password
 show-failed-attempts
 daemonize
