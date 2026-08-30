@@ -23,11 +23,11 @@ POWERLINE_CHARS_CONFIG="🛸"      # UFO
 # "Catppuccin Mocha" theme, nvim/lua/plugins/colorscheme.lua the mocha flavour.
 POWERLINE_COLOR_USER_FG="%F{#cba6f7}"        # Mauve
 POWERLINE_COLOR_PATH_FG="%F{#89dceb}"        # Sky
-POWERLINE_COLOR_GIT_FG="%F{#f5c2e7}"         # Pink
-POWERLINE_COLOR_GIT_DIRTY_FG="%F{#eba0ac}"   # Maroon
+POWERLINE_COLOR_GIT_FG="%F{#a6e3a1}"         # Green  - branch clean
+POWERLINE_COLOR_GIT_DIRTY_FG="%F{#f38ba8}"   # Red    - uncommitted changes
 POWERLINE_COLOR_TIME_FG="%F{#7f849c}"        # Overlay1
 POWERLINE_COLOR_STATUS_FG="%F{#94e2d5}"      # Teal
-POWERLINE_COLOR_ERROR_FG="%F{#f38ba8}"       # Red
+POWERLINE_COLOR_ERROR_FG="%F{#eba0ac}"       # Maroon - non-zero exit code
 POWERLINE_COLOR_SEPARATOR_FG="%F{#45475a}"   # Surface1
 
 # --- Helper Functions ---
