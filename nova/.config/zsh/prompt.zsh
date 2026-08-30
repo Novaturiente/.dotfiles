@@ -18,15 +18,17 @@ POWERLINE_CHARS_NODE="󰎙"
 POWERLINE_CHARS_DOCKER="🐳"
 POWERLINE_CHARS_CONFIG="🛸"      # UFO
 
-# --- Color Scheme (Foreground colors only) ---
-POWERLINE_COLOR_USER_FG="%F{#A15BFF}"        # Nebula Violet
-POWERLINE_COLOR_PATH_FG="%F{#00E5FF}"        # Starlight Cyan
-POWERLINE_COLOR_GIT_FG="%F{#FF5BBE}"         # Cosmic Pink
-POWERLINE_COLOR_GIT_DIRTY_FG="%F{#FF007F}"   # Supernova Magenta
-POWERLINE_COLOR_TIME_FG="%F{#8A8F98}"        # Stardust Grey
-POWERLINE_COLOR_STATUS_FG="%F{#3FF3FF}"      # Neutron Star Blue
-POWERLINE_COLOR_ERROR_FG="%F{#FF3B30}"
-POWERLINE_COLOR_SEPARATOR_FG="%F{#4A4A5A}"
+# --- Color Scheme (Catppuccin Mocha, foreground colors only) ---
+# Same palette ghostty and nvim use: ghostty/config loads the built-in
+# "Catppuccin Mocha" theme, nvim/lua/plugins/colorscheme.lua the mocha flavour.
+POWERLINE_COLOR_USER_FG="%F{#cba6f7}"        # Mauve
+POWERLINE_COLOR_PATH_FG="%F{#89dceb}"        # Sky
+POWERLINE_COLOR_GIT_FG="%F{#f5c2e7}"         # Pink
+POWERLINE_COLOR_GIT_DIRTY_FG="%F{#eba0ac}"   # Maroon
+POWERLINE_COLOR_TIME_FG="%F{#7f849c}"        # Overlay1
+POWERLINE_COLOR_STATUS_FG="%F{#94e2d5}"      # Teal
+POWERLINE_COLOR_ERROR_FG="%F{#f38ba8}"       # Red
+POWERLINE_COLOR_SEPARATOR_FG="%F{#45475a}"   # Surface1
 
 # --- Helper Functions ---
 
