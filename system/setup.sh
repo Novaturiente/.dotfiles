@@ -6,7 +6,10 @@ novarch init
 
 sudo cp system/system/etc/tlp.conf /etc/tlp.conf
 
-sudo cp system/system/etc/ly/config.ini /etc/ly/config.ini
+# Login manager: greetd + sysc-greet (installed from package/manual-install.yaml).
+# The sysc-greet package's post_install creates the `greeter` user, writes
+# /etc/greetd/config.toml and enables greetd, so this only restores the config.
+sudo cp system/system/etc/greetd/config.toml /etc/greetd/config.toml
 
 # Catppuccin Mocha boot splash
 sudo cp -r system/system/usr/share/plymouth/themes/catppuccin-mocha /usr/share/plymouth/themes/
@@ -25,7 +28,7 @@ mkdir -p ~/.config
 
 stow -d ~/.dotfiles -t ~ nova
 
-sudo systemctl enable ly
+sudo systemctl enable greetd
 
 systemctl --user enable batsignal.service
 systemctl --user mask pulseaudio.service pulseaudio.socket
