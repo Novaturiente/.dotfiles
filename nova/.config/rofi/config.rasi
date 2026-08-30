@@ -22,18 +22,20 @@ configuration {
 
 /*****----- Global Properties -----*****/
 
+@import "catppuccin-mocha"
+
 * {
     font:   "JetBrains Mono Nerd Font 12";
-    bg0:    #06060cE6; /* Deep space transparent */
-    bg1:    #4A4A5AD0; /* Starry gray translucent */
-    bg2:    #8C52FFE6; /* Cosmic Purple */
+    bg0:    #1e1e2eE6; /* base, translucent */
+    bg1:    #45475aD0; /* surface1, translucent */
+    bg2:    @mauve;    /* accent */
 
-    fg0:    #E6E6FA;   /* Lavender starlight */
-    fg1:    #FFFFFF;   /* Bright starlight white */
-    fg2:    #8A8F98;   /* Dim stardust gray */
+    fg0:    @text;
+    fg1:    @base;     /* text drawn on the accent background */
+    fg2:    @overlay1;
 
     background-color:   transparent;
-    text-color:         @fg1;
+    text-color:         @fg0;
 
     border-colour:               @bg1;
     handle-colour:               @bg2;

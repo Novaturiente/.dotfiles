@@ -107,6 +107,7 @@ zstyle ':completion:*' list-packed yes
 source $XDG_CONFIG_HOME/zsh/pluginload.zsh
 source $HOME/.config/zsh/plugins/zsh-defer/zsh-defer.plugin.zsh
 _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/fzf.zsh" fzf --zsh
+source $XDG_CONFIG_HOME/zsh/catppuccin-fzf-mocha.sh   # Catppuccin Mocha FZF_DEFAULT_OPTS
 # atuin cached (not deferred): keeps preexec hook eager so the FIRST command is recorded
 _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/atuin.zsh" atuin init zsh
 

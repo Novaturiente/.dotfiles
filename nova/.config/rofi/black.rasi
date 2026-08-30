@@ -4,25 +4,25 @@
 * {
     font:   "JetBrainsMono Nerd Font Mono 12";
 
-    nord0:     #000000;    /* Black */
-    nord1:     #3b4252;    /* Dark Grey-Blue */
-    nord2:     #434c5e;    /* Slate Grey */
-    nord3:     #4c566a;    /* Medium Slate Grey */
+    nord0:     #11111b;    /* Crust */
+    nord1:     #313244;    /* Surface0 */
+    nord2:     #45475a;    /* Surface1 */
+    nord3:     #585b70;    /* Surface2 */
 
-    nord4:     #d8dee9;    /* Light Grey */
-    nord5:     #e5e9f0;    /* Very Light Grey */
-    nord6:     #eceff4;    /* Near White */
+    nord4:     #a6adc8;    /* Subtext0 */
+    nord5:     #bac2de;    /* Subtext1 */
+    nord6:     #cdd6f4;    /* Text */
 
-    nord7:     #8fbcbb;    /* Desaturated Teal */
-    nord8:     #005c87;    /* Light Cyan / Frost Blue */
-    nord9:     #81a1c1;    /* Muted Blue */
-    nord10:    #5e81ac;    /* Desaturated Indigo / Steel Blue */
-    nord11:    #bf616a;    /* Soft Red / Salmon */
+    nord7:     #94e2d5;    /* Teal */
+    nord8:     #cba6f7;    /* Mauve (accent) */
+    nord9:     #89b4fa;    /* Blue */
+    nord10:    #74c7ec;    /* Sapphire */
+    nord11:    #f38ba8;    /* Red */
 
-    nord12:    #d08770;    /* Tan / Warm Orange */
-    nord13:    #ebcb8b;    /* Soft Yellow / Sand */
-    nord14:    #a3be8c;    /* Muted Green / Sage */
-    nord15:    #b48ead;    /* Mauve / Muted Purple */
+    nord12:    #fab387;    /* Peach */
+    nord13:    #f9e2af;    /* Yellow */
+    nord14:    #a6e3a1;    /* Green */
+    nord15:    #cba6f7;    /* Mauve */
 
     background-color:   transparent;
     text-color:         @nord4;
