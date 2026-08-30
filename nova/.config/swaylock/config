@@ -1,0 +1,66 @@
+# swaylock-effects — Catppuccin Mocha
+# Colours are <rrggbb[aa]>. `swaylock --help` lists every option used here.
+#
+# Note on layout: swaylock draws the clock, date and typing feedback INSIDE the
+# indicator, so they move as one block. indicator-*-position places that block;
+# there is no way to split the clock from the password feedback.
+
+# ---- Background ----
+screenshots
+effect-blur=12x3
+effect-vignette=0.35:0.6
+fade-in=0.25
+
+# ---- Indicator block: near the top, centred (screen is 1920x1200) ----
+indicator
+indicator-idle-visible
+indicator-x-position=960
+indicator-y-position=260
+indicator-radius=110
+indicator-thickness=3
+
+# ---- Clock ----
+clock
+timestr=%H:%M
+datestr=%A, %e %B
+font=SF Pro Display
+font-size=26
+
+# ---- No box at rest: transparent inside, invisible ring until you type ----
+inside-color=00000000
+inside-clear-color=00000000
+inside-caps-lock-color=00000000
+inside-ver-color=00000000
+inside-wrong-color=00000000
+
+ring-color=00000000
+ring-clear-color=a6e3a1ff
+ring-caps-lock-color=f9e2afff
+ring-ver-color=f9e2afff
+ring-wrong-color=f38ba8ff
+
+line-uses-inside
+separator-color=00000000
+
+# ---- Typing feedback ----
+key-hl-color=cba6f7ff
+bs-hl-color=f38ba8ff
+caps-lock-key-hl-color=f9e2afff
+caps-lock-bs-hl-color=f38ba8ff
+
+# ---- Text ----
+text-color=cdd6f4ff
+text-clear-color=a6e3a1ff
+text-caps-lock-color=f9e2afff
+text-ver-color=f9e2afff
+text-wrong-color=f38ba8ff
+
+# ---- Keyboard layout box ----
+layout-bg-color=1e1e2ecc
+layout-border-color=45475aff
+layout-text-color=cdd6f4ff
+
+# ---- Behaviour ----
+ignore-empty-password
+show-failed-attempts
+daemonize
