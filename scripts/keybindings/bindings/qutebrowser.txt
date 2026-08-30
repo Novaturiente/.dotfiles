@@ -7,7 +7,7 @@
 <Alt-Right>         Next tab
 :                   Command mode
 ;c                  Quickmark load
-<Ctrl+Alt+t>        spawn -d thorium-browser-avx2 {url} ;; tab-cl
+<Ctrl+Alt+t>        Open URL in external browser, close tab
 <Ctrl-[>            Leave insert/passthrough mode
 <Ctrl-n>            New window
 <Ctrl-p>            mode-enter passthrough

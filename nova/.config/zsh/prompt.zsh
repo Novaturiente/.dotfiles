@@ -69,7 +69,7 @@ function get_runtime_indicator() {
     [[ -f "pyproject.toml" || -f "requirements.txt" || -f ".python-version" ]] && indicators+=("$POWERLINE_CHARS_PYTHON py")
     [[ -f "Cargo.toml" ]] && indicators+=("$POWERLINE_CHARS_RUST rs")
     [[ -f "package.json" ]] && indicators+=("$POWERLINE_CHARS_NODE js")
-    [[ -f "Containerfile" || -f "podman-compose.yml" || -f "Dockerfile" ]] && indicators+=("$POWERLINE_CHARS_DOCKER podman")
+    [[ -f "Containerfile" || -f "podman-compose.yml" || -f "Dockerfile" ]] && indicators+=("$POWERLINE_CHARS_DOCKER docker")
     echo "${indicators[@]}"
 }
 

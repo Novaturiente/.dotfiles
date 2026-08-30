@@ -41,7 +41,6 @@ set -gx LC_ALL en_US.UTF-8
 
 # ---- Qt ----
 set -gx QT_SELECT qt6
-set -gx QT_QPA_PLATFORMTHEME qt6ct
 
 # ---- Mesa / GL vendor (Intel) ----
 set -gx __EGL_VENDOR_LIBRARY_FILENAMES /usr/share/glvnd/egl_vendor.d/50_mesa.json

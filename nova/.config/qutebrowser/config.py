@@ -268,8 +268,6 @@ config.bind("<Alt-j>", "tab-next")
 config.bind("<Ctrl-Shift-Right>", "open -t {url}")
 # config.bind("tt", "config-cycle tabs.show always never ;; message-info 'Toggled Tabs'") # Replaced by Space+tt for position
 
-# External browser
-config.bind("<Ctrl+Alt+t>", "spawn -d thorium-browser-avx2 {url} ;; tab-close")
 
 # ============================================================================
 # Key Bindings & Aliases

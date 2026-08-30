@@ -20,15 +20,16 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 │   ├── .zshrc             # Main shell config (vi mode, zoxide, fzf, atuin)
 │   └── .tmux.conf         # Tmux config (backtick prefix, vi mode)
 ├── scripts/               # Custom utility scripts
-│   ├── rofi/              # Rofi launcher scripts (bookmarks, clipboard, power, tools)
+│   ├── rofi/              # Rofi menus (calendar, password, window switcher, tv-edit)
+│   ├── quickshell/        # Quickshell menu launchers/controllers (bound in niri)
 │   └── keybindings/       # Auto-extract keybindings from niri/nvim/qutebrowser
 ├── system/
 │   ├── novarch            # Compiled Rust binary - declarative package manager
 │   ├── novarch.back       # Backup of previous novarch version
 │   ├── package/           # YAML package lists (one file per category)
 │   ├── system/            # System config files (mirrors /etc structure)
-│   │   ├── boot/          # GRUB theme (CyberSynchro)
-│   │   └── etc/           # TLP, Ly, systemd services, GRUB defaults
+│   │   ├── etc/           # TLP, Ly, PAM, systemd services, udev, sudoers
+│   │   └── usr/           # /usr/local helpers (vpn-run, mullvad-netns, howdy-ir-pre)
 │   └── setup.sh           # First-boot system setup script
 └── .gitignore
 ```
@@ -57,15 +58,12 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 | Layer | Tool | Config Location |
 |-------|------|-----------------|
 | Window Manager | **Niri** (Wayland tiling compositor) | `nova/.config/niri/config.kdl` |
-| Alt WM | Hyprland (also configured) | `nova/.config/hypr/` |
 | Login Manager | **Ly** (TUI) | `system/system/etc/ly/config.ini` |
-| Panel | **Waybar** + DankMaterialShell | `nova/.config/waybar/`, `nova/.config/DankMaterialShell/` |
-| Notifications | **swaync** | `nova/.config/swaync/` |
-| Launcher | **Rofi** (Wayland fork) | `nova/.config/rofi/` |
-| Wallpaper | **wpaperd** (random, 15min cycle) | `nova/.config/wpaperd/` |
-| Idle/Lock | **swayidle** | `nova/.config/swayidle/` |
+| Panel / Notifications / Wallpaper | **DankMaterialShell** (`dms`, Quickshell-based) | `nova/.config/DankMaterialShell/`, `nova/.config/niri/dms/` |
+| Launcher / menus | **Quickshell** daemons (`qs -c <name> -d`), Rofi for a few helpers | `nova/.config/quickshell/`, `nova/.config/rofi/` |
+| Idle/Lock | **swayidle** → `dms ipc call lock lock` | `nova/.config/swayidle/config` |
 | Screenshots | grim + slurp + satty | bound in niri config |
-| Screen Record | wl-screenrec | `scripts/record-script.sh` |
+| Screen Record | wf-recorder (region/audio), wl-screenrec (fullscreen) | `scripts/record-script.sh` |
 | Clipboard | wl-clipboard + cliphist | autostarted in WM config |
 
 ## Shell & Terminal
@@ -84,10 +82,10 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 
 ### Shell Config Loading Order
 1. `.profile` — XDG dirs, API keys, base env
-2. `.zprofile` — login overrides (editor=neovide, Rust mirrors)
+2. `.zprofile` — login overrides (Rust mirrors)
 3. `.zshrc` — sources `.profile`, then loads from `$XDG_CONFIG_HOME/zsh/`:
    - `variables.zsh` — editor, PATH, locale
-   - `aliases.zsh` — 80+ aliases (eza, trash, git, podman, ssh)
+   - `aliases.zsh` — aliases and helper functions (eza, trash, git, ssh, `cproj`)
    - `pluginload.zsh` — zsh plugins (autopair, syntax-highlighting, autosuggestions, autocomplete)
    - `prompt.zsh` — powerline-style prompt with git/language detection
 4. **fish** (default login shell) — `~/.config/fish/config.fish` re-declares the same env/PATH, then auto-loads `conf.d/*.fish` (aliases, autopair, auto-venv). Completions: carapace bridge + native fish + man-page-generated (`fish_update_completions`). Plugins via fisher (`fish_plugins`). Inline autosuggestions read `~/.local/share/fish/fish_history` (not atuin's DB).
@@ -97,26 +95,17 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 - `cp` → `rsync` (progress bar)
 - `ls/la/ll/lt` → `eza` variants
 - `gadd` → auto-stage and commit with message
-- `macup/macdown` → podman compose for WinApps
-- `ollamaup/ollamadown` → podman compose for Ollama
+- `winstart/winstop/winrestart/winsopen` → drive the Windows VM on `novahome` over ssh + docker
 
 ## Editors
 
-### Neovim (primary)
+### Neovim (only editor)
 - Config: `nova/.config/nvim/` (Lua-based)
 - Plugin manager: lazy.nvim
 - Leader key: Space
 - Font: JetBrainsMonoNL Nerd Font, size 13
 - Tabs: 4 spaces
 - Modules: `plugins.lua`, `keybindinds.lua`, `ui.lua`, `coding.lua`, `autostart.lua`, `orgsetup.lua`
-- GUI: Neovide (90% opacity, blur, cursor trail)
-
-### Doom Emacs (secondary)
-- Config: `nova/.config/doom/`
-- Theme: doom-challenger-deep
-- Font: JetBrains Mono NL Nerd Font, size 15
-- Evil mode (vim keybindings)
-- Used for org-mode and as PDF viewer
 
 ## Scripts (`scripts/`)
 
@@ -125,11 +114,9 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 |--------|---------|
 | `brightness.sh` | Adaptive step brightness (1% below 32%, 5% above) |
 | `volume.sh` | playerctl volume adjust |
-| `mute.sh` | pamixer mute toggle |
-| `idle.sh` | Toggle swayidle daemon |
 | `battery-limit.sh` | Lenovo IdeaPad battery conservation mode (70%+ → enable) |
 | `dns.sh` | Toggle Adguard DNS on NetworkManager connection |
-| `wallpaper.sh` | Random wallpaper loop (30min, swaybg) |
+| `tv-only-output.sh` | Switch niri output to the TV only |
 
 ### Productivity
 | Script | Purpose |
@@ -143,11 +130,10 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 ### Rofi Menus (`scripts/rofi/`)
 | Script | Purpose |
 |--------|---------|
-| `bookmarks.sh` | Browser bookmark manager with title fetching |
-| `clipboard.sh` | Clipboard history with image preview |
-| `find.sh` | File finder → open in neovide |
-| `power.sh` | Logout/shutdown/reboot with confirmation |
-| `tools.sh` | File operations (copy, move, rename, delete, restore) |
+| `calendar.sh` | khal calendar front-end |
+| `passrofi.sh` | rbw password picker with per-domain autofill |
+| `windows.sh` | Window switcher for niri |
+| `tv-edit.sh` | Edit the TV output configuration |
 
 ### Keybinding Extractors (`scripts/keybindings/`)
 Auto-extract and display keybindings from niri, neovim, and qutebrowser configs into a unified rofi menu.
@@ -167,7 +153,7 @@ Auto-extract and display keybindings from niri, neovim, and qutebrowser configs 
 - OUTPUT: ACCEPT all
 
 ### Boot
-- GRUB with CyberSynchro theme, 3s timeout
+- systemd-boot (managed by `systemd-boot-manager`); no GRUB on this system
 - Kernel params: `loglevel=3 quiet splash i915.enable_psr=1`
 
 ### Systemd Services
@@ -179,13 +165,13 @@ Auto-extract and display keybindings from niri, neovim, and qutebrowser configs 
 - **GTK/Qt:** Materia theme, WhiteSur icons, Bibata cursor
 - **Terminal font:** IosevkaTerm Nerd Font (size 13)
 - **Editor font:** JetBrains Mono NL Nerd Font (size 13-15)
-- **Color schemes:** Catppuccin Mocha (Ghostty), CachyOS colors (Hyprland), Challenger Deep (Emacs)
+- **Color schemes:** Catppuccin Mocha (Ghostty), DankMaterialShell-generated palettes (niri, nvim, ghostty)
 - **Icon theme:** Cool-Dark-Icons (Rofi), WhiteSur (GTK)
 
 ## Browsers
 - **Primary:** Zen Browser (Wayland)
 - **Secondary:** Qutebrowser (keyboard-driven, dark mode, Catppuccin theme)
-- **Work:** Google Chrome, Thorium (separate qutebrowser profile at `nova/.config/qutebrowser_work/`)
+- **Work:** Google Chrome, Brave
 
 ## Development Languages & Tools
 - **Rust** (rustup, rust-analyzer, Tsinghua mirrors)
@@ -195,13 +181,12 @@ Auto-extract and display keybindings from niri, neovim, and qutebrowser configs 
 - **Lua** (luarocks)
 - **Java** (OpenJDK, for work)
 - **Databases:** PostgreSQL (+ pgvector), MySQL, DBeaver GUI
-- **Containers:** Docker + Podman (WinApps Windows VM via podman-compose)
+- **Containers:** Docker (WinApps connects to a Windows VM on `novahome` in manual mode)
 - **Git tools:** lazygit, git-filter-repo
 
 ## File Management
-- **Terminal:** Yazi (primary), Ranger (secondary)
-- **Yazi keybindings:** Mount menu (M), SMB shares (gs), create (mk), drag-drop (Ctrl+Y)
-- **MIME defaults:** zen (web), emacs (PDF), imv (images), mpv (video/audio), ranger (dirs)
+- No terminal file manager is installed; browse from the shell or `broot`.
+- **MIME defaults** (`nova/.config/mimeapps.list`): zen (web), zathura (PDF/epub), imv (images), mpv (video/audio), nvim (everything text-shaped)
 
 ## Hardware Specifications
 
@@ -238,6 +223,6 @@ Auto-extract and display keybindings from niri, neovim, and qutebrowser configs 
 
 ## Important Notes
 
-- **Wayland-native:** All scripts assume Wayland (wl-copy, slurp, grim, ydotool, wlopm)
-- **Nerd Fonts required:** Icons used throughout rofi, prompts, waybar, and terminal configs
+- **Wayland-native:** All scripts assume Wayland (wl-copy, slurp, grim, ydotool, niri msg)
+- **Nerd Fonts required:** Icons used throughout rofi, quickshell, prompts, and terminal configs
 - **Sensitive files:** API keys and credentials are stored in `.profile` and `.env` files — never commit actual values

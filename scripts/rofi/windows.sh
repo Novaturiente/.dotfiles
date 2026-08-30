@@ -11,9 +11,6 @@ get_app_name() {
         zen)                         echo "Zen Browser" ;;
         org.qutebrowser.qutebrowser) echo "Qutebrowser" ;;
         google-chrome)               echo "Chrome" ;;
-        thorium-browser)             echo "Thorium" ;;
-        org.kde.dolphin)             echo "Dolphin" ;;
-        neovide)                     echo "Neovide" ;;
         *)
             # Extract last dot-separated segment, capitalize first letter
             local last="${app_id##*.}"
