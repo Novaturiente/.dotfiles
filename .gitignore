@@ -1,6 +1,4 @@
 nova/.config/qutebrowser/__pycache__/
-nova/.config/ranger/plugins/__pycache__/
-nova/.config/ranger/plugins/ranger-archives/
 .aider*
 temp/
 docs/
@@ -19,3 +17,6 @@ nova/.password-store/
 nova/.config/zen/**
 !nova/.config/zen/**/
 !nova/.config/zen/**/user.js
+
+# DMS recreates this as an empty placeholder even with matugenTemplateNiri off
+nova/.config/niri/dms/colors.kdl
