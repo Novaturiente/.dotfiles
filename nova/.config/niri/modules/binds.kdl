@@ -139,9 +139,6 @@ binds {
     XF86PowerOff allow-when-locked=true {
         spawn "systemctl suspend-then-hibernate"
     }
-    Mod+I hotkey-overlay-title="Toggle idle" {
-        spawn-sh "~/.dotfiles/scripts/idle.sh"
-    }
     Mod+B hotkey-overlay-title="Toggle bar auto-hide" {
         spawn-sh "dms ipc call bar toggleAutoHide id default"
     }
@@ -165,15 +162,8 @@ binds {
     XF86AudioMute allow-when-locked=true {
         spawn-sh "dms ipc call audio mute"
     }
-    // Shift+wheel-press = toggle idle/sleep inhibit (same as Mod+I)
-    Shift+XF86AudioMute allow-when-locked=true {
-        spawn-sh "~/.dotfiles/scripts/idle.sh"
-    }
     XF86AudioMicMute allow-when-locked=true {
         spawn-sh "dms ipc call audio micmute"
-    }
-    Num_Lock {
-        spawn-sh "sleep 0.3 && swayosd-client --num-lock"
     }
     // Brightness controls
     XF86MonBrightnessUp allow-when-locked=true {

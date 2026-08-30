@@ -1,6 +1,6 @@
 # Custom XDG Base Directories
 export EDITOR="nvim"
-export VISUAL="neovide"
+export VISUAL="nvim"
 
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
@@ -37,7 +37,6 @@ export WGETRC="$XDG_CONFIG_HOME/wget/wgetrc"
 export PATH="$CARGO_HOME/bin:$GOPATH/bin:$BUN_INSTALL/bin:$PATH"
 
 export QT_SELECT=qt6
-export QT_QPA_PLATFORMTHEME=qt6ct
 
 [ -f ~/.env ] && set -a && source ~/.env && set +a
 

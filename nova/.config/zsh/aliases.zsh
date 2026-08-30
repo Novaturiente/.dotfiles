@@ -1,29 +1,12 @@
 # Editor and system update aliases
 # alias vi="nvim"
 alias vi="nvim"
-alias doom="~/.config/emacs/bin/doom"
 alias inova="sudo novarch install"
 alias unova="sudo novarch update"
 alias anova="sudo novarch add"
 alias rnova="sudo novarch remove"
 
 alias cedit="nvim -c 'enew | put + | setlocal buftype=nofile bufhidden=wipe noswapfile'"
-alias emacode='emacs -nw --eval "(run-with-idle-timer 1 nil #'\''my/emacode)"'
-neocode() {
-    if [ -z "$TMUX" ]; then
-        echo "neocode requires tmux"
-        return 1
-    fi
-    local tmpdir=$(mktemp -d)
-    ln -sf ~/.config/yazi/* "$tmpdir/" 2>/dev/null
-    printf '[mgr]\nratio = [0, 1, 0]\n' > "$tmpdir/yazi.toml"
-    local cpane=$(tmux split-window -h -d -l 75% -P -F '#{pane_id}')
-    tmux set-option -p -t "$cpane" allow-passthrough off
-    sleep 1
-    tmux send-keys -t "$cpane" 'claude' Enter
-    YAZI_CONFIG_HOME="$tmpdir" yazi
-    rm -rf "$tmpdir"
-}
 
 # Claude project: lazygit (30%) + claude --dangerously-skip-permissions (70%)
 # in a persistent tmux session named after the target dir (default: $PWD).
@@ -62,8 +45,7 @@ cproj() {
         tmux select-pane -t "$session" -R
     fi
 
-    # Remember the project dir on the session (used by the lazygit<->yazi
-    # toggle keybinding to respawn the left pane in the right directory).
+    # Remember the project dir on the session.
     tmux set-option -t "$session" @cproj_dir "$dir" 2>/dev/null || true
 
     # Focus the claude pane (rightmost) regardless of rebuild/reuse
@@ -90,7 +72,6 @@ alias rm="trash"
 
 alias cp='rsync -ah --info=progress2 --inplace --no-whole-file'
 
-alias grubup="sudo grub-mkconfig -o /boot/grub/grub.cfg"
 alias jctl="journalctl -p 3 -xb"
 alias tarnow='tar -acf '
 alias untar='tar -zxvf '
@@ -111,9 +92,6 @@ alias winstop="ssh nova@novahome docker stop windows"
 alias winrestart="ssh nova@novahome docker restart windows"
 alias winsopen="ssh nova@novahome docker start windows && winapps windows"
 
-alias macup="podman-compose -f ~/.dotfiles/docker/macos.yaml up -d"
-alias macdown="podman-compose -f ~/.dotfiles/docker/macos.yaml down"
-
 # alias novarch="uv run --project ~/.dotfiles/novarch ~/.dotfiles/novarch/run.py"
 alias editsystem="nvim ~/.dotfiles/novarch"
 alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && paru -Syu"
@@ -121,9 +99,6 @@ alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --sa
 alias clear-cache="rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp"
 
 alias eeclogin="ssh -i ~/.ssh/id_eecdev eecdev@$EEC_SERVER_IP"
-
-# yazi (full tree + git signs) + claude --dangerously-skip-permissions, 30:70
-alias yproj="~/.dotfiles/scripts/yazi-claude.sh"
 
 alias cld="claude --dangerously-skip-permissions"
 

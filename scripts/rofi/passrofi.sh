@@ -87,7 +87,7 @@ get_focused_domain() {
     # "start_tmux.sh" get mistaken for a domain and prefill the search.
     local app_id
     app_id=$(echo "$win_info" | grep "App ID:" | sed 's/.*App ID: "\(.*\)"/\1/')
-    echo "$app_id" | grep -qiE 'zen|chrom|firefox|qutebrowser|thorium|brave|browser' || return 0
+    echo "$app_id" | grep -qiE 'zen|chrom|qutebrowser|brave|browser' || return 0
 
     local title
     title=$(echo "$win_info" | grep "Title:" | sed 's/.*Title: "\(.*\)"/\1/')

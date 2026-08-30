@@ -63,7 +63,6 @@ Mod+Escape                      toggle-keyboard-shortcuts-inhibit
 Mod+F                           maximize-column
 Mod+G                           Grammar fix
 Mod+H                           focus-column-left
-Mod+I                           Toggle idle
 Mod+J                           focus-workspace-down
 Mod+K                           focus-workspace-up
 Mod+Left                        focus-column-left
@@ -121,10 +120,8 @@ Mod+WheelScrollDown             focus-column-right
 Mod+WheelScrollLeft             move-column-to-workspace-up
 Mod+WheelScrollRight            move-column-to-workspace-down
 Mod+WheelScrollUp               focus-column-left
-Num_Lock                        sleep 0.3 && swayosd-client --num-lock
 Print                           screenshot
 Shift+XF86AudioLowerVolume      brightness.sh down
-Shift+XF86AudioMute             idle.sh
 Shift+XF86AudioRaiseVolume      brightness.sh up
 XF86AudioLowerVolume            dms ipc call audio decrement 5
 XF86AudioMicMute                dms ipc call audio micmute

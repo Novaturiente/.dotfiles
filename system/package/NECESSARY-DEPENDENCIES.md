@@ -13,17 +13,17 @@ These packages **are not in your package list** but **are required** by packages
 | **bluez-libs** | blueman |
 | **device-mapper** | docker |
 | **hdparm** | tlp |
-| **noto-fonts** | zen-browser-bin, zoom |
+| **noto-fonts** | zen-browser-bin |
 | **perl** | git, stow, tlp |
-| **python** | deluge, flatpak, git-filter-repo, meson, podman-compose, python-pyflakes, python-pynvim, python-ruff, python-tldextract, tlp-pd, trash-cli, udiskie |
+| **python** | flatpak, git-filter-repo, meson, python-pyflakes, python-pynvim, python-ruff, python-tldextract, tlp-pd, trash-cli, udiskie |
 | **rtkit** | xdg-desktop-portal |
 | **sudo** | base-devel |
 | **texinfo** | base-devel |
-| **ttf-bitstream-vera** | zen-browser-bin, zoom |
-| **ttf-dejavu** | zen-browser-bin, zoom |
-| **ttf-liberation** | google-chrome, zen-browser-bin, zoom |
+| **ttf-bitstream-vera** | zen-browser-bin |
+| **ttf-dejavu** | zen-browser-bin |
+| **ttf-liberation** | google-chrome, zen-browser-bin |
 | **usbutils** | tlp |
-| **which** | base-devel, sunshine |
+| **which** | base-devel |
 
 ---
 

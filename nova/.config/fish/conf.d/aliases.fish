@@ -5,7 +5,6 @@
 
 # ---- Editors / system ----
 alias vi      'nvim'
-alias doom    '~/.config/emacs/bin/doom'
 alias cedit   "nvim -c 'enew | put + | setlocal buftype=nofile bufhidden=wipe noswapfile'"
 
 # ---- novarch (declarative package manager) ----
@@ -37,7 +36,6 @@ alias tarnow 'tar -acf'
 alias untar  'tar -zxvf'
 
 # ---- system control ----
-alias grubup 'sudo grub-mkconfig -o /boot/grub/grub.cfg'
 alias jctl   'journalctl -p 3 -xb'
 alias clear-cache 'rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp'
 
@@ -46,13 +44,10 @@ alias gadd 'git add . && git commit -m "Update"'
 
 # ---- misc ----
 alias fileserver 'python3 -m http.server 8080 --directory ~/Share'
-alias macup   'podman-compose -f ~/.dotfiles/docker/macos.yaml up -d'
-alias macdown 'podman-compose -f ~/.dotfiles/docker/macos.yaml down'
 alias winstart 'ssh nova@novahome docker start windows'
 alias winstop  'ssh nova@novahome docker stop windows'
 alias winrestart 'ssh nova@novahome docker restart windows'
 alias winsopen 'ssh nova@novahome docker start windows && winapps windows'
 
 # ---- claude helpers ----
-alias yproj '~/.dotfiles/scripts/yazi-claude.sh'
 alias cld   'claude --dangerously-skip-permissions'
