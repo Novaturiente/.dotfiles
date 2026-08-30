@@ -1,6 +1,7 @@
 {
-  "currentThemeName": "dynamic",
-  "currentThemeCategory": "dynamic",
+  "currentThemeName": "custom",
+  "currentThemeCategory": "custom",
+  "customThemeFile": "/home/nova/.config/DankMaterialShell/themes/catppuccin.json",
   "widgetColorMode": "colorful",
   "cornerRadius": 12,
   "padHours12Hour": true,
