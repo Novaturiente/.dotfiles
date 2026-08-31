@@ -34,21 +34,69 @@ layout {
     shadow {
 
     }
+    // Cancel the 10px gap under the DMS bar only, so windows sit flush
+    // beneath it while gaps 10 still applies everywhere else.
     struts {
-
+        top -10
     }
 }
 
 
 animations {
-    window-open {
-        duration-ms 200
-        curve "ease-out-quad"
+    // Light overshoot on the vertical workspace slide. Niri's default is
+    // damping-ratio=1.0 stiffness=1000, which is critically damped and never
+    // bounces. Raise damping-ratio back toward 1.0 to take the bounce out.
+    workspace-switch {
+        spring damping-ratio=0.75 stiffness=800 epsilon=0.0001
     }
+
+    // New windows slide in from the right and settle into place. The existing
+    // windows getting shoved aside is window-movement below; the camera
+    // following the new window is horizontal-view-movement.
+    window-open {
+        duration-ms 250
+        curve "cubic-bezier" 0.05 0.7 0.1 1
+
+        custom-shader r"
+            vec4 open_color(vec3 coords_geo, vec3 size_geo) {
+                // ponytail: 0.25 of the window width. The render area niri gives
+                // the shader is only somewhat larger than the window, so a bigger
+                // offset starts clipping the right edge. Lower it if you see a cut.
+                float offset = (1.0 - niri_progress) * 0.25;
+
+                vec3 c = vec3(coords_geo.x - offset, coords_geo.y, 1.0);
+                if (c.x < 0.0 || 1.0 < c.x || c.y < 0.0 || 1.0 < c.y)
+                    return vec4(0.0);
+
+                return texture2D(niri_tex, (niri_geo_to_tex * c).st) * niri_clamped_progress;
+            }
+        "
+    }
+
+    // Mirror: closing windows slide back out to the right as they fade.
     window-close {
         duration-ms 200
-        curve "ease-out-cubic"
+        curve "ease-out-quad"
+
+        custom-shader r"
+            vec4 close_color(vec3 coords_geo, vec3 size_geo) {
+                float offset = niri_progress * 0.25;
+
+                vec3 c = vec3(coords_geo.x - offset, coords_geo.y, 1.0);
+                if (c.x < 0.0 || 1.0 < c.x || c.y < 0.0 || 1.0 < c.y)
+                    return vec4(0.0);
+
+                return texture2D(niri_tex, (niri_geo_to_tex * c).st) * (1.0 - niri_clamped_progress);
+            }
+        "
     }
+
+    // The push itself: existing windows moving out of the way on open/close.
+    // Default stiffness is 800, which is over almost before you see it.
+    window-movement {
+        spring damping-ratio=1.0 stiffness=450 epsilon=0.0001
+    }
+
     overview-open-close {
         spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
     }
