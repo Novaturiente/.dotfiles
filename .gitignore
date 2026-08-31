@@ -20,3 +20,11 @@ nova/.config/zen/**
 
 # DMS recreates this as an empty placeholder even with matugenTemplateNiri off
 nova/.config/niri/dms/colors.kdl
+
+# GTK: DMS/matugen regenerates the palette on every theme change,
+# and the asset dirs are symlinks into /usr/share/themes/adw-gtk3
+nova/.config/gtk-3.0/dank-colors.css
+nova/.config/gtk-4.0/dank-colors.css
+nova/.config/gtk-3.0/assets
+nova/.config/gtk-4.0/assets
+nova/.config/gtk-4.0/servers
