@@ -2,6 +2,14 @@
   "currentThemeName": "custom",
   "currentThemeCategory": "custom",
   "customThemeFile": "/home/nova/.config/DankMaterialShell/themes/catppuccin.json",
+  "registryThemeVariants": {
+    "catppuccin": {
+      "dark": {
+        "flavor": "mocha",
+        "accent": "mauve"
+      }
+    }
+  },
   "widgetColorMode": "colorful",
   "cornerRadius": 12,
   "padHours12Hour": true,
@@ -49,7 +57,6 @@
     }
   ],
   "showWorkspaceIndex": true,
-  "showWorkspaceApps": true,
   "showOccupiedWorkspacesOnly": true,
   "workspaceUnfocusedColorMode": "s",
   "focusedWindowShowIcon": false,
@@ -57,6 +64,7 @@
   "spotlightSectionViewModes": {
     "apps": "list"
   },
+  "launcherStyle": "spotlight",
   "weatherEnabled": false,
   "networkPreference": "wifi",
   "cursorSettings": {
@@ -95,6 +103,12 @@
   "notificationTimeoutLow": 10000,
   "notificationCompactMode": true,
   "notificationShowTimeoutBar": true,
+  "dankIslandBarId": "default",
+  "dankIslandHoverOpenDelay": 250,
+  "dankIslandNotificationBadgeClearOnOpen": true,
+  "dankIslandHomeStatusSlot": "right",
+  "dankIslandHomeCompactTight": true,
+  "dankIslandBatteryStyle": "outline",
   "osdAlwaysShowValue": true,
   "osdMediaPlaybackEnabled": true,
   "powerActionHoldDuration": 1,
@@ -110,26 +124,23 @@
       "showOnLastDisplay": true,
       "leftWidgets": [
         {
-          "id": "cpuUsage",
-          "enabled": true,
-          "minimumWidth": false
-        },
-        {
-          "id": "memUsage",
-          "enabled": true,
-          "minimumWidth": true,
-          "showSwap": false,
-          "showInGb": false
-        },
-        {
-          "id": "network_speed_monitor",
+          "id": "workspaceSwitcher",
           "enabled": true
+        },
+        {
+          "id": "runningApps",
+          "enabled": true,
+          "runningAppsCompactMode": true,
+          "runningAppsGroupByApp": false,
+          "runningAppsCurrentWorkspace": false,
+          "runningAppsCurrentMonitor": false
         },
         {
           "id": "focusedWindow",
           "enabled": true,
           "focusedWindowSize": 0,
-          "focusedWindowCompactMode": true
+          "focusedWindowCompactMode": true,
+          "focusedWindowShowIcon": true
         }
       ],
       "centerWidgets": [
@@ -148,8 +159,12 @@
           "mediaSize": 0
         },
         {
-          "id": "colorPicker",
-          "enabled": true
+          "id": "runningApps",
+          "enabled": true,
+          "runningAppsCompactMode": true,
+          "runningAppsGroupByApp": false,
+          "runningAppsCurrentWorkspace": false,
+          "runningAppsCurrentMonitor": false
         }
       ],
       "rightWidgets": [
@@ -159,20 +174,22 @@
         },
         {
           "id": "notificationButton",
-          "enabled": true
+          "enabled": false
         },
         {
           "id": "battery",
-          "enabled": true
+          "enabled": false
         },
         {
           "id": "systemTray",
           "enabled": true,
-          "trayUseInlineExpansion": true
+          "trayUseInlineExpansion": true,
+          "trayAutoOverflow": true,
+          "trayMaxVisibleItems": 0
         },
         {
           "id": "controlCenterButton",
-          "enabled": true,
+          "enabled": false,
           "showNetworkIcon": true,
           "showBluetoothIcon": true,
           "showAudioIcon": true,
@@ -184,14 +201,30 @@
           "showMicPercent": false,
           "showBatteryIcon": false,
           "showPrinterIcon": false
+        },
+        {
+          "id": "network_speed_monitor",
+          "enabled": true
+        },
+        {
+          "id": "cpuUsage",
+          "enabled": true,
+          "minimumWidth": false
+        },
+        {
+          "id": "memUsage",
+          "enabled": true,
+          "minimumWidth": false,
+          "showInGb": true,
+          "showSwap": false
         }
       ],
-      "spacing": 4,
+      "spacing": 0,
       "innerPadding": 4,
       "bottomGap": 0,
       "transparency": 0,
-      "widgetTransparency": 0.58,
-      "squareCorners": true,
+      "widgetTransparency": 0.96,
+      "squareCorners": false,
       "noBackground": false,
       "gothCornersEnabled": false,
       "gothCornerRadiusOverride": false,
@@ -210,13 +243,16 @@
       "removeWidgetPadding": false,
       "maximizeWidgetText": false,
       "maximizeWidgetIcons": false,
-      "widgetOutlineEnabled": false,
+      "widgetOutlineEnabled": true,
       "widgetOutlineColor": "secondary",
       "widgetOutlineOpacity": 0.35,
       "clickThrough": false,
       "useOverlayLayer": false,
       "barInsetPadding": 4,
-      "widgetPadding": 8
+      "widgetPadding": 8,
+      "attachToScreenEdge": false,
+      "shadowIntensity": 0,
+      "shadowOpacity": 60
     }
   ],
   "desktopClockCustomColor": {
@@ -301,6 +337,9 @@
     },
     "dms_clipboard_search": {
       "trigger": "cb"
+    },
+    "dms_qr_generator": {
+      "trigger": "qrg"
     }
   },
   "frameMode": "separate",
