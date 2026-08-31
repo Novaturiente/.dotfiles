@@ -60,10 +60,14 @@ ShellRoot {
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
         WlrLayershell.namespace: "quickshell-switcher"
 
-        onVisibleChanged: if (visible) Qt.callLater(function () { search.forceActiveFocus(); })
+        // ponytail: open-only expand-from-centre; close hides instantly
+        property real anim: 0
+        Behavior on anim { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+        onVisibleChanged: { anim = visible ? 1 : 0; if (visible) Qt.callLater(function () { search.forceActiveFocus(); }) }
 
         Rectangle {
             anchors.fill: parent
+            transform: Scale { origin.y: win.height / 2; yScale: win.anim }
             radius: 4
             color: bg
             border.color: outline
