@@ -58,7 +58,7 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 | Layer | Tool | Config Location |
 |-------|------|-----------------|
 | Window Manager | **Niri** (Wayland tiling compositor) | `nova/.config/niri/config.kdl` |
-| Login Manager | **greetd** + **sysc-greet** (TUI greeter, runs niri + kitty) | `system/system/etc/greetd/config.toml` |
+| Login Manager | **Ly** (TUI greeter on tty2, `ly@tty2.service`) | `system/system/etc/ly/config.ini` |
 | Panel / Notifications / Wallpaper | **DankMaterialShell** (`dms`, Quickshell-based) | `nova/.config/DankMaterialShell/`, `nova/.config/niri/dms/` |
 | Launcher / menus | **Quickshell** daemons (`qs -c <name> -d`), Rofi for a few helpers | `nova/.config/quickshell/`, `nova/.config/rofi/` |
 | Idle/Lock | **swayidle** → `dms ipc call lock lock` | `nova/.config/swayidle/config` |
