@@ -8,7 +8,6 @@
 - terminus-font
 - xdg-desktop-portal
 - xdg-desktop-portal-gtk
-- polkit-gnome
 - rofi-wayland
 - brightnessctl
 - udiskie
