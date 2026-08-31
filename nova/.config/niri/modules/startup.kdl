@@ -2,7 +2,9 @@
 // STARTUP APPLICATIONS
 // ───────────────────────────────────────────────────────────────────────────────────────────
 // System services
-spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
+// disabled 2026-08-31: DMS ships its own polkit agent (Modals/PolkitAuthModal.qml);
+// the GNOME agent registered first and shadowed it with "An authentication agent already exists"
+// spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 // System utilities
 spawn-at-startup "swayidle"
 // Background services
