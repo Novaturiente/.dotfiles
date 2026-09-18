@@ -37,8 +37,13 @@ animations {
     // windows getting shoved aside is window-movement below; the camera
     // following the new window is horizontal-view-movement.
     window-open {
-        duration-ms 250
-        curve "cubic-bezier" 0.05 0.7 0.1 1
+        // Material 3 Expressive "spatial fast", the same curve the Quickshell menus
+        // open on (common/Tokens.qml -> anim.curves.expressiveFastSpatial). Its second
+        // control point sits above 1, so niri_progress runs past 1 near the end: the
+        // window slides a little past where it lands and settles back. That bounce is
+        // the whole point of the curve; flatten the 1.67 toward 1.0 to remove it.
+        duration-ms 350
+        curve "cubic-bezier" 0.42 1.67 0.21 0.9
 
         custom-shader r"
             vec4 open_color(vec3 coords_geo, vec3 size_geo) {
@@ -58,8 +63,11 @@ animations {
 
     // Mirror: closing windows slide back out to the right as they fade.
     window-close {
-        duration-ms 200
-        curve "ease-out-quad"
+        // Material 3 Expressive "effects fast", matching the menus' close. Exits use an
+        // effects curve rather than a spatial one precisely because it does not
+        // overshoot — a window bouncing on its way out reads as a glitch.
+        duration-ms 150
+        curve "cubic-bezier" 0.31 0.94 0.34 1
 
         custom-shader r"
             vec4 close_color(vec3 coords_geo, vec3 size_geo) {
