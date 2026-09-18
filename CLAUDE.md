@@ -59,8 +59,10 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 |-------|------|-----------------|
 | Window Manager | **Niri** (Wayland tiling compositor) | `nova/.config/niri/config.kdl` |
 | Login Manager | **Ly** (TUI greeter on tty2, `ly@tty2.service`) | `system/system/etc/ly/config.ini` |
-| Panel / Notifications / Wallpaper | **DankMaterialShell** (`dms`, Quickshell-based) | `nova/.config/DankMaterialShell/`, `nova/.config/niri/dms/` |
+| Panel / Wallpaper / Lock / OSD | **DankMaterialShell** (`dms`, Quickshell-based) | `nova/.config/DankMaterialShell/`, `nova/.config/niri/dms/` |
+| Notifications | Own Quickshell daemon, ported from caelestia-shell. Runs as `quickshell-notifications.service`, **not** under niri startup. | `nova/.config/quickshell/notifications/` |
 | Launcher / menus | **Quickshell** daemons (`qs -c <name> -d`), Rofi for a few helpers | `nova/.config/quickshell/`, `nova/.config/rofi/` |
+| Menu motion / widgets | `common/` QML module: Material 3 Expressive curves (`Tokens`, `Anim`), ripple (`StateLayer`), `StyledRect`/`StyledTextField`/`StyledScrollBar`. Ported by hand from [caelestia-shell](https://github.com/caelestia-dots/shell); no compiled plugin. | `nova/.config/quickshell/common/` |
 | Idle/Lock | **swayidle** → `dms ipc call lock lock` | `nova/.config/swayidle/config` |
 | Screenshots | grim + slurp + satty | bound in niri config |
 | Screen Record | wf-recorder (region/audio), wl-screenrec (fullscreen) | `scripts/record-script.sh` |
@@ -179,6 +181,46 @@ adding one palette file. See `system/themes/README.md`.
 - **Terminal font:** IosevkaTerm Nerd Font (size 13)
 - **Editor font:** JetBrains Mono NL Nerd Font (size 13-15)
 - **Icon theme:** Cool-Dark-Icons (Rofi), WhiteSur (GTK)
+
+## Notifications
+
+Notification popups come from `nova/.config/quickshell/notifications/`, ported by
+hand from caelestia-shell. Popups only — there is no notification centre and no
+history, so a dismissed notification is gone.
+
+**Why it is a systemd unit and not a niri `spawn-at-startup`.** Only one process
+can own `org.freedesktop.Notifications`, and DMS claims it unconditionally: its
+`Services/NotificationService.qml` creates a `NotificationServer` with no setting
+to disable it, and its QML ships inside the `dms` binary, extracted read-only to
+`/run/user/1000/danklinux-shell/<hash>/`, so patching it does not survive. The
+handover is arranged in systemd instead:
+
+- `nova/.config/systemd/user/quickshell-notifications.service` starts
+  `Before=dms.service` and does not report itself started until `ExecStartPost`
+  sees the bus name is ours.
+- `nova/.config/systemd/user/dms.service.d/override.conf` flips DMS from
+  `Type=dbus` to `Type=simple`. Without it systemd waits ninety seconds for a bus
+  name DMS can never get, fails the start, and restarts it on a loop.
+- The unit sets `QML2_IMPORT_PATH` itself. niri's `environment {}` block only
+  reaches processes niri spawns, so it does not cover systemd user services.
+
+**What this costs.** DMS's notification centre on Mod+N still opens but is
+permanently empty, its island notification badges never light up, and its
+do-not-disturb controls do nothing. Everything else in DMS is unaffected.
+Do-not-disturb is now `qs -c notifications ipc call notifs dnd`; `status` reports
+it and `clear` dismisses whatever is on screen. Nothing is bound to those yet.
+
+**Reverting.** Disable the unit, delete the drop-in, reload:
+
+```sh
+systemctl --user disable --now quickshell-notifications.service
+rm -r ~/.dotfiles/nova/.config/systemd/user/dms.service.d
+systemctl --user daemon-reload && systemctl --user restart dms.service
+```
+
+**Testing it.** `notify-send -a App -i google-chrome "Summary" "Body"`. Use an
+icon name the theme actually has; a missing one falls back to a lettered badge,
+which is deliberate.
 
 ## Browsers
 - **Primary:** Zen Browser (Wayland)
