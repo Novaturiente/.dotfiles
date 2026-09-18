@@ -9,6 +9,9 @@ binds {
     Mod+Shift+T hotkey-overlay-title="Theme picker" {
         spawn "~/.dotfiles/scripts/quickshell/theme.sh"
     }
+    Mod+Alt+W hotkey-overlay-title="Wallpaper picker" {
+        spawn "~/.dotfiles/scripts/quickshell/wallpaper.sh"
+    }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ APPLICATIONS                                                                        │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
