@@ -44,4 +44,32 @@ Singleton {
     readonly property color lavender: "#9d7cd8"
     readonly property color mauve:    "#bb9af7"
     readonly property color pink:     "#ff007c"
+
+    // Material 3 role aliases, mapped onto the palette above. The quicksettings
+    // panels are ported from caelestia-shell, which names every colour by its
+    // M3 role; these eleven lines are what let those files stay verbatim
+    // instead of being rewritten around this repo's role names.
+    readonly property color m3onSurface:           "#c0caf5"
+    readonly property color m3onSurfaceVariant:    "#9aa5ce"
+    readonly property color m3outline:             "#414868"
+    readonly property color m3primary:             "#bb9af7"
+    readonly property color m3onPrimary:           "#1a1b26"
+    readonly property color m3primaryContainer:    "#3b4261"
+    readonly property color m3onPrimaryContainer:  "#bb9af7"
+    readonly property color m3secondaryContainer:  "#292e42"
+    readonly property color m3onSecondaryContainer: "#c0caf5"
+    readonly property color m3error:               "#f7768e"
+    readonly property color m3onError:             "#1a1b26"
+    readonly property color m3surface:             "#1a1b26"
+    readonly property color m3surfaceContainer:    "#24283b"
+    readonly property color m3surfaceContainerHighest: "#3b4261"
+    readonly property color m3secondary:           "#bb9af7"
+    readonly property color m3onSecondary:         "#1a1b26"
+
+    // M3 elevation tint. caelestia lightens a surface by its elevation level;
+    // ponytail: every palette here is dark and the panels only ever pass level
+    // 1 or 2, so a flat pass-through is visually indistinguishable.
+    function layer(c, level) {
+        return c;
+    }
 }
