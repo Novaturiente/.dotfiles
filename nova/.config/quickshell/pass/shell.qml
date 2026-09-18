@@ -62,13 +62,13 @@ ShellRoot {
     IpcHandler {
         target: "pass"
         function open(domain: string): void {
-            if (win.visible) { win.visible = false; return; }
+            if (win.shown) { win.shown = false; return; }
             prefill = domain || "";
             view = "main";
             mainSearch.text = "";        // clear stale filter (onTextChanged resets currentIndex)
             reload();                    // passctl serializes the vault unlock (flock), so
             run(["sync"]);               // firing these concurrently prompts pinentry only once
-            win.visible = true;
+            win.shown = true;
         }
     }
 
@@ -77,7 +77,7 @@ ShellRoot {
     // pinentry no one asked for. open() reloads anyway, after pass.sh unlocks.
 
     // ── actions (all dispatch to passctl; window hides so focus returns) ──────
-    function hide() { win.visible = false; }
+    function hide() { win.shown = false; }
     function copyEntry(e)   { run(["copy", e]); hide(); }
     function copyField(e,f) { run(["copy-field", e, f]); hide(); }
     function totp(e)        { run(["totp", e]); hide(); }
@@ -129,7 +129,10 @@ ShellRoot {
     // ── window ────────────────────────────────────────────────────────────────
     PanelWindow {
         id: win
-        visible: false
+        // `shown` is what callers set. The window stays mapped until the close
+        // animation has run out, which is what `visible` tracks.
+        property bool shown: false
+        visible: shown || anim > 0
         anchors { top: false; bottom: false; left: false; right: false }
         implicitWidth: 720
         // Auto-fit height to the main list, capped at maxH. Other views (forms,
@@ -140,17 +143,25 @@ ShellRoot {
             : maxH
         color: "transparent"
         WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+        WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
         WlrLayershell.namespace: "quickshell-pass"
 
-        // ponytail: open-only expand-from-centre; close hides instantly
-        property real anim: 0
-        Behavior on anim { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-        onVisibleChanged: { anim = visible ? 1 : 0; if (visible) Qt.callLater(function () { focusScope.forceActiveFocus(); mainSearch.forceActiveFocus(); }) }
+        // Expand from the centre on open, collapse back on close.
+        property real anim: shown ? 1 : 0
+        // Opening rides caelestia's expressive fast-spatial curve, which overshoots a
+        // touch and settles. Closing rides the effects curve instead: it is quicker and
+        // does not overshoot, because a panel that bounces on its way out reads as a
+        // glitch. Anim.DefaultSpatial (500ms) is what upstream's launcher uses for the
+        // open; that felt slow for menus opened this often.
+        Behavior on anim { Anim { type: win.shown ? Anim.FastSpatial : Anim.FastEffects } }
+        onShownChanged: { if (shown) Qt.callLater(function () { focusScope.forceActiveFocus(); mainSearch.forceActiveFocus(); }) }
 
         Rectangle {
             anchors.fill: parent
             transform: Scale { origin.y: win.height / 2; yScale: win.anim }
+            // Fade alongside the scale, as caelestia's panels do. Clamped because the
+            // spatial curve overshoots past 1 on the way in.
+            opacity: Math.min(1, win.anim)
             radius: 4
             color: bg
             border.color: outline
@@ -179,7 +190,7 @@ ShellRoot {
                         RowLayout {
                             anchors.fill: parent; anchors.leftMargin: 14; anchors.rightMargin: 14; spacing: 10
                             Text { text: ""; color: accent; font.family: uiFont; font.pixelSize: 18 }
-                            TextField {
+                            StyledTextField {
                                 id: mainSearch
                                 Layout.fillWidth: true; focus: view === "main"
                                 color: fg; font.family: uiFont; font.pixelSize: 16; background: null
@@ -223,7 +234,7 @@ ShellRoot {
                             return rows.filter(function (r) { return q === "" || r.label.toLowerCase().indexOf(q) !== -1; });
                         }
                         onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
-                        delegate: Rectangle {
+                        delegate: StyledRect {
                             required property int index
                             required property var modelData
                             property var rowData: modelData
@@ -238,8 +249,7 @@ ShellRoot {
                                 }
                                 Text { text: modelData.label; color: fg; font.family: uiFont; font.pixelSize: 14; elide: Text.ElideRight; Layout.fillWidth: true }
                             }
-                            MouseArea {
-                                anchors.fill: parent; hoverEnabled: true
+                            StateLayer {
                                 onEntered: mainList.currentIndex = index
                                 onClicked: {
                                     if (modelData.action === "add-pw") view = "add";
@@ -264,15 +274,14 @@ ShellRoot {
                         boundsBehavior: Flickable.StopAtBounds
                         Keys.onReturnPressed: if (subModel[currentIndex]) runSubAction(subModel[currentIndex].id)
                         Keys.onEnterPressed:  if (subModel[currentIndex]) runSubAction(subModel[currentIndex].id)
-                        delegate: Rectangle {
+                        delegate: StyledRect {
                             required property int index
                             required property var modelData
                             width: ListView.view.width; implicitHeight: 40; radius: 0
                             color: index === subList.currentIndex ? selBg : "transparent"
                             Text { anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 12
                                    text: modelData.t; color: fg; font.family: uiFont; font.pixelSize: 14 }
-                            MouseArea {
-                                anchors.fill: parent; hoverEnabled: true
+                            StateLayer {
                                 onEntered: subList.currentIndex = index
                                 onClicked: runSubAction(modelData.id)
                             }
@@ -304,7 +313,7 @@ ShellRoot {
                     Rectangle {
                         Layout.fillWidth: true; implicitHeight: 44; radius: 0
                         color: inputBg; border.color: accent; border.width: 1
-                        TextField {
+                        StyledTextField {
                             id: seqField; anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 12
                             color: fg; font.family: uiFont; font.pixelSize: 15; background: null
                             onAccepted: { run(["set-autotype", curEntry, seqField.text]); view = "main"; }
@@ -349,7 +358,7 @@ ShellRoot {
         Rectangle {
             Layout.fillWidth: true; implicitHeight: 42; radius: 0
             color: inputBg; border.color: accent; border.width: 1
-            TextField {
+            StyledTextField {
                 id: tf; anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 12
                 color: fg; font.family: uiFont; font.pixelSize: 15; background: null
                 echoMode: pf.masked ? TextInput.Password : TextInput.Normal

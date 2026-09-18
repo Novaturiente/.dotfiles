@@ -54,9 +54,9 @@ ShellRoot {
     IpcHandler {
         target: "kb"
         function toggle(): void {
-            if (win.visible) { win.visible = false; return; }
+            if (win.shown) { win.shown = false; return; }
             curApp = 0; search.text = "";        // reset to first app tab + clear filter
-            loadFast(); refresh(); win.visible = true;
+            loadFast(); refresh(); win.shown = true;
         }
     }
     Component.onCompleted: refresh()   // prime at daemon boot
@@ -65,23 +65,34 @@ ShellRoot {
 
     PanelWindow {
         id: win
-        visible: false
+        // `shown` is what callers set. The window stays mapped until the close
+        // animation has run out, which is what `visible` tracks.
+        property bool shown: false
+        visible: shown || anim > 0
         anchors { top: false; bottom: false; left: false; right: false }
         implicitWidth: 1240
         implicitHeight: 820
         color: "transparent"
         WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+        WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
         WlrLayershell.namespace: "quickshell-keybindings"
 
-        // ponytail: open-only expand-from-centre; close hides instantly
-        property real anim: 0
-        Behavior on anim { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-        onVisibleChanged: { anim = visible ? 1 : 0; if (visible) Qt.callLater(function () { search.forceActiveFocus(); }) }
+        // Expand from the centre on open, collapse back on close.
+        property real anim: shown ? 1 : 0
+        // Opening rides caelestia's expressive fast-spatial curve, which overshoots a
+        // touch and settles. Closing rides the effects curve instead: it is quicker and
+        // does not overshoot, because a panel that bounces on its way out reads as a
+        // glitch. Anim.DefaultSpatial (500ms) is what upstream's launcher uses for the
+        // open; that felt slow for menus opened this often.
+        Behavior on anim { Anim { type: win.shown ? Anim.FastSpatial : Anim.FastEffects } }
+        onShownChanged: { if (shown) Qt.callLater(function () { search.forceActiveFocus(); }) }
 
         Rectangle {
             anchors.fill: parent
             transform: Scale { origin.y: win.height / 2; yScale: win.anim }
+            // Fade alongside the scale, as caelestia's panels do. Clamped because the
+            // spatial curve overshoots past 1 on the way in.
+            opacity: Math.min(1, win.anim)
             radius: 4
             color: bg
             border.color: outline
@@ -96,17 +107,17 @@ ShellRoot {
                 Text { text: "󰌌  Keybindings"; color: accent; font.family: uiFont; font.pixelSize: 18; font.bold: true; Layout.bottomMargin: 8 }
                 Repeater {
                     model: apps
-                    delegate: Rectangle {
+                    delegate: StyledRect {
                         required property int index
                         required property var modelData
                         Layout.fillWidth: true; implicitHeight: 46; radius: 0
-                        color: index === curApp ? selBg : (tabMa.containsMouse ? inputBg : "transparent")
+                        color: index === curApp ? selBg : "transparent"
                         RowLayout {
                             anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 12
                             Text { text: modelData.app; color: fg; font.family: uiFont; font.pixelSize: 16; Layout.fillWidth: true }
                             Text { text: modelData.count; color: index === curApp ? fg : subtext; font.family: uiFont; font.pixelSize: 13 }
                         }
-                        MouseArea { id: tabMa; anchors.fill: parent; hoverEnabled: true
+                        StateLayer {
                             onClicked: { curApp = index; search.text = ""; search.forceActiveFocus(); } }
                     }
                 }
@@ -129,7 +140,7 @@ ShellRoot {
                         RowLayout {
                             anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 12; spacing: 10
                             Text { text: ""; color: accent; font.family: uiFont; font.pixelSize: 17 }
-                            TextField {
+                            StyledTextField {
                                 id: search
                                 Layout.fillWidth: true; focus: true
                                 color: fg; font.family: uiFont; font.pixelSize: 16; background: null
@@ -137,7 +148,7 @@ ShellRoot {
                                 placeholderTextColor: subtext
                                 onTextChanged: kbList.currentIndex = 0
                                 Keys.onPressed: (e) => {
-                                    if (e.key === Qt.Key_Escape) { win.visible = false; e.accepted = true; }
+                                    if (e.key === Qt.Key_Escape) { win.shown = false; e.accepted = true; }
                                     else if (e.key === Qt.Key_Down) { kbList.incrementCurrentIndex(); e.accepted = true; }
                                     else if (e.key === Qt.Key_Up)   { kbList.decrementCurrentIndex(); e.accepted = true; }
                                     else if (e.key === Qt.Key_Backtab || (e.key === Qt.Key_Tab && (e.modifiers & Qt.ShiftModifier))) {
@@ -159,7 +170,7 @@ ShellRoot {
                         id: kbList
                         Layout.fillWidth: true; Layout.fillHeight: true; clip: true
                         boundsBehavior: Flickable.StopAtBounds
-                        ScrollBar.vertical: ScrollBar { }
+                        ScrollBar.vertical: StyledScrollBar { flickable: kbList }
                         model: {
                             var qy = search.text.toLowerCase();
                             var out = [];
@@ -170,7 +181,7 @@ ShellRoot {
                             return out;
                         }
                         onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
-                        delegate: Rectangle {
+                        delegate: StyledRect {
                             required property int index
                             required property var modelData
                             property var rowData: modelData
@@ -183,7 +194,7 @@ ShellRoot {
                                 Text { text: modelData.desc; color: fg; font.family: uiFont; font.pixelSize: 14
                                        Layout.fillWidth: true; elide: Text.ElideRight }
                             }
-                            MouseArea { anchors.fill: parent; hoverEnabled: true
+                            StateLayer {
                                 onEntered: kbList.currentIndex = index
                                 onClicked: copyLine(modelData.key + "  " + modelData.desc) }
                         }
