@@ -38,38 +38,49 @@ ShellRoot {
     function launch(file) {
         launcher.command = ["bash", applaunch, "launch", file];
         launcher.running = true;
-        win.visible = false;
+        win.shown = false;
     }
 
     IpcHandler {
         target: "launcher"
         function toggle(): void {
-            if (win.visible) { win.visible = false; return; }
-            search.text = ""; reload(); win.visible = true;
+            if (win.shown) { win.shown = false; return; }
+            search.text = ""; reload(); win.shown = true;
         }
     }
     Component.onCompleted: reload()
 
     PanelWindow {
         id: win
-        visible: false
+        // `shown` is what callers set. The window stays mapped until the close
+        // animation has run out, which is what `visible` tracks.
+        property bool shown: false
+        visible: shown || anim > 0
         anchors { top: false; bottom: false; left: false; right: false }
         implicitWidth: 680
         readonly property int maxH: 560
         implicitHeight: Math.min(maxH, 104 + Math.max(1, appList.count) * 52)
         color: "transparent"
         WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+        WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
         WlrLayershell.namespace: "quickshell-launcher"
 
-        // ponytail: open-only expand-from-centre; close hides instantly
-        property real anim: 0
-        Behavior on anim { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-        onVisibleChanged: { anim = visible ? 1 : 0; if (visible) Qt.callLater(function () { search.forceActiveFocus(); }) }
+        // Expand from the centre on open, collapse back on close.
+        property real anim: shown ? 1 : 0
+        // Opening rides caelestia's expressive fast-spatial curve, which overshoots a
+        // touch and settles. Closing rides the effects curve instead: it is quicker and
+        // does not overshoot, because a panel that bounces on its way out reads as a
+        // glitch. Anim.DefaultSpatial (500ms) is what upstream's launcher uses for the
+        // open; that felt slow for menus opened this often.
+        Behavior on anim { Anim { type: win.shown ? Anim.FastSpatial : Anim.FastEffects } }
+        onShownChanged: { if (shown) Qt.callLater(function () { search.forceActiveFocus(); }) }
 
         Rectangle {
             anchors.fill: parent
             transform: Scale { origin.y: win.height / 2; yScale: win.anim }
+            // Fade alongside the scale, as caelestia's panels do. Clamped because the
+            // spatial curve overshoots past 1 on the way in.
+            opacity: Math.min(1, win.anim)
             radius: 4
             color: bg
             border.color: outline
@@ -87,7 +98,7 @@ ShellRoot {
                     RowLayout {
                         anchors.fill: parent; anchors.leftMargin: 14; anchors.rightMargin: 14; spacing: 10
                         Text { text: ""; color: accent; font.family: uiFont; font.pixelSize: 20 }
-                        TextField {
+                        StyledTextField {
                             id: search
                             Layout.fillWidth: true; focus: true
                             color: fg; font.family: uiFont; font.pixelSize: 17; background: null
@@ -95,7 +106,7 @@ ShellRoot {
                             placeholderTextColor: subtext
                             onTextChanged: appList.currentIndex = 0
                             Keys.onPressed: (e) => {
-                                if (e.key === Qt.Key_Escape) { win.visible = false; e.accepted = true; }
+                                if (e.key === Qt.Key_Escape) { win.shown = false; e.accepted = true; }
                                 else if (e.key === Qt.Key_Down) { appList.incrementCurrentIndex(); e.accepted = true; }
                                 else if (e.key === Qt.Key_Up)   { appList.decrementCurrentIndex(); e.accepted = true; }
                                 else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) {
@@ -113,7 +124,7 @@ ShellRoot {
                     id: appList
                     Layout.fillWidth: true; Layout.fillHeight: true; clip: true
                     boundsBehavior: Flickable.StopAtBounds
-                    ScrollBar.vertical: ScrollBar { }
+                    ScrollBar.vertical: StyledScrollBar { flickable: appList }
                     model: {
                         var qy = search.text.toLowerCase();
                         if (qy === "") return apps;
@@ -123,7 +134,7 @@ ShellRoot {
                         return out;
                     }
                     onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
-                    delegate: Rectangle {
+                    delegate: StyledRect {
                         required property int index
                         required property var modelData
                         property var rowData: modelData
@@ -140,7 +151,7 @@ ShellRoot {
                             Text { text: modelData.name; color: fg; font.family: uiFont; font.pixelSize: 16
                                    Layout.fillWidth: true; elide: Text.ElideRight }
                         }
-                        MouseArea { anchors.fill: parent; hoverEnabled: true
+                        StateLayer {
                             onEntered: appList.currentIndex = index
                             onClicked: launch(modelData.file) }
                     }

@@ -56,13 +56,13 @@ ShellRoot {
     IpcHandler {
         target: "cal"
         function toggle(): void {
-            if (win.visible) { win.visible = false; return; }
-            view = "main"; mainSearch.text = ""; reload(); win.visible = true;
+            if (win.shown) { win.shown = false; return; }
+            view = "main"; mainSearch.text = ""; reload(); win.shown = true;
         }
     }
     Component.onCompleted: reload()
 
-    function hide() { win.visible = false; }
+    function hide() { win.shown = false; }
 
     function openActions(uid, title) {
         curUid = uid; curTitle = title;
@@ -81,7 +81,10 @@ ShellRoot {
 
     PanelWindow {
         id: win
-        visible: false
+        // `shown` is what callers set. The window stays mapped until the close
+        // animation has run out, which is what `visible` tracks.
+        property bool shown: false
+        visible: shown || anim > 0
         anchors { top: false; bottom: false; left: false; right: false }
         implicitWidth: 640
         readonly property int maxH: 560
@@ -90,17 +93,25 @@ ShellRoot {
             : maxH
         color: "transparent"
         WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+        WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
         WlrLayershell.namespace: "quickshell-calendar"
 
-        // ponytail: open-only expand-from-centre; close hides instantly
-        property real anim: 0
-        Behavior on anim { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-        onVisibleChanged: { anim = visible ? 1 : 0; if (visible) Qt.callLater(function () { mainSearch.forceActiveFocus(); }) }
+        // Expand from the centre on open, collapse back on close.
+        property real anim: shown ? 1 : 0
+        // Opening rides caelestia's expressive fast-spatial curve, which overshoots a
+        // touch and settles. Closing rides the effects curve instead: it is quicker and
+        // does not overshoot, because a panel that bounces on its way out reads as a
+        // glitch. Anim.DefaultSpatial (500ms) is what upstream's launcher uses for the
+        // open; that felt slow for menus opened this often.
+        Behavior on anim { Anim { type: win.shown ? Anim.FastSpatial : Anim.FastEffects } }
+        onShownChanged: { if (shown) Qt.callLater(function () { mainSearch.forceActiveFocus(); }) }
 
         Rectangle {
             anchors.fill: parent
             transform: Scale { origin.y: win.height / 2; yScale: win.anim }
+            // Fade alongside the scale, as caelestia's panels do. Clamped because the
+            // spatial curve overshoots past 1 on the way in.
+            opacity: Math.min(1, win.anim)
             radius: 4
             color: bg
             border.color: outline
@@ -120,7 +131,7 @@ ShellRoot {
                         RowLayout {
                             anchors.fill: parent; anchors.leftMargin: 14; anchors.rightMargin: 14; spacing: 10
                             Text { text: "󰸗"; color: accent; font.family: uiFont; font.pixelSize: 18 }
-                            TextField {
+                            StyledTextField {
                                 id: mainSearch
                                 Layout.fillWidth: true; focus: view === "main"
                                 color: fg; font.family: uiFont; font.pixelSize: 16; background: null
@@ -155,7 +166,7 @@ ShellRoot {
                             return rows.filter(function (r) { return qy === "" || r.label.toLowerCase().indexOf(qy) !== -1; });
                         }
                         onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
-                        delegate: Rectangle {
+                        delegate: StyledRect {
                             required property int index
                             required property var modelData
                             property var rowData: modelData
@@ -167,8 +178,7 @@ ShellRoot {
                                        font.family: uiFont; font.pixelSize: 14 }
                                 Text { text: modelData.label; color: fg; font.family: uiFont; font.pixelSize: 14; elide: Text.ElideRight; Layout.fillWidth: true }
                             }
-                            MouseArea {
-                                anchors.fill: parent; hoverEnabled: true
+                            StateLayer {
                                 onEntered: mainList.currentIndex = index
                                 onClicked: { if (modelData.act === "add") view = "add";
                                              else if (modelData.act === "ikhal") { run(["edit"]); hide(); }
@@ -190,7 +200,7 @@ ShellRoot {
                         Rectangle {
                             Layout.preferredWidth: 160; implicitHeight: 38; radius: 0
                             color: inputBg; border.color: accent; border.width: 1
-                            TextField {
+                            StyledTextField {
                                 id: dateField; anchors.fill: parent; anchors.leftMargin: 10; anchors.rightMargin: 10
                                 color: fg; font.family: uiFont; font.pixelSize: 14; background: null
                                 text: cal.isoDate()
@@ -264,7 +274,7 @@ ShellRoot {
                                 Layout.fillWidth: true; Layout.fillHeight: true; columns: 7; columnSpacing: 2; rowSpacing: 2
                                 Repeater {
                                     model: 42
-                                    delegate: Rectangle {
+                                    delegate: StyledRect {
                                         required property int index
                                         // first weekday of the month, and this cell's day number
                                         property int firstDow: new Date(cal.yr, cal.mo, 1).getDay()
@@ -278,8 +288,8 @@ ShellRoot {
                                             color: (inMonth && dayNum === cal.dy) ? fg : subtext
                                             font.family: uiFont; font.pixelSize: 13
                                         }
-                                        MouseArea {
-                                            anchors.fill: parent; enabled: inMonth
+                                        StateLayer {
+                                            disabled: !inMonth
                                             onClicked: { cal.dy = dayNum; cal.forceActiveFocus(); }
                                         }
                                     }
@@ -315,14 +325,14 @@ ShellRoot {
                         boundsBehavior: Flickable.StopAtBounds
                         Keys.onReturnPressed: if (model[currentIndex]) runSub(model[currentIndex].id)
                         Keys.onEnterPressed:  if (model[currentIndex]) runSub(model[currentIndex].id)
-                        delegate: Rectangle {
+                        delegate: StyledRect {
                             required property int index
                             required property var modelData
                             width: ListView.view.width; implicitHeight: 40; radius: 0
                             color: index === subList.currentIndex ? selBg : "transparent"
                             Text { anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 12
                                    text: modelData.t; color: fg; font.family: uiFont; font.pixelSize: 14 }
-                            MouseArea { anchors.fill: parent; hoverEnabled: true
+                            StateLayer {
                                 onEntered: subList.currentIndex = index; onClicked: runSub(modelData.id) }
                         }
                     }
@@ -385,7 +395,7 @@ ShellRoot {
         Text { text: tp.label; color: subtext; font.family: uiFont; font.pixelSize: 12 }
         Rectangle {
             implicitWidth: 42; implicitHeight: 34; radius: 0; color: inputBg; border.color: accent; border.width: 1
-            TextField { id: hourF; anchors.fill: parent; anchors.margins: 2; horizontalAlignment: TextInput.AlignHCenter
+            StyledTextField { id: hourF; anchors.fill: parent; anchors.margins: 2; horizontalAlignment: TextInput.AlignHCenter
                 color: fg; font.family: uiFont; font.pixelSize: 14; background: null
                 maximumLength: 2; inputMethodHints: Qt.ImhDigitsOnly
                 placeholderText: "hh"; placeholderTextColor: subtext }
@@ -393,7 +403,7 @@ ShellRoot {
         Text { text: ":"; color: fg; font.family: uiFont; font.pixelSize: 15 }
         Rectangle {
             implicitWidth: 42; implicitHeight: 34; radius: 0; color: inputBg; border.color: accent; border.width: 1
-            TextField { id: minF; anchors.fill: parent; anchors.margins: 2; horizontalAlignment: TextInput.AlignHCenter
+            StyledTextField { id: minF; anchors.fill: parent; anchors.margins: 2; horizontalAlignment: TextInput.AlignHCenter
                 color: fg; font.family: uiFont; font.pixelSize: 14; background: null
                 maximumLength: 2; inputMethodHints: Qt.ImhDigitsOnly
                 placeholderText: "mm"; placeholderTextColor: subtext }
@@ -413,7 +423,7 @@ ShellRoot {
         signal submit()
         Layout.fillWidth: true; implicitHeight: 38; radius: 0
         color: inputBg; border.color: accent; border.width: 1
-        TextField {
+        StyledTextField {
             id: tf; anchors.fill: parent; anchors.leftMargin: 10; anchors.rightMargin: 10
             color: fg; font.family: uiFont; font.pixelSize: 14; background: null
             placeholderText: ph; placeholderTextColor: subtext

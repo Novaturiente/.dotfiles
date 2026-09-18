@@ -56,10 +56,10 @@ ShellRoot {
         var choice = (rows.length > 0 && selected >= 0 && selected < rows.length)
             ? rows[selected].url
             : input.text;
-        if (choice.trim() === "") { win.visible = false; return; }
+        if (choice.trim() === "") { win.shown = false; return; }
         opener.command = ["bash", scriptDir + "/zen-open.sh", choice];
         opener.running = true;
-        win.visible = false;
+        win.shown = false;
     }
 
     // Resident daemon: stay running, toggle the window via IPC (engine boot is
@@ -67,8 +67,8 @@ ShellRoot {
     IpcHandler {
         target: "menu"
         function toggle(): void {
-            if (win.visible) { win.visible = false; }
-            else { input.text = ""; selected = 0; loader.running = true; win.visible = true; }
+            if (win.shown) { win.shown = false; }
+            else { input.text = ""; selected = 0; loader.running = true; win.shown = true; }
         }
     }
 
@@ -91,24 +91,35 @@ ShellRoot {
 
     PanelWindow {
         id: win
-        visible: false                 // daemon starts hidden; IPC toggle reveals it
+        // `shown` is what callers set. The window stays mapped until the close
+        // animation has run out, which is what `visible` tracks.
+        property bool shown: false
+        visible: shown || anim > 0                 // daemon starts hidden; IPC toggle reveals it
         anchors { top: false; bottom: false; left: false; right: false }
         implicitWidth: 760
         implicitHeight: 520
         color: "transparent"
 
         WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+        WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
         WlrLayershell.namespace: "quickshell-zen-url"
 
-        // ponytail: open-only expand-from-centre; close hides instantly
-        property real anim: 0
-        Behavior on anim { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-        onVisibleChanged: { anim = visible ? 1 : 0; if (visible) input.forceActiveFocus() }
+        // Expand from the centre on open, collapse back on close.
+        property real anim: shown ? 1 : 0
+        // Opening rides caelestia's expressive fast-spatial curve, which overshoots a
+        // touch and settles. Closing rides the effects curve instead: it is quicker and
+        // does not overshoot, because a panel that bounces on its way out reads as a
+        // glitch. Anim.DefaultSpatial (500ms) is what upstream's launcher uses for the
+        // open; that felt slow for menus opened this often.
+        Behavior on anim { Anim { type: win.shown ? Anim.FastSpatial : Anim.FastEffects } }
+        onShownChanged: { if (shown) input.forceActiveFocus() }
 
         Rectangle {
             anchors.fill: parent
             transform: Scale { origin.y: win.height / 2; yScale: win.anim }
+            // Fade alongside the scale, as caelestia's panels do. Clamped because the
+            // spatial curve overshoots past 1 on the way in.
+            opacity: Math.min(1, win.anim)
             radius: 4
             color: bg
             border.color: outline
@@ -140,7 +151,7 @@ ShellRoot {
                             
                             font.family: uiFont; font.pixelSize: 18
                         }
-                        TextField {
+                        StyledTextField {
                             id: input
                             Layout.fillWidth: true
                             focus: true
@@ -154,7 +165,7 @@ ShellRoot {
                             // keys the list needs; everything else types normally
                             Keys.onPressed: (e) => {
                                 if (e.key === Qt.Key_Escape) {
-                                    win.visible = false; e.accepted = true;
+                                    win.shown = false; e.accepted = true;
                                 } else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) {
                                     accept(); e.accepted = true;
                                 } else if (e.key === Qt.Key_Down || (e.key === Qt.Key_N && (e.modifiers & Qt.ControlModifier))) {
@@ -185,7 +196,7 @@ ShellRoot {
                     onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
                     boundsBehavior: Flickable.StopAtBounds
 
-                    delegate: Rectangle {
+                    delegate: StyledRect {
                         required property int index
                         required property var modelData
                         width: ListView.view.width
@@ -241,9 +252,7 @@ ShellRoot {
                             }
                         }
 
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
+                        StateLayer {
                             onEntered: selected = index
                             onClicked: { selected = index; accept(); }
                         }

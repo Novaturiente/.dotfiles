@@ -68,37 +68,48 @@ ShellRoot {
         applying = true;
         applier.command = ["bash", themeScript, row.name];
         applier.running = true;
-        win.visible = false;
+        win.shown = false;
     }
 
     IpcHandler {
         target: "theme"
         function toggle(): void {
-            if (win.visible) { win.visible = false; return; }
+            if (win.shown) { win.shown = false; return; }
             reload();
-            win.visible = true;
+            win.shown = true;
         }
     }
 
     PanelWindow {
         id: win
-        visible: false
+        // `shown` is what callers set. The window stays mapped until the close
+        // animation has run out, which is what `visible` tracks.
+        property bool shown: false
+        visible: shown || anim > 0
         anchors { top: false; bottom: false; left: false; right: false }
         implicitWidth: 620
         implicitHeight: 92 + Math.max(1, rows.length) * 64
         color: "transparent"
         WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+        WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
         WlrLayershell.namespace: "quickshell-theme"
 
-        // ponytail: open-only expand-from-centre; close hides instantly
-        property real anim: 0
-        Behavior on anim { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-        onVisibleChanged: { anim = visible ? 1 : 0; if (visible) Qt.callLater(function () { keys.forceActiveFocus(); }) }
+        // Expand from the centre on open, collapse back on close.
+        property real anim: shown ? 1 : 0
+        // Opening rides caelestia's expressive fast-spatial curve, which overshoots a
+        // touch and settles. Closing rides the effects curve instead: it is quicker and
+        // does not overshoot, because a panel that bounces on its way out reads as a
+        // glitch. Anim.DefaultSpatial (500ms) is what upstream's launcher uses for the
+        // open; that felt slow for menus opened this often.
+        Behavior on anim { Anim { type: win.shown ? Anim.FastSpatial : Anim.FastEffects } }
+        onShownChanged: { if (shown) Qt.callLater(function () { keys.forceActiveFocus(); }) }
 
         Rectangle {
             anchors.fill: parent
             transform: Scale { origin.y: win.height / 2; yScale: win.anim }
+            // Fade alongside the scale, as caelestia's panels do. Clamped because the
+            // spatial curve overshoots past 1 on the way in.
+            opacity: Math.min(1, win.anim)
             radius: 4
             color: bg
             border.color: outline
@@ -109,7 +120,7 @@ ShellRoot {
                 anchors.fill: parent
                 focus: true
                 Keys.onPressed: (e) => {
-                    if (e.key === Qt.Key_Escape) { win.visible = false; e.accepted = true; }
+                    if (e.key === Qt.Key_Escape) { win.shown = false; e.accepted = true; }
                     else if (e.key === Qt.Key_Down || e.key === Qt.Key_J || e.key === Qt.Key_Tab) {
                         if (rows.length) sel = (sel + 1) % rows.length; e.accepted = true;
                     } else if (e.key === Qt.Key_Up || e.key === Qt.Key_K || e.key === Qt.Key_Backtab) {
@@ -145,11 +156,11 @@ ShellRoot {
                         id: list
                         Layout.fillWidth: true; Layout.fillHeight: true; clip: true
                         boundsBehavior: Flickable.StopAtBounds
-                        ScrollBar.vertical: ScrollBar { }
+                        ScrollBar.vertical: StyledScrollBar { flickable: list }
                         model: rows
                         currentIndex: sel
                         onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
-                        delegate: Rectangle {
+                        delegate: StyledRect {
                             required property int index
                             required property var modelData
                             width: ListView.view.width; height: 64; radius: 0
@@ -193,8 +204,7 @@ ShellRoot {
                                     color: accent; font.family: uiFont; font.pixelSize: 18
                                 }
                             }
-                            MouseArea {
-                                anchors.fill: parent; hoverEnabled: true
+                            StateLayer {
                                 onEntered: sel = index
                                 onClicked: apply(modelData)
                             }
