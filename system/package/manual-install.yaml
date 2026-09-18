@@ -19,7 +19,9 @@
 - howdy-next-git
 - swaylock-effects
 - adw-gtk-theme
-- onlyoffice
+- onlyoffice-bin
 - xdg-desktop-portal-gnome
-- ghgrab
+- ghgrab-bin
 - gnome-keyring
+- ttf-material-symbols-variable
+- shellcheck-bin

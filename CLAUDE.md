@@ -62,7 +62,8 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 | Panel / Wallpaper / Lock / OSD | **DankMaterialShell** (`dms`, Quickshell-based) | `nova/.config/DankMaterialShell/`, `nova/.config/niri/dms/` |
 | Notifications | Own Quickshell daemon, ported from caelestia-shell. Runs as `quickshell-notifications.service`, **not** under niri startup. | `nova/.config/quickshell/notifications/` |
 | Launcher / menus | **Quickshell** daemons (`qs -c <name> -d`), Rofi for a few helpers | `nova/.config/quickshell/`, `nova/.config/rofi/` |
-| Menu motion / widgets | `common/` QML module: Material 3 Expressive curves (`Tokens`, `Anim`), ripple (`StateLayer`), `StyledRect`/`StyledTextField`/`StyledScrollBar`. Ported by hand from [caelestia-shell](https://github.com/caelestia-dots/shell); no compiled plugin. | `nova/.config/quickshell/common/` |
+| Menu motion / widgets | `common/` QML module: Material 3 Expressive curves (`Tokens`, `Anim`), ripple (`StateLayer`), and the `Styled*` widget set. Ported by hand from [caelestia-shell](https://github.com/caelestia-dots/shell); no compiled plugin. | `nova/.config/quickshell/common/` |
+| Quick settings | Own Quickshell daemon: wifi, bluetooth, audio and battery in one layer-shell panel, toggled by `Mod+Ctrl+S`. Ported from caelestia's bar popouts. | `nova/.config/quickshell/quicksettings/` |
 | Idle/Lock | **swayidle** → `dms ipc call lock lock` | `nova/.config/swayidle/config` |
 | Screenshots | grim + slurp + satty | bound in niri config |
 | Screen Record | wf-recorder (region/audio), wl-screenrec (fullscreen) | `scripts/record-script.sh` |
@@ -221,6 +222,36 @@ systemctl --user daemon-reload && systemctl --user restart dms.service
 **Testing it.** `notify-send -a App -i google-chrome "Summary" "Body"`. Use an
 icon name the theme actually has; a missing one falls back to a lettered badge,
 which is deliberate.
+
+## Quick Settings
+
+`Mod+Ctrl+S` opens a layer-shell panel at the top right with wifi, bluetooth,
+audio and battery controls, stacked in one scrolling column. It is a resident
+daemon (`qs -c quicksettings -d`) toggled over IPC like every other menu here.
+
+The four panels are ported by hand from caelestia-shell's **bar popouts**
+(`modules/bar/popouts`), where each one hangs off a bar status icon and opens on
+hover. This system runs DankMaterialShell's bar instead, so there is nothing to
+hover: they are stacked in one panel and opened by keybind. Escape closes.
+Upstream dismissed on click-outside through `HyprlandFocusGrab`, which is
+Hyprland-only and has no niri equivalent.
+
+**No compiled plugin**, matching `common/`. Caelestia's C++ `Tokens`, `Tr`
+translations, `GlobalConfig` and cava visualiser were stripped on the way over;
+the Material 3 role names its QML uses (`m3primary`, `m3onSurfaceVariant` and so
+on) are aliases added to the `Colors.qml` **theme template**, so they re-render
+with every palette.
+
+- **Panels carry a `Panel` suffix** (`BluetoothPanel.qml`, not `Bluetooth.qml`)
+  so they cannot shadow the singletons they use — an unsuffixed `Bluetooth.qml`
+  would hide `Quickshell.Bluetooth`'s own `Bluetooth` singleton.
+- **`Nmcli.qml` is 1800 lines** taken wholesale from upstream. Its ethernet half
+  is inert on this laptop but was left in rather than audited out.
+- **Checking it:** `qs -p ~/.config/quickshell/quicksettings/selfcheck.qml`
+  asserts the service's radio state, active connection and network list against
+  what `nmcli` itself reports. Greps for `NMCLI CHECK PASS`. The widget layer is
+  covered by `qs -c selfcheck`.
+- **The only package it needs** is `ttf-material-symbols-variable`, for the icons.
 
 ## Browsers
 - **Primary:** Zen Browser (Wayland)

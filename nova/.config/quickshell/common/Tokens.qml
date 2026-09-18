@@ -62,4 +62,56 @@ Singleton {
     readonly property var fontSize: ({
         small: 11, smaller: 12, normal: 13, larger: 15, large: 18, extraLarge: 28
     })
+
+    // ---- Fonts -------------------------------------------------------------
+    // Material 3 type scale. Point sizes come from caelestia's
+    // plugin/src/Caelestia/Config/appearanceconfig.hpp; the families are this
+    // repo's, not caelestia's (it ships GoogleSansFlex and CaskaydiaCove NF).
+    readonly property string sansFamily: "JetBrainsMono Nerd Font"
+    readonly property string monoFamily: "JetBrainsMono Nerd Font"
+    readonly property string iconFamily: "Material Symbols Rounded"
+
+    // Returns a chainable font builder. Every call returns a NEW builder, so a
+    // shared token like `Tokens.font.body.builders.medium` can never be mutated
+    // by one call site and leak into another.
+    //
+    // ponytail: replaces caelestia's C++ FontBuilder. Only the four methods the
+    // panels actually call are here; variable axes are set directly on
+    // MaterialIcon instead, which is the only thing that needs them.
+    function fontBuilder(spec) {
+        return {
+            weight: w => fontBuilder(Object.assign({}, spec, { weight: w })),
+            size: s => fontBuilder(Object.assign({}, spec, { pointSize: s })),
+            scale: s => fontBuilder(Object.assign({}, spec, { pointSize: Math.round(spec.pointSize * s) })),
+            build: () => Qt.font(spec)
+        };
+    }
+
+    function fontStyle(family, sizes, weight) {
+        const style = { builders: {} };
+        for (const name in sizes) {
+            const spec = { family: family, pointSize: sizes[name], weight: weight };
+            style[name] = Qt.font(spec);
+            style.builders[name] = fontBuilder(spec);
+        }
+        return style;
+    }
+
+    readonly property var font: ({
+        body: fontStyle(sansFamily, { small: 12, medium: 14, large: 16 }, Font.Normal),
+        title: fontStyle(sansFamily, { small: 14, medium: 16, large: 22 }, Font.Medium),
+        label: fontStyle(sansFamily, { small: 11, medium: 12, large: 14 }, Font.Medium),
+        mono: fontStyle(monoFamily, { small: 12, medium: 14, large: 16 }, Font.Normal),
+        // Icon sizes are caelestia's dp values divided by 1.33, as in the header.
+        icon: Object.assign(fontStyle(iconFamily, { small: 15, medium: 18, large: 24, extraLarge: 36 }, Font.Normal), {
+            size: s => fontBuilder({ family: iconFamily, pointSize: s, weight: Font.Normal })
+        })
+    })
+
+    // ---- Sizes -------------------------------------------------------------
+    // Panel widths, from caelestia's BarTokens. Only the ones the quicksettings
+    // panels reference are kept.
+    readonly property var sizes: ({
+        bar: { networkWidth: 320, audioWidth: 320, batteryWidth: 250 }
+    })
 }

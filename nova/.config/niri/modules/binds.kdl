@@ -75,6 +75,9 @@ binds {
     Mod+Shift+P hotkey-overlay-title="Password Manager" {
         spawn "~/.dotfiles/scripts/quickshell/pass.sh"
     }
+    Mod+Ctrl+S hotkey-overlay-title="Quick Settings" {
+        spawn "~/.dotfiles/scripts/quickshell/quicksettings.sh"
+    }
     Mod+P hotkey-overlay-title="Phone mirror" {
         spawn-sh "scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --window-height=1150"
     }

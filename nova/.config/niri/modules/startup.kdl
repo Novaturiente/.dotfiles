@@ -38,3 +38,6 @@ spawn-at-startup "qs" "-c" "switcher" "-d"
 spawn-at-startup "qs" "-c" "clipboard" "-d"
 // Theme picker — resident quickshell daemon, toggled by Mod+Shift+T
 spawn-at-startup "qs" "-c" "theme" "-d"
+// Quick settings (wifi/bluetooth/audio/battery) — resident quickshell daemon,
+// toggled by Mod+Ctrl+S
+spawn-at-startup "qs" "-c" "quicksettings" "-d"
