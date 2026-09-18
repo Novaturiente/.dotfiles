@@ -9,11 +9,6 @@ sudo cp system/system/etc/tlp.conf /etc/tlp.conf
 # Login manager: Ly (installed from package/windowmanager.yaml).
 # Ly is a TUI greeter running on its own VT; it needs no dedicated user.
 sudo mkdir -p /etc/ly
-sudo cp system/system/etc/ly/config.ini /etc/ly/config.ini
-
-# Catppuccin Mocha boot splash
-sudo cp -r system/system/usr/share/plymouth/themes/catppuccin-mocha /usr/share/plymouth/themes/
-sudo plymouth-set-default-theme -R catppuccin-mocha
 
 # sudo cp system/system/etc/modules-load/ntsync.conf /etc/modules-load.d/ntsync.conf
 
@@ -27,6 +22,11 @@ sudo cp ./system/system/etc/systemd/system/battery-limit.timer /etc/systemd/syst
 mkdir -p ~/.config
 
 stow -d ~/.dotfiles -t ~ nova
+
+# Colours for every application, plus /etc/ly/config.ini and the Plymouth boot
+# splash. Reads system/themes/current, so a fresh machine comes up on whichever
+# theme is committed. Switch later with scripts/theme.sh <name> or Mod+Shift+T.
+./scripts/theme.sh "$(cat system/themes/current)" --system
 
 sudo systemctl enable ly@tty2.service
 

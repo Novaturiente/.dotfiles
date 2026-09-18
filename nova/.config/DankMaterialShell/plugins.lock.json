@@ -1,0 +1,20 @@
+{
+  "lockfileVersion": 1,
+  "plugins": {
+    "dankBatteryAlerts": {
+      "repo": "https://github.com/AvengeMedia/dms-plugins",
+      "path": "DankBatteryAlerts",
+      "commit": "e8c36175a1a8ee4718df5d8ef60d105add94f33e"
+    },
+    "dankKDEConnect": {
+      "repo": "https://github.com/AvengeMedia/dms-plugins",
+      "path": "DankKDEConnect",
+      "commit": "e8c36175a1a8ee4718df5d8ef60d105add94f33e"
+    },
+    "dankLauncherKeys": {
+      "repo": "https://github.com/AvengeMedia/dms-plugins",
+      "path": "DankLauncherKeys",
+      "commit": "e8c36175a1a8ee4718df5d8ef60d105add94f33e"
+    }
+  }
+}

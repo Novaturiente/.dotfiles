@@ -5,4 +5,8 @@ environment {
     QT_QPA_PLATFORM "wayland"
     QT_QPA_PLATFORMTHEME "xdgdesktopportal"
     WLR_HEADLESS_OUTPUTS "1"
+    // Lets every `qs -c <name>` config import the shared palette singleton as
+    // `import common`. Quickshell only auto-registers singletons inside a
+    // config's own root, so the shared one is reached as a QML module instead.
+    QML2_IMPORT_PATH "/home/nova/.config/quickshell"
 }

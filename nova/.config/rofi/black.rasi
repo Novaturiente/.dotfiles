@@ -1,28 +1,30 @@
 /* ROFI VERTICAL THEME USING THE NORD COLOR PALETTE */
 /* Author: Newman Sanchez (https://github.com/newmanls) */
 
+@import "current.rasi"
+
 * {
     font:   "JetBrainsMono Nerd Font Mono 12";
 
-    nord0:     #11111b;    /* Crust */
-    nord1:     #313244;    /* Surface0 */
-    nord2:     #45475a;    /* Surface1 */
-    nord3:     #585b70;    /* Surface2 */
+    nord0:     @crust;
+    nord1:     @surface0;
+    nord2:     @surface1;
+    nord3:     @surface2;
 
-    nord4:     #a6adc8;    /* Subtext0 */
-    nord5:     #bac2de;    /* Subtext1 */
-    nord6:     #cdd6f4;    /* Text */
+    nord4:     @subtext0;
+    nord5:     @subtext1;
+    nord6:     @text;
 
-    nord7:     #94e2d5;    /* Teal */
-    nord8:     #cba6f7;    /* Mauve (accent) */
-    nord9:     #89b4fa;    /* Blue */
-    nord10:    #74c7ec;    /* Sapphire */
-    nord11:    #f38ba8;    /* Red */
+    nord7:     @teal;
+    nord8:     @accent;
+    nord9:     @blue;
+    nord10:    @sapphire;
+    nord11:    @red;
 
-    nord12:    #fab387;    /* Peach */
-    nord13:    #f9e2af;    /* Yellow */
-    nord14:    #a6e3a1;    /* Green */
-    nord15:    #cba6f7;    /* Mauve */
+    nord12:    @peach;
+    nord13:    @yellow;
+    nord14:    @green;
+    nord15:    @mauve;
 
     background-color:   transparent;
     text-color:         @nord4;

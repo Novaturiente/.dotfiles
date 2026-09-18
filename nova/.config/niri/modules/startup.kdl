@@ -36,3 +36,5 @@ spawn-at-startup "qs" "-c" "launcher" "-d"
 spawn-at-startup "qs" "-c" "switcher" "-d"
 // Clipboard manager (image previews) — resident quickshell daemon, toggled by Mod+V
 spawn-at-startup "qs" "-c" "clipboard" "-d"
+// Theme picker — resident quickshell daemon, toggled by Mod+Shift+T
+spawn-at-startup "qs" "-c" "theme" "-d"
