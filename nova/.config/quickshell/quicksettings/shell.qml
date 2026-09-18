@@ -7,19 +7,25 @@
 // DankMaterialShell's bar instead, so they are stacked in one resident daemon
 // and toggled over IPC like every other menu in this repo.
 //
-// Escape closes. Upstream dismissed on click-outside via HyprlandFocusGrab,
-// which is Hyprland-only; niri has no equivalent protocol.
+// The window covers the whole screen while open, transparent except for the
+// panel itself, so a click anywhere else dismisses it. Upstream got that from
+// HyprlandFocusGrab, which is Hyprland-only; niri has no equivalent protocol,
+// and layer-shell surfaces are never told about clicks that miss them.
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Wayland
 import Quickshell.Io
+import Quickshell.Wayland
 import common
 import quicksettings
 
 ShellRoot {
     id: root
+
+    // Every `qs -c <name>` is its own process, so this shrinks the tokens for
+    // this daemon alone and leaves the other menus at full size.
+    Component.onCompleted: Tokens.scale = 0.8
 
     PanelWindow {
         id: win
@@ -30,44 +36,57 @@ ShellRoot {
         property real anim: shown ? 1 : 0
 
         visible: shown || anim > 0
+
+        // Full screen: the dismiss layer needs to cover everything the panel
+        // does not.
         anchors {
             top: true
+            bottom: true
+            left: true
             right: true
         }
-        margins {
-            top: 8
-            right: 8
-        }
-
-        readonly property int pad: Tokens.padding.large
-        implicitWidth: Tokens.sizes.bar.networkWidth + pad * 2
-        // Cap at most of the screen so a long network list scrolls instead of
-        // running off the bottom.
-        implicitHeight: Math.min(screen.height - 80, content.implicitHeight + pad * 2)
 
         color: "transparent"
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
         WlrLayershell.namespace: "quickshell-quicksettings"
 
-        // Same motion as the other menus: expressive-fast on the way in, which
-        // overshoots slightly and settles, and the quicker effects curve on the
-        // way out, because a panel that bounces while closing reads as a glitch.
-        Behavior on anim {
-            Anim {
-                type: win.shown ? Anim.FastSpatial : Anim.FastEffects
-            }
+        // Clicks that reach this have missed the panel, because the panel's own
+        // blocker below is stacked above it.
+        MouseArea {
+            anchors.fill: parent
+            onClicked: win.shown = false
         }
 
         Rectangle {
-            anchors.fill: parent
+            id: panel
+
+            readonly property int pad: Tokens.padding.large
+
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.topMargin: 8
+            anchors.rightMargin: 8
+
+            implicitWidth: Tokens.sizes.bar.networkWidth + pad * 2
+            // Cap at most of the screen so a long network list scrolls instead
+            // of running off the bottom.
+            implicitHeight: Math.min(parent.height - 80, content.implicitHeight + pad * 2)
+            width: implicitWidth
+            height: implicitHeight
+
+            // Same motion as the other menus: expressive-fast on the way in,
+            // which overshoots slightly and settles, and the quicker effects
+            // curve on the way out, because a panel that bounces while closing
+            // reads as a glitch.
             transform: Scale {
-                origin.x: win.width
+                origin.x: panel.width
                 origin.y: 0
                 xScale: win.anim
                 yScale: win.anim
             }
             opacity: Math.min(1, win.anim)
+
             radius: Tokens.rounding.large
             color: Colors.bg
             border.color: Colors.outline
@@ -82,11 +101,18 @@ ShellRoot {
                     win.shown = false;
             }
 
+            // Absorbs clicks that land on the panel but miss a control, so they
+            // never reach the dismiss layer underneath. Declared first, which
+            // puts it below every control here.
+            MouseArea {
+                anchors.fill: parent
+            }
+
             Flickable {
                 id: flick
 
                 anchors.fill: parent
-                anchors.margins: win.pad
+                anchors.margins: panel.pad
                 contentHeight: content.implicitHeight
                 boundsBehavior: Flickable.StopAtBounds
                 clip: true
@@ -135,7 +161,7 @@ ShellRoot {
             // way it replaces the popout upstream.
             WirelessPassword {
                 anchors.fill: parent
-                anchors.margins: win.pad
+                anchors.margins: panel.pad
                 visible: popouts.currentName === "wirelesspassword"
                 popouts: popouts
                 network: network.passwordNetwork

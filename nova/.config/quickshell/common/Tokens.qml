@@ -13,6 +13,20 @@ import Quickshell
 import QtQuick
 
 Singleton {
+    id: root
+
+    // Multiplies every size token: fonts, spacing, padding, rounding and panel
+    // widths, but never durations or curves. Each `qs -c <name>` is its own
+    // process with its own copy of this singleton, so a daemon can set it in
+    // Component.onCompleted and only shrink itself. Scaling the tokens keeps
+    // text crisp, which a `scale` transform on the rendered item would not.
+    property real scale: 1
+
+    // Rounds to whole pixels so scaled sizes do not land on half-pixel edges.
+    function s(v: real): real {
+        return Math.round(v * root.scale);
+    }
+
     readonly property var anim: ({
         curves: {
             emphasized:               [0.05, 0, 2 / 15, 0.06, 1 / 6, 0.4, 5 / 24, 0.82, 0.25, 1, 1, 1],
@@ -45,22 +59,22 @@ Singleton {
     // ponytail: `full` is INT_MAX upstream; Rectangle clamps radius to half the
     // shorter side anyway, so any number past the largest menu works.
     readonly property var rounding: ({
-        extraSmall: 4, small: 8, medium: 12, large: 16, largeIncreased: 20,
-        extraLarge: 28, extraLargeIncreased: 32, extraExtraLarge: 48, full: 9999
+        extraSmall: s(4), small: s(8), medium: s(12), large: s(16), largeIncreased: s(20),
+        extraLarge: s(28), extraLargeIncreased: s(32), extraExtraLarge: s(48), full: 9999
     })
 
     readonly property var spacing: ({
-        extraSmall: 4, small: 8, medium: 12, large: 16, largeIncreased: 20,
-        extraLarge: 28, extraLargeIncreased: 32, extraExtraLarge: 48
+        extraSmall: s(4), small: s(8), medium: s(12), large: s(16), largeIncreased: s(20),
+        extraLarge: s(28), extraLargeIncreased: s(32), extraExtraLarge: s(48)
     })
 
     readonly property var padding: ({
-        extraSmall: 4, small: 8, medium: 12, large: 16, largeIncreased: 20,
-        extraLarge: 28, extraLargeIncreased: 32, extraExtraLarge: 48
+        extraSmall: s(4), small: s(8), medium: s(12), large: s(16), largeIncreased: s(20),
+        extraLarge: s(28), extraLargeIncreased: s(32), extraExtraLarge: s(48)
     })
 
     readonly property var fontSize: ({
-        small: 11, smaller: 12, normal: 13, larger: 15, large: 18, extraLarge: 28
+        small: s(11), smaller: s(12), normal: s(13), larger: s(15), large: s(18), extraLarge: s(28)
     })
 
     // ---- Fonts -------------------------------------------------------------
@@ -90,13 +104,14 @@ Singleton {
     function fontStyle(family, sizes, weight) {
         const style = { builders: {} };
         for (const name in sizes) {
-            const spec = { family: family, pointSize: sizes[name], weight: weight };
+            const spec = { family: family, pointSize: s(sizes[name]), weight: weight };
             style[name] = Qt.font(spec);
             style.builders[name] = fontBuilder(spec);
         }
         return style;
     }
 
+    // Re-evaluates when `scale` changes because fontStyle() reads it through s().
     readonly property var font: ({
         body: fontStyle(sansFamily, { small: 12, medium: 14, large: 16 }, Font.Normal),
         title: fontStyle(sansFamily, { small: 14, medium: 16, large: 22 }, Font.Medium),
@@ -112,6 +127,6 @@ Singleton {
     // Panel widths, from caelestia's BarTokens. Only the ones the quicksettings
     // panels reference are kept.
     readonly property var sizes: ({
-        bar: { networkWidth: 320, audioWidth: 320, batteryWidth: 250 }
+        bar: { networkWidth: s(320), audioWidth: s(320), batteryWidth: s(250) }
     })
 }
