@@ -82,6 +82,26 @@ ShellRoot {
                 if (Colors[role] === undefined)
                     fails.push("Colors." + role + " is missing from the theme template");
 
+            // The scale knob must move every size token and leave motion alone.
+            // Daemons set it per-process; a stray 1 here means a daemon that
+            // shrank itself would silently stay full size.
+            const fullFont = Tokens.font.body.medium.pointSize;
+            const fullPad = Tokens.padding.large;
+            const fullWidth = Tokens.sizes.bar.networkWidth;
+            const fullDuration = Tokens.anim.durations.expressiveDefaultSpatial;
+            Tokens.scale = 0.5;
+            if (Tokens.font.body.medium.pointSize !== Math.round(fullFont * 0.5))
+                fails.push("Tokens.scale did not reach font sizes");
+            if (Tokens.padding.large !== Math.round(fullPad * 0.5))
+                fails.push("Tokens.scale did not reach padding");
+            if (Tokens.sizes.bar.networkWidth !== Math.round(fullWidth * 0.5))
+                fails.push("Tokens.scale did not reach panel widths");
+            if (Tokens.anim.durations.expressiveDefaultSpatial !== fullDuration)
+                fails.push("Tokens.scale changed an animation duration, which it must not");
+            Tokens.scale = 1;
+            if (Tokens.font.body.medium.pointSize !== fullFont)
+                fails.push("Tokens.scale did not restore to 1");
+
             console.log(fails.length === 0 ? "SELFCHECK PASS" : "SELFCHECK FAIL: " + fails.join(" | "));
             quit.running = true;
         }
