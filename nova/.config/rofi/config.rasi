@@ -22,12 +22,10 @@ configuration {
 
 /*****----- Global Properties -----*****/
 
-@import "catppuccin-mocha"
+@import "current"
 
 * {
     font:   "JetBrains Mono Nerd Font 12";
-    bg0:    #1e1e2eE6; /* base, translucent */
-    bg1:    #45475aD0; /* surface1, translucent */
     bg2:    @mauve;    /* accent */
 
     fg0:    @text;

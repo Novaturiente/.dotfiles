@@ -5,6 +5,8 @@ workspace "Main"
 workspace "Work"
 
 
+// Focus-ring and border colours live in modules/colors.kdl, which
+// scripts/theme.sh generates; niri merges the two layout blocks.
 layout {
     gaps 10
     // center-focused-column "always"
@@ -17,27 +19,8 @@ layout {
     default-column-width {
         proportion 0.5
     }
-    // Focus ring styling
-    focus-ring {
-        width 2
-        inactive-color "#181825"
-        active-gradient from="#FF007F" to="#8C52FF" to="#00E5FF" angle=225
-    }
-    // Window border styling
-    border {
-        off
-        width 4
-        active-color "#ffc87f"
-        inactive-color "#505050"
-        urgent-color "#9b0000"
-    }
     shadow {
 
-    }
-    // Cancel the 10px gap under the DMS bar only, so windows sit flush
-    // beneath it while gaps 10 still applies everywhere else.
-    struts {
-        top -10
     }
 }
 

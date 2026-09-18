@@ -105,6 +105,7 @@ Mod+Shift+R                     switch-preset-window-height
 Mod+Shift+S                     grim -g \
 Mod+Shift+Slash                 keybindings.sh
 Mod+Shift+Tab                   switch-focus-between-floating-and-tiling
+Mod+Shift+T                     Theme picker
 Mod+Shift+U                     move-workspace-down
 Mod+Shift+WheelScrollDown       focus-column-right
 Mod+Shift+WheelScrollUp         focus-column-left
@@ -122,6 +123,7 @@ Mod+WheelScrollRight            move-column-to-workspace-down
 Mod+WheelScrollUp               focus-column-left
 Print                           screenshot
 Shift+XF86AudioLowerVolume      brightness.sh down
+Shift+XF86AudioMute             if pkill swayidle; then notify-send 'Suspend disabled'; else swayidle & notify-send 'Suspend enabled'; fi
 Shift+XF86AudioRaiseVolume      brightness.sh up
 XF86AudioLowerVolume            dms ipc call audio decrement 5
 XF86AudioMicMute                dms ipc call audio micmute

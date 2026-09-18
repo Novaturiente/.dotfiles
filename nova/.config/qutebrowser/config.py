@@ -8,9 +8,10 @@ config = config  # pyright: ignore
 config.load_autoconfig(True)
 
 # Theme
-import catppuccin_mocha
+import theme
+import theme_colors
 
-catppuccin_mocha.setup(c)
+theme.setup(c)
 
 
 # ============================================================================
@@ -221,7 +222,7 @@ c.new_instance_open_target = "tab"
 c.hints.chars = "asdfghjkl"
 c.hints.uppercase = True
 c.hints.radius = 3
-c.hints.border = "1px solid #11111b"
+c.hints.border = "1px solid " + theme_colors.CRUST
 c.hints.min_chars = 1
 
 # For focusing scrollable frames (e.g. Jira, Confluence) via :hint frame

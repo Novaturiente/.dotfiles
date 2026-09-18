@@ -6,6 +6,9 @@ binds {
     Mod+Shift+Slash {
         spawn "~/.dotfiles/scripts/quickshell/keybindings.sh"
     }
+    Mod+Shift+T hotkey-overlay-title="Theme picker" {
+        spawn "~/.dotfiles/scripts/quickshell/theme.sh"
+    }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ APPLICATIONS                                                                        │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
@@ -161,6 +164,10 @@ binds {
     }
     XF86AudioMute allow-when-locked=true {
         spawn-sh "dms ipc call audio mute"
+    }
+    // Shift+wheel-press = toggle swayidle (auto-lock + suspend-then-hibernate)
+    Shift+XF86AudioMute allow-when-locked=true {
+        spawn-sh "if pkill swayidle; then notify-send 'Suspend disabled'; else swayidle & notify-send 'Suspend enabled'; fi"
     }
     XF86AudioMicMute allow-when-locked=true {
         spawn-sh "dms ipc call audio micmute"

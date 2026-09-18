@@ -1,21 +1,26 @@
 -- ============================================================================
--- COLORSCHEME: Catppuccin
+-- COLORSCHEME
 -- ============================================================================
+-- The palette comes from lua/theme.lua, which scripts/theme.sh regenerates
+-- from system/themes/palettes/<name>.env. Catppuccin is used as the rendering
+-- engine for every theme: its color_overrides table accepts all 26 palette
+-- slots, so a different theme is a different set of hexes rather than a
+-- different plugin.
+--
+-- ponytail: one colorscheme plugin, not one per theme. Add a dedicated plugin
+-- only if a theme needs different highlight-group semantics, not just hexes.
+local theme = require("theme")
+
 return {
 	"catppuccin/nvim",
 	name = "catppuccin",
 	lazy = false, -- main colorscheme: load at startup
 	priority = 1000, -- load before other plugins
 	opts = {
-		flavour = "mocha", -- latte, frappe, macchiato, mocha
+		flavour = "mocha",
 		transparent_background = false,
 		color_overrides = {
-			mocha = {
-				base = "#06060c",   -- Deep space black
-				mantle = "#030307", -- Darker background elements
-				crust = "#000000",
-				text = "#e6e6fa",   -- Lavender/Starlight white
-			},
+			mocha = theme.palette,
 		},
 		integrations = {
 			treesitter = true,

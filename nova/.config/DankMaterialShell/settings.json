@@ -1,15 +1,7 @@
 {
   "currentThemeName": "custom",
   "currentThemeCategory": "custom",
-  "customThemeFile": "/home/nova/.config/DankMaterialShell/themes/catppuccin.json",
-  "registryThemeVariants": {
-    "catppuccin": {
-      "dark": {
-        "flavor": "mocha",
-        "accent": "mauve"
-      }
-    }
-  },
+  "customThemeFile": "/home/nova/.config/DankMaterialShell/themes/current.json",
   "widgetColorMode": "colorful",
   "cornerRadius": 12,
   "padHours12Hour": true,
@@ -103,14 +95,10 @@
   "notificationTimeoutLow": 10000,
   "notificationCompactMode": true,
   "notificationShowTimeoutBar": true,
-  "dankIslandBarId": "default",
-  "dankIslandHoverOpenDelay": 250,
-  "dankIslandNotificationBadgeClearOnOpen": true,
-  "dankIslandHomeStatusSlot": "right",
-  "dankIslandHomeCompactTight": true,
-  "dankIslandBatteryStyle": "outline",
   "osdAlwaysShowValue": true,
+  "osdPosition": 6,
   "osdMediaPlaybackEnabled": true,
+  "osdPowerProfileEnabled": true,
   "powerActionHoldDuration": 1,
   "barConfigs": [
     {
@@ -150,21 +138,46 @@
           "clockCompactMode": false
         },
         {
-          "id": "workspaceSwitcher",
-          "enabled": true
+          "id": "controlCenterButton",
+          "enabled": true,
+          "showNetworkIcon": true,
+          "showBluetoothIcon": true,
+          "showAudioIcon": true,
+          "showAudioPercent": false,
+          "showVpnIcon": false,
+          "showBrightnessIcon": false,
+          "showBrightnessPercent": false,
+          "showMicIcon": false,
+          "showMicPercent": false,
+          "showBatteryIcon": false,
+          "showPrinterIcon": false,
+          "showScreenSharingIcon": true,
+          "showIdleInhibitorIcon": false,
+          "showDoNotDisturbIcon": false,
+          "controlCenterGroupOrder": [
+            "network",
+            "vpn",
+            "bluetooth",
+            "audio",
+            "microphone",
+            "brightness",
+            "battery",
+            "printer",
+            "screenSharing",
+            "idleInhibitor",
+            "doNotDisturb"
+          ]
         },
         {
-          "id": "music",
+          "id": "battery",
           "enabled": true,
-          "mediaSize": 0
-        },
-        {
-          "id": "runningApps",
-          "enabled": true,
-          "runningAppsCompactMode": true,
-          "runningAppsGroupByApp": false,
-          "runningAppsCurrentWorkspace": false,
-          "runningAppsCurrentMonitor": false
+          "showBatteryPercent": true,
+          "showBatteryPercentOnlyOnBattery": false,
+          "showBatteryTime": false,
+          "showBatteryTimeOnlyOnBattery": false,
+          "showBatteryPowerCharging": false,
+          "showBatteryPowerDischarging": false,
+          "batteryStyle": "icon"
         }
       ],
       "rightWidgets": [
@@ -221,7 +234,7 @@
       ],
       "spacing": 0,
       "innerPadding": 4,
-      "bottomGap": 0,
+      "bottomGap": -10,
       "transparency": 0,
       "widgetTransparency": 0.96,
       "squareCorners": false,
@@ -252,7 +265,41 @@
       "widgetPadding": 8,
       "attachToScreenEdge": false,
       "shadowIntensity": 0,
-      "shadowOpacity": 60
+      "shadowOpacity": 60,
+      "islandHoverOpenDelay": 250,
+      "islandNotificationBadgeClearOnOpen": true,
+      "islandHomeCompactTight": true,
+      "islandBatteryStyle": "outline",
+      "islandHomeLayout": [
+        {
+          "id": "media",
+          "enabled": true
+        },
+        {
+          "id": "clock",
+          "enabled": true
+        },
+        {
+          "id": "weather",
+          "enabled": false
+        },
+        {
+          "id": "status",
+          "enabled": true
+        },
+        {
+          "id": "volume",
+          "enabled": false
+        },
+        {
+          "id": "brightness",
+          "enabled": false
+        },
+        {
+          "id": "notifications",
+          "enabled": true
+        }
+      ]
     }
   ],
   "desktopClockCustomColor": {
@@ -343,5 +390,5 @@
     }
   },
   "frameMode": "separate",
-  "configVersion": 16
+  "configVersion": 18
 }
