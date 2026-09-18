@@ -1,0 +1,42 @@
+# Notification popups, replacing DankMaterialShell's.
+#
+# Only one process on the bus can own org.freedesktop.Notifications, and DMS
+# claims it unconditionally — its QML creates a NotificationServer with no setting
+# to turn it off. So this unit is ordered Before=dms.service and does not report
+# itself started until it actually owns the name, which makes the handover
+# deterministic rather than a race between two startup commands.
+#
+# Type is simple rather than dbus on purpose: systemd refuses to have two units
+# declare the same BusName=, and the shipped dms.service already declares this one.
+# ExecStartPost does the waiting instead.
+#
+# The companion drop-in in dms.service.d/override.conf stops systemd waiting on
+# that same bus name to decide DMS has started.
+#
+# To go back to DMS's notifications:
+#   systemctl --user disable --now quickshell-notifications.service
+#   rm -r ~/.dotfiles/nova/.config/systemd/user/dms.service.d
+#   systemctl --user daemon-reload && systemctl --user restart dms.service
+
+[Unit]
+Description=Quickshell notification popups
+PartOf=graphical-session.target
+After=graphical-session.target
+Requisite=graphical-session.target
+Before=dms.service
+
+[Service]
+Type=simple
+# niri's environment {} block only reaches the processes niri itself spawns, not
+# the systemd user manager, so the shared `common` QML module has to be pointed at
+# here too. Keep this in step with niri/modules/environment.kdl.
+Environment=QML2_IMPORT_PATH=%h/.config/quickshell
+ExecStart=/usr/bin/qs -c notifications
+# Hold the unit "starting" until the bus name is ours, up to ten seconds, so that
+# dms.service cannot start and grab it first.
+ExecStartPost=/bin/sh -c 'n=0; while [ $n -lt 100 ]; do busctl --user status org.freedesktop.Notifications >/dev/null 2>&1 && exit 0; n=$((n+1)); sleep 0.1; done; exit 1'
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target
