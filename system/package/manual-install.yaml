@@ -1,27 +1,3 @@
-- labwc
-- bitwarden-cli
-- rbw
-- pinentry
-- tpm2-tools
-- unrar
-- openblas
-- zen-browser-bin
-- gst-plugins-good
-- gst-libav
-- earlyoom
-- handy-bin
-- brave-bin
-- qemu-hw-display-virtio-vga-gl
-- qemu-hw-display-virtio-gpu-gl
-- wf-recorder
-- pnpm
-- linux-enable-ir-emitter-git
-- howdy-next-git
-- swaylock-effects
-- adw-gtk-theme
-- onlyoffice-bin
-- xdg-desktop-portal-gnome
-- ghgrab-bin
-- gnome-keyring
-- ttf-material-symbols-variable
-- shellcheck-bin
+# Landing file for `novarch add` when no --to is given.
+# Sort entries out into the category files; normally empty.
+[]

@@ -1,12 +1,14 @@
 - python-adblock
 - qutebrowser
 - zen-browser-bin
+- google-chrome
+- brave-bin
+- firefoxpwa
+#- cachyos-firefox-settings   # disabled: only consumer of the firefox package
+- browserpass
+- thunderbird
 - wireguard-tools
 - kdeconnect
 - localsend
-- thunderbird
-- browserpass
-#- cachyos-firefox-settings   # disabled: only consumer of the firefox package
-- firefoxpwa
 - cryptomator
 - cryptomator-cli

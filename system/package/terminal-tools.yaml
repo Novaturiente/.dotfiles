@@ -1,10 +1,12 @@
 - zsh
+- fish
 - ghostty
 - tmux
 - neovim
 - btop
 - fastfetch
 - gdu
+- duf
 - lsof
 - atuin
 - zoxide
@@ -16,11 +18,11 @@
 - jq
 - trash-cli
 - wget
+- gnu-netcat
 - sshfs
 - dialog
-- fish
-- duf
 - television
 - carapace-bin
 - nodejs-inshellisense
-- herdr
+- herdr-bin
+- khal
