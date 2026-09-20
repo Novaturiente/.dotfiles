@@ -3,6 +3,10 @@
 - imv
 - imagemagick
 - easyeffects
+- espeak-ng
+- handy-bin
+- gst-plugins-good
 - gst-plugins-bad
+- gst-libav
 - zathura
 - zathura-pdf-mupdf
