@@ -7,8 +7,7 @@ x-scheme-handler/unknown=zen.desktop
 text/html=zen.desktop
 application/xhtml+xml=zen.desktop
 
-# Documents — zathura
-application/pdf=org.pwmt.zathura.desktop
+# Documents — zathura (PDFs open in Emacs, below)
 application/epub+zip=org.pwmt.zathura.desktop
 application/postscript=org.pwmt.zathura.desktop
 
@@ -38,25 +37,29 @@ audio/opus=mpv.desktop
 audio/mp4=mpv.desktop
 audio/aac=mpv.desktop
 
-# Everything text-shaped — neovim (see nova/.local/share/applications/nvim.desktop)
-text/plain=nvim.desktop
-text/markdown=nvim.desktop
-text/csv=nvim.desktop
+# Prose, notes and data views — Emacs (markdown-mode, pdf-tools, csv-mode)
+text/plain=emacs.desktop
+text/markdown=emacs.desktop
+text/x-org=emacs.desktop
+text/x-readme=emacs.desktop
+text/x-log=emacs.desktop
+text/english=emacs.desktop
+text/csv=emacs.desktop
+text/tab-separated-values=emacs.desktop
+application/pdf=emacs.desktop
+
+# Everything else text-shaped (code, config) — neovim (see nova/.local/share/applications/nvim.desktop)
 text/css=nvim.desktop
 text/xml=nvim.desktop
 text/javascript=nvim.desktop
 text/troff=nvim.desktop
-text/english=nvim.desktop
 text/rust=nvim.desktop
 text/vnd.graphviz=nvim.desktop
-text/x-log=nvim.desktop
 text/x-diff=nvim.desktop
 text/x-patch=nvim.desktop
-text/x-readme=nvim.desktop
 text/x-makefile=nvim.desktop
 text/x-cmake=nvim.desktop
 text/x-tex=nvim.desktop
-text/x-org=nvim.desktop
 text/x-ini=nvim.desktop
 text/x-c=nvim.desktop
 text/x-c++=nvim.desktop
