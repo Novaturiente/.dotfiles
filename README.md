@@ -79,7 +79,7 @@ stow -d ~/.dotfiles -t ~ -D nova
 - **GTK/Qt:** Materia theme, WhiteSur icons, Bibata cursor
 - **Terminal font:** IosevkaTerm Nerd Font (size 13)
 - **Editor font:** JetBrains Mono NL Nerd Font (size 13–15)
-- **Color schemes:** Catppuccin Mocha (Ghostty), Challenger Deep (Emacs)
+- **Color schemes:** Catppuccin Mocha (Ghostty)
 
 ## Shell & Terminal
 
@@ -124,12 +124,11 @@ stow -d ~/.dotfiles -t ~ -D nova
 - **GUI:** Neovide (90% opacity, blur, cursor trail)
 - **Modules:** `plugins.lua`, `keybindinds.lua`, `ui.lua`, `coding.lua`, `autostart.lua`, `orgsetup.lua`
 
-### Doom Emacs (secondary)
+### Emacs (secondary)
 
-- **Config:** `nova/.config/doom/`
-- **Theme:** doom-challenger-deep
+- **Config:** `nova/.config/emacs/` (vanilla, built-in `package.el` + `use-package`)
 - **Evil mode** (vim keybindings)
-- Used for org-mode and as PDF viewer
+- **Theme:** follows `scripts/theme.sh` via the generated `theme.el`
 
 ## Package Management
 
@@ -243,7 +242,7 @@ Auto-extracts keybindings from niri, neovim, and qutebrowser configs into a unif
 
 - **Primary:** Yazi (custom keybindings: mount menu, SMB shares, drag-drop)
 - **Secondary:** Ranger (miller columns, kitty image preview)
-- **MIME defaults:** Zen (web), Emacs (PDF), imv (images), mpv (media), Ranger (dirs)
+- **MIME defaults:** Zen (web), Emacs (PDF, Markdown, CSV, plain text), zathura (epub), imv (images), mpv (media), nvim (code), Ranger (dirs)
 
 ## Hardware
 
