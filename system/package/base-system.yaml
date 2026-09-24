@@ -11,6 +11,9 @@
 - git
 - stow
 - xdg-user-dirs
+# `mimetype`: lets xdg-open detect files by extension, so mimeapps.list routes
+# .md/.csv to Emacs and code to nvim instead of everything reading as text/plain.
+- perl-file-mimeinfo
 - networkmanager
 - iwd
 - openssh
