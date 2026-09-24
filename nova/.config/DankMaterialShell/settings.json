@@ -3,61 +3,89 @@
   "currentThemeCategory": "custom",
   "customThemeFile": "/home/nova/.config/DankMaterialShell/themes/current.json",
   "widgetColorMode": "colorful",
-  "cornerRadius": 12,
   "padHours12Hour": true,
   "animationVariant": 1,
   "motionEffect": 2,
   "barElevationEnabled": false,
   "blurBorderOpacity": 1,
   "blurWallpaperOnOverview": true,
-  "controlCenterShowVpnIcon": false,
   "controlCenterWidgets": [
     {
       "id": "volumeSlider",
       "enabled": true,
-      "width": 50
+      "w": 4,
+      "h": 1
     },
     {
       "id": "brightnessSlider",
       "enabled": true,
-      "width": 50
+      "w": 4,
+      "h": 1
     },
     {
       "id": "wifi",
       "enabled": true,
-      "width": 50
+      "w": 4,
+      "h": 1
     },
     {
       "id": "bluetooth",
       "enabled": true,
-      "width": 50
+      "w": 4,
+      "h": 1
     },
     {
       "id": "audioOutput",
       "enabled": true,
-      "width": 50
+      "w": 4,
+      "h": 1
     },
     {
       "id": "audioInput",
       "enabled": true,
-      "width": 50
+      "w": 4,
+      "h": 1
     },
     {
       "id": "doNotDisturb",
       "enabled": true,
-      "width": 50
+      "w": 4,
+      "h": 1
+    },
+    {
+      "id": "nightMode",
+      "enabled": true,
+      "w": 4,
+      "h": 1
     }
   ],
-  "showWorkspaceIndex": true,
-  "showOccupiedWorkspacesOnly": true,
-  "workspaceUnfocusedColorMode": "s",
-  "focusedWindowShowIcon": false,
-  "runningAppsCurrentWorkspace": false,
   "spotlightSectionViewModes": {
     "apps": "list"
   },
   "launcherStyle": "spotlight",
   "weatherEnabled": false,
+  "dashTabs": [
+    {
+      "id": "overview",
+      "enabled": true
+    },
+    {
+      "id": "media",
+      "enabled": true
+    },
+    {
+      "id": "wallpaper",
+      "enabled": false
+    },
+    {
+      "id": "weather",
+      "enabled": false
+    },
+    {
+      "id": "settings",
+      "enabled": true
+    }
+  ],
   "networkPreference": "wifi",
   "cursorSettings": {
     "theme": "Bibata-Modern-Classic",
@@ -88,7 +116,6 @@
   "matugenTemplateFirefox": false,
   "matugenTemplateZenBrowser": false,
   "matugenTemplateGhostty": false,
-  "dockAutoHide": true,
   "lockScreenShowProfileImage": false,
   "maxFprintTries": 3,
   "lockPamPath": "/etc/pam.d/dankshell",
@@ -96,7 +123,7 @@
   "notificationCompactMode": true,
   "notificationShowTimeoutBar": true,
   "osdAlwaysShowValue": true,
-  "osdPosition": 6,
+  "osdPosition": 4,
   "osdMediaPlaybackEnabled": true,
   "osdPowerProfileEnabled": true,
   "powerActionHoldDuration": 1,
@@ -113,7 +140,10 @@
       "leftWidgets": [
         {
           "id": "workspaceSwitcher",
-          "enabled": true
+          "enabled": true,
+          "showWorkspaceIndex": true,
+          "showOccupiedWorkspacesOnly": true,
+          "workspaceUnfocusedColorMode": "s"
         },
         {
           "id": "runningApps",
@@ -132,6 +162,17 @@
         }
       ],
       "centerWidgets": [
+        {
+          "id": "battery",
+          "enabled": true,
+          "showBatteryPercent": true,
+          "showBatteryPercentOnlyOnBattery": false,
+          "showBatteryTime": false,
+          "showBatteryTimeOnlyOnBattery": false,
+          "showBatteryPowerCharging": false,
+          "showBatteryPowerDischarging": false,
+          "batteryStyle": "icon"
+        },
         {
           "id": "clock",
           "enabled": true,
@@ -167,17 +208,6 @@
             "idleInhibitor",
             "doNotDisturb"
           ]
-        },
-        {
-          "id": "battery",
-          "enabled": true,
-          "showBatteryPercent": true,
-          "showBatteryPercentOnlyOnBattery": false,
-          "showBatteryTime": false,
-          "showBatteryTimeOnlyOnBattery": false,
-          "showBatteryPowerCharging": false,
-          "showBatteryPowerDischarging": false,
-          "batteryStyle": "icon"
         }
       ],
       "rightWidgets": [
@@ -232,11 +262,11 @@
           "showSwap": false
         }
       ],
-      "spacing": 0,
+      "spacing": 12,
       "innerPadding": 4,
       "bottomGap": -10,
       "transparency": 0,
-      "widgetTransparency": 0.96,
+      "widgetTransparency": 1,
       "squareCorners": false,
       "noBackground": false,
       "gothCornersEnabled": false,
@@ -253,16 +283,15 @@
       "visible": true,
       "popupGapsAuto": true,
       "popupGapsManual": 4,
-      "removeWidgetPadding": false,
       "maximizeWidgetText": false,
       "maximizeWidgetIcons": false,
-      "widgetOutlineEnabled": true,
+      "widgetOutlineEnabled": false,
       "widgetOutlineColor": "secondary",
       "widgetOutlineOpacity": 0.35,
       "clickThrough": false,
       "useOverlayLayer": false,
       "barInsetPadding": 4,
-      "widgetPadding": 8,
+      "widgetPadding": 12,
       "attachToScreenEdge": false,
       "shadowIntensity": 0,
       "shadowOpacity": 60,
@@ -299,7 +328,8 @@
           "id": "notifications",
           "enabled": true
         }
-      ]
+      ],
+      "followInterfaceStyle": false
     }
   ],
   "desktopClockCustomColor": {
@@ -333,11 +363,11 @@
       "id": "dw_1768279518899_vd4bn7u86",
       "widgetType": "systemMonitor",
       "name": "System Monitor",
-      "enabled": false,
+      "enabled": true,
       "config": {
         "showHeader": true,
-        "transparency": 0.8,
-        "colorMode": "primary",
+        "transparency": 0.5,
+        "colorMode": "secondary",
         "customColor": "#ffffff",
         "showCpu": true,
         "showCpuGraph": true,
@@ -349,29 +379,23 @@
         "showNetwork": true,
         "showNetworkGraph": true,
         "showDisk": true,
-        "showTopProcesses": false,
-        "topProcessCount": 3,
-        "topProcessSortBy": "cpu",
+        "showTopProcesses": true,
+        "topProcessCount": 5,
+        "topProcessSortBy": "memory",
         "layoutMode": "auto",
-        "graphInterval": 60,
+        "graphInterval": 300,
         "displayPreferences": [
           "all"
-        ]
+        ],
+        "clickThrough": false
       }
     },
     {
-      "id": "dw_1768279550386_up4ys3qjo",
-      "widgetType": "desktopClock",
-      "name": "Desktop Clock",
+      "id": "dw_1789811864331_faj311kbs",
+      "widgetType": "desktopCommand",
+      "name": "Desktop Command",
       "enabled": false,
       "config": {
-        "style": "analog",
-        "transparency": 0.8,
-        "colorMode": "primary",
-        "customColor": "#ffffff",
-        "showDate": true,
-        "showAnalogNumbers": false,
-        "showAnalogSeconds": true,
         "displayPreferences": [
           "all"
         ]
@@ -390,5 +414,74 @@
     }
   },
   "frameMode": "separate",
-  "configVersion": 18
+  "configVersion": 28,
+  "radiusStrength": 63,
+  "dockConfigs": [
+    {
+      "id": "dock",
+      "name": "Dock",
+      "enabled": false,
+      "screenPreferences": [
+        "all"
+      ],
+      "showOnLastDisplay": true,
+      "position": 1,
+      "mode": "compact",
+      "taskbarAlign": "center",
+      "widgetExpansion": "popout",
+      "iconSize": 40,
+      "spacing": 4,
+      "itemSpacing": 4,
+      "margin": 0,
+      "bottomGap": 0,
+      "transparency": 1,
+      "followInterfaceStyle": true,
+      "autoHide": true,
+      "smartAutoHide": false,
+      "useOverlayLayer": false,
+      "editOnRightClick": false,
+      "showOnFullscreen": false,
+      "openOnOverview": false,
+      "groupByApp": false,
+      "separatePinnedAndRunningApps": false,
+      "restoreSpecialWorkspaceOnClick": false,
+      "isolateDisplays": false,
+      "indicatorStyle": "circle",
+      "borderEnabled": false,
+      "borderColor": "surfaceText",
+      "borderOpacity": 1,
+      "borderThickness": 1,
+      "launcherEnabled": false,
+      "launcherLogoMode": "apps",
+      "launcherLogoCustomPath": "",
+      "launcherLogoColorOverride": "",
+      "launcherLogoSizeOffset": 0,
+      "launcherLogoBrightness": 0.5,
+      "launcherLogoContrast": 1,
+      "maxVisibleApps": 0,
+      "maxVisibleRunningApps": 0,
+      "showOverflowBadge": true,
+      "showTrash": false,
+      "trashFileManager": "default",
+      "trashCustomCommand": "",
+      "order": [],
+      "widgets": [
+        {
+          "id": "dock_launcher",
+          "widgetId": "dockLauncher",
+          "enabled": true
+        },
+        {
+          "id": "dock_apps",
+          "widgetId": "appsDock",
+          "enabled": true
+        },
+        {
+          "id": "dock_trash",
+          "widgetId": "dockTrash",
+          "enabled": true
+        }
+      ]
+    }
+  ]
 }
