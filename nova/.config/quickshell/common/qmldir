@@ -15,16 +15,3 @@ StateLayer 1.0 StateLayer.qml
 StyledRect 1.0 StyledRect.qml
 StyledScrollBar 1.0 StyledScrollBar.qml
 StyledTextField 1.0 StyledTextField.qml
-
-# Material 3 widgets, ported from caelestia-shell for the quicksettings panels.
-AnchorAnim 1.0 AnchorAnim.qml
-ButtonBase 1.0 ButtonBase.qml
-CircularIndicator 1.0 CircularIndicator.qml
-CustomMouseArea 1.0 CustomMouseArea.qml
-IconTextButton 1.0 IconTextButton.qml
-MaterialIcon 1.0 MaterialIcon.qml
-StyledRadioButton 1.0 StyledRadioButton.qml
-StyledSlider 1.0 StyledSlider.qml
-StyledSwitch 1.0 StyledSwitch.qml
-StyledText 1.0 StyledText.qml
-TextButton 1.0 TextButton.qml

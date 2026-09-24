@@ -18,7 +18,14 @@ cmd_refresh() {
 cmd_list() {
     local first=1
     printf '['
+    # niri first, the rest alphabetical. The UI opens on the first entry, and on
+    # this machine that should be the window manager, not whatever sorts first.
+    local files=()
+    if [[ -f "$BIN/niri.txt" ]]; then files+=("$BIN/niri.txt"); fi
     for f in "$BIN"/*.txt; do
+        [[ "$f" == "$BIN/niri.txt" ]] || files+=("$f")
+    done
+    for f in "${files[@]}"; do
         [[ -f "$f" ]] || continue
         local name; name=$(basename "$f" .txt)
         [[ "$name" == *-default ]] && continue

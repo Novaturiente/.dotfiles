@@ -45,6 +45,7 @@ Mod+Ctrl+Page_Up                move-column-to-workspace-up
 Mod+Ctrl+P                      Phone mirror
 Mod+Ctrl+Right                  move-column-right
 Mod+Ctrl+R                      Record screen / Stop
+Mod+Ctrl+S                      Control centre
 Mod+Ctrl+Shift+P                Turn off monitor
 Mod+Ctrl+Shift+R                Record region / Stop
 Mod+Ctrl+Shift+WheelScrollDown  move-column-right

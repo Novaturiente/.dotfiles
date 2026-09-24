@@ -21,7 +21,8 @@ hotkey-overlay {
 // disabled 2026-06-01: server-side deploy alert system stopped; was spamming "null" notifications from ntfy keepalive events
 // spawn-sh-at-startup "~/.dotfiles/scripts/incoming-notification.sh"
 //Handy startup
-spawn-sh-at-startup "handy --start-hidden"
+// disabled 2026-09-20: first Alt+Space now boots handy itself (costs one dead keypress + cold start)
+// spawn-sh-at-startup "handy --start-hidden"
 // Zen URL bar menu — resident quickshell daemon, toggled by Mod+S over IPC
 spawn-at-startup "qs" "-c" "zen-url" "-d"
 // Password manager menu — resident quickshell daemon, toggled by Mod+Shift+P
@@ -40,4 +41,3 @@ spawn-at-startup "qs" "-c" "clipboard" "-d"
 spawn-at-startup "qs" "-c" "theme" "-d"
 // Quick settings (wifi/bluetooth/audio/battery) — resident quickshell daemon,
 // toggled by Mod+Ctrl+S
-spawn-at-startup "qs" "-c" "quicksettings" "-d"

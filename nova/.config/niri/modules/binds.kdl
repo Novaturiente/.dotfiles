@@ -31,7 +31,7 @@ binds {
 		spawn-sh "ghostty --title='herdr' -e herdr"
     }
     Mod+D hotkey-overlay-title="Application launcher" {
-        spawn "~/.dotfiles/scripts/quickshell/launcher.sh"
+        spawn "dms" "ipc" "call" "spotlight" "toggle"
     }
     // Mod+P hotkey-overlay-title="Phone (calls + SMS)" {
     //     spawn "~/.local/bin/ac-phone"
@@ -75,8 +75,8 @@ binds {
     Mod+Shift+P hotkey-overlay-title="Password Manager" {
         spawn "~/.dotfiles/scripts/quickshell/pass.sh"
     }
-    Mod+Ctrl+S hotkey-overlay-title="Quick Settings" {
-        spawn "~/.dotfiles/scripts/quickshell/quicksettings.sh"
+    Mod+Ctrl+S hotkey-overlay-title="Control centre" {
+        spawn "dms" "ipc" "call" "control-center" "toggle";
     }
     Mod+P hotkey-overlay-title="Phone mirror" {
         spawn-sh "scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --window-height=1150"

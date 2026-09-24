@@ -1,6 +1,10 @@
 {
   "lockfileVersion": 1,
   "plugins": {
+    "cavaVisualizer": {
+      "repo": "https://github.com/ernestowgg/cava-visualizer",
+      "commit": "2d08bef95bc7cd170ad5730a27791c9af6d80a52"
+    },
     "dankBatteryAlerts": {
       "repo": "https://github.com/AvengeMedia/dms-plugins",
       "path": "DankBatteryAlerts",
@@ -15,6 +19,14 @@
       "repo": "https://github.com/AvengeMedia/dms-plugins",
       "path": "DankLauncherKeys",
       "commit": "e8c36175a1a8ee4718df5d8ef60d105add94f33e"
+    },
+    "desktopCommand": {
+      "repo": "https://github.com/yayuuu/desktopCommand",
+      "commit": "a2e663ee031918ea01e2e65cf88aa3ded85a53f8"
+    },
+    "dmsfilemanager": {
+      "repo": "https://github.com/suruibin/dms-filemanager",
+      "commit": "712154f3eb5dae789ce03f0700488163928395fa"
     }
   }
 }
