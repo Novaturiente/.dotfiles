@@ -16,6 +16,7 @@ return {
 			{ "<leader>t", group = "Terminal" },
 			{ "<leader>n", group = "Notifications" },
 			{ "<leader>a", group = "AI" },
+			{ "<leader>u", group = "UI" },
 		},
 	},
 	keys = {

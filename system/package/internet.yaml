@@ -2,9 +2,7 @@
 - qutebrowser
 - zen-browser-bin
 - google-chrome
-- brave-bin
 - firefoxpwa
-#- cachyos-firefox-settings   # disabled: only consumer of the firefox package
 - browserpass
 - thunderbird
 - wireguard-tools

@@ -10,3 +10,5 @@
 - gst-libav
 - zathura
 - zathura-pdf-mupdf
+# Emacs pdf-tools: its epdfinfo server links against poppler-glib at runtime.
+- poppler-glib

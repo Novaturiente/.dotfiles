@@ -4,7 +4,7 @@ term = kitty
 
 # Font Settings
 # font-family = JetBrainsMono Nerd Font
-font-family = IosevkaTerm Nerd Font
+font-family = ZedMono Nerd Font
 font-size = 13
 font-style = Regular
 font-style-bold = Bold
