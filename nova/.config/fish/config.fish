@@ -32,8 +32,8 @@ set -gx XDG_DOTFILES_HOME $HOME/.dotfiles
 # state, so choose it here to keep the theme reproducible.
 fish_config theme choose catppuccin-mocha
 
-set -gx EDITOR "emacs -nw"
-set -gx VISUAL "emacs -nw"
+set -gx EDITOR "emacsclient -t --alternate-editor="
+set -gx VISUAL "emacsclient -t --alternate-editor="
 set -gx NVIM_LOG_FILE $HOME/.cache/nvim/my_custom_log.txt
 
 # ---- Man page formatting (bat as pager) ----
