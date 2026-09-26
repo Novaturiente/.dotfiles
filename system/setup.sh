@@ -4,20 +4,14 @@ sudo cp novarch /usr/bin/novarch
 
 novarch init
 
-sudo cp system/system/etc/tlp.conf /etc/tlp.conf
+# System files: system/system mirrors /, so copy the whole tree onto it
+# (tlp.conf, sleep.conf, zram, docker, udev, units, /usr/local helpers, polkit, pam).
+sudo cp -r system/system/. /
+sudo chmod 0440 /etc/sudoers.d/vpn-run
 
 # Login manager: Ly (installed from package/windowmanager.yaml).
 # Ly is a TUI greeter running on its own VT; it needs no dedicated user.
 sudo mkdir -p /etc/ly
-
-# sudo cp system/system/etc/modules-load/ntsync.conf /etc/modules-load.d/ntsync.conf
-
-# sudo cp ./system/system/etc/systemd/sleep.conf /etc/systemd/sleep.conf
-
-sudo cp ./scripts/battery-limit.sh /usr/local/bin/battery-limit.sh
-sudo chmod +x /usr/local/bin/battery-limit.sh
-sudo cp ./system/system/etc/systemd/system/battery-limit.service /etc/systemd/system/battery-limit.service
-sudo cp ./system/system/etc/systemd/system/battery-limit.timer /etc/systemd/system/battery-limit.timer
 
 mkdir -p ~/.config
 
@@ -28,33 +22,35 @@ stow -d ~/.dotfiles -t ~ nova
 # theme is committed. Switch later with scripts/theme.sh <name> or Mod+Shift+T.
 ./scripts/theme.sh "$(cat system/themes/current)" --system
 
+sudo systemctl daemon-reload
 sudo systemctl enable ly@tty2.service
 
-systemctl --user enable batsignal.service
 systemctl --user mask pulseaudio.service pulseaudio.socket
 
-sudo systemctl enable battery-limit.timer
+sudo systemctl enable battery-limit.timer paccache.timer
 
-# Set fish as default login shell
+# Set zsh as default login shell
 chsh "$(whoami)" -s "$(which zsh)"
 
 # pkgfile: command-not-found handler + package/binary completion database
 sudo pkgfile --update
 sudo systemctl enable --now pkgfile-update.timer
 
-# fish: generate completions from installed man pages (Gap 1)
-fish -c 'fish_update_completions'
-
 sudo mkinitcpio -P
 
-sudo iptables -P INPUT DROP
-sudo iptables -P OUTPUT ACCEPT
-sudo iptables -P FORWARD ACCEPT
-sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-sudo iptables -A INPUT -i lo -j ACCEPT
-sudo iptables -A INPUT -p tcp --dport 1714:1764 -j ACCEPT
-sudo iptables -A INPUT -p udp --dport 1714:1764 -j ACCEPT
-sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
-sudo iptables-save | sudo tee /etc/iptables/rules.v4
+# Firewall: ufw, deny incoming by default
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw default deny routed
+sudo ufw allow 22
+sudo ufw allow 1714:1764/tcp # KDE Connect
+sudo ufw allow 1714:1764/udp
+sudo ufw allow 3000
+sudo ufw allow 3001
+sudo ufw allow in on wlan0 to 224.0.0.251 port 5353 proto udp  # mDNS
+sudo ufw allow in on wlan0 to 239.255.255.250 port 1900 proto udp  # SSDP
+sudo ufw allow in on wlan0 from 192.168.220.0/24
+sudo ufw --force enable
+sudo systemctl enable ufw.service
 
 sudo reboot
