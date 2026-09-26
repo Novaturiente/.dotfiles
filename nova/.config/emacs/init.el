@@ -25,6 +25,7 @@
       display-line-numbers-type 'relative
       scroll-margin 10
       scroll-conservatively 101        ; scroll by lines at the margin, not half a screen
+      vc-follow-symlinks t             ; stow symlinks: open the real file without asking
       whitespace-style '(face trailing tab-mark space-mark)
       ;; Like listchars: mark tabs and non-breaking spaces only, not every space.
       whitespace-display-mappings '((tab-mark ?\t [?» ?\t])
@@ -131,7 +132,7 @@ With RELATIVE, copy it relative to the project root, or from ~ outside a project
   (evil-set-leader '(normal visual motion) (kbd "SPC"))
   (evil-define-key 'motion 'global
     (kbd "<leader>w")  #'save-buffer
-    (kbd "<leader>q")  #'kill-current-buffer ; keeps the window, like bdelete
+    (kbd "<leader>q")  #'nova-close-tab      ; like bdelete; the last tab quits
     (kbd "<leader>Q")  #'save-buffers-kill-terminal
     (kbd "<leader>m")  #'nova-copy-messages
     (kbd "<leader>yp") #'nova-yank-path
@@ -172,7 +173,7 @@ With RELATIVE, copy it relative to the project root, or from ~ outside a project
   :init (setq evil-collection-key-blacklist '("SPC"))
   :config
   (evil-collection-init
-   '(dired wdired help info eat pdf markdown-mode csv which-key xref replace
+   '(dired wdired help info eat (pdf pdf-view) markdown-mode (csv csv-mode) which-key xref replace
      buff-menu outline)))
 
 ;; jk leaves insert mode. Insert state only, like the imap in Neovim: with Esc
@@ -220,7 +221,10 @@ With RELATIVE, copy it relative to the project root, or from ~ outside a project
 ;; PDFs rendered by pdf-tools. Its epdfinfo server is built into the package
 ;; directory by `pdf-tools-install'; the loader defers everything to the first PDF.
 (use-package pdf-tools
-  :init (pdf-loader-install))
+  :init
+  (pdf-loader-install)
+  ;; q closes the tab like SPC q, instead of quit-window, which leaves *Messages*.
+  (evil-define-key 'normal 'pdf-view-mode-map "q" #'nova-close-tab))
 
 ;; CSV and TSV open as an aligned table with the first row pinned as a header.
 (defun nova-csv-preview ()
@@ -498,9 +502,18 @@ files Git doesn't track yet."
 
 ;; After startup has shown any files or directories it was given (the MIME
 ;; defaults open files this way), so only an empty start gets the dashboard.
-;; *scratch* goes, or it would stay behind as a tab; SPC x brings it back.
+;; *scratch* always goes, or it would stay behind as a tab; SPC x brings it back.
 (add-hook 'emacs-startup-hook
           (lambda ()
             (when (equal (buffer-name) "*scratch*")
-              (nova-dashboard)
+              (nova-dashboard))
+            (when (get-buffer "*scratch*")
               (kill-buffer "*scratch*"))))
+
+(defun nova-close-tab ()
+  "Close the current tab. The window's last tab closes the window too, and
+the last tab of the last window quits Emacs."
+  (interactive)
+  (cond ((cdr (funcall tab-line-tabs-function)) (kill-current-buffer))
+        ((one-window-p) (save-buffers-kill-terminal))
+        ((kill-current-buffer) (delete-window))))

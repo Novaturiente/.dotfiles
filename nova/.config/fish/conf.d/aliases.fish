@@ -5,6 +5,7 @@
 
 # ---- Editors / system ----
 alias vi      'nvim'
+alias emacs   'emacs -nw'   # terminal Emacs from the shell; the desktop entry still opens a window
 alias cedit   "nvim -c 'enew | put + | setlocal buftype=nofile bufhidden=wipe noswapfile'"
 
 # ---- novarch (declarative package manager) ----
