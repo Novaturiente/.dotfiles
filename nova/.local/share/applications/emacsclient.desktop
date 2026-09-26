@@ -1,0 +1,19 @@
+[Desktop Entry]
+Type=Application
+Name=Emacs (Client)
+GenericName=Text Editor
+Comment=Edit text
+Icon=emacs
+Exec=emacsclient --no-wait --reuse-frame --alternate-editor= %F
+Terminal=false
+Categories=Development;TextEditor;
+StartupNotify=true
+StartupWMClass=Emacs
+Keywords=emacsclient;
+# ponytail: overrides /usr/share/applications/emacsclient.desktop, whose Exec
+# wraps emacsclient in sh -c with nested escaped quotes. xdg-open's own Exec
+# parser (used by terminal apps such as explorenova) mangles them, the shell
+# dies on an unmatched quote, and xdg-open still exits 0, so nothing opens.
+# --no-wait returns at once instead of holding the caller until the buffer
+# is closed.
+MimeType=application/pdf;text/plain;text/markdown;text/csv;text/tab-separated-values;text/css;text/xml;text/javascript;text/troff;text/x-log;text/x-diff;text/x-patch;text/x-readme;text/x-makefile;text/x-cmake;text/x-tex;text/x-org;text/x-ini;text/x-csrc;text/x-chdr;text/x-c++src;text/x-c++hdr;text/x-c;text/x-c++;text/x-java;text/x-java-source;text/x-python;text/x-python3;text/x-lua;text/x-go;text/x-perl;text/x-ruby;text/x-php;text/x-sql;text/x-scala;text/x-kotlin;text/x-haskell;text/x-dart;text/x-nim;text/x-zig;text/x-vala;text/x-objcsrc;text/x-pascal;text/x-tcl;text/x-scheme;text/x-common-lisp;text/x-erlang;text/x-elixir;text/x-clojure;text/x-svelte;text/x-vue;text/x-qml;text/x-typescript;text/x-scss;text/x-sass;text/x-less;text/x-gherkin;text/x-dockerfile;text/x-nix;text/x-modelica;text/vnd.graphviz;text/rust;text/english;application/json;application/schema+json;application/ld+json;application/yaml;application/x-yaml;application/toml;application/xml;application/sql;application/javascript;application/x-javascript;application/typescript;application/x-shellscript;application/x-perl;application/x-ruby;application/x-php;application/x-awk;application/x-m4;application/x-desktop;application/x-subrip;application/x-ipynb+json;application/x-cmake;application/x-gettext-translation;application/x-gettext;application/xslt+xml;application/rss+xml;application/atom+xml;
