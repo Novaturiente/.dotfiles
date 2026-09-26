@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# lazygit edit/open handler. Opens the file in nvim in a NEW tmux window
-# (so lazygit stays visible in its pane), with CPROJ=1 so nvim auto-enables
-# the whole-file inline git diff. Falls back to a plain nvim if not in tmux.
+# lazygit edit/open handler. Opens the file in terminal Emacs in a NEW tmux
+# window (so lazygit stays visible in its pane). Falls back to a plain
+# Emacs in the current terminal if not in tmux.
 #
 # Usage: lazygit-edit.sh <filename> [line]
 
@@ -16,18 +16,18 @@ line="${2:-}"
 # (relative) filename resolves.
 workdir="$PWD"
 
-# Build the nvim command safely (handles spaces in paths)
+# Build the emacs command safely (handles spaces in paths)
 qfile="$(printf '%q' "$file")"
-ncmd="CPROJ=1 exec nvim"
-[[ -n "$line" ]] && ncmd="$ncmd +$line"
-ncmd="$ncmd -- $qfile"
+ecmd="exec emacs -nw"
+[[ -n "$line" ]] && ecmd="$ecmd +$line"
+ecmd="$ecmd -- $qfile"
 
 if [[ -n "${TMUX:-}" ]]; then
-	tmux new-window -c "$workdir" -n "edit:$(basename "$file")" "$ncmd"
+	tmux new-window -c "$workdir" -n "edit:$(basename "$file")" "$ecmd"
 else
 	if [[ -n "$line" ]]; then
-		exec nvim +"$line" -- "$file"
+		exec emacs -nw +"$line" -- "$file"
 	else
-		exec nvim -- "$file"
+		exec emacs -nw -- "$file"
 	fi
 fi
