@@ -12,3 +12,15 @@
 - zathura-pdf-mupdf
 # Emacs pdf-tools: its epdfinfo server links against poppler-glib at runtime.
 - poppler-glib
+
+# Intel graphics, video decode and codecs (declared 2026-09-26 so novarch keeps them)
+- mesa
+- mesa-utils
+- vulkan-icd-loader
+- opencl-mesa
+- vpl-gpu-rt
+- gst-plugin-va
+- gst-plugin-pipewire
+- gst-plugins-ugly
+- libvpx
+- libdvdcss
