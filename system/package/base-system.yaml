@@ -92,7 +92,6 @@
 - hwdetect
 - hwinfo
 - rebuild-detector
-- novarch
 - reflector
 - cryptsetup
 - device-mapper

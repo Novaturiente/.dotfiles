@@ -31,7 +31,6 @@
 
 # CLI tools installed outside novarch (declared 2026-09-26)
 - pv
-- explorenova
 - tuxedo-bin
 - pass-import
 - pass-otp
