@@ -70,7 +70,7 @@ Mod+K                           focus-workspace-up
 Mod+Left                        focus-column-left
 Mod+L                           focus-column-right
 Mod+Minus                       set-column-width "-10%"
-Mod+N                           Neovim
+Mod+N                           Emacs
 Mod+O                           File picker
 Mod+Page_Down                   focus-workspace-down
 Mod+Page_Up                     focus-workspace-up

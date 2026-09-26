@@ -405,7 +405,7 @@
       "id": "dw_1768279518899_vd4bn7u86",
       "widgetType": "systemMonitor",
       "name": "System Monitor",
-      "enabled": true,
+      "enabled": false,
       "config": {
         "showHeader": true,
         "transparency": 0.5,

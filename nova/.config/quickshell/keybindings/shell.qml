@@ -69,6 +69,9 @@ ShellRoot {
         // animation has run out, which is what `visible` tracks.
         property bool shown: false
         visible: shown || anim > 0
+        // ponytail: no resident daemon; quit once hidden and idle (Qt.quit kills running Processes)
+        onVisibleChanged: if (!visible) quitter.start()
+        Timer { id: quitter; interval: 200; repeat: true; onTriggered: if (win.visible) stop(); else if (!(lister.running || refresher.running || copier.running)) Qt.quit() }
         anchors { top: false; bottom: false; left: false; right: false }
         implicitWidth: 1240
         implicitHeight: 820
