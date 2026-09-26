@@ -148,7 +148,6 @@ Packages are organized into YAML files in `system/package/`. Each file is a simp
 | `work.yaml` | Java, Docker, databases (PostgreSQL, MySQL), Chrome, WPS Office, Zoom |
 | `internet.yaml` | Qutebrowser, Zen Browser, KDE Connect, LocalSend, Thunderbird |
 | `media.yaml` | mpv, playerctl, imv, imagemagick, easyeffects |
-| `gaming.yaml` | Wine/Proton/GameMode (currently all disabled) |
 | `nvidia.yaml` | NVIDIA drivers (currently all disabled — Intel iGPU only) |
 | `virtualization.yaml` | Empty |
 
@@ -191,7 +190,6 @@ novarch init    # Bootstrap — install all packages from all YAML files
 | Script | Purpose |
 |--------|---------|
 | `bookmarks.sh` | Browser bookmark manager with title fetching |
-| `clipboard.sh` | Clipboard history with image preview via cliphist |
 | `find.sh` | File finder in dotfiles → open in neovide |
 | `power.sh` | Logout/shutdown/reboot with confirmation |
 | `tools.sh` | File operations (copy, move, rename, delete, restore via trash) |

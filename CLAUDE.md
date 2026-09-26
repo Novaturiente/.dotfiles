@@ -39,8 +39,8 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 ### Package Management (`system/package/`)
 - **Format:** Simple YAML lists — each file is an array of package names (`- package-name`)
 - **Commented packages** (`#- package-name`) are disabled/not installed
-- **Categories:** base-system, terminal-tools, windowmanager, development, work, internet, media, gaming (disabled), nvidia (disabled), virtualization (empty)
-- **novarch** reads these YAML files and syncs installed packages declaratively
+- **Categories:** base-system, terminal-tools, windowmanager, development, work, internet, media, manual-install, nvidia (disabled), virtualization
+- **novarch** reads these YAML files and syncs installed packages declaratively. `novarch install` **removes** any package it tracks (state in `/var/lib/novarch/state.yaml`) that no YAML declares, so declare a package before relying on it; `novarch diff` previews the sync
 - **paru** is the AUR helper
 
 ### Dotfile Deployment
@@ -50,7 +50,7 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 
 ### System Config Deployment
 - Files under `system/system/` mirror the `/` filesystem structure
-- Deployed manually via `cp` commands in `setup.sh`
+- Deployed as one tree by `setup.sh`: `sudo cp -r system/system/. /`
 - Example: `system/system/etc/tlp.conf` → `/etc/tlp.conf`
 
 ## Desktop Environment Stack
@@ -61,19 +61,19 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 | Login Manager | **Ly** (TUI greeter on tty2, `ly@tty2.service`) | `system/system/etc/ly/config.ini` |
 | Panel / Wallpaper / Lock / OSD | **DankMaterialShell** (`dms`, Quickshell-based) | `nova/.config/DankMaterialShell/`, `nova/.config/niri/dms/` |
 | Notifications | Own Quickshell daemon, ported from caelestia-shell. Runs as `quickshell-notifications.service`, **not** under niri startup. | `nova/.config/quickshell/notifications/` |
-| Launcher / menus | **Quickshell** daemons (`qs -c <name> -d`), Rofi for a few helpers | `nova/.config/quickshell/`, `nova/.config/rofi/` |
+| Launcher / menus | **Quickshell** menus, started on demand by `scripts/quickshell/*.sh` and quit once closed and idle (nothing resident); Rofi for a few helpers | `nova/.config/quickshell/`, `nova/.config/rofi/` |
 | Menu motion / widgets | `common/` QML module: Material 3 Expressive curves (`Tokens`, `Anim`), ripple (`StateLayer`), and the `Styled*` widget set. Ported by hand from [caelestia-shell](https://github.com/caelestia-dots/shell); no compiled plugin. | `nova/.config/quickshell/common/` |
-| Idle/Lock | **swayidle** → `dms ipc call lock lock` | `nova/.config/swayidle/config` |
+| Idle/Lock | **swayidle**: lock with swaylock (`scripts/lock.sh`) at 5 min, screen off at 10 min, never suspends on idle | `nova/.config/swayidle/config` |
 | Screenshots | grim + slurp + satty | bound in niri config |
 | Screen Record | wf-recorder (region/audio), wl-screenrec (fullscreen) | `scripts/record-script.sh` |
-| Clipboard | wl-clipboard + cliphist | autostarted in WM config |
+| Clipboard | DMS clipboard history (Mod+V → `dms ipc call clipboard toggle`) | `nova/.config/DankMaterialShell/` |
 
 ## Shell & Terminal
 
 | Tool | Details |
 |------|---------|
-| **Shell** | fish (primary, default login shell), zsh (also configured) |
-| **Terminal** | Ghostty (IosevkaTerm Nerd Font, size 13, Catppuccin Mocha, 50% opacity) |
+| **Shell** | zsh (primary, default login shell); fish config is kept but unused |
+| **Terminal** | Ghostty (ZedMono Nerd Font, size 13, themed by `scripts/theme.sh`, 90% opacity) |
 | **Multiplexer** | tmux (prefix: backtick `` ` ``, vi mode) |
 | **History** | atuin (synced) |
 | **Navigation** | zoxide (cd replacement), fzf (fuzzy finder) |
@@ -90,7 +90,7 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
    - `aliases.zsh` — aliases and helper functions (eza, trash, git, ssh, `cproj`)
    - `pluginload.zsh` — zsh plugins (autopair, syntax-highlighting, deja inline suggestions); the fish-style Tab menu is native `menu select`, configured in `.zshrc`
    - `prompt.zsh` — powerline-style prompt with git/language detection
-4. **fish** (default login shell) — `~/.config/fish/config.fish` re-declares the same env/PATH, then auto-loads `conf.d/*.fish` (aliases, autopair, auto-venv). Completions: carapace bridge + native fish + man-page-generated (`fish_update_completions`). Plugins via fisher (`fish_plugins`). Inline autosuggestions read `~/.local/share/fish/fish_history` (not atuin's DB).
+4. **fish** (unused, zsh is the login shell) — `~/.config/fish/config.fish` re-declares the same env/PATH, then auto-loads `conf.d/*.fish` (aliases, autopair, auto-venv). Completions: carapace bridge + native fish + man-page-generated (`fish_update_completions`). Plugins via fisher (`fish_plugins`). Inline autosuggestions read `~/.local/share/fish/fish_history` (not atuin's DB).
 
 ### Notable Aliases
 - `rm` → `trash-put` (safe delete)
@@ -130,7 +130,7 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 |--------|---------|
 | `brightness.sh` | Adaptive step brightness (1% below 32%, 5% above) |
 | `volume.sh` | playerctl volume adjust |
-| `battery-limit.sh` | Lenovo IdeaPad battery conservation mode (70%+ → enable) |
+| `battery-limit.sh` | Lenovo IdeaPad conservation mode (70%+ → enable). Lives in `system/system/usr/local/bin/`; the root timer runs the root-owned copy in `/usr/local/bin`, never the user-writable repo file |
 | `dns.sh` | Toggle Adguard DNS on NetworkManager connection |
 | `tv-only-output.sh` | Switch niri output to the TV only |
 
@@ -159,22 +159,23 @@ Auto-extract and display keybindings from niri, neovim, and qutebrowser configs 
 ### Power Management (TLP)
 - AC: performance governor, performance EPP
 - Battery: powersave governor, balance_power EPP
-- Battery charge thresholds: start 75%, stop 80%
+- No charge thresholds in TLP (its ideapad driver only takes 0/1); `battery-limit.timer` toggles conservation mode
 - WiFi power saving: off on AC, on on battery
 - Sleep mode: s2idle (modern standby)
 
-### Firewall (iptables)
-- INPUT: DROP by default
-- Allow: established connections, loopback, KDE Connect (1714-1764), SSH (22)
-- OUTPUT: ACCEPT all
+### Firewall (ufw)
+- Incoming and routed: DROP by default; outgoing: ACCEPT
+- Allow: SSH (22), KDE Connect (1714-1764 tcp/udp), 3000, 3001, mDNS/SSDP and 192.168.220.0/24 on wlan0
+- Rules are recreated by `setup.sh`
 
 ### Boot
 - systemd-boot (managed by `systemd-boot-manager`); no GRUB on this system
-- Kernel params: `loglevel=3 quiet splash i915.enable_psr=1`
+- Kernel params: `zswap.enabled=0 nowatchdog quiet splash` (btrfs root on subvol `@`)
 
 ### Systemd Services
-- `battery-limit.timer` — runs battery limit script every 5 min
-- `batsignal.service` — battery notifications (critical: 10%, warning: 30%, full: 95%)
+- `battery-limit.timer` — runs `/usr/local/bin/battery-limit.sh` as root every 5 min
+- `paccache.timer` — weekly; keeps 2 versions of installed packages, none of uninstalled (drop-in in `system/system/etc/systemd/system/paccache.service.d/`)
+- Battery alerts come from the DMS `dankBatteryAlerts` plugin (batsignal was removed)
 
 ## Theming & Fonts
 
@@ -192,7 +193,7 @@ adding one palette file. See `system/themes/README.md`.
 - **GTK:** follows DankMaterialShell; both gtk.css files import `dank-colors.css`.
   The widget theme (`adw-gtk3-dark`) is fixed — only the colours change.
 - **Qt:** left to DMS's own qt5ct/qt6ct templates and the xdg portal; not templated here
-- **Terminal font:** IosevkaTerm Nerd Font (size 13)
+- **Terminal font:** ZedMono Nerd Font (size 13)
 - **Editor font:** JetBrains Mono NL Nerd Font (size 13-15)
 - **Icon theme:** Cool-Dark-Icons (Rofi), WhiteSur (GTK)
 
@@ -239,7 +240,7 @@ which is deliberate.
 ## Browsers
 - **Primary:** Zen Browser (Wayland)
 - **Secondary:** Qutebrowser (keyboard-driven, dark mode, follows the active theme)
-- **Work:** Google Chrome, Brave
+- **Work:** Google Chrome
 
 ## Development Languages & Tools
 - **Rust** (rustup, rust-analyzer, Tsinghua mirrors)
@@ -270,24 +271,24 @@ which is deliberate.
 | **RAM** | 16 GB (15.2 GiB usable), soldered |
 | **Storage** | Samsung PM9C1a 1 TB NVMe SSD (DRAM-less, PCIe) |
 | | 2 GB EFI partition (`/boot`, vfat) + 952 GB btrfs (root + home, single partition) |
-| **Swap** | 15.2 GB zram (compressed) + ~24 GB swap file |
+| **Swap** | 7.6 GB zram (zstd, `ram / 2`) + 8 GB swap file (`/swap/swapfile`) |
 | **WiFi** | Intel AX211 (WiFi 6E, CNVi, Meteor Lake PCH) |
 | **Bluetooth** | Intel AX211 BT 5.3 |
 | **Webcam** | Bison Integrated RGB Camera (USB) |
 | **Card Reader** | O2 Micro SD/MMC Controller |
 | **Ports** | Thunderbolt 4 (USB-C), USB 3.2 Gen 2x1 |
 | **Display** | 14" 1920x1080 @ 60 Hz (eDP-1), intel_backlight |
-| **Kernel** | linux-cachyos 6.19.x (PREEMPT_DYNAMIC, clang/LLD built) |
+| **Kernel** | linux-cachyos 7.2.x (PREEMPT_DYNAMIC, clang/LLD built) |
 | **Filesystem** | Btrfs (single partition for / and /home) |
 | **Networking** | Tailscale VPN active, Docker/Podman bridge networks |
 
 ### Hardware-Specific Config Notes
-- **TLP** is tuned for Meteor Lake: s2idle sleep, Intel HWP, NatACPI battery thresholds (75-80%)
+- **TLP** is tuned for Meteor Lake: s2idle sleep, Intel HWP, NatACPI enabled (charge limit handled by `battery-limit.timer`)
 - **Battery conservation** managed via Lenovo IdeaPad ACPI sysfs (`/sys/bus/platform/drivers/ideapad_acpi/`)
 - **i915 PSR** (Panel Self Refresh) enabled in kernel params for display power saving
 - **intel-compute-runtime** + **intel-media-driver** installed for OpenCL and media acceleration
-- **intel-npu-driver-bin** installed for NPU support
-- **No NVIDIA packages** — nvidia.yaml and gaming.yaml are fully commented out
+- NPU: kernel driver (`intel_vpu`) loaded; the userspace `intel-npu-driver` is not installed
+- **No NVIDIA or gaming packages** — nvidia.yaml is fully commented out; gaming.yaml and Steam were removed 2026-09-26
 
 ## Important Notes
 
