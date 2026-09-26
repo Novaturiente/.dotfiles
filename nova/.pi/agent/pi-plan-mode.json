@@ -1,0 +1,19 @@
+{
+  "defaultPlanTools": [
+    "read",
+    "grep",
+    "find",
+    "ls",
+    "bash",
+    "lsp_diagnostics",
+    "lens_diagnostics",
+    "symbol_search",
+    "module_report",
+    "read_symbol",
+    "read_enclosing",
+    "project_report",
+    "session_search",
+    "memory_search",
+    "pi_claude_code_provider_web_search"
+  ]
+}

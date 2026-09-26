@@ -1,0 +1,12 @@
+{
+  "providers": {
+    "pi-claude-code-provider": {
+      "modelOverrides": {
+        "opus": { "name": "opus" },
+        "sonnet": { "name": "sonnet" },
+        "fable": { "name": "fable" },
+        "haiku": { "name": "haiku" }
+      }
+    }
+  }
+}
