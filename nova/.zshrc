@@ -84,8 +84,7 @@ source $XDG_CONFIG_HOME/zsh/aliases.zsh
 source $XDG_CONFIG_HOME/zsh/functions.zsh
 
 # -------------------------------------------------------------------
-# Completions  (fix 6: compinit runs HERE, before zsh-autocomplete loads in
-# pluginload — was previously sourced after it, which was fragile)
+# Completions  (compinit runs HERE, before pluginload)
 # -------------------------------------------------------------------
 fpath=(~/.config/zsh/completions $fpath)
 autoload -Uz compinit
@@ -104,20 +103,28 @@ zstyle ':completion:*'         list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS} 'ma=48;5;17;38;5;255'
 zstyle ':completion:*' list-columns 2
 zstyle ':completion:*' list-packed yes
+
+# Fish-style Tab: first Tab completes the common prefix and lists, second Tab
+# enters the highlighted menu. Matching is case-insensitive, then substring.
+zmodload zsh/complist
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'l:|=* r:|=*'
+zstyle ':completion:*:descriptions' format $'\e[2;37m%d\e[m'
+zstyle ':completion:*' group-name ''
+bindkey -M menuselect '^I'   menu-complete                  # Tab cycles, like fish
+bindkey -M menuselect '/'    accept-and-infer-next-history  # / on a dir steps into it
+bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete  # Shift+Tab goes back
+bindkey -M menuselect '^J'   down-line-or-history
+bindkey -M menuselect '^K'   up-line-or-history
+bindkey -M menuselect '^S'   history-incremental-search-forward  # search inside the menu
 # -------------------------------------------------------------------
-# External Tools & Plugins  (zsh-autocomplete loads here, AFTER compinit — fix 6)
+# External Tools & Plugins
 # -------------------------------------------------------------------
 source $XDG_CONFIG_HOME/zsh/pluginload.zsh
 source $HOME/.config/zsh/plugins/zsh-defer/zsh-defer.plugin.zsh
 _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/fzf.zsh" fzf --zsh
 # atuin cached (not deferred): keeps preexec hook eager so the FIRST command is recorded
 _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/atuin.zsh" atuin init zsh
-
-# Tab / menu-select keybindings (applied after zsh-autocomplete has loaded)
-bindkey "$terminfo[kcbt]" menu-select
-bindkey -M menuselect              '^I'         menu-complete
-bindkey -M menuselect "$terminfo[kcbt]" reverse-menu-complete
-bindkey '^I' menu-select
 
 # -------------------------------------------------------------------
 # Google Cloud SDK
@@ -137,7 +144,7 @@ zsh-defer source /home/nova/.config/broot/launcher/bash/br
 # -------------------------------------------------------------------
 # Vi-mode UX parity with fish (cursor shape per mode + `jk` to exit insert)
 #   Uses add-zle-hook-widget so it chains with fast-syntax-highlighting /
-#   zsh-autocomplete instead of clobbering their zle-keymap-select hook.
+#   deja instead of clobbering their zle-keymap-select hook.
 # -------------------------------------------------------------------
 KEYTIMEOUT=20                                   # 0.2s, matches fish_sequence_key_delay_ms
 autoload -Uz add-zle-hook-widget
@@ -157,8 +164,10 @@ bindkey -M viins 'jk' vi-cmd-mode               # jk -> normal mode (like fish)
 # Carapace — multi-shell completion bridge (fish parity, after compinit)
 # -------------------------------------------------------------------
 export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
+export CARAPACE_MATCH=1                          # case-insensitive, like fish
 zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
 _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/carapace.zsh" carapace _carapace zsh
+compdef _files emacs   # carapace's emacs completer drops the / on dirs and adds a space
 
 # -------------------------------------------------------------------
 # zoxide — MUST be initialized last (zoxide doctor requirement)

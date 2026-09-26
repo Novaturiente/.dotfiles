@@ -88,7 +88,7 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 3. `.zshrc` — sources `.profile`, then loads from `$XDG_CONFIG_HOME/zsh/`:
    - `variables.zsh` — editor, PATH, locale
    - `aliases.zsh` — aliases and helper functions (eza, trash, git, ssh, `cproj`)
-   - `pluginload.zsh` — zsh plugins (autopair, syntax-highlighting, autosuggestions, autocomplete)
+   - `pluginload.zsh` — zsh plugins (autopair, syntax-highlighting, deja inline suggestions); the fish-style Tab menu is native `menu select`, configured in `.zshrc`
    - `prompt.zsh` — powerline-style prompt with git/language detection
 4. **fish** (default login shell) — `~/.config/fish/config.fish` re-declares the same env/PATH, then auto-loads `conf.d/*.fish` (aliases, autopair, auto-venv). Completions: carapace bridge + native fish + man-page-generated (`fish_update_completions`). Plugins via fisher (`fish_plugins`). Inline autosuggestions read `~/.local/share/fish/fish_history` (not atuin's DB).
 
