@@ -40,7 +40,7 @@ binds {
         spawn "~/.dotfiles/scripts/rofi/tv-edit.sh";
     }
     Mod+N hotkey-overlay-title="Emacs" {
-        spawn "emacs"
+        spawn "emacsclient" "-c" "--alternate-editor="
     }
     Mod+T hotkey-overlay-title="Task scratchpad" {
         spawn "~/.dotfiles/scripts/tasks.sh"

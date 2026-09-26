@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# lazygit edit/open handler. Opens the file in terminal Emacs in a NEW tmux
-# window (so lazygit stays visible in its pane). Falls back to a plain
-# Emacs in the current terminal if not in tmux.
+# lazygit edit/open handler. Opens the file in a terminal frame of the Emacs
+# daemon, in a NEW tmux window (so lazygit stays visible in its pane). Falls
+# back to the current terminal if not in tmux.
 #
 # Usage: lazygit-edit.sh <filename> [line]
 
@@ -16,9 +16,9 @@ line="${2:-}"
 # (relative) filename resolves.
 workdir="$PWD"
 
-# Build the emacs command safely (handles spaces in paths)
+# Build the emacsclient command safely (handles spaces in paths)
 qfile="$(printf '%q' "$file")"
-ecmd="exec emacs -nw"
+ecmd="exec emacsclient -t --alternate-editor="
 [[ -n "$line" ]] && ecmd="$ecmd +$line"
 ecmd="$ecmd -- $qfile"
 
@@ -26,8 +26,8 @@ if [[ -n "${TMUX:-}" ]]; then
 	tmux new-window -c "$workdir" -n "edit:$(basename "$file")" "$ecmd"
 else
 	if [[ -n "$line" ]]; then
-		exec emacs -nw +"$line" -- "$file"
+		exec emacsclient -t --alternate-editor= +"$line" -- "$file"
 	else
-		exec emacs -nw -- "$file"
+		exec emacsclient -t --alternate-editor= -- "$file"
 	fi
 fi

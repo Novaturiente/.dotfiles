@@ -510,6 +510,12 @@ files Git doesn't track yet."
             (when (get-buffer "*scratch*")
               (kill-buffer "*scratch*"))))
 
+;; The daemon starts once with no frame, so each empty `emacsclient -c' frame
+;; asks for its buffer here instead. Daemon only: in a plain `emacs FILE' this
+;; would split the window to show the dashboard beside the file.
+(when (daemonp)
+  (setq initial-buffer-choice #'nova-dashboard))
+
 (defun nova-close-tab ()
   "Close the current tab. The window's last tab closes the window too, and
 the last tab of the last window quits Emacs."
