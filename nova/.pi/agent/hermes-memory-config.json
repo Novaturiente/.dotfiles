@@ -1,7 +1,0 @@
-{
-  "childExtensionPaths": [
-    "~/.pi/agent/git/github.com/chem/pi-claude-code-provider/extensions/pi-claude-code-provider.ts"
-  ],
-  "llmModelOverride": "pi-claude-code-provider/haiku",
-  "llmThinkingOverride": "off"
-}

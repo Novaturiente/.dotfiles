@@ -74,11 +74,21 @@ async function prepare(cwd: string, name: string, base?: string) {
 	return { path, branch, created: true, copied };
 }
 
+// Set by the fish `pi` wrapper; it cd's into the path written here after pi exits.
+// Removed from env so subagent child pi processes don't overwrite it.
+// Kept on globalThis because the extension is re-imported on every session switch.
+const g = globalThis as { __piCwdFile?: string };
+g.__piCwdFile ??= process.env.PI_CWD_FILE;
+delete process.env.PI_CWD_FILE;
+const CWD_FILE = g.__piCwdFile;
+
 export default function (pi: ExtensionAPI) {
 	let autoContinue = false; // set by a tool, consumed by the command it queues
 
 	// Footer path (powerline custom item "wtpath"): <root>:<worktree> inside a worktree, else basename.
 	pi.on("session_start", (_e, ctx) => {
+		// Move the real process too (like Claude Code), so herdr's new_cwd="follow" sees the worktree.
+		try { process.chdir(ctx.cwd); } catch {}
 		const m = ctx.cwd.match(/\/([^/]+)\/\.claude\/worktrees\/([^/]+)$/);
 		ctx.ui.setStatus("wtpath", m ? `${m[1]}:${m[2]}` : ctx.cwd.split("/").pop() || ctx.cwd);
 	});
@@ -231,6 +241,8 @@ export default function (pi: ExtensionAPI) {
 	let hooked = false;
 	let hint = "";
 	pi.on("session_shutdown", (event, ctx) => {
+		// Last shutdown wins, so the final session's cwd is what the shell gets.
+		if (CWD_FILE) try { writeFileSync(CWD_FILE, ctx.cwd); } catch {}
 		if (event.reason !== "quit" || ctx.mode !== "tui") return;
 		const file = ctx.sessionManager.getSessionFile();
 		if (!file || !existsSync(file)) return;

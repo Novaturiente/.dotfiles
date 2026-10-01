@@ -1,37 +1,55 @@
 {
-  "lastChangelogVersion": "0.87.1",
+  "lastChangelogVersion": "0.99.2",
+  "theme": "dark",
   "defaultProvider": "pi-claude-code-provider",
   "defaultModel": "opus",
   "packages": [
-    "npm:pi-omniroute-sync",
-    "npm:pi-subagents",
-    "npm:pi-lens",
-    "npm:@dietrichgebert/ponytail",
-    "npm:pi-hermes-memory",
-    "npm:@narumitw/pi-goal",
     "git:github.com/chem/pi-claude-code-provider",
+    "npm:pi-subagents",
+    "npm:@dietrichgebert/ponytail",
     "npm:pi-powerline-footer",
     "npm:pi-caveman",
     "npm:pi-impeccable-skill",
     "npm:@narumitw/pi-plan-mode",
-    "npm:@juicesharp/rpiv-ask-user-question",
-    "npm:pi-mcp-adapter",
+    {
+      "source": "npm:@juicesharp/rpiv-ask-user-question",
+      "extensions": []
+    },
     "npm:@rokiy/pi-ui",
     "npm:pi-rewind",
-    "npm:@narumitw/pi-btw"
+    "npm:@narumitw/pi-btw",
+    "npm:@everyx/pi-read-doc",
+    "npm:@narumitw/pi-goal",
+    {
+      "source": "npm:@juicesharp/rpiv-todo",
+      "extensions": []
+    },
+    "npm:pi-background-tasks",
+    "npm:pi-simplify",
+    "npm:pi-agent-browser-native",
+    "npm:@vndv/pi-codegraph",
+    "npm:pi-lens"
   ],
-  "theme": "dark",
   "extensions": [
     "extensions/compact-tools.ts",
     "extensions/turn-timer.ts",
-    "extensions/claude-usage.ts"
+    "extensions/claude-usage.ts",
+    "/home/nova/.pi/agent/npm/node_modules/@juicesharp/rpiv-todo/index.bundle.mjs",
+    "/home/nova/.pi/agent/npm/node_modules/@juicesharp/rpiv-ask-user-question/index.bundle.mjs"
   ],
   "powerline": {
+    "separator": "pipe",
     "placement": "below",
     "welcome": false,
     "model": {
       "display": "name",
       "showThinkingLevel": true
+    },
+    "context": {
+      "format": "percent"
+    },
+    "cache_read": {
+      "format": "percent"
     },
     "layout": {
       "left": [
@@ -40,17 +58,24 @@
         "model",
         "shell_mode",
         "queue",
-        "context_pct",
+        "custom:ctx",
         "cache_read",
         "cost",
         "custom:usage",
-        "time_spent"
+        "extension_statuses",
+        "time_spent",
+        "custom:turn",
+        "custom:bg"
       ],
-      "secondary": [
-        "extension_statuses"
-      ]
+      "secondary": []
     },
     "customItems": [
+      {
+        "id": "ctx",
+        "statusKey": "ctx",
+        "position": "left",
+        "selfColorize": true
+      },
       {
         "id": "usage",
         "statusKey": "usage",
@@ -58,15 +83,21 @@
         "selfColorize": true
       },
       {
+        "id": "turn",
+        "statusKey": "turn",
+        "position": "left",
+        "selfColorize": true
+      },
+      {
+        "id": "bg",
+        "statusKey": "background-tasks",
+        "position": "left"
+      },
+      {
         "id": "wtpath",
         "statusKey": "wtpath",
         "position": "left",
         "color": "#00afaf"
-      },
-      {
-        "id": "lens",
-        "statusKey": "pi-lens-lsp",
-        "position": "left"
       }
     ]
   },
@@ -74,5 +105,12 @@
   "showLastPrompt": false,
   "tuiMode": "fullscreen",
   "hideThinkingBlock": true,
-  "doubleEscapeAction": "none"
+  "doubleEscapeAction": "none",
+  "subagents": {
+    "agentOverrides": {
+      "scout": {
+        "model": "pi-claude-code-provider/haiku"
+      }
+    }
+  }
 }

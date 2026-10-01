@@ -1,0 +1,42 @@
+diff --git a/src/stream-events.ts b/src/stream-events.ts
+index 0fd52ac..828ad6c 100644
+--- a/src/stream-events.ts
++++ b/src/stream-events.ts
+@@ -13,6 +13,29 @@ import {
+   type RateLimitNoticeSink,
+ } from "./claude-protocol.ts";
+ import type { MutableOutput } from "./types.ts";
++import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
++import { homedir } from "node:os";
++
++// LOCAL PATCH (nova): keep the per-response usage windows (5h / 7d utilization + reset) that
++// Claude sends as rate_limit_event, for pi's claude-usage footer and usage-panel. Upstream drops them.
++function persistUnifiedWindows(info: unknown): void {
++  const windows = (info as { unifiedWindows?: unknown } | null)?.unifiedWindows;
++  if (!windows || typeof windows !== "object") return;
++  try {
++    const dir = `${homedir()}/.cache`;
++    const file = `${dir}/claude-usage-live.json`;
++    let prev: { windows?: object } = {};
++    try {
++      prev = JSON.parse(readFileSync(file, "utf8"));
++    } catch {
++      prev = {}; // first write
++    }
++    mkdirSync(dir, { recursive: true });
++    writeFileSync(file, JSON.stringify({ at: Date.now(), windows: { ...prev.windows, ...windows } }));
++  } catch {
++    // advisory; must never fail a provider request
++  }
++}
+ 
+ interface StreamEventEnvelope {
+   type?: string;
+@@ -639,6 +662,7 @@ export class ClaudeEventMapper {
+   }
+ 
+   private acceptRateLimit(info: unknown): void {
++    persistUnifiedWindows(info);
+     const notice = parseRateLimitNotice(info);
+     if (!notice) return;
+     // Repeats are de-duplicated once per session by the extension's notifier,

@@ -205,6 +205,82 @@ With RELATIVE, copy it relative to the project root, or from ~ outside a project
 (use-package eat
   :init (setq eat-kill-buffer-on-exit t))
 
+;; Completion (blink.cmp): a popup as you type, and the top candidate previewed
+;; inline in grey (built in; TAB accepts it). Candidates come from the language
+;; server plus words in every visible window, so a pane beside the code feeds
+;; its identifiers into completion.
+(use-package corfu
+  :demand t
+  :init (setq corfu-auto t
+              corfu-auto-prefix 2
+              corfu-cycle t)
+  :config (global-corfu-mode))
+(global-completion-preview-mode)
+
+(use-package cape
+  :demand t
+  :init
+  ;; ponytail: visible windows of this frame only; widen to all buffers if
+  ;; words from hidden buffers are missed.
+  (setq cape-dabbrev-buffer-function
+        (lambda () (mapcar #'window-buffer (window-list))))
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'nova-line-capf))
+
+(defun nova-line-capf ()
+  "Complete the whole current line from lines in the other visible windows.
+Typing the start of a line shown in another pane previews the rest of that
+line. Returns nothing when no line matches, so word completion
+takes over."
+  ;; ponytail: replaces from the indentation to point, so text after point
+  ;; (an auto-closed paren) stays and may double up.
+  (let* ((start (save-excursion (back-to-indentation) (point)))
+         (typed (buffer-substring-no-properties start (point)))
+         lines)
+    (when (>= (length typed) 2)
+      (dolist (buf (delete (current-buffer) (mapcar #'window-buffer (window-list))))
+        (with-current-buffer buf
+          (save-excursion
+            (goto-char (point-min))
+            (while (search-forward typed nil t)
+              (let ((line (string-trim (buffer-substring-no-properties
+                                        (line-beginning-position) (line-end-position)))))
+                (when (and (string-prefix-p typed line) (not (equal typed line)))
+                  (push line lines)))
+              (forward-line 1)))))
+      (when lines
+        (list start (point) (delete-dups lines) :exclusive 'no)))))
+
+;; LSP (nvim-lspconfig), built in. Same servers as lsp.lua. The server's
+;; candidates are merged with the window words, like blink's lsp + buffer.
+(defun nova-eglot-capf ()
+  (when (eglot-managed-p)
+    (setq-local completion-at-point-functions
+                (list #'nova-line-capf
+                      (cape-capf-super #'eglot-completion-at-point #'cape-dabbrev)
+                      #'cape-file))))
+
+;; Rust and Go have no mode until their tree-sitter grammar exists. Emacs 31
+;; pins each grammar's source and builds it on first use; this builds it
+;; without asking, into the cache rather than the repo.
+(setq treesit-auto-install-grammar 'always
+      treesit-extra-load-path (list (expand-file-name "tree-sitter" nova-cache)))
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-ts-mode))
+(add-to-list 'auto-mode-alist '("/go\\.mod\\'" . go-mod-ts-mode))
+
+(use-package eglot
+  :ensure nil
+  :hook (((python-mode python-ts-mode rust-mode rust-ts-mode go-mode go-ts-mode
+           sh-mode bash-ts-mode c-mode c-ts-mode c++-mode c++-ts-mode lua-mode lua-ts-mode)
+          . eglot-ensure)
+         (eglot-managed-mode . nova-eglot-capf))
+  :init
+  (evil-define-key 'normal 'global
+    (kbd "<leader>lr") #'eglot-rename
+    (kbd "<leader>la") #'eglot-code-actions))
+
 ;; Markdown rendered in place: markup hidden, headings sized. Tab folds the
 ;; section under the cursor and Shift-Tab cycles the whole outline.
 (use-package markdown-mode
