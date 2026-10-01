@@ -26,7 +26,7 @@ export default function (pi: ExtensionAPI) {
 		ctx.ui.setStatus(
 			"turn",
 			started
-				? t.fg("muted", "turn ") + t.fg("text", fmt(Date.now() - started))
+				? t.fg("accent", "turn ") + t.fg("text", fmt(Date.now() - started))
 				: "",
 		);
 		if (running.size === 0) {

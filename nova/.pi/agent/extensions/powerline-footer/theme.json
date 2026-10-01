@@ -1,4 +1,10 @@
 {
-  "colors": { "context": "#ffffff" },
+  "colors": {
+    "context": "#ffffff",
+    "tokens": "#bcbcbc",
+    "cost": "#ffd75f",
+    "separator": "#8a8a8a",
+    "thinking": "#bcbcbc"
+  },
   "icons": { "folder": "" }
 }

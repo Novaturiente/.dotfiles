@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "serena": {
+      "command": "serena",
+      "args": ["start-mcp-server", "--context=agent", "--project-from-cwd"],
+      "description": "Semantic code navigation: find symbols, references, and symbol-level edits via LSP"
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@4.0.3"],
+      "description": "Up-to-date library/framework docs: resolve-library-id, then query-docs",
+      "exposure": "direct"
+    }
+  }
+}
