@@ -63,12 +63,17 @@ while :; do
 	# Last pane left in the window: close instead of lingering alone.
 	[ "$(tmux display -p -t "$TMUX_PANE" '#{window_panes}')" -gt 1 ] || exit
 	read -r h me < <(tmux display -p -t "$TMUX_PANE" '#{pane_height} #{session_name}')
+	# Selected agent = active pane of this session's active window.
+	sel=$(tmux display -p -t "$me:" '#{pane_id}')
 	ids=() top=("${dim} AGENTS${off}" "")
 	while IFS=$'\t' read -r id agent state loc dir _; do
 		ids+=("$id")
 		c=${col[$state]:-${col[idle]}}
-		top+=("$(printf ' %d \e[38;2;%sm●%s %-8.8s \e[38;2;%sm%-7s%s' "${#ids[@]}" "$c" "$off" "$agent" "$c" "$state" "$off")")
-		top+=("$(printf '   %s%.28s%s' "$dim" "$loc $dir" "$off")")
+		# Selected: mauve bar in the gutter + bold name.
+		g=' ' b=''
+		[ "$id" = "$sel" ] && g=$'\e[38;2;203;166;247m▎\e[0m' b=$'\e[1m'
+		top+=("$(printf '%s%d \e[38;2;%sm●%s %s%-8.8s%s \e[38;2;%sm%-7s%s' "$g" "${#ids[@]}" "$c" "$off" "$b" "$agent" "$off" "$c" "$state" "$off")")
+		top+=("$(printf '%s  %s%.28s%s' "$g" "$dim" "$loc $dir" "$off")")
 	done < <(agents)
 	[ ${#ids[@]} -eq 0 ] && top+=(" ${dim}no agents running${off}")
 
