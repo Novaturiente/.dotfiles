@@ -28,6 +28,10 @@ if [ -n "$ZSH_VERSION" ]; then
     fi
 fi
 
+# ---- Pi ----
+# Lets pi-observational-memory's tool-bearing worker calls (no cwd in prompt) run on the session model.
+export PI_CLAUDE_CODE_PROVIDER_BORROW_SOLE_DIRECTORY=on
+
 # ---- Locale Settings ----
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
