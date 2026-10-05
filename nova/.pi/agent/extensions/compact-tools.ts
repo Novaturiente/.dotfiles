@@ -11,6 +11,7 @@ import {
 	createLsTool,
 	createReadTool,
 	createWriteTool,
+	ToolExecutionComponent,
 } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
 import { homedir } from "os";
@@ -148,5 +149,33 @@ export default function (pi: ExtensionAPI) {
 				return new Text(text, 0, 0);
 			},
 		});
+	}
+
+	// Tool boxes: no bg fill, colored bar down the left side instead (status color).
+	// ponytail: prototype patch on pi internals, may break on pi upgrades.
+	const TEP: any = ToolExecutionComponent.prototype;
+	pi.on("session_start", async (_e, ctx) => {
+		TEP.__barTheme = ctx.ui.theme;
+	});
+	if (!TEP.__bar) {
+		TEP.__bar = true;
+		const update = TEP.updateDisplay;
+		TEP.updateDisplay = function (...a: any[]) {
+			const r = update.apply(this, a);
+			this.contentBox?.setBgFn(undefined);
+			this.contentText?.setCustomBgFn(undefined);
+			return r;
+		};
+		const render = TEP.render;
+		TEP.render = function (w: number) {
+			const lines: string[] = render.call(this, w);
+			const t = TEP.__barTheme;
+			if (!t || (this.hasRendererDefinition() && this.getRenderShell() === "self")) return lines;
+			const bar = t.fg(this.isPartial ? "muted" : this.result?.isError ? "error" : "success", "▎");
+			// line 0 = spacer between calls; skip image escape lines; replace the 1-col left pad
+			return lines.map((l, i) =>
+				i === 0 || l[0] !== " " || /\x1b_G|\x1b\]1337/.test(l) ? l : bar + l.slice(1),
+			);
+		};
 	}
 }

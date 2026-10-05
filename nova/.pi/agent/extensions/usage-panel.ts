@@ -12,6 +12,9 @@ import { homedir } from "node:os";
 import type { ExtensionAPI, ExtensionContext, Theme } from "@earendil-works/pi-coding-agent";
 import { HStack, matchesKey, ScrollView, truncateToWidth, VStack } from "@earendil-works/pi-tui";
 import { cachedUsage } from "./claude-usage.ts";
+// ponytail: reaches into pi-observational-memory internals; breaks if the plugin renames these
+import { rawTokensSinceLastCompaction } from "../npm/node_modules/pi-observational-memory/src/session-ledger/progress.ts";
+import { loadConfig, resolveCompactAfterTokens } from "../npm/node_modules/pi-observational-memory/src/config.ts";
 
 const ORIGINAL = Symbol.for("diff-panel.originalRoot");
 const PREV_FOCUS = Symbol.for("diff-panel.prevFocus");
@@ -25,7 +28,8 @@ let pane: any;
 let body: ScrollView;
 let timer: ReturnType<typeof setInterval> | null = null;
 
-let usage: any; // /api/oauth/usage response
+let currentProvider = "claude";
+let usage: any; // usage response
 let plan: { sub?: string; tier?: string } = {};
 let fetchedAt = 0;
 let fetchErr = "";
@@ -33,24 +37,53 @@ let loading = false;
 
 type Totals = { calls: number; input: number; output: number; cacheRead: number; cacheWrite: number; cost: number };
 let snap:
-	| { model: string; cu?: { tokens: number | null; contextWindow: number; percent: number | null }; parts: [string, number][]; totals: Totals; compactions: number }
+	| { model: string; cu?: { tokens: number | null; contextWindow: number; percent: number | null }; parts: [string, number][]; totals: Totals; compactions: number; om?: { progress: number; threshold: number } }
 	| undefined;
 
 // ---------- data ----------
 
 let backoffUntil = 0;
 
-async function refresh(maxAge = STALE_MS) {
+async function refresh(maxAge = STALE_MS, ctx?: ExtensionContext) {
 	if (loading) return;
 	loading = true;
-	try {
-		const c = JSON.parse(await readFile(`${homedir()}/.claude/.credentials.json`, "utf8")).claudeAiOauth;
-		plan = { sub: c.subscriptionType, tier: c.rateLimitTier };
-	} catch {
-		plan = {}; // no Claude Code login on this box
+	const provider = ctx?.model?.provider === "antigravity" ? "antigravity" : "claude";
+	const modelId = ctx?.model?.id ?? "";
+	currentProvider = provider;
+
+	if (provider === "antigravity") {
+		try {
+			const auth = JSON.parse(await readFile(`${homedir()}/.pi/agent/auth.json`, "utf8"))?.antigravity;
+			const res = await fetch("https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist", {
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${auth?.access}`,
+					"Content-Type": "application/json",
+					"User-Agent": "antigravity/cli/1.2.4 (aidev_client; os_type=linux; arch=amd64; cl=982146307; auth_method=consumer)",
+				},
+				body: JSON.stringify({ metadata: { ideType: "ANTIGRAVITY", platform: "PLATFORM_UNSPECIFIED", pluginType: "GEMINI" } }),
+				signal: AbortSignal.timeout(5_000),
+			});
+			if (res.ok) {
+				const d = await res.json();
+				plan = { sub: d.paidTier?.name ?? d.currentTier?.name ?? "Google AI", tier: d.paidTier?.id ?? d.currentTier?.id };
+			} else {
+				plan = { sub: "Antigravity", tier: auth?.email };
+			}
+		} catch {
+			plan = { sub: "Antigravity", tier: undefined };
+		}
+	} else {
+		try {
+			const c = JSON.parse(await readFile(`${homedir()}/.claude/.credentials.json`, "utf8")).claudeAiOauth;
+			plan = { sub: c.subscriptionType, tier: c.rateLimitTier };
+		} catch {
+			plan = {};
+		}
 	}
-	const r = await cachedUsage(maxAge);
-	if (r.data) usage = r.data; // keep last good data on failure
+
+	const r = await cachedUsage(maxAge, provider, modelId);
+	if (r.data) usage = r.data;
 	fetchedAt = r.at;
 	fetchErr = r.err ?? "";
 	backoffUntil = r.backoffUntil ?? 0;
@@ -60,6 +93,21 @@ async function refresh(maxAge = STALE_MS) {
 
 type Limit = { label: string; pct: number; reset: string | null };
 function limits(u: any): Limit[] {
+	if (currentProvider === "antigravity") {
+		const list: Limit[] = [];
+		for (const group of u?.groups || []) {
+			for (const bucket of group.buckets || []) {
+				const rem = bucket.remainingFraction != null ? Math.round(bucket.remainingFraction * 100) : null;
+				const usedPct = rem != null ? Math.max(0, Math.min(100, 100 - rem)) : 0;
+				list.push({
+					label: `${group.displayName} · ${String(bucket.displayName || "").replace(" Remaining", "")}`,
+					pct: usedPct,
+					reset: bucket.resetTime ?? null,
+				});
+			}
+		}
+		return list;
+	}
 	if (Array.isArray(u?.limits) && u.limits.length)
 		return u.limits.map((l: any) => ({
 			label:
@@ -125,7 +173,12 @@ function takeSnap(ctx: ExtensionContext) {
 		totals.cacheWrite += u.cacheWrite ?? 0;
 		totals.cost += u.cost?.total ?? 0;
 	}
+	const om = {
+		progress: rawTokensSinceLastCompaction(sm.getBranch()),
+		threshold: resolveCompactAfterTokens(loadConfig(ctx.cwd), ctx.model?.contextWindow),
+	};
 	snap = {
+		om,
 		model: ctx.model?.name ?? ctx.model?.id ?? "no model",
 		cu,
 		parts: [...parts].map(([n, c]) => [n, Math.round(c * k)] as [string, number]).sort((a, b) => b[1] - a[1]),
@@ -194,6 +247,13 @@ function bodyLines(w: number): string[] {
 	} else out.push(th.fg("dim", `  total unknown until next response${cu ? ` · window ${fmt(cu.contextWindow)}` : ""}`));
 	for (const [name, tok] of parts) kv(name, `~${fmt(tok)}` + (cu?.contextWindow ? th.fg("dim", `  ${((tok / cu.contextWindow) * 100).toFixed(1)}%`) : ""));
 	if (cu?.tokens != null) kv("Free", fmt(cu.contextWindow - cu.tokens));
+	if (snap.om) {
+		const { progress, threshold } = snap.om;
+		const pct = (progress / threshold) * 100;
+		head("OM AUTO-COMPACT");
+		out.push(`  ${bar(pct, bw)} ${tier(pct, `${Math.round(pct)}%`)}`);
+		out.push(th.fg("dim", `  ~${fmt(progress)} / ${fmt(threshold)} est. tokens · checked when agent settles`));
+	}
 
 	head("SESSION");
 	kv("API calls", String(t.calls));
@@ -252,7 +312,7 @@ function show(ctx: ExtensionContext) {
 		return;
 	}
 	takeSnap(ctx);
-	refresh(); // shared cache decides whether to hit the network
+	refresh(STALE_MS, ctx); // shared cache decides whether to hit the network
 	if (shown()) return tui.requestRender();
 	// another side pane (diff-panel) may hold focus; hand focus back before swapping it out
 	const f = tui.getFocusedComponent();
@@ -261,8 +321,9 @@ function show(ctx: ExtensionContext) {
 	const [main, dock] = original.entries;
 
 	body = new ScrollView(new Lines(bodyLines), { scrollbar: "auto" });
+	const title = () => ` ${theme.bold(theme.fg("accent", currentProvider === "antigravity" ? "ANTIGRAVITY QUOTA" : "CLAUDE USAGE"))}`;
 	const content = new VStack([
-		{ component: new Lines(() => [` ${theme.bold(theme.fg("accent", "CLAUDE USAGE"))}`]) },
+		{ component: new Lines(() => [title()]) },
 		{ component: body, basis: 0, grow: 1, shrink: 1, minSize: 1 },
 		{
 			component: new Lines((w) => [
@@ -286,7 +347,7 @@ function show(ctx: ExtensionContext) {
 	// live countdowns + stale refetch while visible
 	timer ??= setInterval(() => {
 		if (!shown()) return;
-		refresh();
+		refresh(STALE_MS, ctx);
 		tui.requestRender();
 	}, 30_000);
 }
@@ -333,7 +394,7 @@ export default function (pi: ExtensionAPI) {
 		pi.on(ev as any, (_e: unknown, ctx: ExtensionContext) => {
 			if (!shown()) return;
 			takeSnap(ctx);
-			refresh(); // picks up the provider's live 5h/7d file; network only if stale
+			refresh(STALE_MS, ctx); // picks up provider live file or quota; network only if stale
 			tui.requestRender();
 		});
 	pi.on("session_shutdown", () => {

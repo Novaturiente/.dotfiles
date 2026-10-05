@@ -3,7 +3,7 @@
  *   your prompt · "▸ N tool calls · thinking … click to expand" · final reply text (thinking stripped).
  * User-facing parts stay visible and split the turn into several collapsed sections:
  *   text right before a question tool (ask_user_question etc.), the question/answer itself, the final reply.
- * Click the ▸ line to expand, click ▾ to collapse again. Ctrl+Alt+O flips every past turn.
+ * Click the ▸ line to expand, click ▾ to collapse again. Alt+O flips every past turn.
  * Fullscreen tuiMode only. Nothing is removed: this only changes what the chat container renders.
  * ponytail: patches pi's chat Container.render (internal); a pi update may need this revisited.
  */
@@ -175,7 +175,7 @@ export default function (pi: ExtensionAPI) {
 		tui?.requestRender();
 	});
 
-	pi.registerShortcut("ctrl+alt+o", {
+	pi.registerShortcut("alt+o", {
 		description: "Expand / collapse all past turns",
 		handler: (ctx) => {
 			attach(ctx);

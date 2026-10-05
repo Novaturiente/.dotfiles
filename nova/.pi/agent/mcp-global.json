@@ -10,6 +10,15 @@
       "args": ["-y", "@upstash/context7-mcp@4.0.3"],
       "description": "Up-to-date library/framework docs: resolve-library-id, then query-docs",
       "exposure": "direct"
+    },
+    "gsc": {
+      "command": "searchconsole-mcp",
+      "args": [],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "/home/nova/.secrets/gsc-service-account.json"
+      },
+      "description": "Google Search Console: query search analytics (clicks, impressions, position, queries, pages), inspect URL indexing status, and list sitemaps",
+      "exposure": "direct"
     }
   }
 }
