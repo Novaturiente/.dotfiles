@@ -7,7 +7,7 @@ if [ "$1" = toggle ]; then
 	if [ -n "$sb" ]; then
 		tmux kill-pane -t "$sb"
 	else
-		tmux split-window -t "$2" -hbfd -l 34 "$0"
+		tmux split-window -t "$2" -hbfd -l 17 "$0"
 	fi
 	exit
 fi
@@ -29,12 +29,14 @@ while :; do
 	while IFS=$'\t' read -r id agent state loc dir cmd; do
 		case $cmd in zsh | bash | fish | sh) continue ;; esac
 		ids+=("$id")
-		out+=$(printf ' %d \e[38;2;%sm●%s %-8.8s \e[38;2;%sm%-7s%s' \
-			"${#ids[@]}" "${col[$state]:-${col[idle]}}" "$off" "$agent" "${col[$state]:-${col[idle]}}" "$state" "$off")
-		out+=$'\e[K\n'"$(printf '   %s%.28s%s' "$dim" "$loc $dir" "$off")"$'\e[K\n'
+		c=${col[$state]:-${col[idle]}}
+		# 17 cols: number+dot+name / state / location, each line fits
+		out+=$(printf ' %d \e[38;2;%sm●%s %.11s' "${#ids[@]}" "$c" "$off" "$agent")$'\e[K\n'
+		out+=$(printf '   \e[38;2;%sm%s%s' "$c" "$state" "$off")$'\e[K\n'
+		out+=$(printf '   %s%.13s%s' "$dim" "$loc $dir" "$off")$'\e[K\n'
 	done < <(tmux list-panes -a -F '#{pane_id}	#{@agent}	#{@agent_state}	#{session_name}:#{window_index}	#{b:pane_current_path}	#{pane_current_command}' |
 		awk -F'\t' '$2 != ""')
-	[ ${#ids[@]} -eq 0 ] && out+=" ${dim}no agents running${off}"$'\e[K\n'
+	[ ${#ids[@]} -eq 0 ] && out+=" ${dim}no agents${off}"$'\e[K\n'
 	printf '%s\e[J' "$out"
 
 	read -rsn1 -t1 k
