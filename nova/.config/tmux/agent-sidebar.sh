@@ -10,7 +10,10 @@ WIDTH=15%
 # ponytail: pane whose foreground is a shell = agent exited without reporting off; hidden, not cleared
 agents() {
 	tmux list-panes -a -F '#{pane_id}	#{@agent}	#{@agent_state}	#{session_name}:#{window_index}	#{b:pane_current_path}	#{pane_current_command}' |
-		awk -F'\t' '$2 != "" && $6 !~ /^(zsh|bash|fish|sh)$/'
+		awk -F'\t' -v OFS='\t' '
+			# Known agent not yet reported via hook (e.g. agy before its first prompt): show as idle.
+			$2 == "" && $6 ~ /^(agy|claude|pi|codex)$/ { $2 = $6; $3 = "idle" }
+			$2 != "" && $6 !~ /^(zsh|bash|fish|sh)$/'
 }
 
 goto() { tmux select-window -t "$1" \; select-pane -t "$1" \; switch-client -t "$1"; }
