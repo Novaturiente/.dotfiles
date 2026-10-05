@@ -4,7 +4,7 @@
 # agent-sidebar.sh resize -> window-resized hook: keep the sidebar at WIDTH.
 # agent-sidebar.sh next|prev <pane> -> prefix+j/k: jump to the next/previous agent.
 # Keys in the sidebar: 1-9 jump to that agent, q closes.
-WIDTH=15%
+WIDTH=12%
 
 # Agent panes, in sidebar order: id, name, state, session:window, folder.
 # ponytail: pane whose foreground is a shell = agent exited without reporting off; hidden, not cleared
@@ -13,6 +13,8 @@ agents() {
 		awk -F'\t' -v OFS='\t' '
 			# Known agent not yet reported via hook (e.g. agy before its first prompt): show as idle.
 			$2 == "" && $6 ~ /^(agy|claude|pi|codex)$/ { $2 = $6; $3 = "idle" }
+			# Empty field would collapse under IFS=tab in read and shift the columns.
+			$3 == "" { $3 = "idle" }
 			$2 != "" && $6 !~ /^(zsh|bash|fish|sh)$/'
 }
 
@@ -52,8 +54,9 @@ if [ "$1" = toggle ] || [ "$1" = resize ]; then
 fi
 
 tmux set -p -t "$TMUX_PANE" @sidebar 1 \; select-pane -t "$TMUX_PANE" -T agents
-printf '\e[?25l'
-trap 'printf "\e[?25h"' EXIT
+# Hide cursor; SGR mouse reporting so clicks reach the draw loop.
+printf '\e[?25l\e[?1000h\e[?1006h'
+trap 'printf "\e[?25h\e[?1000l\e[?1006l"' EXIT
 
 # Catppuccin Mocha: yellow, red, green, overlay0
 declare -A col=([working]='249;226;175' [blocked]='243;139;168' [done]='166;227;161' [idle]='108;112;134')
@@ -65,9 +68,10 @@ while :; do
 	read -r h me < <(tmux display -p -t "$TMUX_PANE" '#{pane_height} #{session_name}')
 	# Selected agent = active pane of this session's active window.
 	sel=$(tmux display -p -t "$me:" '#{pane_id}')
-	ids=() top=("${dim} AGENTS${off}" "")
+	# tt/bt: click target per screen row (p:<pane> or s:<session>), parallel to top/bot.
+	ids=() top=("${dim} AGENTS${off}" "") tt=("" "")
 	while IFS=$'\t' read -r id agent state loc dir _; do
-		ids+=("$id")
+		ids+=("$id") tt+=("p:$id" "p:$id")
 		c=${col[$state]:-${col[idle]}}
 		# Selected: mauve bar in the gutter + bold name.
 		g=' ' b=''
@@ -75,10 +79,10 @@ while :; do
 		top+=("$(printf '%s%d \e[38;2;%sm●%s %s%-8.8s%s \e[38;2;%sm%-7s%s' "$g" "${#ids[@]}" "$c" "$off" "$b" "$agent" "$off" "$c" "$state" "$off")")
 		top+=("$(printf '%s  %s%.28s%s' "$g" "$dim" "$loc $dir" "$off")")
 	done < <(agents)
-	[ ${#ids[@]} -eq 0 ] && top+=(" ${dim}no agents running${off}")
+	[ ${#ids[@]} -eq 0 ] && top+=(" ${dim}no agents running${off}") tt+=("")
 
 	# Sessions pinned to the bottom: green dot = attached, mauve name = this one.
-	bot=("" "${dim} SESSIONS${off}")
+	bot=("" "${dim} SESSIONS${off}") bt=("" "")
 	# Folder of each session's first non-sidebar pane.
 	declare -A first=()
 	while IFS=$'\t' read -r s sbp d; do
@@ -90,15 +94,34 @@ while :; do
 		[ "$name" = "$me" ] && nc=$'\e[1;38;2;203;166;247m'
 		bot+=("$(printf ' \e[38;2;%sm●%s %s%-18.18s%s %s%sw%s' "$d" "$off" "$nc" "$name" "$off" "$dim" "$wins" "$off")")
 		bot+=("$(printf '   %s%.24s%s' "$dim" "${first[$name]}" "$off")")
+		bt+=("s:$name" "s:$name")
 	done < <(tmux list-sessions -F '#{session_name}	#{session_windows}	#{session_attached}')
 
-	while [ $((${#top[@]} + ${#bot[@]})) -lt "$h" ]; do top+=(""); done
+	while [ $((${#top[@]} + ${#bot[@]})) -lt "$h" ]; do top+=("") tt+=(""); done
+	rows=("${tt[@]}" "${bt[@]}")
 	# $(...) drops the final newline, so a full-height list never scrolls.
 	printf '\e[H%s\e[J' "$(printf '%s\e[K\n' "${top[@]}" "${bot[@]}")"
 
 	read -rsn1 -t1 k
 	case $k in
 	q) exit ;;
+	$'\e')
+		# Mouse: ESC [ < button ; col ; row M  (M = press). Left click only.
+		seq=''
+		while read -rsn1 -t0.05 c; do
+			seq+=$c
+			[[ $c == [Mm] ]] && break
+		done
+		[[ $seq =~ ^\[\<0\;[0-9]+\;([0-9]+)M$ ]] || continue
+		t=${rows[BASH_REMATCH[1] - 1]}
+		[ -n "$t" ] || continue
+		# The click focused the sidebar; hand focus back before jumping.
+		tmux last-pane -t "$TMUX_PANE" 2>/dev/null
+		case $t in
+		p:*) goto "${t#p:}" ;;
+		s:*) tmux switch-client -t "=${t#s:}" ;;
+		esac
+		;;
 	[1-9])
 		id=${ids[k - 1]}
 		[ -n "$id" ] && goto "$id"
