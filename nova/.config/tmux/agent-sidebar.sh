@@ -3,7 +3,7 @@
 # agent-sidebar.sh         -> draw loop, runs inside the sidebar pane.
 # agent-sidebar.sh resize -> window-resized hook: keep the sidebar at WIDTH.
 # Keys in the sidebar: 1-9 jump to that agent, q closes.
-WIDTH=18%
+WIDTH=15%
 if [ "$1" = toggle ] || [ "$1" = resize ]; then
 	sb=$(tmux list-panes -t "$2" -F '#{pane_id} #{@sidebar}' | awk '$2 == 1 {print $1}')
 	if [ "$1" = resize ]; then
