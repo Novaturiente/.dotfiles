@@ -43,7 +43,7 @@ that want something other than `RRGGBB`: `${TOKEN}_DEC` (decimal) and
 ## How each application is reached
 
 Most configs keep their own settings and pull in a small generated file:
-Ghostty (`theme = current`), tmux (`source-file`), zsh (`colors.zsh`), fish
+Ghostty (`theme = current`), zsh (`colors.zsh`), fish
 (`conf.d/00-theme.fish`), niri (`modules/colors.kdl`, merged into the `layout`
 block from `modules/layout.kdl`), rofi (`@import "current"`), Neovim
 (`lua/theme.lua`), Emacs (`theme.el`), mpv (`include=`), and qutebrowser

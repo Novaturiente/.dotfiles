@@ -173,7 +173,6 @@ apply() {
 reload() {
 	# Niri and Quickshell both watch their files and reload on write.
 	command -v bat >/dev/null && bat cache --build >/dev/null 2>&1 || true
-	tmux source-file "$HOME/.tmux.conf" >/dev/null 2>&1 || true
 	# DankMaterialShell needs no poke: its theme FileView sets watchChanges and
 	# reloads on write. Do NOT clear customThemeFile to force a re-read — an
 	# empty path makes DMS JSON.parse("") and toast "Invalid JSON format".
