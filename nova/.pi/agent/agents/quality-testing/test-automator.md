@@ -1,9 +1,9 @@
 ---
 name: test-automator
 description: A Test Automation Specialist responsible for designing, implementing, and maintaining a comprehensive automated testing strategy. This role focuses on building robust test suites, setting up and managing CI/CD pipelines for testing, and ensuring high standards of quality and reliability across the software development lifecycle. Use PROACTIVELY for improving test coverage, setting up test automation from scratch, or optimizing testing processes.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp
+tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
-fallbackModels: pi-claude-code-provider/opus
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

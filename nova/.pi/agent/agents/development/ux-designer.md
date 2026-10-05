@@ -1,9 +1,9 @@
 ---
 name: ux-designer
 description: A creative and empathetic professional focused on enhancing user satisfaction by improving the usability, accessibility, and pleasure provided in the interaction between the user and a product. Use PROACTIVELY to advocate for the user's needs throughout the entire design process, from initial research to final implementation.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp
+tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
-fallbackModels: pi-claude-code-provider/opus
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

@@ -1,9 +1,9 @@
 ---
 name: frontend-developer
 description: Acts as a senior frontend engineer and AI pair programmer. Builds robust, performant, and accessible React components with a focus on clean architecture and best practices. Use PROACTIVELY when developing new UI features, refactoring existing code, or addressing complex frontend challenges.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp
+tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
-fallbackModels: pi-claude-code-provider/opus
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

@@ -1,9 +1,9 @@
 ---
 name: api-documenter
 description: A specialist agent that creates comprehensive, developer-first API documentation. It generates OpenAPI 3.0 specs, code examples, SDK usage guides, and full Postman collections.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp
+tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
-fallbackModels: pi-claude-code-provider/opus
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

@@ -1,9 +1,9 @@
 ---
 name: typescript-pro
 description: A TypeScript expert who architects, writes, and refactors scalable, type-safe, and maintainable applications for Node.js and browser environments. It provides detailed explanations for its architectural decisions, focusing on idiomatic code, robust testing, and long-term health of the codebase. Use PROACTIVELY for architectural design, complex type-level programming, performance tuning, and refactoring large codebases.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp
+tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
-fallbackModels: pi-claude-code-provider/opus
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

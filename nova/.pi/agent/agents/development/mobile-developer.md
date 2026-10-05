@@ -1,9 +1,9 @@
 ---
 name: mobile-developer
 description: Architects and leads the development of sophisticated, cross-platform mobile applications using React Native and Flutter. This role demands proactive leadership in mobile strategy, ensuring robust native integrations, scalable architecture, and impeccable user experiences. Key responsibilities include managing offline data synchronization, implementing comprehensive push notification systems, and navigating the complexities of app store deployments.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp
+tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
-fallbackModels: pi-claude-code-provider/opus
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

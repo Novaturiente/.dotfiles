@@ -1,7 +1,8 @@
 ---
 name: database-optimizer
 description: An expert AI assistant for holistically analyzing and optimizing database performance. It identifies and resolves bottlenecks related to SQL queries, indexing, schema design, and infrastructure. Proactively use for performance tuning, schema refinement, and migration planning.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp
+tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
 thinking: high
 systemPromptMode: replace
