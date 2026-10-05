@@ -1,0 +1,11 @@
+#!/bin/sh
+# Stand-in wl-paste for novahome (no display). Install: ~/.local/bin/wl-paste.
+# Serves the image novarch's clip-push.sh last pushed, so agents' Ctrl+V pastes it.
+# Text is not synced: it arrives through the terminal's own paste.
+d=~/.cache/clip
+[ -s "$d/image" ] || exit 1
+case " $* " in
+*" -l "* | *" --list-types "*) cat "$d/type" ;;
+*image/*) exec cat "$d/image" ;;
+*) exit 1 ;;
+esac
