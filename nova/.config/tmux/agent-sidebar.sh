@@ -33,6 +33,12 @@ if [ "$1" = next ] || [ "$1" = prev ]; then
 	goto "${ids[i]}"
 	exit
 fi
+# reap <window>: pane-exited/after-kill-pane hook. Only sidebars left -> close the
+# window, so a session dies with its last real pane.
+if [ "$1" = reap ]; then
+	tmux list-panes -t "$2" -F '#{@sidebar}' 2>/dev/null | grep -qvx 1 || tmux kill-window -t "$2" 2>/dev/null
+	exit 0
+fi
 if [ "$1" = toggle ] || [ "$1" = resize ]; then
 	sb=$(tmux list-panes -t "$2" -F '#{pane_id} #{@sidebar}' | awk '$2 == 1 {print $1}')
 	if [ "$1" = resize ]; then
@@ -68,11 +74,17 @@ while :; do
 
 	# Sessions pinned to the bottom: green dot = attached, mauve name = this one.
 	bot=("" "${dim} SESSIONS${off}")
+	# Folder of each session's first non-sidebar pane.
+	declare -A first=()
+	while IFS=$'\t' read -r s sbp d; do
+		[ "$sbp" = s ] || [ -n "${first[$s]+x}" ] || first[$s]=$d
+	done < <(tmux list-panes -a -F '#{session_name}	#{?#{@sidebar},s,p}	#{b:pane_current_path}')
 	while IFS=$'\t' read -r name wins att; do
 		d=${col[idle]} nc=''
 		[ "$att" -gt 0 ] && d=${col[done]}
 		[ "$name" = "$me" ] && nc=$'\e[1;38;2;203;166;247m'
 		bot+=("$(printf ' \e[38;2;%sm●%s %s%-18.18s%s %s%sw%s' "$d" "$off" "$nc" "$name" "$off" "$dim" "$wins" "$off")")
+		bot+=("$(printf '   %s%.24s%s' "$dim" "${first[$name]}" "$off")")
 	done < <(tmux list-sessions -F '#{session_name}	#{session_windows}	#{session_attached}')
 
 	while [ $((${#top[@]} + ${#bot[@]})) -lt "$h" ]; do top+=(""); done
