@@ -21,6 +21,8 @@ declare -A col=([working]='249;226;175' [blocked]='243;139;168' [done]='166;227;
 dim=$'\e[38;2;108;112;134m' off=$'\e[0m'
 
 while :; do
+	# Last pane left in the window: close instead of lingering alone.
+	[ "$(tmux display -p -t "$TMUX_PANE" '#{window_panes}')" -gt 1 ] || exit
 	ids=()
 	out=$'\e[H'"${dim} AGENTS${off}"$'\e[K\n\e[K\n'
 	# ponytail: pane whose foreground is a shell = agent exited without reporting off; hidden, not cleared
