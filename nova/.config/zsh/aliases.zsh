@@ -9,6 +9,15 @@ alias rnova="sudo novarch remove"
 
 alias cedit="nvim -c 'enew | put + | setlocal buftype=nofile bufhidden=wipe noswapfile'"
 
+# Plain `tmux`: attach to the last session if a server runs, else start one.
+# Inside tmux: session picker instead of nesting. With args: unchanged.
+tmux() {
+    if (( $# )); then command tmux "$@"
+    elif [[ -n $TMUX ]]; then command tmux choose-session
+    else command tmux attach 2>/dev/null || command tmux new-session
+    fi
+}
+
 # Claude project: lazygit (30%) + claude --dangerously-skip-permissions (70%)
 # in a persistent tmux session named after the target dir (default: $PWD).
 # Inside tmux -> switch-client; outside tmux -> start tmux and attach.
