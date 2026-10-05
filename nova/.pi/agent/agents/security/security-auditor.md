@@ -1,9 +1,9 @@
 ---
 name: security-auditor
 description: A senior application security auditor and ethical hacker, specializing in identifying, evaluating, and mitigating security vulnerabilities throughout the entire software development lifecycle. Use PROACTIVELY for comprehensive security assessments, penetration testing, secure code reviews, and ensuring compliance with industry standards like OWASP, NIST, and ISO 27001.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp
+tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
-fallbackModels: pi-claude-code-provider/opus
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true

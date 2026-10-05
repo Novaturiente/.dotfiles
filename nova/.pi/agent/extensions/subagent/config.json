@@ -1,1 +1,4 @@
-{ "toolDescriptionMode": "compact" }
+{
+  "toolDescriptionMode": "compact",
+  "maxSubagentDepth": 2
+}

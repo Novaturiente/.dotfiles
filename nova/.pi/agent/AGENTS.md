@@ -1,6 +1,7 @@
 # Global Instructions (pi)
 
 Never run sudo — ask user to run it. All dates/times in IST.
+Project `AGENTS.md`/`CLAUDE.md` files add to these; on conflict, project file wins for that project.
 
 ## Email
 Never use `eecglobal.dev@gmail.com` for home-server/self-hosted things (work only), even though it is git `user.email`.
@@ -15,11 +16,14 @@ Never use `eecglobal.dev@gmail.com` for home-server/self-hosted things (work onl
 - Both machines have `/home/nova`. Never assume a file the user mentions is on this box — check here, then `ssh novarch 'ls <path>'`. Always say which host a path is on.
 - Laptop files: `scp novarch:/path /tmp/` or `rsync -a novarch:/dir/ ~/mirror/dir/`. Prefix laptop paths with `novarch:`. Never ask user to copy by hand.
 - Also a home server: Docker stacks + systemd **user** timers (no cron). Inventory: `~/Automation/CLAUDE.md` — read before touching anything self-hosted; update it when changing `~/Automation/`. Stacks also in `~/Jellyfin/`, `~/Immich/`, `~/searxng/`, `~/gotify/`, `~/DockerProjects/`.
-- Coolify (`coolify.eecglobal.com`) deploys `~/Projects/` apps — separate from local containers.
+- Coolify (`coolify.eecglobal.com`) deploys `~/Projects/` apps — separate from local containers. After any push from `~/Projects/`, follow the `coolify` skill's Post-Push Auto-Monitor unless user says skip.
 
 ## Rules
-1. Read everything task-related first. Clear → act. Ask only for: destructive/irreversible action, scope change, input only user has, real ambiguity. Never end turn on a promise.
-2. Ask before building when request has >1 plausible reading, or touches production (auth, payments, DB schema, live data/routes). Otherwise build at 95% confidence. One `ask_user_question` call, ≤3 questions, recommended option first.
+1. Read everything task-related first. Never end turn on a promise.
+2. When to ask:
+   - Clear default exists (project config/conventions, AGENTS.md, earlier answer) → use it, don't stall. Ponytail's "never stall on an answer you can default" applies only here.
+   - No clear default → ask, never assume. Always ask for: >1 plausible reading, destructive/irreversible action, scope change, input only user has, production (auth, payments, DB schema, live data/routes).
+   - One `ask_user_question` call, ≤3 questions, recommended option first.
    Plan shape (any plan: `/plan` mode, or after intake questions) — message, not a file unless asked:
    - **Rung**: which ponytail ladder rung stops here, why higher ones fail.
    - **Diff**: files touched, change in each. Fewest files that work.
@@ -35,23 +39,35 @@ Never use `eecglobal.dev@gmail.com` for home-server/self-hosted things (work onl
 9. Before `edit`, `read` the file in this session. Re-read after /reload, compaction, or if it was last read in an earlier turn. Read and edit are separate steps, never in the same parallel batch (pi-lens read-guard blocks otherwise).
 
 ## Final message
-Open with one plain sentence (what happened / found). Then short bold headers + bullets, one fact each. Gloss every identifier in plain language on first mention. No process narration, no arrow chains, no invented jargon. Clear beats short.
+Overrides ponytail's "≤3 lines" and caveman terseness for the final message. Clear beats short.
+- Open with one plain sentence (what happened / found).
+- Then short bold headers + bullets, one fact each. Easy to scan.
+- Gloss every identifier in plain language on first mention.
+- No process narration, no arrow chains, no invented jargon.
 
 ## Coding style
 - One unit, one job. Seams where change happens (data access, external services, UI, business rules). No single-implementation interfaces.
 - Web basics: stateless handlers, work in DB (indexes, pagination), no N+1, slow work off request path.
 - `~/Projects/` = Next.js/TS: render server-side where it helps SEO (public/marketing pages); client components only for interactivity. Colocate route code, lift to shared only at the second consumer. Validate with project's schema lib.
 
-## Pi tool map
-- Clarify → `ask_user_question`. Plan approval → `plan_mode_complete` (only when /plan active).
-- MCP → pi built-in MCP (no `mcp` gateway tool). Servers: `extensions/project-mcp.ts` merges global `~/.pi/agent/mcp-global.json` with the nearest `.mcp.json` for repos under `~/Projects/`; same name → project wins. Never create `~/.pi/agent/mcp.json` (pi makes it beat project servers). Tools are `mcp__<server>__<tool>`, called from `codemode` scripts (find with `searchTools()`; server usage notes + tool list with `describeNamespace("serena")`). Exception: context7 has `direct` exposure, so call its tools directly. Status: footer `🔌 MCP: <servers> (<connected>)` from `extensions/mcp-status.ts`; details in `/mcp` (`pi mcp list` doesn't see extension servers). Symbol/caller/impact questions ("what calls X", "what breaks if X changes", "where is X defined") → `codegraph_*` tools, or Serena (`mcp__serena__find_symbol`, `mcp__serena__find_referencing_symbols`) via codemode, in main thread — never `scout` for these (no MCP tools, misses indirect callers). Text/config/dir-map questions → `scout` or grep. Library docs → context7 (`mcp__context7__resolve-library-id`, then `mcp__context7__query-docs`, called directly, not via codemode).
-- Delegation is pre-authorized by the user: call `subagents_enable` and delegate without asking whenever a specialist fits or subtasks are independent; launch independent ones together, keep working meanwhile, correct any that drift. Pick narrowest agent: `scout` for recon, `worker` for bounded edits, `reviewer` for review. Still need an explicit request: multi-agent fan-outs (`/parallel-review`, `/review-loop`, `/parallel-research`, council) — they cost real money.
-- Parallel subagents under the Claude provider: never `subagent({workflow: true})` (bridge delivers `"true"` as a string → `Unknown workflow resource 'true'`). Use either separate calls each with `async: true` (foreground calls collide: `Rejected: a subagent call is already in progress`), or write the script to a file and pass `workflow: "./path.js"`. One foreground subagent call per turn max.
-- Recon goes to `scout` (pinned to Haiku in settings, far cheaper than Opus main thread; keep it on Haiku, don't override its model up unless Haiku's summary proved insufficient), not main thread: any exploration spanning >3 files, dir/architecture mapping, "where/how is X done" text searches, reading long logs/docs. Ask it for a compact summary with file:line refs. Main thread reads only files it will edit or must quote. Exceptions: symbol questions (code-graph MCP above), one known file, whole-session-state repros.
-- Noisy command output (tests, builds, lint, installs, `git log`/`diff`, logs) → filter at source: `2>&1 | tail -40`, or `2>&1 | grep -E "error|fail|warn" -i | head -50`, `git diff --stat` before full diff. Rerun unfiltered only when the filtered output isn't enough.
-- Web → `pi_claude_code_provider_web_search`.
-- Browser → native `agent_browser` tool (pi-agent-browser-native) only; never run `agent-browser` via bash, no browser MCP, no Playwright. Pass CLI args as a list: `{"args":["open","<url>"]}` → `["snapshot","-i"]` → `["click","@eN"]`/`["fill","@eN","text"]` → re-snapshot after page changes → `["close"]` when done. Fixed sequences → `batch --bail`; loops/branches → `agent_browser_code`; QA/Electron/extra tools → `agent_browser_tools`. Sessions are managed per pi session; use `sessionMode: "fresh"` for a clean launch (e.g. `--headed`). Localhost services reachable directly.
-- Coolify → `coolify` skill. After any push from `~/Projects/`, follow its Post-Push Auto-Monitor unless user says skip.
+## Tools
+Config details (MCP merge, subagent grants, browser flow): `~/.pi/agent/docs/tooling.md` — read only when editing that config or a tool seems missing.
+- Web search → `google_search`; `pi_claude_code_provider_web_search` only if no other search tool exists.
+- MCP tools (`mcp__<server>__<tool>`) → call via `codemode` (`searchTools()`), except context7: call directly. Never create `~/.pi/agent/mcp.json`.
+- Symbol/caller/impact questions → `codegraph_*` or Serena via codemode, or async subagent. Text/config/dir-map → `scout` or grep. Library docs → context7.
+- Browser → native `agent_browser` only; never `agent-browser` via bash, no browser MCP, no Playwright.
+- Noisy output (tests, builds, lint, installs, `git log`/`diff`, logs) → filter at source: `2>&1 | tail -40` or `2>&1 | grep -iE "error|fail|warn" | head -50`; `git diff --stat` before full diff. Rerun unfiltered only if needed.
+
+## Subagents
+- Delegation pre-authorized: call `subagents_enable`, delegate without asking when a specialist fits or subtasks are independent; launch independent ones together, keep working, correct drift. Main agent coordinates.
+- Narrowest agent: `scout` recon, `worker` bounded edits, `reviewer` review. User specialists in `~/.pi/agent/agents/` aren't in the prompt → run `subagent({action:"list", capabilities:true})` and pick narrowest match.
+- Nesting depth 2: oracle/researcher → scout/worker/reviewer; worker → scout/reviewer; scout/reviewer are leaves.
+- Explicit request needed for fan-outs (`/parallel-review`, `/review-loop`, `/parallel-research`, council) — cost real money.
+- Recon → `scout` (Haiku; don't override model up unless its summary proved insufficient): exploration >3 files, dir/architecture mapping, "where/how is X done", long logs/docs. Ask for compact summary with file:line refs. Main thread reads only files it edits or must quote. Exceptions: symbol questions, one known file, whole-session-state repros.
+- Always launch scout/worker/reviewer/oracle/researcher with `async: true` (their MCP/extension tools load only in background children; foreground fails).
+- Researcher lacks `web_search`/`fetch_content`/`source_check` → tell it to use `google_search` (fallback `pi_claude_code_provider_web_search`) and `agent_browser`.
+- Claude provider bug: never `subagent({workflow: true})` (arrives as string → `Unknown workflow resource 'true'`). Use separate `async: true` calls, or write script to file and pass `workflow: "./path.js"`. Max one foreground subagent call per turn.
+- Child questions (`need_decision`/`interview_request` via `contact_supervisor`): don't answer yourself unless already settled in this conversation or AGENTS.md. Relay with `ask_user_question` (prefix header/question with agent name), reply via `subagent_supervisor({action:"reply", replyTo:<request id>, message})`. Several pending → `subagent_supervisor({action:"pending"})`, batch into one `ask_user_question` (≤4), reply per id. `progress_update` → no reply.
 
 ## Worktrees (mandatory for edits in a repo)
 - Any file edit in a git project → `enter_worktree` (leave via `exit_worktree`). Never `git checkout -b`/`switch` in main checkout unless user asked.

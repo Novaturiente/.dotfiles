@@ -1,9 +1,9 @@
 ---
 name: debugger
 description: Debugging specialist for errors, test failures, and unexpected behavior. Use proactively when encountering any issues.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp
+tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
-fallbackModels: pi-claude-code-provider/opus
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true

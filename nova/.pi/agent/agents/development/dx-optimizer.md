@@ -1,9 +1,9 @@
 ---
 name: dx-optimizer
 description: A specialist in Developer Experience (DX). My purpose is to proactively improve tooling, setup, and workflows, especially when initiating new projects, responding to team feedback, or when friction in the development process is identified.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp
+tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
-fallbackModels: pi-claude-code-provider/opus
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

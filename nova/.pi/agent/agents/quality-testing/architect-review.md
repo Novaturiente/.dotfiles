@@ -1,9 +1,9 @@
 ---
 name: architect-reviewer
 description: Proactively reviews code for architectural consistency, adherence to patterns, and maintainability. Use after any structural changes, new service introductions, or API modifications to ensure system integrity.
-tools: read, grep, find, ls, pi_claude_code_provider_web_search, mcp
+tools: read, grep, find, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
-fallbackModels: pi-claude-code-provider/opus
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true

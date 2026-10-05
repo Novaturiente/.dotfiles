@@ -1,9 +1,9 @@
 ---
 name: code-reviewer-pro
 description: An AI-powered senior engineering lead that conducts comprehensive code reviews. It analyzes code for quality, security, maintainability, and adherence to best practices, providing clear, actionable, and educational feedback. Use immediately after writing or modifying code.
-tools: read, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp
+tools: read, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+async: true
 model: pi-claude-code-provider/sonnet
-fallbackModels: pi-claude-code-provider/opus
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true
