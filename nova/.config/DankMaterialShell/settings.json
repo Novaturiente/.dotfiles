@@ -403,7 +403,7 @@
       "borderOpacity": 0.9,
       "borderThickness": 1,
       "fontScale": 1,
-      "autoHide": false,
+      "autoHide": true,
       "autoHideDelay": 250,
       "openOnOverview": true,
       "visible": true,
