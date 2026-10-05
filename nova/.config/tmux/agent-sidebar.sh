@@ -41,16 +41,19 @@ if [ "$1" = reap ]; then
 	tmux list-panes -t "$2" -F '#{@sidebar}' 2>/dev/null | grep -qvx 1 || tmux kill-window -t "$2" 2>/dev/null
 	exit 0
 fi
-if [ "$1" = toggle ] || [ "$1" = resize ]; then
+# open <window>: hooks. Like toggle but never closes, and skipped mid-restore.
+if [ "$1" = toggle ] || [ "$1" = resize ] || [ "$1" = open ]; then
 	sb=$(tmux list-panes -t "$2" -F '#{pane_id} #{@sidebar}' | awk '$2 == 1 {print $1}')
 	if [ "$1" = resize ]; then
 		[ -n "$sb" ] && tmux resize-pane -t "$sb" -x "$WIDTH"
 	elif [ -n "$sb" ]; then
-		tmux kill-pane -t "$sb"
-	else
-		tmux split-window -t "$2" -hbfd -l "$WIDTH" "$0"
+		if [ "$1" = toggle ]; then tmux kill-pane -t "$sb"; fi
+	elif [ "$1" = toggle ] || [ -z "$(tmux show -gqv @restoring)" ]; then
+		# Mark at once so a second open racing this one sees it.
+		new=$(tmux split-window -t "$2" -hbfdP -F '#{pane_id}' -l "$WIDTH" "$0") &&
+			tmux set -p -t "$new" @sidebar 1
 	fi
-	exit
+	exit 0
 fi
 
 tmux set -p -t "$TMUX_PANE" @sidebar 1 \; select-pane -t "$TMUX_PANE" -T agents
@@ -69,7 +72,7 @@ while :; do
 	# Selected agent = active pane of this session's active window.
 	sel=$(tmux display -p -t "$me:" '#{pane_id}')
 	# tt/bt: click target per screen row (p:<pane> or s:<session>), parallel to top/bot.
-	ids=() top=("${dim} AGENTS${off}" "") tt=("" "")
+	ids=() top=("" "${dim} AGENTS${off}" "") tt=("" "" "")
 	while IFS=$'\t' read -r id agent state loc dir _; do
 		ids+=("$id") tt+=("p:$id" "p:$id")
 		c=${col[$state]:-${col[idle]}}
@@ -96,6 +99,7 @@ while :; do
 		bot+=("$(printf '   %s%.24s%s' "$dim" "${first[$name]}" "$off")")
 		bt+=("s:$name" "s:$name")
 	done < <(tmux list-sessions -F '#{session_name}	#{session_windows}	#{session_attached}')
+	bot+=("") bt+=("")
 
 	while [ $((${#top[@]} + ${#bot[@]})) -lt "$h" ]; do top+=("") tt+=(""); done
 	rows=("${tt[@]}" "${bt[@]}")
