@@ -15,15 +15,28 @@ export default function (pi: ExtensionAPI) {
 	let active = false;
 	let blocked = 0;
 	let last = "";
+	let ref = "";
 	let queue = Promise.resolve();
+
+	// Conversation file, stored on the pane so a tmux restore runs `pi --session <file>`.
+	const track = (ctx: any) => {
+		try {
+			const f = ctx?.sessionManager?.getSessionFile?.();
+			if (typeof f === "string" && f.startsWith("/")) ref = f;
+		} catch {
+			// No session manager (ephemeral session): keep the last known file.
+		}
+	};
 
 	const publish = () => {
 		const state = blocked > 0 ? "blocked" : active ? "working" : "idle";
-		if (state === last) return;
-		last = state;
+		const key = `${state} ${ref}`;
+		if (key === last) return;
+		last = key;
+		const args = ref ? ["pi", state, ref] : ["pi", state];
 		// Serialized so a fast working->idle never lands out of order.
 		queue = queue.then(
-			() => new Promise<void>((done) => execFile(SCRIPT, ["pi", state], () => done())),
+			() => new Promise<void>((done) => execFile(SCRIPT, args, () => done())),
 		);
 	};
 
@@ -37,18 +50,21 @@ export default function (pi: ExtensionAPI) {
 		// TUI only: subagents/print/RPC modes have no pane of their own.
 		if (ctx?.mode !== "tui") return;
 		root = true;
+		track(ctx);
 		active = ctx?.isIdle?.() === false;
 		publish();
 	});
 
-	pi.on("agent_start", () => {
+	pi.on("agent_start", (_e, ctx) => {
 		if (!root) return;
+		track(ctx);
 		active = true;
 		publish();
 	});
 
 	pi.on("agent_settled", (_e, ctx) => {
 		if (!root || ctx?.isIdle?.() !== true) return;
+		track(ctx);
 		active = false;
 		publish();
 	});
