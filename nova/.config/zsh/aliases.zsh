@@ -18,7 +18,8 @@ tmux() {
     fi
 }
 # tmux on novahome (like herdr --remote). Run from a plain Ghostty window.
-alias th="ssh -t novahome 'tmux attach; or tmux new-session'"
+# Bare `tmux` there runs the fish wrapper: starts tmux.service if needed, then attaches.
+alias th="ssh -t novahome tmux"
 
 # Claude project: lazygit (30%) + claude --dangerously-skip-permissions (70%)
 # in a persistent tmux session named after the target dir (default: $PWD).

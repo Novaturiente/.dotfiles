@@ -11,6 +11,9 @@ rsync -a nova/.config/fish/functions/tmux.fish "$h:.config/fish/functions/"
 rsync -a nova/.pi/agent/extensions/tmux-agent-state.ts "$h:.pi/agent/extensions/"
 rsync -a scripts/novahome/wl-paste "$h:.local/bin/"
 rsync -a ~/.gemini/config/hooks.json "$h:.gemini/config/"
+rsync -a scripts/novahome/tmux.service "$h:.config/systemd/user/"
+# Enable at boot; start now only if no tmux server is already running.
+ssh "$h" 'systemctl --user daemon-reload && systemctl --user enable tmux.service 2>/dev/null; tmux has-session 2>/dev/null || systemctl --user start tmux.service'
 
 # Claude hooks: swap novahome's agent-state entries for this laptop's, keep the rest.
 jq '[.hooks | to_entries[] | {key, value: [.value[] | select(tostring | test("tmux/agent-state"))]}
