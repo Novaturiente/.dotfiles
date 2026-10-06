@@ -8,8 +8,9 @@
 // System utilities
 spawn-at-startup "swayidle"
 // Hyprland hides the DMS bar (the island replaces it there) and DMS saves that
-// to settings.json, so show it again here once DMS answers.
-spawn-sh-at-startup "for i in $(seq 50); do dms ipc call bar reveal id default 2>/dev/null | grep -q SUCCESS && break; sleep 0.2; done"
+// to settings.json, so show it again here once DMS answers. Same for DMS's
+// volume/brightness OSD, which Hyprland turns off in favour of the island.
+spawn-sh-at-startup "for i in $(seq 50); do dms ipc call bar reveal id default 2>/dev/null | grep -q SUCCESS && break; sleep 0.2; done; dms ipc call settings set osdVolumeEnabled true; dms ipc call settings set osdBrightnessEnabled true"
 // Background services
 spawn-sh-at-startup "kdeconnectd"
 spawn-sh-at-startup "udiskie --no-tray --notify"

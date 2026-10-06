@@ -80,13 +80,16 @@ end)
 -- ── Media keys ─────────────────────────────────────────────────────────────
 bind("XF86AudioRaiseVolume",         run("dms ipc call audio increment 5"), LOCK)
 bind("XF86AudioLowerVolume",         run("dms ipc call audio decrement 5"), LOCK)
-bind("SHIFT + XF86AudioRaiseVolume", run(S .. "brightness.sh up"),          LOCK)
-bind("SHIFT + XF86AudioLowerVolume", run(S .. "brightness.sh down"),        LOCK)
+-- Brightness goes through the island so it flashes its OSD (sysfs has no change
+-- signal); falls back to the script if the island is not running.
+local BRIGHT = "qs -c island ipc call island brightness %s || " .. S .. "brightness.sh %s"
+bind("SHIFT + XF86AudioRaiseVolume", run(BRIGHT:format("up", "up")),     LOCK)
+bind("SHIFT + XF86AudioLowerVolume", run(BRIGHT:format("down", "down")), LOCK)
 bind("XF86AudioMute",                run("dms ipc call audio mute"),        { locked = true })
 bind("SHIFT + XF86AudioMute",        run("if pkill swayidle; then notify-send 'Suspend disabled'; else swayidle & notify-send 'Suspend enabled'; fi"), { locked = true })
 bind("XF86AudioMicMute",             run("dms ipc call audio micmute"),     { locked = true })
-bind("XF86MonBrightnessUp",          run(S .. "brightness.sh up"),          LOCK)
-bind("XF86MonBrightnessDown",        run(S .. "brightness.sh down"),        LOCK)
+bind("XF86MonBrightnessUp",          run(BRIGHT:format("up", "up")),     LOCK)
+bind("XF86MonBrightnessDown",        run(BRIGHT:format("down", "down")), LOCK)
 
 -- ── Columns (focus-column-* / move-column-*) ────────────────────────────────
 for _, k in ipairs({ "left", "H" }) do
