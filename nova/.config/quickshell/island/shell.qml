@@ -1,7 +1,7 @@
 //@ pragma UseQApplication
-// Dynamic island — Quickshell. A pill at the bottom centre that shows the time,
-// date and battery, and morphs into other pages on demand. Bottom for now so it
-// does not collide with the DMS bar; meant to replace that bar later.
+// Dynamic island — Quickshell. A pill at the top centre that shows the time,
+// date and battery, and morphs into other pages on demand. Replaces the DMS bar
+// on Hyprland (hyprland.lua hides the bar and starts this).
 //
 // Start by hand (not autostarted yet):  qs -c island -d
 //
@@ -724,10 +724,10 @@ ShellRoot {
     }
 
     // --- Windows -----------------------------------------------------------
-    // Invisible strip that only reserves space at the bottom for the pill.
+    // Invisible strip that only reserves space at the top for the pill.
     // The island window itself is fullscreen and ignores exclusion.
     PanelWindow {
-        anchors.bottom: true
+        anchors.top: true
         anchors.left: true
         anchors.right: true
         implicitHeight: 1
@@ -778,8 +778,8 @@ ShellRoot {
                     input: inPage
                 })[root.mode]
 
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: Tokens.spacing.small
+            anchors.top: parent.top
+            anchors.topMargin: Tokens.spacing.small
             anchors.horizontalCenter: parent.horizontalCenter
             width: page.implicitWidth + Tokens.padding.large * 2
             height: page.implicitHeight + Tokens.padding.small * 2
