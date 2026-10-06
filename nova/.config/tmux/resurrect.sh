@@ -42,4 +42,8 @@ post)
 		done | while read -r p; do tmux kill-pane -t "$p"; done
 	tmux list-windows -a -F '#{window_id}' | while read -r w; do "$sidebar" open "$w"; done
 	;;
+save)
+	# tmux.service ExecStop: save before the server and its agents are killed.
+	s=$(tmux show -gqv @resurrect-save-script-path) && [ -n "$s" ] && "$s" quiet
+	;;
 esac
