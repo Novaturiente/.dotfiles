@@ -107,17 +107,19 @@ while :; do
 	sel=$(tmux display -p -t "$me:" '#{pane_id}')
 
 	# Usage follows the agent in the active pane: pi publishes @agent_model
-	# (tmux-agent-state.ts), Claude Code = claude. Other panes (shell, sidebar,
-	# codex) keep the last provider shown. '|' not tab: empty fields collapse under tab IFS.
+	# (tmux-agent-state.ts), Claude Code = claude. No claude/pi agent in the active
+	# pane (shell, codex, ...) = no usage block. '|' not tab: empty fields collapse under tab IFS.
 	IFS='|' read -r ag am cmd < <(tmux display -p -t "$sel" '#{@agent}|#{@agent_model}|#{pane_current_command}')
 	case ${ag:-$cmd} in
 	claude) src=claude ;;
-	pi) [ -n "$am" ] && src=$am ;;
+	pi) [[ $am == antigravity/* ]] && src=$am || src=claude ;;
+	*) src='' ;;
 	esac
-	[[ $src == antigravity/* ]] || src=claude
 	# ponytail: re-reads the cache every 30s (or on provider change); only pi refreshes it, so the age shows staleness
 	if [ "$src" != "$shown" ] || ((SECONDS >= next_usage)); then
-		if [ "$src" = claude ]; then
+		if [ -z "$src" ]; then
+			uw=()
+		elif [ "$src" = claude ]; then
 			mapfile -t uw < <(usage)
 			label=CLAUDE
 		else
