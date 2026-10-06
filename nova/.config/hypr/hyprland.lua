@@ -124,8 +124,11 @@ hl.on("hyprland.start", function()
 end)
 
 -- Leave no Hyprland socket behind for a later niri session's DMS to latch onto.
+-- Only when systemd still points at *this* instance: an older session exiting
+-- after a newer one logged in must not tear down the newer session's target
+-- or wipe its env (that left kdeconnectd crash-looping on a dead display).
 hl.on("hyprland.shutdown", function()
-    hl.exec_cmd("systemctl --user stop hyprland-session.target; systemctl --user unset-environment HYPRLAND_INSTANCE_SIGNATURE")
+    hl.exec_cmd([[[ "$(systemctl --user show-environment | sed -n 's/^HYPRLAND_INSTANCE_SIGNATURE=//p')" = "$HYPRLAND_INSTANCE_SIGNATURE" ] && { systemctl --user stop hyprland-session.target; systemctl --user unset-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY; }]])
 end)
 
 require("colors")
