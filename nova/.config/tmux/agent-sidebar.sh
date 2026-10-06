@@ -35,6 +35,21 @@ usage() {
 		"\(.[0])\t\(.[1] | round)\t\(.[2] | floor)\t\(.[3] / 1000 | floor)"' 2>/dev/null
 }
 
+# Antigravity quota from pi's cache, same rows. Group picked by model id like
+# antigravityWindows(): Claude/GPT models -> "Claude and GPT", else Gemini.
+usage_agy() {
+	jq -r --arg m "$1" '
+		.at as $at |
+		(if ($m | test("claude|gpt|sonnet|opus"; "i")) then "claude|gpt" else "gemini" end) as $re |
+		(.data.groups // []) as $g |
+		(first($g[] | select(.displayName | test($re; "i"))) // $g[0] // {}) as $grp |
+		["5h","5h"], ["weekly","wk"] | . as [$w,$n] |
+		first($grp.buckets[]? | select(.window == $w or (.bucketId | test($w)))) // empty |
+		select(.remainingFraction != null) |
+		"\($n)\t\((1 - .remainingFraction) * 100 | round)\t\(.resetTime | if . == null then 0 else sub("\\.[0-9]+"; "") | fromdateiso8601 end)\t\($at / 1000 | floor)"' \
+		~/.cache/antigravity-usage.json 2>/dev/null
+}
+
 goto() { tmux select-window -t "$1" \; select-pane -t "$1" \; switch-client -t "$1"; }
 
 if [ "$1" = next ] || [ "$1" = prev ]; then
@@ -82,35 +97,62 @@ trap 'printf "\e[?25h\e[?7h\e[?1000l\e[?1006l"' EXIT
 # Catppuccin Mocha: yellow, red, green, overlay0
 declare -A col=([working]='249;226;175' [blocked]='243;139;168' [done]='166;227;161' [idle]='108;112;134')
 dim=$'\e[38;2;108;112;134m' off=$'\e[0m'
-next_usage=0
+next_usage=0 src=claude shown=''
 
 while :; do
-	# ponytail: re-reads the cache every 30s; only pi refreshes it, so the age shows staleness
-	if ((SECONDS >= next_usage)); then mapfile -t uw < <(usage); next_usage=$((SECONDS + 30)); fi
-	foot=()
-	if [ ${#uw[@]} -gt 0 ]; then
-		at=0
-		for u in "${uw[@]}"; do IFS=$'\t' read -r _ _ _ a <<<"$u"; ((a > at)) && at=$a; done
-		foot=("$(printf ' %sUSAGE · %dm ago%s' "$dim" $(((EPOCHSECONDS - at) / 60)) "$off")")
-		for u in "${uw[@]}"; do
-			IFS=$'\t' read -r n p r _ <<<"$u"
-			c=${col[done]}
-			((p >= 70)) && c=${col[working]}
-			((p >= 90)) && c=${col[blocked]}
-			f=$(((p * 5 + 50) / 100)); ((f > 5)) && f=5
-			bar=$(printf '%*s' "$f" '' | sed 's/ /█/g')$(printf '%*s' $((5 - f)) '' | sed 's/ /░/g')
-			t=''
-			if ((r > 0)); then
-				if [ "$n" = 5h ]; then t=$(date -d "@$r" +%H:%M); else t=$(date -d "@$r" '+%a %H:%M'); fi
-			fi
-			foot+=("$(printf ' %s%s%s \e[38;2;%sm%s%s%4d%% %s%s%s' "$dim" "$n" "$off" "$c" "$bar" "$off" "$p" "$dim" "$t" "$off")")
-		done
-	fi
 	# Last pane left in the window: close instead of lingering alone.
 	[ "$(tmux display -p -t "$TMUX_PANE" '#{window_panes}')" -gt 1 ] || exit
 	read -r h me < <(tmux display -p -t "$TMUX_PANE" '#{pane_height} #{session_name}')
 	# Selected agent = active pane of this session's active window.
 	sel=$(tmux display -p -t "$me:" '#{pane_id}')
+
+	# Usage follows the agent in the active pane: pi publishes @agent_model
+	# (tmux-agent-state.ts), Claude Code = claude. Other panes (shell, sidebar,
+	# codex) keep the last provider shown. '|' not tab: empty fields collapse under tab IFS.
+	IFS='|' read -r ag am cmd < <(tmux display -p -t "$sel" '#{@agent}|#{@agent_model}|#{pane_current_command}')
+	case ${ag:-$cmd} in
+	claude) src=claude ;;
+	pi) [ -n "$am" ] && src=$am ;;
+	esac
+	[[ $src == antigravity/* ]] || src=claude
+	# ponytail: re-reads the cache every 30s (or on provider change); only pi refreshes it, so the age shows staleness
+	if [ "$src" != "$shown" ] || ((SECONDS >= next_usage)); then
+		if [ "$src" = claude ]; then
+			mapfile -t uw < <(usage)
+			label=CLAUDE
+		else
+			m=${src#*/}
+			mapfile -t uw < <(usage_agy "$m")
+			label='AGY GEMINI'
+			[[ ${m,,} =~ claude|gpt|sonnet|opus ]] && label='AGY CLAUDE'
+		fi
+		shown=$src next_usage=$((SECONDS + 30))
+	fi
+	foot=()
+	if [ ${#uw[@]} -gt 0 ]; then
+		at=0
+		for u in "${uw[@]}"; do IFS=$'\t' read -r _ _ _ a <<<"$u"; ((a > at)) && at=$a; done
+		age=$(((EPOCHSECONDS - at) / 60))m
+		((${age%m} >= 60)) && age=$((${age%m} / 60))h
+		foot=("$(printf ' %s%s · %s ago%s' "$dim" "$label" "$age" "$off")")
+		for u in "${uw[@]}"; do
+			IFS=$'\t' read -r n p r _ <<<"$u"
+			c=${col[done]}
+			((p >= 70)) && c=${col[working]}
+			((p >= 90)) && c=${col[blocked]}
+			# Window already reset since the cache was written: the percent is meaningless.
+			((r > 0 && r <= EPOCHSECONDS)) && c=${col[idle]}
+			f=$(((p * 5 + 50) / 100)); ((f > 5)) && f=5
+			bar=$(printf '%*s' "$f" '' | sed 's/ /█/g')$(printf '%*s' $((5 - f)) '' | sed 's/ /░/g')
+			t=''
+			if ((r > 0 && r <= EPOCHSECONDS)); then
+				t=stale
+			elif ((r > 0)); then
+				if [ "$n" = 5h ]; then t=$(date -d "@$r" +%H:%M); else t=$(date -d "@$r" '+%a %H:%M'); fi
+			fi
+			foot+=("$(printf ' %s%s%s \e[38;2;%sm%s%s%4d%% %s%s%s' "$dim" "$n" "$off" "$c" "$bar" "$off" "$p" "$dim" "$t" "$off")")
+		done
+	fi
 	# Tree: each session, its agents under it. rows = click target per screen line
 	# (p:<pane> or s:<session>), parallel to lines. Agent numbers (1-9 keys) run
 	# across sessions in the same order as prefix+j/k.
@@ -153,10 +195,11 @@ while :; do
 
 	# ponytail: clipped at pane height, no scrolling; add it if sessions+agents outgrow the pane
 	# Usage pinned to the bottom: list gets the rest, padded so the footer sits on the last rows.
-	bh=$((h - ${#foot[@]}))
+	# Last row stays blank so nothing touches the bottom edge.
+	bh=$((h - ${#foot[@]} - 1))
 	lines=("${lines[@]:0:bh}") rows=("${rows[@]:0:bh}")
 	while [ ${#foot[@]} -gt 0 ] && [ ${#lines[@]} -lt "$bh" ]; do lines+=(""); done
-	lines+=("${foot[@]}")
+	lines+=("${foot[@]}" "")
 	# $(...) drops the final newline, so a full-height list never scrolls.
 	printf '\e[H%s\e[J' "$(printf '%s\e[K\n' "${lines[@]}")"
 
