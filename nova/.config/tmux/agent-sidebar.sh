@@ -18,6 +18,23 @@ agents() {
 			$2 != "" && $6 !~ /^(zsh|bash|fish|sh)$/'
 }
 
+# Claude subscription windows from pi's claude-usage.ts caches (pi and Claude Code
+# share one subscription). Newer of endpoint cache / per-response live file wins,
+# same as withLive(). Rows: name, percent, reset epoch (0 = unknown), data epoch.
+usage() {
+	cat ~/.cache/claude-usage.json ~/.cache/claude-usage-live.json 2>/dev/null | jq -rs '
+		(map(select(.data))[0] // {}) as $c | (map(select(.windows))[0] // {}) as $l |
+		["five_hour","5h"], ["seven_day","wk"] | . as [$k,$n] |
+		if ($l.at // 0) > ($c.at // 0) and ($l.windows[$k].utilization | type) == "number" then
+			[$n, $l.windows[$k].utilization * 100,
+			 ($l.windows[$k].resetsAt // 0 | if . < 1e11 then . else . / 1000 end), $l.at]
+		else
+			[$n, $c.data[$k].utilization,
+			 ($c.data[$k].resets_at | if . == null then 0 else sub("\\.[0-9]+"; "") | sub("\\+00:00$"; "Z") | fromdateiso8601 end), $c.at]
+		end | select(.[1] != null) |
+		"\(.[0])\t\(.[1] | round)\t\(.[2] | floor)\t\(.[3] / 1000 | floor)"' 2>/dev/null
+}
+
 goto() { tmux select-window -t "$1" \; select-pane -t "$1" \; switch-client -t "$1"; }
 
 if [ "$1" = next ] || [ "$1" = prev ]; then
@@ -65,8 +82,30 @@ trap 'printf "\e[?25h\e[?7h\e[?1000l\e[?1006l"' EXIT
 # Catppuccin Mocha: yellow, red, green, overlay0
 declare -A col=([working]='249;226;175' [blocked]='243;139;168' [done]='166;227;161' [idle]='108;112;134')
 dim=$'\e[38;2;108;112;134m' off=$'\e[0m'
+next_usage=0
 
 while :; do
+	# ponytail: re-reads the cache every 30s; only pi refreshes it, so the age shows staleness
+	if ((SECONDS >= next_usage)); then mapfile -t uw < <(usage); next_usage=$((SECONDS + 30)); fi
+	foot=()
+	if [ ${#uw[@]} -gt 0 ]; then
+		at=0
+		for u in "${uw[@]}"; do IFS=$'\t' read -r _ _ _ a <<<"$u"; ((a > at)) && at=$a; done
+		foot=("$(printf ' %sUSAGE · %dm ago%s' "$dim" $(((EPOCHSECONDS - at) / 60)) "$off")")
+		for u in "${uw[@]}"; do
+			IFS=$'\t' read -r n p r _ <<<"$u"
+			c=${col[done]}
+			((p >= 70)) && c=${col[working]}
+			((p >= 90)) && c=${col[blocked]}
+			f=$(((p * 5 + 50) / 100)); ((f > 5)) && f=5
+			bar=$(printf '%*s' "$f" '' | sed 's/ /█/g')$(printf '%*s' $((5 - f)) '' | sed 's/ /░/g')
+			t=''
+			if ((r > 0)); then
+				if [ "$n" = 5h ]; then t=$(date -d "@$r" +%H:%M); else t=$(date -d "@$r" '+%a %H:%M'); fi
+			fi
+			foot+=("$(printf ' %s%s%s \e[38;2;%sm%s%s%4d%% %s%s%s' "$dim" "$n" "$off" "$c" "$bar" "$off" "$p" "$dim" "$t" "$off")")
+		done
+	fi
 	# Last pane left in the window: close instead of lingering alone.
 	[ "$(tmux display -p -t "$TMUX_PANE" '#{window_panes}')" -gt 1 ] || exit
 	read -r h me < <(tmux display -p -t "$TMUX_PANE" '#{pane_height} #{session_name}')
@@ -113,7 +152,11 @@ while :; do
 	done < <(tmux list-sessions -F '#{session_name}	#{session_windows}	#{session_attached}')
 
 	# ponytail: clipped at pane height, no scrolling; add it if sessions+agents outgrow the pane
-	lines=("${lines[@]:0:h}")
+	# Usage pinned to the bottom: list gets the rest, padded so the footer sits on the last rows.
+	bh=$((h - ${#foot[@]}))
+	lines=("${lines[@]:0:bh}") rows=("${rows[@]:0:bh}")
+	while [ ${#foot[@]} -gt 0 ] && [ ${#lines[@]} -lt "$bh" ]; do lines+=(""); done
+	lines+=("${foot[@]}")
 	# $(...) drops the final newline, so a full-height list never scrolls.
 	printf '\e[H%s\e[J' "$(printf '%s\e[K\n' "${lines[@]}")"
 
