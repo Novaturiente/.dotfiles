@@ -15,10 +15,10 @@ start)
 		exec "$sidebar" open "$2"
 	fi
 	tmux set -g @resurrect-started 1
-	save=$(tmux show -gqv @resurrect-save-script-path)
 	restore=$(tmux show -gqv @resurrect-restore-script-path)
 	# ponytail: fixed 60s poll; continuum not needed for one loop
-	(while sleep 60 && tmux has-session 2>/dev/null; do "$save" quiet; done) >/dev/null 2>&1 &
+	# Runs while the server lives (exit-empty off keeps it up with zero sessions).
+	(while sleep 60 && [ -n "$(tmux show -gqv @resurrect-started 2>/dev/null)" ]; do "$0" save; done) >/dev/null 2>&1 &
 	# No save file -> restore.sh exits without hooks, so run post ourselves.
 	{ [ -n "$restore" ] && "$restore"; "$0" post; } >/dev/null 2>&1 &
 	;;
@@ -28,7 +28,6 @@ pre)
 		while read -r p; do tmux kill-pane -t "$p"; done
 	;;
 post)
-	tmux set -gu @restoring
 	# Saved sidebars come back as plain shells. Find them in the save file by their
 	# saved title (live titles are unreliable: fish/zsh overwrite them after restore;
 	# the saved command is empty because resurrect only records child processes).
@@ -40,10 +39,28 @@ post)
 		while IFS="$(printf '\t')" read -r s w i; do
 			tmux display -p -t "=$s:$w.$i" '#{pane_id}' 2>/dev/null
 		done | while read -r p; do tmux kill-pane -t "$p"; done
+	# Cleared last: the kills above fire save hooks, which must not save a half-restored state.
+	tmux set -gu @restoring
 	tmux list-windows -a -F '#{window_id}' | while read -r w; do "$sidebar" open "$w"; done
 	;;
 save)
-	# tmux.service ExecStop: save before the server and its agents are killed.
+	# Autosave loop, tmux.service ExecStop, and close hooks (pane/window/session), so
+	# whatever was closed by hand is not restored. Serialized: hooks fire in bursts.
+	[ -n "$(tmux show -gqv @resurrect-started 2>/dev/null)" ] || exit 0 # no server
+	[ -n "$(tmux show -gqv @restoring)" ] && exit 0
+	rdir=$(tmux show -gqv @resurrect-dir)
+	rdir=${rdir:-${XDG_DATA_HOME:-$HOME/.local/share}/tmux/resurrect}
+	mkdir -p "$rdir"
+	exec 9>"$rdir/.lock"
+	flock 9
+	# Save files are named by the second. Two saves in one second write the same file;
+	# resurrect then sees it equal to `last`, deletes it, and leaves `last` dangling.
+	sleep 1
+	if [ -z "$(tmux list-sessions -F x 2>/dev/null)" ]; then
+		# Everything closed by hand: next start is empty, not the old save.
+		rm -f "$rdir/last" "$rdir/agents.tsv"
+		exit 0
+	fi
 	s=$(tmux show -gqv @resurrect-save-script-path) && [ -n "$s" ] && "$s" quiet
 	;;
 map)
