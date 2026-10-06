@@ -10,6 +10,10 @@ Pointed to from `~/.pi/agent/AGENTS.md`. Read when editing MCP/subagent config o
 - Every server uses default `codemode` exposure (none `direct`); don't add `exposure` fields. `"defaultTools": ["+codemode"]` in settings keeps codemode on.
 - Status: footer `🔌 MCP: <servers> (<connected>)` from `extensions/mcp-status.ts`; details in `/mcp`. `pi mcp list` doesn't see extension servers.
 
+## Local package patches
+- `patches/*.patch` fix installed packages (pi-plan-mode symlink settings, claude-code-provider usage windows). `pi update` wipes them.
+- After any `pi update`: `~/.pi/agent/scripts/apply-patches.sh` (idempotent; new patch → add its prefix→dir case), then `scripts/build-rpiv-bundles.sh`, then `/reload`.
+
 ## Subagent tool grants
 - `subagents.agentOverrides` in `settings.json` grants scout/worker/reviewer/oracle/researcher: codegraph_*, codemode, lens_diagnostics, agent_browser*, `mcp:context7`, `inheritSkills: true`.
 - Serena: full `mcp:serena` for worker only; scout/reviewer/oracle get read-only `mcp:serena/<tool>` selectors.
