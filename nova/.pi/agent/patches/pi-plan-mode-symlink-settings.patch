@@ -9,7 +9,17 @@
  import { basename, dirname, join } from "node:path";
  import { getAgentDir } from "@earendil-works/pi-coding-agent";
  var PLAN_MODE_SETTINGS_FILE = "pi-plan-mode.json";
-@@ -667,10 +667,13 @@
+@@ -634,7 +634,8 @@
+ }
+ async function readSettingsContents(settingsPath) {
+   const flags = constants.O_RDONLY | (constants.O_NONBLOCK ?? 0) | (constants.O_NOFOLLOW ?? 0);
+-  const handle = await open(settingsPath, flags);
++  // LOCAL PATCH (nova): follow a stowed symlink to its real file; O_NOFOLLOW still guards the resolved path.
++  const handle = await open(await realpath(settingsPath).catch(() => settingsPath), flags);
+   try {
+     const stats = await handle.stat();
+     if (!stats.isFile()) throw new Error("settings path is not a regular file");
+@@ -667,10 +668,13 @@
    if (Buffer.byteLength(contents, "utf8") > MAX_SETTINGS_BYTES) {
      throw new Error(`settings document exceeds ${MAX_SETTINGS_BYTES} bytes`);
    }
@@ -25,7 +35,7 @@
    try {
      await writeFile(temporaryPath, contents, {
        encoding: "utf8",
-@@ -680,7 +683,7 @@
+@@ -680,7 +684,7 @@
      });
      await beforeRename?.(temporaryPath, settingsPath);
      signal?.throwIfAborted();
