@@ -29,9 +29,17 @@ pre)
 	;;
 post)
 	tmux set -gu @restoring
-	# Saved sidebars come back as plain shells titled "agents".
-	tmux list-panes -a -F '#{pane_id}	#{pane_title}	#{?#{@sidebar},s,p}' | awk -F'\t' '$2 == "agents" && $3 == "p" {print $1}' |
-		while read -r p; do tmux kill-pane -t "$p"; done
+	# Saved sidebars come back as plain shells. Find them in the save file by their
+	# saved title (live titles are unreliable: fish/zsh overwrite them after restore;
+	# the saved command is empty because resurrect only records child processes).
+	# Resolve all ids first, then kill, since killing shifts pane indices.
+	# ponytail: assumes a from-scratch restore; a manual prefix+C-r over live panes may hit the wrong index
+	rdir=$(tmux show -gqv @resurrect-dir)
+	last=${rdir:-${XDG_DATA_HOME:-$HOME/.local/share}/tmux/resurrect}/last
+	[ -f "$last" ] && awk -F'\t' '$1 == "pane" && $7 == "agents" {print $2 "\t" $3 "\t" $6}' "$last" |
+		while IFS="$(printf '\t')" read -r s w i; do
+			tmux display -p -t "=$s:$w.$i" '#{pane_id}' 2>/dev/null
+		done | while read -r p; do tmux kill-pane -t "$p"; done
 	tmux list-windows -a -F '#{window_id}' | while read -r w; do "$sidebar" open "$w"; done
 	;;
 esac
