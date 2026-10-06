@@ -107,11 +107,13 @@ hl.on("hyprland.start", function()
     -- Hand systemd this session's env, bring the target up through
     -- hyprland-session.target, then start DMS (niri pulls it via niri.service.wants).
     -- Once DMS answers, hide its bar (the island replaces it here; niri's
-    -- startup.kdl reveals it again) and start the island.
+    -- startup.kdl reveals it again), turn off DMS's volume/brightness OSD (the
+    -- island shows its own; niri turns DMS's back on) and start the island.
     hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME QML2_IMPORT_PATH XCURSOR_THEME XCURSOR_SIZE"
         .. " && systemctl --user start hyprland-session.target"
         .. " && systemctl --user start quickshell-notifications.service dms.service"
         .. "; for i in $(seq 50); do dms ipc call bar hide id default 2>/dev/null | grep -q SUCCESS && break; sleep 0.2; done"
+        .. "; dms ipc call settings set osdVolumeEnabled false; dms ipc call settings set osdBrightnessEnabled false"
         .. "; qs -c island -d")
     hl.exec_cmd("swayidle")
     hl.exec_cmd("kdeconnectd")
