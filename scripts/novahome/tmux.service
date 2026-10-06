@@ -1,6 +1,6 @@
 # novahome only (installed by scripts/novahome/sync.sh, needs linger).
-# Starts tmux at boot; its session-created hook restores the last resurrect save
-# and resumes agents. Saves on stop, so shutdown/reboot loses nothing.
+# Starts tmux at boot; its session-created hook restores state.json and resumes
+# agents. Saves on stop too (state.sh flush), on top of the event-driven saves.
 [Unit]
 Description=tmux server (restore at start, save at stop)
 
@@ -9,7 +9,7 @@ Type=forking
 WorkingDirectory=%h
 # Sized so restored layouts fit before any client attaches.
 ExecStart=/usr/bin/tmux new-session -d -x 200 -y 50
-ExecStop=-%h/.config/tmux/resurrect.sh save
+ExecStop=-%h/.config/tmux/state.sh flush
 ExecStop=-/usr/bin/tmux kill-server
 TimeoutStopSec=30
 
