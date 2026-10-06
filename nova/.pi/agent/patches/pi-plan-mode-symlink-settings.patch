@@ -1,0 +1,36 @@
+--- a/dist/chunks/chunk-VLNCRAFL.ts
++++ b/dist/chunks/chunk-VLNCRAFL.ts
+@@ -327,7 +327,7 @@
+ // src/settings.ts
+ import { randomUUID } from "node:crypto";
+ import { constants } from "node:fs";
+-import { mkdir, open, rename, rm, writeFile } from "node:fs/promises";
++import { mkdir, open, realpath, rename, rm, writeFile } from "node:fs/promises";
+ import { basename, dirname, join } from "node:path";
+ import { getAgentDir } from "@earendil-works/pi-coding-agent";
+ var PLAN_MODE_SETTINGS_FILE = "pi-plan-mode.json";
+@@ -667,10 +667,13 @@
+   if (Buffer.byteLength(contents, "utf8") > MAX_SETTINGS_BYTES) {
+     throw new Error(`settings document exceeds ${MAX_SETTINGS_BYTES} bytes`);
+   }
+-  const directory = dirname(settingsPath);
++  // LOCAL PATCH (nova): rename onto the symlink's real file so a stowed settings file stays a link.
++  // Plain file: realpath returns the same path. Missing file: falls back to the given path.
++  const target = await realpath(settingsPath).catch(() => settingsPath);
++  const directory = dirname(target);
+   await mkdir(directory, { recursive: true });
+   signal?.throwIfAborted();
+-  const temporaryPath = join(directory, `.${basename(settingsPath)}.${process.pid}.${randomUUID()}.tmp`);
++  const temporaryPath = join(directory, `.${basename(target)}.${process.pid}.${randomUUID()}.tmp`);
+   try {
+     await writeFile(temporaryPath, contents, {
+       encoding: "utf8",
+@@ -680,7 +683,7 @@
+     });
+     await beforeRename?.(temporaryPath, settingsPath);
+     signal?.throwIfAborted();
+-    await rename(temporaryPath, settingsPath);
++    await rename(temporaryPath, target);
+   } finally {
+     await rm(temporaryPath, { force: true }).catch(() => void 0);
+   }
