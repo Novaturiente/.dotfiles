@@ -11,7 +11,7 @@ type=$(wl-paste -l 2>/dev/null | grep -m1 -E '^image/(png|jpeg|gif|webp|bmp)$')
 if [ -z "$type" ]; then
 	# A copied image file (file manager) counts too.
 	file=$(wl-paste -l 2>/dev/null | grep -qx text/uri-list &&
-		wl-paste -t text/uri-list 2>/dev/null | sed -n 's#^file://##p' | head -1)
+		wl-paste -t text/uri-list 2>/dev/null | tr -d '\r' | sed -n 's#^file://##p' | head -1)
 	case $file in *.png | *.jpg | *.jpeg | *.gif | *.webp | *.bmp)
 		type=$(file -b --mime-type "$file") ;;
 	*) file= ;;
@@ -22,6 +22,16 @@ if [ -n "$type" ]; then
 	{ if [ -n "$file" ]; then cat "$file"; else wl-paste -t "$type"; fi; } |
 		$ssh "mkdir -p ~/.cache/clip && cat > ~/.cache/clip/image && echo $type > ~/.cache/clip/type" &&
 		touch "$mark"
+	# Clipboard history (DMS) and file managers also offer the laptop path as text,
+	# which the terminal pastes. Mirror that file to the same path on novahome so
+	# the pasted path resolves there. Only read when an image is on the clipboard,
+	# so copied passwords are never read.
+	{ wl-paste -t text/plain; wl-paste -t text/uri-list | sed -n 's#^file://##p'; } 2>/dev/null |
+		tr -d '\r' | sort -u | while read -r p; do
+			case $p in "$HOME"/*.png | "$HOME"/*.jpg | "$HOME"/*.jpeg | "$HOME"/*.gif | "$HOME"/*.webp | "$HOME"/*.bmp)
+				[ -f "$p" ] && $ssh "mkdir -p '$(dirname "$p")' && cat > '$p'" < "$p" ;;
+			esac
+		done
 elif [ -e "$mark" ]; then
 	$ssh 'rm -f ~/.cache/clip/image ~/.cache/clip/type' && rm -f "$mark"
 fi
