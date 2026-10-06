@@ -7,7 +7,7 @@ Pointed to from `~/.pi/agent/AGENTS.md`. Read when editing MCP/subagent config o
 - `extensions/project-mcp.ts` merges global `~/.pi/agent/mcp-global.json` with nearest `.mcp.json` for repos under `~/Projects/`; same server name → project wins.
 - Never create `~/.pi/agent/mcp.json` — pi makes it beat project servers.
 - Tools named `mcp__<server>__<tool>`, called from `codemode` (find with `searchTools()`; usage notes + tool list via `describeNamespace("serena")`).
-- context7 has `direct` exposure → call its tools directly, not via codemode.
+- Every server uses default `codemode` exposure (none `direct`); don't add `exposure` fields. `"defaultTools": ["+codemode"]` in settings keeps codemode on.
 - Status: footer `🔌 MCP: <servers> (<connected>)` from `extensions/mcp-status.ts`; details in `/mcp`. `pi mcp list` doesn't see extension servers.
 
 ## Subagent tool grants
