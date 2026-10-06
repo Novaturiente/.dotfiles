@@ -17,6 +17,8 @@ tmux() {
     else command tmux attach 2>/dev/null || command tmux new-session
     fi
 }
+# tmux on novahome (like herdr --remote). Run from a plain Ghostty window.
+alias th="ssh -t novahome 'tmux attach; or tmux new-session'"
 
 # Claude project: lazygit (30%) + claude --dangerously-skip-permissions (70%)
 # in a persistent tmux session named after the target dir (default: $PWD).
