@@ -1,9 +1,11 @@
 {
-  "lastChangelogVersion": "1.0.3",
+  "lastChangelogVersion": "1.0.4",
   "theme": "catppuccin-dark",
   "defaultProvider": "pi-claude-code-provider",
   "defaultModel": "opus",
-  "defaultTools": ["+codemode"],
+  "defaultTools": [
+    "+codemode"
+  ],
   "showCacheMissNotices": true,
   "packages": [
     "git:github.com/chem/pi-claude-code-provider",
