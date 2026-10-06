@@ -1,32 +1,32 @@
 #!/usr/bin/env bash
+# Region select -> screenshot -> RapidOCR (PP-OCRv6, ONNX) -> clipboard.
+# Needs: python-rapidocr (AUR) + python-onnxruntime-cpu, models bundled.
 
-# 1. Select area (slurp) and Capture Screenshot (grim)
-# We pipe the image directly into memory, no temp files needed.
-GEOMETRY=$(slurp)
-
-# Check if user cancelled selection (Esc)
-if [ -z "$GEOMETRY" ]; then
-	exit 1
-fi
+GEOMETRY=$(slurp) || exit 1
+[ -z "$GEOMETRY" ] && exit 1
 
 notify-send -t 1000 "OCR" "Processing..."
 
-# 2. Run OCR (Tesseract)
-# 'grim -g' takes the area.
-# '-' tells grim to output to stdout.
-# 'tesseract stdin stdout' reads from pipe and writes to pipe.
-# '-l eng' uses English (add 'eng+chi_sim' for English + Chinese, etc.)
-TEXT=$(grim -g "$GEOMETRY" - | tesseract stdin stdout -l eng 2>/dev/null)
+# Det limit_type "max": the default "min" upscales short, wide captures ~10x
+# before detection (1.8 s -> 0.2 s). cls off: screen text is never rotated.
+TEXT=$(grim -g "$GEOMETRY" - | python -c '
+import sys
+from rapidocr import RapidOCR
+ocr = RapidOCR(params={
+    "Global.log_level": "critical",
+    "Global.use_cls": False,
+    "Det.limit_type": "max",
+    "Det.limit_side_len": 1280,
+    "EngineConfig.onnxruntime.intra_op_num_threads": 6,
+})
+r = ocr(sys.stdin.buffer.read())
+print("\n".join(r.txts or []))
+' 2>/dev/null)
 
-# 3. Check Result
 if [ -z "$TEXT" ]; then
 	notify-send "OCR" "No text detected."
 	exit 1
 fi
 
-# 4. Cleanup & Copy
-# Trim whitespace
-FINAL_TEXT=$(echo "$TEXT" | xargs)
-
-echo "$FINAL_TEXT" | wl-copy
+printf '%s' "$TEXT" | wl-copy
 notify-send "OCR" "Text copied to clipboard!"
