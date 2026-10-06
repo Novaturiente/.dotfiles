@@ -17,8 +17,7 @@
       "env": {
         "GOOGLE_APPLICATION_CREDENTIALS": "/home/nova/.secrets/gsc-service-account.json"
       },
-      "description": "Google Search Console: query search analytics (clicks, impressions, position, queries, pages), inspect URL indexing status, and list sitemaps",
-      "exposure": "direct"
+      "description": "Google Search Console: query search analytics (clicks, impressions, position, queries, pages), inspect URL indexing status, and list sitemaps"
     }
   }
 }
