@@ -86,7 +86,7 @@ EOF
 		# Keep flags like --dangerously-skip-permissions, drop old resume flags.
 		# Drop everything up to the claude binary (may be preceded by an interpreter).
 		set -- $cmd
-		args= skip= seen=
+		args='' skip='' seen=''
 		for a; do
 			if [ -z "$seen" ]; then case $a in claude | */claude) seen=1 ;; esac; continue; fi
 			if [ -n "$skip" ]; then skip=; continue; fi
