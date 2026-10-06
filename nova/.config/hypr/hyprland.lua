@@ -103,9 +103,16 @@ hl.window_rule({ match = { class = "^com.danklinux.dms$" },   float = true })
 
 -- ── Startup (niri modules/startup.kdl) ──────────────────────────────────────
 hl.on("hyprland.start", function()
-    -- DMS and the notification daemon are systemd user units. Hand them this
-    -- session's env, then start them (niri pulled dms in via niri.service.wants).
-    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME QML2_IMPORT_PATH XCURSOR_THEME XCURSOR_SIZE && systemctl --user start quickshell-notifications.service dms.service")
+    -- DMS, Emacs and the notification daemon hang off graphical-session.target.
+    -- Hand systemd this session's env, bring the target up through
+    -- hyprland-session.target, then start DMS (niri pulls it via niri.service.wants).
+    -- Once DMS answers, hide its bar (the island replaces it here; niri's
+    -- startup.kdl reveals it again) and start the island.
+    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME QML2_IMPORT_PATH XCURSOR_THEME XCURSOR_SIZE"
+        .. " && systemctl --user start hyprland-session.target"
+        .. " && systemctl --user start quickshell-notifications.service dms.service"
+        .. "; for i in $(seq 50); do dms ipc call bar hide id default 2>/dev/null | grep -q SUCCESS && break; sleep 0.2; done"
+        .. "; qs -c island -d")
     hl.exec_cmd("swayidle")
     hl.exec_cmd("kdeconnectd")
     hl.exec_cmd("udiskie --no-tray --notify")
@@ -114,7 +121,7 @@ end)
 
 -- Leave no Hyprland socket behind for a later niri session's DMS to latch onto.
 hl.on("hyprland.shutdown", function()
-    hl.exec_cmd("systemctl --user unset-environment HYPRLAND_INSTANCE_SIGNATURE")
+    hl.exec_cmd("systemctl --user stop hyprland-session.target; systemctl --user unset-environment HYPRLAND_INSTANCE_SIGNATURE")
 end)
 
 require("colors")
