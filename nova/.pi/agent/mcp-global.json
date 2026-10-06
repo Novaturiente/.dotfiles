@@ -8,8 +8,7 @@
     "context7": {
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp@4.0.3"],
-      "description": "Up-to-date library/framework docs: resolve-library-id, then query-docs",
-      "exposure": "direct"
+      "description": "Up-to-date library/framework docs: resolve-library-id, then query-docs"
     },
     "gsc": {
       "command": "searchconsole-mcp",
