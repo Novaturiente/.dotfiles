@@ -9,7 +9,7 @@ notify-send -t 1000 "OCR" "Processing..."
 
 # Det limit_type "max": the default "min" upscales short, wide captures ~10x
 # before detection (1.8 s -> 0.2 s). cls off: screen text is never rotated.
-TEXT=$(grim -g "$GEOMETRY" - | python -c '
+TEXT=$(grim -g "$GEOMETRY" - | /usr/bin/python -c '
 import sys
 from rapidocr import RapidOCR
 ocr = RapidOCR(params={
