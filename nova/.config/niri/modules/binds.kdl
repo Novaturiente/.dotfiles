@@ -27,8 +27,8 @@ binds {
     Mod+Shift+W hotkey-overlay-title="Qutebrowser (VPN)" {
         spawn-sh "vpn-run qutebrowser"
     }
-    Mod+Return hotkey-overlay-title="Terminal (herdr)" {
-		spawn-sh "ghostty --title='herdr' -e herdr"
+    Mod+Return hotkey-overlay-title="Terminal (tmux)" {
+		spawn-sh "ghostty --title='tmux' -e zsh -ic tmux"
     }
     Mod+D hotkey-overlay-title="Application launcher" {
         spawn "dms" "ipc" "call" "spotlight" "toggle"
@@ -63,7 +63,7 @@ binds {
     Mod+S hotkey-overlay-title="Zen URL bar" {
         spawn "~/.dotfiles/scripts/quickshell/zen-url.sh"
     }
-    Mod+G hotkey-overlay-title="Grammar fix" {
+    Mod+Ctrl+G hotkey-overlay-title="Grammar fix" {
         spawn-sh "~/.dotfiles/scripts/fix_grammar.sh"
     }
     Mod+Shift+C hotkey-overlay-title="Calendar" {

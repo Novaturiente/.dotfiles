@@ -36,7 +36,7 @@ window-rule {
     open-on-workspace "Main"
 }
 window-rule {
-    match title="herdr"
+    match title="tmux"
     open-maximized true
 }
 // Task scratchpad
