@@ -143,8 +143,8 @@ Packages are organized into YAML files in `system/package/`. Each file is a simp
 |------|----------|
 | `base-system.yaml` | Kernel, firmware, networking, audio (pipewire), filesystems, power (TLP) |
 | `terminal-tools.yaml` | zsh, ghostty, tmux, neovim, yazi, CLI tools (bat, fd, ripgrep, fzf, eza) |
-| `windowmanager.yaml` | Niri, Ly, Waybar, Rofi, fonts, themes, screenshot/recording tools |
-| `development.yaml` | Build tools, Rust/Python/Node/Go/Lua, LSPs, linters, lazygit, tesseract OCR |
+| `windowmanager.yaml` | Niri, Ly, Waybar, Rofi, fonts, themes, screenshot/recording/OCR tools |
+| `development.yaml` | Build tools, Rust/Python/Node/Go/Lua, LSPs, linters, lazygit |
 | `work.yaml` | Java, Docker, databases (PostgreSQL, MySQL), Chrome, WPS Office, Zoom |
 | `internet.yaml` | Qutebrowser, Zen Browser, KDE Connect, LocalSend, Thunderbird |
 | `media.yaml` | mpv, playerctl, imv, imagemagick, easyeffects |
@@ -180,7 +180,7 @@ novarch init    # Bootstrap — install all packages from all YAML files
 | Script | Purpose |
 |--------|---------|
 | `fix_grammar.sh` | Clipboard text → LLM API → grammar correction → paste back |
-| `ocr_select.sh` | Region select → screenshot → Tesseract OCR → clipboard |
+| `ocr_select.sh` | Region select → screenshot → RapidOCR → clipboard |
 | `file_picker.sh` | Zenity file dialog → clipboard → ydotool paste |
 | `calendar-notify.sh` | Parse khal events → schedule 10min-before notifications via `at` |
 | `record-script.sh` | wl-screenrec wrapper (full/region/audio modes) |

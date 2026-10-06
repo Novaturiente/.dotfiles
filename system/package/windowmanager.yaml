@@ -26,6 +26,8 @@
 - satty
 - tesseract
 - tesseract-data-eng
+- python-rapidocr
+- python-onnxruntime-cpu
 - wf-recorder
 - wl-screenrec
 - wl-clipboard
