@@ -144,9 +144,13 @@ while :; do
 		foot=("$(printf ' %s%s · %s ago%s' "$dim" "$label" "$age" "$off")")
 		for u in "${uw[@]}"; do
 			IFS=$'\t' read -r n p r _ <<<"$u"
-			c=${col[done]}
-			((p >= 70)) && c=${col[working]}
-			((p >= 90)) && c=${col[blocked]}
+			# Smooth gradient: green (0%) -> yellow (50%) -> red (100%), Catppuccin Mocha.
+			q=$((p < 0 ? 0 : p > 100 ? 100 : p))
+			if ((q <= 50)); then
+				c="$((166 + 83 * q / 50));$((227 - q / 50));$((161 + 14 * q / 50))"
+			else
+				c="$((249 - 6 * (q - 50) / 50));$((226 - 87 * (q - 50) / 50));$((175 - 7 * (q - 50) / 50))"
+			fi
 			# Window already reset since the cache was written: the percent is meaningless.
 			((r > 0 && r <= EPOCHSECONDS)) && c=${col[idle]}
 			f=$(((p * 5 + 50) / 100)); ((f > 5)) && f=5
