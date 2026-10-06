@@ -3,6 +3,7 @@ nova/.config/qutebrowser/__pycache__/
 temp/
 docs/
 docs/*
+!nova/.pi/agent/docs/
 .superpowers/
 
 # Password store (sensitive metadata)

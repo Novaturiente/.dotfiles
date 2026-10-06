@@ -1,6 +1,6 @@
 {
-  "lastChangelogVersion": "0.99.2",
-  "theme": "dark",
+  "lastChangelogVersion": "1.0.3",
+  "theme": "catppuccin-dark",
   "defaultProvider": "pi-claude-code-provider",
   "defaultModel": "opus",
   "packages": [
@@ -11,34 +11,26 @@
     "npm:pi-caveman",
     "npm:pi-impeccable-skill",
     "npm:@narumitw/pi-plan-mode",
-    {
-      "source": "npm:@juicesharp/rpiv-ask-user-question",
-      "extensions": []
-    },
-    "npm:@rokiy/pi-ui",
-    "npm:pi-rewind",
+    "npm:@juicesharp/rpiv-ask-user-question",
     "npm:@narumitw/pi-btw",
     "npm:@everyx/pi-read-doc",
-    "npm:@narumitw/pi-goal",
-    {
-      "source": "npm:@juicesharp/rpiv-todo",
-      "extensions": []
-    },
+    "npm:@juicesharp/rpiv-todo",
     "npm:pi-background-tasks",
     "npm:pi-simplify",
     "npm:pi-agent-browser-native",
     "npm:@vndv/pi-codegraph",
-    "npm:pi-lens"
-  ],
-  "extensions": [
-    "extensions/compact-tools.ts",
-    "extensions/turn-timer.ts",
-    "extensions/claude-usage.ts",
-    "/home/nova/.pi/agent/npm/node_modules/@juicesharp/rpiv-todo/index.bundle.mjs",
-    "/home/nova/.pi/agent/npm/node_modules/@juicesharp/rpiv-ask-user-question/index.bundle.mjs"
+    "npm:pi-lens",
+    "npm:pi-observational-memory",
+    "npm:pi-antigravity",
+    {
+      "source": "npm:pi-seo",
+      "extensions": []
+    },
+    "npm:pi-goal-x",
+    "npm:pi-animations"
   ],
   "powerline": {
-    "separator": "pipe",
+    "separator": "powerline-thin",
     "placement": "below",
     "welcome": false,
     "model": {
@@ -97,7 +89,7 @@
         "id": "wtpath",
         "statusKey": "wtpath",
         "position": "left",
-        "color": "#00afaf"
+        "color": "#94e2d5"
       }
     ]
   },
@@ -106,10 +98,184 @@
   "tuiMode": "fullscreen",
   "hideThinkingBlock": true,
   "doubleEscapeAction": "none",
+  "observational-memory": {
+    "compactAfterTokens": 150000
+  },
   "subagents": {
     "agentOverrides": {
       "scout": {
-        "model": "pi-claude-code-provider/haiku"
+        "model": "pi-claude-code-provider/haiku",
+        "inheritSkills": true,
+        "tools": [
+          "read",
+          "grep",
+          "find",
+          "ls",
+          "bash",
+          "write",
+          "contact_supervisor",
+          "codegraph_search",
+          "codegraph_callers",
+          "codegraph_callees",
+          "codegraph_impact",
+          "codegraph_explore",
+          "codegraph_node",
+          "codegraph_status",
+          "codegraph_files",
+          "codemode",
+          "lens_diagnostics",
+          "agent_browser",
+          "agent_browser_code",
+          "agent_browser_tools",
+          "mcp:serena/find_symbol",
+          "mcp:serena/find_referencing_symbols",
+          "mcp:serena/find_declaration",
+          "mcp:serena/find_implementations",
+          "mcp:serena/get_symbols_overview",
+          "mcp:serena/search_for_pattern",
+          "mcp:serena/get_diagnostics_for_file",
+          "mcp:serena/read_file",
+          "mcp:serena/list_dir",
+          "mcp:serena/find_file",
+          "mcp:context7"
+        ]
+      },
+      "worker": {
+        "inheritSkills": true,
+        "tools": [
+          "read",
+          "grep",
+          "find",
+          "ls",
+          "bash",
+          "edit",
+          "write",
+          "contact_supervisor",
+          "codegraph_search",
+          "codegraph_callers",
+          "codegraph_callees",
+          "codegraph_impact",
+          "codegraph_explore",
+          "codegraph_node",
+          "codegraph_status",
+          "codegraph_files",
+          "codemode",
+          "lens_diagnostics",
+          "agent_browser",
+          "agent_browser_code",
+          "agent_browser_tools",
+          "mcp:serena",
+          "mcp:context7",
+          "subagent",
+          "subagent_supervisor"
+        ],
+        "allowedAgents": [
+          "scout",
+          "reviewer"
+        ]
+      },
+      "reviewer": {
+        "inheritSkills": true,
+        "tools": [
+          "read",
+          "grep",
+          "find",
+          "ls",
+          "watchdog_diff",
+          "contact_supervisor",
+          "codegraph_search",
+          "codegraph_callers",
+          "codegraph_callees",
+          "codegraph_impact",
+          "codegraph_explore",
+          "codegraph_node",
+          "codegraph_status",
+          "codegraph_files",
+          "codemode",
+          "lens_diagnostics",
+          "agent_browser",
+          "agent_browser_code",
+          "agent_browser_tools",
+          "mcp:serena/find_symbol",
+          "mcp:serena/find_referencing_symbols",
+          "mcp:serena/find_declaration",
+          "mcp:serena/find_implementations",
+          "mcp:serena/get_symbols_overview",
+          "mcp:serena/search_for_pattern",
+          "mcp:serena/get_diagnostics_for_file",
+          "mcp:serena/read_file",
+          "mcp:serena/list_dir",
+          "mcp:serena/find_file",
+          "mcp:context7"
+        ]
+      },
+      "oracle": {
+        "inheritSkills": true,
+        "tools": [
+          "read",
+          "grep",
+          "find",
+          "ls",
+          "bash",
+          "contact_supervisor",
+          "codegraph_search",
+          "codegraph_callers",
+          "codegraph_callees",
+          "codegraph_impact",
+          "codegraph_explore",
+          "codegraph_node",
+          "codegraph_status",
+          "codegraph_files",
+          "codemode",
+          "lens_diagnostics",
+          "agent_browser",
+          "agent_browser_code",
+          "agent_browser_tools",
+          "mcp:serena/find_symbol",
+          "mcp:serena/find_referencing_symbols",
+          "mcp:serena/find_declaration",
+          "mcp:serena/find_implementations",
+          "mcp:serena/get_symbols_overview",
+          "mcp:serena/search_for_pattern",
+          "mcp:serena/get_diagnostics_for_file",
+          "mcp:serena/read_file",
+          "mcp:serena/list_dir",
+          "mcp:serena/find_file",
+          "mcp:context7",
+          "google_search",
+          "pi_claude_code_provider_web_search",
+          "subagent",
+          "subagent_supervisor"
+        ],
+        "allowedAgents": [
+          "scout",
+          "worker",
+          "reviewer"
+        ]
+      },
+      "researcher": {
+        "inheritSkills": true,
+        "tools": [
+          "read",
+          "write",
+          "contact_supervisor",
+          "google_search",
+          "pi_claude_code_provider_web_search",
+          "agent_browser",
+          "agent_browser_code",
+          "agent_browser_tools",
+          "codemode",
+          "mcp:context7",
+          "codegraph_search",
+          "codegraph_explore",
+          "subagent",
+          "subagent_supervisor"
+        ],
+        "allowedAgents": [
+          "scout",
+          "worker",
+          "reviewer"
+        ]
       }
     }
   }
