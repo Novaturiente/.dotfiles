@@ -190,6 +190,19 @@ flush) flush ;;
 start)
 	if [ -n "$(tmux show -gqv @state-started)" ]; then
 		[ -n "$(tmux show -gqv @restoring)" ] && exit 0
+		# tmux's session counter never resets while the server lives (exit-empty
+		# off): give a plain-number session the lowest number not in use.
+		sn=$(tmux display -p -t "$2" '#{session_name}')
+		case $sn in *[!0-9]* | '') ;; *)
+			used=$(tmux list-sessions -F '#{session_name}')
+			n=0
+			while printf '%s\n' "$used" | grep -qx "$n"; do
+				[ "$n" = "$sn" ] && break
+				n=$((n + 1))
+			done
+			[ "$n" = "$sn" ] || tmux rename-session -t "$(tmux display -p -t "$2" '#{session_id}')" "$n"
+			;;
+		esac
 		"$sidebar" open "$2"
 		save
 	else
