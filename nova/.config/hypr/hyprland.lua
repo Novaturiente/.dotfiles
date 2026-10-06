@@ -68,14 +68,14 @@ hl.config({
 })
 
 -- ── Animations (approximations of niri modules/layout.kdl) ───────────────────
--- Material 3 "spatial fast" overshoot curve used by niri window-open.
-hl.curve("m3SpatialFast", { type = "bezier", points = { {0.42, 1.67}, {0.21, 0.9} } })
 hl.curve("m3EffectsFast", { type = "bezier", points = { {0.31, 0.94}, {0.34, 1} } })
 -- niri springs: damping-ratio 1.0 = no bounce, 0.75 = light bounce.
 hl.curve("move",      { type = "spring", mass = 1, stiffness = 450, dampening = 42 })
 hl.curve("wsBounce",  { type = "spring", mass = 1, stiffness = 800, dampening = 42 })
 
-hl.animation({ leaf = "windowsIn",   enabled = true, speed = 3.5, bezier = "m3SpatialFast", style = "slide right" })
+-- New window slides in on the same spring that pushes its neighbours aside,
+-- so the open reads as one smooth shove instead of an overshoot pop.
+hl.animation({ leaf = "windowsIn",   enabled = true, speed = 4,   spring = "move", style = "slide right" })
 hl.animation({ leaf = "windowsOut",  enabled = true, speed = 1.5, bezier = "m3EffectsFast", style = "slide right" })
 hl.animation({ leaf = "windowsMove", enabled = true, speed = 4,   spring = "move" })
 hl.animation({ leaf = "fadeIn",      enabled = true, speed = 3.5, bezier = "m3EffectsFast" })
