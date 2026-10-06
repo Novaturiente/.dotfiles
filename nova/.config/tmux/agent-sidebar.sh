@@ -57,9 +57,10 @@ if [ "$1" = toggle ] || [ "$1" = resize ] || [ "$1" = open ]; then
 fi
 
 tmux set -p -t "$TMUX_PANE" @sidebar 1 \; select-pane -t "$TMUX_PANE" -T agents
-# Hide cursor; SGR mouse reporting so clicks reach the draw loop.
-printf '\e[?25l\e[?1000h\e[?1006h'
-trap 'printf "\e[?25h\e[?1000l\e[?1006l"' EXIT
+# Hide cursor, no line wrap (long rows clip instead of breaking the layout);
+# SGR mouse reporting so clicks reach the draw loop.
+printf '\e[?25l\e[?7l\e[?1000h\e[?1006h'
+trap 'printf "\e[?25h\e[?7h\e[?1000l\e[?1006l"' EXIT
 
 # Catppuccin Mocha: yellow, red, green, overlay0
 declare -A col=([working]='249;226;175' [blocked]='243;139;168' [done]='166;227;161' [idle]='108;112;134')
@@ -71,40 +72,50 @@ while :; do
 	read -r h me < <(tmux display -p -t "$TMUX_PANE" '#{pane_height} #{session_name}')
 	# Selected agent = active pane of this session's active window.
 	sel=$(tmux display -p -t "$me:" '#{pane_id}')
-	# tt/bt: click target per screen row (p:<pane> or s:<session>), parallel to top/bot.
-	ids=() top=("" "${dim} AGENTS${off}" "") tt=("" "" "")
-	while IFS=$'\t' read -r id agent state loc dir _; do
-		ids+=("$id") tt+=("p:$id" "p:$id")
-		c=${col[$state]:-${col[idle]}}
-		# Selected: mauve bar in the gutter + bold name.
-		g=' ' b=''
-		[ "$id" = "$sel" ] && g=$'\e[38;2;203;166;247m▎\e[0m' b=$'\e[1m'
-		top+=("$(printf '%s%d \e[38;2;%sm●%s %s%-8.8s%s \e[38;2;%sm%-7s%s' "$g" "${#ids[@]}" "$c" "$off" "$b" "$agent" "$off" "$c" "$state" "$off")")
-		top+=("$(printf '%s  %s%.28s%s' "$g" "$dim" "$loc $dir" "$off")")
-	done < <(agents)
-	[ ${#ids[@]} -eq 0 ] && top+=(" ${dim}no agents running${off}") tt+=("")
-
-	# Sessions pinned to the bottom: green dot = attached, mauve name = this one.
-	bot=("" "${dim} SESSIONS${off}") bt=("" "")
-	# Folder of each session's first non-sidebar pane.
+	# Tree: each session, its agents under it. rows = click target per screen line
+	# (p:<pane> or s:<session>), parallel to lines. Agent numbers (1-9 keys) run
+	# across sessions in the same order as prefix+j/k.
+	mapfile -t all < <(agents)
+	# Folder of each session's first non-sidebar pane, shown when it has no agents.
 	declare -A first=()
 	while IFS=$'\t' read -r s sbp d; do
 		[ "$sbp" = s ] || [ -n "${first[$s]+x}" ] || first[$s]=$d
 	done < <(tmux list-panes -a -F '#{session_name}	#{?#{@sidebar},s,p}	#{b:pane_current_path}')
+	ids=() lines=("" "${dim} SESSIONS${off}" "") rows=("" "" "")
 	while IFS=$'\t' read -r name wins att; do
+		# Green dot = attached, mauve name = this session.
 		d=${col[idle]} nc=''
 		[ "$att" -gt 0 ] && d=${col[done]}
 		[ "$name" = "$me" ] && nc=$'\e[1;38;2;203;166;247m'
-		bot+=("$(printf ' \e[38;2;%sm●%s %s%-18.18s%s %s%sw%s' "$d" "$off" "$nc" "$name" "$off" "$dim" "$wins" "$off")")
-		bot+=("$(printf '   %s%.24s%s' "$dim" "${first[$name]}" "$off")")
-		bt+=("s:$name" "s:$name")
+		lines+=("$(printf ' \e[38;2;%sm●%s %s%-18.18s%s %s%sw%s' "$d" "$off" "$nc" "$name" "$off" "$dim" "$wins" "$off")")
+		rows+=("s:$name")
+		mine=()
+		for a in "${all[@]}"; do
+			IFS=$'\t' read -r _ _ _ loc _ <<<"$a"
+			[ "${loc%:*}" = "$name" ] && mine+=("$a")
+		done
+		if [ ${#mine[@]} -eq 0 ]; then
+			lines+=("$(printf '   %s%.24s%s' "$dim" "${first[$name]}" "$off")") rows+=("s:$name")
+		fi
+		for k in "${!mine[@]}"; do
+			IFS=$'\t' read -r id agent state loc dir _ <<<"${mine[k]}"
+			ids+=("$id") rows+=("p:$id" "p:$id")
+			c=${col[$state]:-${col[idle]}}
+			br='├' cont='│'
+			[ "$k" -eq $((${#mine[@]} - 1)) ] && br='└' cont=' '
+			# Selected: mauve bar in the gutter + bold name.
+			g=' ' b=''
+			[ "$id" = "$sel" ] && g=$'\e[38;2;203;166;247m▎\e[0m' b=$'\e[1m'
+			lines+=("$(printf '%s%s%s%s %d \e[38;2;%sm●%s %s%-8.8s%s \e[38;2;%sm%-7s%s' "$g" "$dim" "$br" "$off" "${#ids[@]}" "$c" "$off" "$b" "$agent" "$off" "$c" "$state" "$off")")
+			lines+=("$(printf '%s%s%s    w%s %.22s%s' "$g" "$dim" "$cont" "${loc##*:}" "$dir" "$off")")
+		done
+		lines+=("") rows+=("")
 	done < <(tmux list-sessions -F '#{session_name}	#{session_windows}	#{session_attached}')
-	bot+=("") bt+=("")
 
-	while [ $((${#top[@]} + ${#bot[@]})) -lt "$h" ]; do top+=("") tt+=(""); done
-	rows=("${tt[@]}" "${bt[@]}")
+	# ponytail: clipped at pane height, no scrolling; add it if sessions+agents outgrow the pane
+	lines=("${lines[@]:0:h}")
 	# $(...) drops the final newline, so a full-height list never scrolls.
-	printf '\e[H%s\e[J' "$(printf '%s\e[K\n' "${top[@]}" "${bot[@]}")"
+	printf '\e[H%s\e[J' "$(printf '%s\e[K\n' "${lines[@]}")"
 
 	read -rsn1 -t1 k
 	case $k in
