@@ -16,6 +16,7 @@ export default function (pi: ExtensionAPI) {
 	let blocked = 0;
 	let last = "";
 	let ref = "";
+	let cwd = "";
 	let queue = Promise.resolve();
 
 	// Conversation file, stored on the pane so a tmux restore runs `pi --session <file>`.
@@ -26,14 +27,16 @@ export default function (pi: ExtensionAPI) {
 		} catch {
 			// No session manager (ephemeral session): keep the last known file.
 		}
+		// Folder too: a worktree switch starts a new session rooted elsewhere.
+		if (typeof ctx?.cwd === "string" && ctx.cwd.startsWith("/")) cwd = ctx.cwd;
 	};
 
 	const publish = () => {
 		const state = blocked > 0 ? "blocked" : active ? "working" : "idle";
-		const key = `${state} ${ref}`;
+		const key = `${state} ${ref} ${cwd}`;
 		if (key === last) return;
 		last = key;
-		const args = ref ? ["pi", state, ref] : ["pi", state];
+		const args = ["pi", state, ref, cwd];
 		// Serialized so a fast working->idle never lands out of order.
 		queue = queue.then(
 			() => new Promise<void>((done) => execFile(SCRIPT, args, () => done())),

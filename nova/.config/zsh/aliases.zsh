@@ -17,6 +17,9 @@ tmux() {
     else command tmux attach 2>/dev/null || command tmux new-session
     fi
 }
+# Inside tmux: every cd saves tmux state, so a restore reopens panes in their last folder.
+[[ -n $TMUX ]] && chpwd_functions+=(_tmux_state_save)
+_tmux_state_save() { ~/.config/tmux/state.sh save 2>/dev/null; }
 # tmux on novahome (like herdr --remote). Run from a plain Ghostty window.
 # Bare `tmux` there runs the fish wrapper: starts tmux.service if needed, then attaches.
 alias th="ssh -t novahome tmux"
