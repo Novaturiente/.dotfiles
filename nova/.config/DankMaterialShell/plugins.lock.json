@@ -23,10 +23,6 @@
     "desktopCommand": {
       "repo": "https://github.com/yayuuu/desktopCommand",
       "commit": "a2e663ee031918ea01e2e65cf88aa3ded85a53f8"
-    },
-    "dmsfilemanager": {
-      "repo": "https://github.com/suruibin/dms-filemanager",
-      "commit": "712154f3eb5dae789ce03f0700488163928395fa"
     }
   }
 }
