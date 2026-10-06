@@ -49,10 +49,22 @@ export default function (pi: ExtensionAPI) {
 		publish();
 	});
 
+	// Active model as "provider/id" on the pane; the sidebar shows that provider's usage.
+	const model = (ctx: any) => {
+		const m = ctx?.model;
+		if (!m?.provider) return;
+		execFile("tmux", ["set", "-p", "-t", process.env.TMUX_PANE!, "@agent_model", `${m.provider}/${m.id ?? ""}`], () => {});
+	};
+
+	pi.on("model_select", (_e, ctx) => {
+		if (root) model(ctx);
+	});
+
 	pi.on("session_start", (_e, ctx) => {
 		// TUI only: subagents/print/RPC modes have no pane of their own.
 		if (ctx?.mode !== "tui") return;
 		root = true;
+		model(ctx);
 		track(ctx);
 		active = ctx?.isIdle?.() === false;
 		publish();
@@ -75,6 +87,7 @@ export default function (pi: ExtensionAPI) {
 	pi.on("session_shutdown", () => {
 		if (!root) return;
 		try {
+			execFileSync("tmux", ["set", "-p", "-t", process.env.TMUX_PANE!, "-u", "@agent_model"]);
 			execFileSync(SCRIPT, ["pi", "off"]);
 		} catch {
 			// tmux server already gone on shutdown: nothing left to clear.
