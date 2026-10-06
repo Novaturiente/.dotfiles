@@ -81,16 +81,16 @@ list_entries() {
 
 get_focused_domain() {
     local win_info
-    win_info=$(niri msg focused-window 2>/dev/null) || return 1
+    win_info=$(~/.dotfiles/scripts/wm.sh focused 2>/dev/null) || return 1
 
     # Only autofill from browser windows — otherwise titles like
     # "start_tmux.sh" get mistaken for a domain and prefill the search.
     local app_id
-    app_id=$(echo "$win_info" | grep "App ID:" | sed 's/.*App ID: "\(.*\)"/\1/')
+    app_id=$(jq -r '.app_id // ""' <<<"$win_info")
     echo "$app_id" | grep -qiE 'zen|chrom|qutebrowser|brave|browser' || return 0
 
     local title
-    title=$(echo "$win_info" | grep "Title:" | sed 's/.*Title: "\(.*\)"/\1/')
+    title=$(jq -r '.title // ""' <<<"$win_info")
 
     # Try to extract domain from browser title
     # Common patterns: "Page Title - domain.com - Browser" or "domain.com/path"
