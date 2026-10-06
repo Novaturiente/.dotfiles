@@ -68,7 +68,7 @@ bind("CTRL + ALT + Delete",     dsp.exit())
 bind(M .. " + CTRL + SHIFT + P", dsp.dpms({ action = "off" }))
 bind("XF86PowerOff",            run("systemctl suspend-then-hibernate"), { locked = true })
 bind("switch:on:Lid Switch",    run("systemctl suspend-then-hibernate"), { locked = true })
-bind(M .. " + B",               run("dms ipc call bar toggleAutoHide id default"))
+bind(M .. " + B",               run("qs -c island ipc call island toggleAutoHide"))
 
 -- niri toggle-keyboard-shortcuts-inhibit: a submap where only Mod+Escape is live,
 -- so every other key reaches the focused app (VMs, remote desktops).

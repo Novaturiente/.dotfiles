@@ -43,6 +43,11 @@ ShellRoot {
     // Which slider the OSD page shows; kept apart from `mode` so the page does
     // not switch icon while it fades out.
     property string osdKind: "volume"
+    // Auto-hide (Mod+B): the pill tucks up leaving a thin strip at the top edge;
+    // hovering the strip, an OSD or any open page brings it back.
+    property bool autoHide: false
+    property bool hovered: false
+    readonly property bool tucked: autoHide && mode === "idle" && !hovered
 
     function show(m: string): void {
         if (!modes.includes(m))
@@ -271,6 +276,9 @@ ShellRoot {
         }
         function idle(): void {
             root.show("idle");
+        }
+        function toggleAutoHide(): void {
+            root.autoHide = !root.autoHide;
         }
         function volume(arg: string): void {
             if (arg === "mute") {
@@ -731,7 +739,7 @@ ShellRoot {
         anchors.left: true
         anchors.right: true
         implicitHeight: 1
-        exclusiveZone: 42
+        exclusiveZone: root.autoHide ? 0 : 42
         color: "transparent"
         WlrLayershell.namespace: "island-spacer"
         mask: Region {}
@@ -779,8 +787,18 @@ ShellRoot {
                 })[root.mode]
 
             anchors.top: parent.top
-            anchors.topMargin: Tokens.spacing.small
+            anchors.topMargin: root.tucked ? 4 - height : Tokens.spacing.small
             anchors.horizontalCenter: parent.horizontalCenter
+
+            Behavior on anchors.topMargin {
+                Anim {
+                    type: Anim.FastSpatial
+                }
+            }
+
+            HoverHandler {
+                onHoveredChanged: root.hovered = hovered
+            }
             width: page.implicitWidth + Tokens.padding.large * 2
             height: page.implicitHeight + Tokens.padding.small * 2
             radius: Math.min(height / 2, Tokens.rounding.extraLarge)
