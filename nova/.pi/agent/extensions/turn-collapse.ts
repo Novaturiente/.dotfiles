@@ -9,6 +9,7 @@
  */
 import {
 	AssistantMessageComponent,
+	CustomMessageComponent,
 	type ExtensionAPI,
 	type ExtensionContext,
 	type Theme,
@@ -63,6 +64,12 @@ function anchorsOf(rest: any[]): Set<any> {
 	const final = rest.filter(isAssistant).reverse().find((a) => textOf(a.lastMessage));
 	const anchors = new Set<any>(final ? [final] : []);
 	rest.forEach((c, i) => {
+		// deep pass continues the turn → keep the reply before it visible too
+		if (c instanceof CustomMessageComponent && (c as any).message?.customType === "impeccable-deep-pass") {
+			const prev = rest.slice(0, i).reverse().find(isAssistant);
+			if (prev && textOf(prev.lastMessage)) anchors.add(prev);
+			return;
+		}
 		if (!isAsk(c)) return;
 		anchors.add(c);
 		const caller = rest.slice(0, i).reverse().find(isAssistant); // message that issued the question call
