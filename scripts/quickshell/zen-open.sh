@@ -19,26 +19,27 @@ else
     URL="${SEARCH}$(printf '%s' "$IN" | sed 's/ /+/g')"   # search term
 fi
 
+WM=~/.dotfiles/scripts/wm.sh
 focus_zen() {
     local before now new id
-    before=$(niri msg --json windows 2>/dev/null \
+    before=$("$WM" windows 2>/dev/null \
         | jq -c '[.[] | select(.app_id=="zen") | .id]' 2>/dev/null || echo '[]')
     for _ in $(seq 1 50); do                       # up to ~5s, exits early
-        now=$(niri msg --json windows 2>/dev/null || true)
+        now=$("$WM" windows 2>/dev/null || true)
         [[ -z "$now" ]] && { sleep 0.1; continue; }
         new=$(jq -r --argjson b "$before" \
             '[.[] | select(.app_id=="zen")]
              | map(select((.id as $i | $b | index($i)) | not))
              | sort_by(.id) | last | .id // empty' <<<"$now" 2>/dev/null || true)
         if [[ -n "$new" ]]; then
-            niri msg action focus-window --id "$new" >/dev/null 2>&1 || true
+            "$WM" focus "$new" >/dev/null 2>&1 || true
             return
         fi
         if [[ "$before" != "[]" ]]; then           # reused an existing window
             id=$(jq -r '[.[] | select(.app_id=="zen")]
                  | sort_by(.focus_timestamp.secs) | last | .id // empty' \
                  <<<"$now" 2>/dev/null || true)
-            [[ -n "$id" ]] && niri msg action focus-window --id "$id" >/dev/null 2>&1 || true
+            [[ -n "$id" ]] && "$WM" focus "$id" >/dev/null 2>&1 || true
             return
         fi
         sleep 0.1

@@ -38,7 +38,7 @@ get_tmux_session() {
 # --- Main ---
 
 # Get all windows as JSON, filter out focused, sort by workspace
-windows_json=$(niri msg -j windows)
+windows_json=$(~/.dotfiles/scripts/wm.sh windows)
 
 # Build entries
 declare -A id_map     # display_string -> window_id
@@ -92,4 +92,4 @@ selected=$(echo "$entries" | rofi -dmenu -i -p "󰖯 " -theme "black.rasi")
 
 # Focus the selected window
 win_id="${id_map[$selected]}"
-[[ -n "$win_id" ]] && niri msg action focus-window --id "$win_id"
+[[ -n "$win_id" ]] && ~/.dotfiles/scripts/wm.sh focus "$win_id"
