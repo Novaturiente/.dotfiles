@@ -138,7 +138,7 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 | Script | Purpose |
 |--------|---------|
 | `fix_grammar.sh` | Clipboard text → NVIDIA API (gpt-oss-120b) → grammar correction → paste back |
-| `ocr_select.sh` | Region select → screenshot → Tesseract OCR → clipboard |
+| `ocr_select.sh` | Region select → screenshot → RapidOCR (PP-OCRv6, `python-rapidocr` AUR) → clipboard |
 | `file_picker.sh` | Zenity file dialog → wl-copy → ydotool paste |
 | `calendar-notify.sh` | Parse khal events → schedule 10min-before notifications via `at` |
 | `record-script.sh` | wl-screenrec wrapper (full/region/audio modes) |
