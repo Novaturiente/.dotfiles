@@ -98,6 +98,11 @@ trap 'printf "\e[?25h\e[?7h\e[?1000l\e[?1006l"' EXIT
 declare -A col=([working]='249;226;175' [blocked]='243;139;168' [done]='166;227;161' [idle]='108;112;134')
 dim=$'\e[38;2;108;112;134m' off=$'\e[0m'
 next_usage=0 src=claude shown=''
+# Animation: working = braille spinner, blocked = red icon fading in and out.
+# Lines carry @W@/@B@ placeholders, swapped for the current frame at each redraw.
+spin=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
+pulse=('243;139;168' '206;118;143' '168;97;118' '131;76;93' '168;97;118' '206;118;143')
+fr=0
 
 while :; do
 	# Last pane left in the window: close instead of lingering alone.
@@ -184,13 +189,19 @@ while :; do
 			IFS=$'\t' read -r id agent state loc dir _ <<<"${mine[k]}"
 			ids+=("$id") rows+=("p:$id" "p:$id")
 			c=${col[$state]:-${col[idle]}}
+			case $state in
+			working) ic=@W@ sw=working ;;
+			blocked) ic=@B@ sw=waiting ;;
+			'done') ic=$'\e[38;2;'$c'm✓' sw=$state ;;
+			*) ic=$'\e[38;2;'$c'm○' sw=$state ;;
+			esac
 			br='├' cont='│'
 			[ "$k" -eq $((${#mine[@]} - 1)) ] && br='└' cont=' '
 			# Selected: mauve bar in the gutter + bold name.
 			g=' ' b=''
 			[ "$id" = "$sel" ] && g=$'\e[38;2;203;166;247m▎\e[0m' b=$'\e[1m'
-			lines+=("$(printf '%s%s%s%s %d \e[38;2;%sm●%s %s%-8.8s%s \e[38;2;%sm%-7s%s' "$g" "$dim" "$br" "$off" "${#ids[@]}" "$c" "$off" "$b" "$agent" "$off" "$c" "$state" "$off")")
-			lines+=("$(printf '%s%s%s    w%s %.22s%s' "$g" "$dim" "$cont" "${loc##*:}" "$dir" "$off")")
+			lines+=("$(printf '%s%s%s%s %s%s %s%-9.9s%s \e[38;2;%sm%s%s' "$g" "$dim" "$br" "$off" "$ic" "$off" "$b" "$agent" "$off" "$c" "$sw" "$off")")
+			lines+=("$(printf '%s%s%s%s   \e[38;2;166;173;200m%.20s%s' "$g" "$dim" "$cont" "$off" "$dir" "$off")")
 		done
 		lines+=("") rows+=("")
 	done < <(tmux list-sessions -F '#{session_name}	#{session_windows}	#{session_attached}')
@@ -202,10 +213,17 @@ while :; do
 	lines=("${lines[@]:0:bh}") rows=("${rows[@]:0:bh}")
 	while [ ${#foot[@]} -gt 0 ] && [ ${#lines[@]} -lt "$bh" ]; do lines+=(""); done
 	lines+=("${foot[@]}" "")
-	# $(...) drops the final newline, so a full-height list never scrolls.
-	printf '\e[H%s\e[J' "$(printf '%s\e[K\n' "${lines[@]}")"
-
-	read -rsn1 -t1 k
+	# Data refreshes once a second; the frame redraws 4x a second for the animation.
+	# A key or click breaks out at once.
+	for _ in 1 2 3 4; do
+		# $(...) drops the final newline, so a full-height list never scrolls.
+		out=$(printf '%s\e[K\n' "${lines[@]}")
+		out=${out//@W@/$'\e[38;2;'${col[working]}'m'${spin[fr % 10]}}
+		out=${out//@B@/$'\e[38;2;'${pulse[fr % 6]}'m✱'}
+		((fr++))
+		printf '\e[H%s\e[J' "$out"
+		read -rsn1 -t0.25 k && break
+	done
 	case $k in
 	q) exit ;;
 	$'\e')
