@@ -11,6 +11,7 @@
 //   drag sideways   past 30% of the width dismisses; short of that it snaps back
 //   drag up / down  collapses or expands the card
 //   middle click    closes immediately
+//   right click     expands / collapses (full text, actions, inline reply)
 //   hover           holds the expiry timer open
 pragma ComponentBehavior: Bound
 
@@ -65,6 +66,27 @@ StyledRect {
 
     property bool expanded: false
     property bool closing: false
+    // True when the card timed out rather than being dismissed by the user; the
+    // island keeps such notifications alive so history can still run actions.
+    property bool expired: false
+
+    // Click on the card: run the app's default action (usually "open the chat
+    // / mail / page"); without one (plain notify-send, e.g. lin-whatsapp), focus
+    // the sender's window. Expand/collapse stays on ▾ and vertical drag.
+    function activate(): void {
+        const acts = modelData.actions;
+        for (let i = 0; i < acts.length; i++) {
+            if (acts[i].identifier === "default") {
+                // close() first: invoke() closes the notification, which can
+                // destroy this card before the next line runs.
+                close();
+                acts[i].invoke();
+                return;
+            }
+        }
+        Quickshell.execDetached(["bash", Quickshell.env("HOME") + "/.dotfiles/scripts/wm.sh", "focus-app", modelData.desktopEntry, modelData.appName]);
+        close();
+    }
 
     // Some notifications (volume, copy progress) carry a 0-100 value hint, which
     // upstream draws as a ring around the app icon.
@@ -78,7 +100,17 @@ StyledRect {
     // expand/collapse can animate towards it.
     readonly property int targetHeight: inner.anchors.margins * 2 + summary.implicitHeight + (expanded
         ? Tokens.spacing.extraSmall * 2 + appName.implicitHeight + body.implicitHeight + actions.implicitHeight + Tokens.spacing.small
+            + (hasReply ? replyBox.implicitHeight + Tokens.spacing.small : 0)
         : bodyPreview.implicitHeight)
+
+    // Inline reply (KDE Connect SMS etc.); only when the server advertises it.
+    readonly property bool hasReply: modelData.hasInlineReply ?? false
+    function sendReply(text: string): void {
+        if (!text)
+            return;
+        close(); // before sendInlineReply(), same reason as activate()
+        modelData.sendInlineReply(text);
+    }
 
     function close(): void {
         if (closing)
@@ -119,14 +151,17 @@ StyledRect {
     Timer {
         id: expiry
 
-        running: interval > 0 && !dragArea.containsMouse && !dragArea.pressed && !root.closing
+        running: interval > 0 && !dragArea.containsMouse && !dragArea.pressed && !root.closing && !replyField.activeFocus
         interval: {
             const t = root.modelData.expireTimeout;
             if (t > 0)
                 return t;
             return root.critical ? 0 : root.low ? 10000 : 5000;
         }
-        onTriggered: root.close()
+        onTriggered: {
+            root.expired = true;
+            root.close();
+        }
     }
 
     // Exit: throw the card off whichever side it was last dragged toward, then
@@ -168,7 +203,7 @@ StyledRect {
         anchors.fill: parent
         hoverEnabled: true
         preventStealing: true
-        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
         cursorShape: pressed ? Qt.ClosedHandCursor : undefined
 
         drag.target: root
@@ -178,9 +213,19 @@ StyledRect {
             startY = e.y;
             if (e.button === Qt.MiddleButton)
                 root.close();
+            else if (e.button === Qt.RightButton)
+                root.expanded = !root.expanded;
         }
 
-        onReleased: {
+        onReleased: e => {
+            if (e.button === Qt.RightButton)
+                return;
+            // A click that did not move is a tap: activate instead of swipe.
+            if (e.button === Qt.LeftButton && Math.abs(root.x) < 4 && Math.abs(e.y - startY) < 4) {
+                root.x = 0;
+                root.activate();
+                return;
+            }
             // Upstream's clearThreshold: a third of the way across commits the swipe.
             if (Math.abs(root.x) < root.implicitWidth * 0.3)
                 root.x = 0;
@@ -482,8 +527,8 @@ StyledRect {
                         Layout.fillWidth: true
                         label: modelData.text
                         onActivated: {
+                            root.close(); // before invoke(), see activate()
                             modelData.invoke();
-                            root.close();
                         }
                     }
                 }
@@ -500,6 +545,35 @@ StyledRect {
 
                         interval: 2000
                     }
+                }
+            }
+
+            StyledRect {
+                id: replyBox
+
+                anchors.left: summary.left
+                anchors.right: parent.right
+                anchors.top: actions.bottom
+                anchors.topMargin: Tokens.spacing.small
+                implicitHeight: 34
+                radius: Tokens.rounding.small
+                color: Colors.inputBg
+                opacity: root.expanded && root.hasReply ? 1 : 0
+                visible: opacity > 0
+
+                Behavior on opacity {
+                    Anim {
+                        type: Anim.DefaultEffects
+                    }
+                }
+
+                StyledTextField {
+                    id: replyField
+
+                    anchors.fill: parent
+                    font.family: root.uiFont
+                    placeholderText: root.modelData.inlineReplyPlaceholder || "Reply…"
+                    onAccepted: root.sendReply(text)
                 }
             }
         }

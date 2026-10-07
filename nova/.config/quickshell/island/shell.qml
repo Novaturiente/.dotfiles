@@ -12,12 +12,20 @@
 //   volume <arg>       "+5", "-5" or "mute"
 //   brightness <arg>   "up" or "down" (same steps as scripts/brightness.sh)
 // Modes: idle, volume, brightness, dashboard, tray, battery, wifi, bluetooth,
-// output, input. Click the island to open the dashboard; click outside or press
+// output, input, launcher (app search; apps from scripts/quickshell/applaunch.sh,
+// Up/Down/Enter, click to launch), power (Left/Right/Enter; everything but Lock
+// needs a second press within 3 s or a 1 s hold), polkit (password prompt; opens
+// by itself when an app asks for authentication). Click the island to open the dashboard; click outside or press
 // Esc to close (Esc on a sub-page goes back to the dashboard). On a dashboard
 // tile the icon toggles, the rest opens its picker.
 //
 // Volume changes made anywhere flash the volume page; brightness only flashes
 // when changed through here (sysfs backlight has no change signal).
+//
+// Notifications: the island is the notification server under Hyprland. One live
+// popup morphs the idle pill into the card; two or more stack at the right edge.
+// Resting the pointer on the idle pill for 300 ms opens `hub` (media player +
+// in-memory notification history); leaving it closes again.
 //
 // Adding a mode: add its name to `modes`, a Page below, and a line in `page`.
 import Quickshell
@@ -26,6 +34,9 @@ import Quickshell.Wayland
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import Quickshell.Services.SystemTray
+import Quickshell.Services.Polkit
+import Quickshell.Services.Notifications
+import Quickshell.Services.Mpris
 import Quickshell.Networking
 import Quickshell.Bluetooth
 import QtQuick
@@ -34,31 +45,113 @@ import common
 ShellRoot {
     id: root
 
-    readonly property var modes: ["idle", "volume", "brightness", "dashboard", "tray", "battery", "wifi", "bluetooth", "output", "input"]
+    readonly property var modes: ["idle", "volume", "brightness", "dashboard", "tray", "battery", "wifi", "bluetooth", "output", "input", "launcher", "power", "polkit", "clipboard", "hub"]
     readonly property var subPages: ["battery", "wifi", "bluetooth", "output", "input"]
     property string mode: "idle"
     // Anything bigger than the pill or an OSD: grabs the keyboard and closes on
     // a click outside.
-    readonly property bool expanded: !["idle", "volume", "brightness"].includes(mode)
+    // hub is hover-driven, so it neither grabs the keyboard nor catches clicks.
+    readonly property bool expanded: !["idle", "volume", "brightness", "hub"].includes(mode)
     // Which slider the OSD page shows; kept apart from `mode` so the page does
     // not switch icon while it fades out.
     property string osdKind: "volume"
-    // Auto-hide (Mod+B): the pill tucks up leaving a thin strip at the top edge;
-    // hovering the strip, an OSD or any open page brings it back.
+    // Auto-hide (Mod+B): the pill tucks up leaving a thin strip at the top edge.
+    // Like the DMS bar, touching the top edge anywhere brings it back; it stays
+    // while the pointer is on the edge or the pill, and tucks 250ms after it leaves.
     property bool autoHide: false
+    property bool edgeHovered: false
+    property bool pillHovered: false
     property bool hovered: false
-    readonly property bool tucked: autoHide && mode === "idle" && !hovered
+    readonly property bool pointerIn: edgeHovered || pillHovered
+    readonly property bool tucked: autoHide && mode === "idle" && !hovered && !notifInIsland
+
+    onPointerInChanged: {
+        if (pointerIn) {
+            leaveTimer.stop();
+            hovered = true;
+        } else {
+            leaveTimer.restart();
+        }
+    }
+
+    Timer {
+        id: leaveTimer
+        interval: 250
+        onTriggered: root.hovered = false
+    }
+
+    // Hover hub: 300 ms dwell on the idle pill opens it, leaving closes it.
+    // With no history and no media the hub would be empty, so the dashboard
+    // opens instead; a hover-opened dashboard also closes on leave (a clicked
+    // one, or one you navigate inside, stays).
+    property bool hoverOpened: false
+    readonly property bool hoverPage: mode === "hub" || (hoverOpened && mode === "dashboard")
+    onPillHoveredChanged: {
+        if (pillHovered) {
+            hubLeave.stop();
+            if (mode === "idle" && !notifInIsland)
+                hubDwell.restart();
+        } else {
+            hubDwell.stop();
+            if (hoverPage)
+                hubLeave.restart();
+        }
+    }
+    Timer {
+        id: hubDwell
+        interval: 300
+        onTriggered: {
+            if (root.mode !== "idle" || root.notifInIsland)
+                return;
+            const empty = root.history.length === 0 && root.player === null;
+            root.show(empty ? "dashboard" : "hub");
+            root.hoverOpened = true;
+        }
+    }
+    Timer {
+        id: hubLeave
+        interval: 300
+        // Not while typing a reply into a history entry.
+        onTriggered: if (root.hoverPage && !root.histTyping) root.show("idle")
+    }
 
     function show(m: string): void {
         if (!modes.includes(m))
             return;
+        hoverOpened = false;
+        histTyping = false;
         if (m === "volume" || m === "brightness") {
             osdKind = m;
             hideTimer.restart();
         } else {
             hideTimer.stop();
         }
+        // Leaving the password prompt (Esc, click outside) cancels the request.
+        if (mode === "polkit" && m !== "polkit" && polkit.flow && !polkit.flow.isCompleted)
+            polkit.flow.cancelAuthenticationRequest();
         mode = m;
+        // Text fields must own the keyboard while their page is up; everywhere
+        // else the island takes it back so Esc keeps working.
+        if (m === "launcher") {
+            appSearch.text = "";
+            appList.currentIndex = 0;
+            appLister.running = true;
+            Qt.callLater(() => appSearch.forceActiveFocus());
+        } else if (m === "polkit") {
+            polkitField.text = "";
+            Qt.callLater(() => polkitField.forceActiveFocus());
+        } else if (m === "clipboard") {
+            clipSearch.text = "";
+            clipList.currentIndex = 0;
+            clipLister.running = true;
+            Qt.callLater(() => clipSearch.forceActiveFocus());
+        } else {
+            if (m === "power") {
+                powerSel = 0;
+                powerArmed = -1;
+            }
+            island.forceActiveFocus();
+        }
     }
 
     // OSD pages only flash when nothing bigger is open.
@@ -108,6 +201,151 @@ ShellRoot {
             return;
         sink.audio.muted = false;
         sink.audio.volume = Math.max(0, Math.min(1, v));
+    }
+
+    // --- App launcher ------------------------------------------------------
+    readonly property string applaunch: Quickshell.env("HOME") + "/.dotfiles/scripts/quickshell/applaunch.sh"
+    property var apps: [] // [{id,name,icon,file}], most-used first
+    Process {
+        id: appLister
+        command: ["bash", root.applaunch, "list"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    root.apps = JSON.parse(text);
+                } catch (e) {
+                    root.apps = [];
+                }
+            }
+        }
+    }
+    function launchApp(file: string): void {
+        Quickshell.execDetached(["bash", applaunch, "launch", file]);
+        show("idle");
+    }
+
+    // --- Clipboard history (Mod+V) -----------------------------------------
+    // cliphist records every copy (text, images, copied files as uri-lists);
+    // the watcher lives and dies with the island, so it is Hyprland-only.
+    // Images are decoded once into clipCache for thumbnails.
+    // ponytail: clipCache is never pruned; add cleanup if it ever grows large.
+    readonly property string clipCache: Quickshell.env("HOME") + "/.cache/island/clip"
+    property var clips: [] // [{line, text, image}], newest first
+    Process {
+        command: ["wl-paste", "--watch", "cliphist", "store"]
+        running: true
+    }
+    Process {
+        id: clipLister
+        command: ["sh", "-c", "d=$1; mkdir -p \"$d\"; cliphist list | head -n 200 | while IFS= read -r l; do"
+            + " case $l in *'[[ binary data'*) id=${l%%\t*}; [ -s \"$d/$id\" ] || printf '%s\\n' \"$l\" | cliphist decode > \"$d/$id\";; esac;"
+            + " printf '%s\\n' \"$l\"; done", "sh", root.clipCache]
+        stdout: StdioCollector {
+            onStreamFinished: root.clips = text.split("\n").filter(l => l.includes("\t")).map(l => {
+                const tab = l.indexOf("\t");
+                const t = l.slice(tab + 1);
+                return { line: l, id: l.slice(0, tab), text: t, image: t.startsWith("[[ binary data") };
+            })
+        }
+    }
+    function pickClip(c: var): void {
+        // Copied files go back as text/uri-list so file managers paste files.
+        const type = c.text.startsWith("file://") ? "-t text/uri-list" : "";
+        Quickshell.execDetached(["sh", "-c", "printf '%s\\n' \"$1\" | cliphist decode | wl-copy " + type, "sh", c.line]);
+        show("idle");
+    }
+    Process {
+        id: clipDeleter
+        onExited: clipLister.running = true
+    }
+    function deleteClip(c: var): void {
+        clipDeleter.command = ["sh", "-c", "printf '%s\\n' \"$1\" | cliphist delete", "sh", c.line];
+        clipDeleter.running = true;
+    }
+
+    // --- Power menu --------------------------------------------------------
+    // Lock runs at once; the rest need a second press within 3 s, or a 1 s hold.
+    readonly property var powerActions: [
+        { icon: 0xF033E, label: "Lock", confirm: false, cmd: [Quickshell.env("HOME") + "/.dotfiles/scripts/lock.sh"] },
+        { icon: 0xF0343, label: "Log out", confirm: true, cmd: ["hyprctl", "dispatch", "hl.dsp.exit()"] },
+        { icon: 0xF04B2, label: "Suspend", confirm: true, cmd: ["systemctl", "suspend-then-hibernate"] },
+        { icon: 0xF0709, label: "Reboot", confirm: true, cmd: ["systemctl", "reboot"] },
+        { icon: 0xF0425, label: "Shut down", confirm: true, cmd: ["systemctl", "poweroff"] }
+    ]
+    property int powerSel: 0
+    property int powerArmed: -1
+    Timer {
+        id: armTimer
+        interval: 3000
+        onTriggered: root.powerArmed = -1
+    }
+    function powerPress(i: int, held: bool): void {
+        const a = powerActions[i];
+        if (a.confirm && !held && powerArmed !== i) {
+            powerArmed = i;
+            armTimer.restart();
+            return;
+        }
+        powerArmed = -1;
+        show("idle");
+        Quickshell.execDetached(a.cmd);
+    }
+
+    // --- Polkit ------------------------------------------------------------
+    // The island is the session's password agent. Only one agent can register,
+    // so DMS's is switched off under Hyprland (DMS_DISABLE_POLKIT=1, hyprland.lua).
+    PolkitAgent {
+        id: polkit
+        onAuthenticationRequestStarted: root.show("polkit")
+    }
+    Connections {
+        target: polkit.flow
+        function onIsCompletedChanged(): void {
+            if (polkit.flow?.isCompleted && root.mode === "polkit")
+                root.show("idle");
+        }
+    }
+
+    // --- Low-battery alerts (were DMS's dankBatteryAlerts plugin) -----------
+    // One notification per threshold per discharge; plugging in re-arms them.
+    property int batAlerted: 100
+    onBatPctChanged: checkBattery()
+    onChargingChanged: checkBattery()
+    function checkBattery(): void {
+        if (charging || batPct === 0) { // 0 = UPower not ready yet
+            batAlerted = 100;
+            return;
+        }
+        for (const [t, urgency, title] of [[20, "critical", "Battery critical"], [30, "normal", "Battery low"]]) {
+            if (batPct <= t && batAlerted > t) {
+                batAlerted = t;
+                Quickshell.execDetached(["notify-send", "-u", urgency, "-a", "Battery", "-i", "battery-caution", title, batPct + "% left, plug in the charger"]);
+                return;
+            }
+        }
+    }
+    // Charger plug/unplug. Keyed on onBattery, not charging: conservation mode
+    // holds the battery at "pending-charge" while plugged in.
+    Connections {
+        target: UPower
+        function onOnBatteryChanged(): void {
+            if (root.batPct === 0) // UPower not ready yet (startup)
+                return;
+            const on = UPower.onBattery;
+            Quickshell.execDetached(["notify-send", "-a", "Battery", "-i", on ? "battery" : "battery-charging",
+                on ? "Charger disconnected" : "Charger connected", root.batPct + "%"]);
+        }
+    }
+
+    // --- Idle suspend (battery only) ---------------------------------------
+    // 30 min idle on battery -> suspend-then-hibernate. swayidle still locks at
+    // 5 min and blanks at 10. Skipped while swayidle is off (Shift+Mute toggle
+    // = "suspend disabled") and while anything holds an idle inhibitor (video).
+    IdleMonitor {
+        timeout: 1800
+        respectInhibitors: true
+        onIsIdleChanged: if (isIdle && UPower.onBattery)
+            Quickshell.execDetached(["sh", "-c", "pgrep -x swayidle >/dev/null && systemctl suspend-then-hibernate"])
     }
 
     // --- Brightness --------------------------------------------------------
@@ -218,31 +456,120 @@ ShellRoot {
         return d.paired ? "Paired" : "Not paired";
     }
 
-    // --- DND / night mode --------------------------------------------------
-    // DND lives in the notifications daemon, night mode in DMS; both are read
-    // over their IPC whenever the dashboard opens or a tile is clicked.
+    // --- Notifications -----------------------------------------------------
+    // hyprland.lua stops quickshell-notifications.service before starting the
+    // island, so this server owns org.freedesktop.Notifications here (niri keeps
+    // that daemon). History is memory only, newest first, capped at 50.
+    // DND hides popups but still records history; critical always shows.
+    // A popup that times out is NOT closed: the app's notification stays alive
+    // in history (entry.n) so its actions still work; it is closed when the
+    // user swipes it, clears history, or it falls off the 50-entry cap.
     property bool dnd: false
-    property bool night: false
-    Process {
-        id: dndRead
-        command: ["qs", "-c", "notifications", "ipc", "call", "notifs", "status"]
-        stdout: StdioCollector {
-            onStreamFinished: root.dnd = text.startsWith("dnd on")
+    property var popups: [] // live Notification objects, oldest first
+    property var history: [] // [{key, n, app, summary, body, time}]; n null once closed
+    property int notifSeq: 0
+    readonly property bool notifInIsland: popups.length === 1 && mode === "idle"
+    // Players without a track title (e.g. a WhatsApp web tab) are not media.
+    readonly property var player: {
+        const ps = Mpris.players.values.filter(p => p.trackTitle);
+        return ps.find(p => p.isPlaying) ?? ps[0] ?? null;
+    }
+    NotificationServer {
+        keepOnReload: false
+        persistenceSupported: false
+        actionsSupported: true
+        bodySupported: true
+        bodyMarkupSupported: true
+        bodyHyperlinksSupported: true
+        imageSupported: true
+        inlineReplySupported: true
+        onNotification: n => {
+            n.tracked = true;
+            // Closed by anyone (app, user, action): drop the card, keep the text.
+            n.closed.connect(() => {
+                root.popups = root.popups.filter(x => x !== n);
+                root.history = root.history.map(h => h.n === n ? Object.assign({}, h, { n: null }) : h);
+            });
+            const all = [{ key: ++root.notifSeq, n: n, app: n.appName, desktop: n.desktopEntry, summary: n.summary, body: n.body.replace(/<[^>]*>/g, ""), time: new Date() }].concat(root.history);
+            root.history = all.slice(0, 50);
+            for (const h of all.slice(50))
+                h.n?.dismiss();
+            if (root.dnd && n.urgency !== NotificationUrgency.Critical)
+                return;
+            root.popups = root.popups.concat([n]);
         }
     }
+    // Called once a card's exit animation has finished. Timed-out cards stay
+    // alive for history; swiped ones are closed.
+    function dropNotif(n: var, expired: bool): void {
+        popups = popups.filter(x => x !== n);
+        if (n && !expired)
+            n.dismiss();
+    }
+    function clearHistory(): void {
+        const old = history;
+        history = [];
+        for (const h of old)
+            h.n?.dismiss();
+    }
+    function histActions(n: var): var {
+        const out = [];
+        if (n)
+            for (let i = 0; i < n.actions.length; i++)
+                if (n.actions[i].identifier !== "default")
+                    out.push(n.actions[i]);
+        return out;
+    }
+    // Run an action from history; the entry goes away like a used popup.
+    function invokeHist(h: var, a: var): void {
+        const n = h.n;
+        if (!n || !a)
+            return;
+        history = history.filter(x => x.key !== h.key);
+        const resident = n.resident;
+        a.invoke();
+        if (resident)
+            n.dismiss();
+    }
+    // Click on a history entry: default action if the app still offers one,
+    // otherwise focus the sender's window (works after the app closed it too).
+    function histDefault(h: var): void {
+        const n = h.n;
+        if (n)
+            for (let i = 0; i < n.actions.length; i++)
+                if (n.actions[i].identifier === "default")
+                    return invokeHist(h, n.actions[i]);
+        Quickshell.execDetached(["bash", Quickshell.env("HOME") + "/.dotfiles/scripts/wm.sh", "focus-app", h.desktop ?? "", h.app ?? ""]);
+        history = history.filter(x => x.key !== h.key);
+        n?.dismiss();
+    }
+    // Expanded history entry: ✕ removes it (and closes it for the app).
+    function dismissHist(h: var): void {
+        history = history.filter(x => x.key !== h.key);
+        h.n?.dismiss();
+    }
+    // Inline reply from history (KDE Connect SMS etc.).
+    property bool histTyping: false
+    function replyHist(h: var, text: string): void {
+        if (!text || !h.n)
+            return;
+        const n = h.n;
+        history = history.filter(x => x.key !== h.key);
+        n.sendInlineReply(text);
+        histTyping = false;
+    }
+
+    // --- Night mode --------------------------------------------------------
+    // A running hyprsunset (4000K); read when the dashboard opens or the tile is clicked.
+    property bool night: false
     Process {
         id: nightRead
-        command: ["dms", "ipc", "call", "night", "status"]
-        stdout: StdioCollector {
-            onStreamFinished: root.night = /: enabled/.test(text)
-        }
+        command: ["pgrep", "-x", "hyprsunset"]
+        onExited: code => root.night = code === 0
     }
     Process {
         id: ipcToggle
-        onExited: {
-            dndRead.running = true;
-            nightRead.running = true;
-        }
+        onExited: nightRead.running = true
     }
     function runToggle(cmd: var): void {
         ipcToggle.command = cmd;
@@ -251,7 +578,6 @@ ShellRoot {
 
     onModeChanged: {
         if (mode === "dashboard") {
-            dndRead.running = true;
             nightRead.running = true;
             brightRead.running = true;
         }
@@ -286,11 +612,33 @@ ShellRoot {
                     root.sink.audio.muted = !root.muted;
                 return;
             }
+            if (arg === "micmute") {
+                if (root.source?.audio)
+                    root.source.audio.muted = !root.source.audio.muted;
+                return;
+            }
             root.setVolume(root.volume + parseFloat(arg) / 100);
         }
         function brightness(arg: string): void {
             root.stepBrightness(arg);
         }
+        function getWallpaper(): string {
+            return root.wallpaper;
+        }
+        function setWallpaper(path: string): void {
+            wpFile.setText(path);
+            root.wallpaper = path;
+        }
+    }
+
+    // --- Wallpaper ---------------------------------------------------------
+    // One fixed image (no shuffle). Path lives in ~/.local/state/island/wallpaper;
+    // the Mod+Alt+W picker and lock.sh go through getWallpaper/setWallpaper.
+    property string wallpaper: ""
+    FileView {
+        id: wpFile
+        path: Quickshell.env("HOME") + "/.local/state/island/wallpaper"
+        onLoaded: root.wallpaper = text().trim()
     }
 
     // --- Building blocks ---------------------------------------------------
@@ -418,6 +766,27 @@ ShellRoot {
             anchors.rightMargin: Tokens.padding.small
             text: String.fromCodePoint(0xF0142)
             color: tile.ink
+        }
+    }
+
+    // Small rounded button on history entries (actions, ✕, Copy).
+    component HistChip: Rectangle {
+        id: chip
+        property string label
+        signal clicked
+        width: chipLabel.implicitWidth + Tokens.padding.medium * 2
+        height: chipLabel.implicitHeight + Tokens.padding.small
+        radius: height / 2
+        color: Colors.surface2
+        T {
+            id: chipLabel
+            anchors.centerIn: parent
+            text: chip.label
+            font.pixelSize: Tokens.fontSize.smaller
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: chip.clicked()
         }
     }
 
@@ -732,6 +1101,32 @@ ShellRoot {
     }
 
     // --- Windows -----------------------------------------------------------
+    // Wallpaper, one per screen. Bottom layer so it sits above DMS's own
+    // wallpaper (Background) while DMS still runs, and below every window.
+    Variants {
+        model: Quickshell.screens
+        PanelWindow {
+            required property var modelData
+            screen: modelData
+            anchors.top: true
+            anchors.bottom: true
+            anchors.left: true
+            anchors.right: true
+            exclusionMode: ExclusionMode.Ignore
+            color: Colors.crust
+            WlrLayershell.layer: WlrLayer.Bottom
+            WlrLayershell.namespace: "island-wallpaper"
+            mask: Region {}
+            Image {
+                anchors.fill: parent
+                source: root.wallpaper ? "file://" + root.wallpaper : ""
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+                sourceSize: Qt.size(parent.width, parent.height)
+            }
+        }
+    }
+
     // Invisible strip that only reserves space at the top for the pill.
     // The island window itself is fullscreen and ignores exclusion.
     PanelWindow {
@@ -739,10 +1134,70 @@ ShellRoot {
         anchors.left: true
         anchors.right: true
         implicitHeight: 1
-        exclusiveZone: root.autoHide ? 0 : 42
+        exclusiveZone: root.autoHide ? 0 : 34
         color: "transparent"
         WlrLayershell.namespace: "island-spacer"
         mask: Region {}
+    }
+
+    // Auto-hide reveal trigger: full-width 2px strip on the top edge, on the
+    // Overlay layer so nothing above it can take the pointer.
+    PanelWindow {
+        visible: root.autoHide
+        anchors.top: true
+        anchors.left: true
+        anchors.right: true
+        implicitHeight: 2
+        exclusionMode: ExclusionMode.Ignore
+        color: "transparent"
+        WlrLayershell.layer: WlrLayer.Overlay
+        WlrLayershell.namespace: "island-edge"
+
+        Item {
+            anchors.fill: parent
+            HoverHandler {
+                onHoveredChanged: root.edgeHovered = hovered
+            }
+        }
+    }
+
+    // Two or more popups (or any while the island is busy) stack at the right
+    // edge, out of the way of whatever is in the middle.
+    PanelWindow {
+        visible: !root.notifInIsland && root.popups.length > 0
+        anchors.top: true
+        anchors.right: true
+        margins.top: Tokens.padding.medium
+        margins.right: Tokens.padding.medium
+        implicitWidth: 430
+        implicitHeight: Math.max(1, notifStack.implicitHeight)
+        color: "transparent"
+        exclusionMode: ExclusionMode.Normal
+        exclusiveZone: 0
+        WlrLayershell.layer: WlrLayer.Overlay
+        WlrLayershell.namespace: "island-notifications"
+        // OnDemand: clicking a card's inline reply field gives it the keyboard.
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+
+        Column {
+            id: notifStack
+            width: parent.width
+            spacing: Tokens.spacing.medium
+            move: Transition {
+                Anim {
+                    property: "y"
+                }
+            }
+            Repeater {
+                model: ScriptModel {
+                    values: root.notifInIsland ? [] : root.popups
+                }
+                NotifCard {
+                    implicitWidth: 430
+                    onDismissed: root.dropNotif(modelData, expired)
+                }
+            }
+        }
     }
 
     PanelWindow {
@@ -759,9 +1214,14 @@ ShellRoot {
         color: "transparent"
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.namespace: "island"
-        WlrLayershell.keyboardFocus: root.expanded ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+        // A hover-opened dashboard keeps the pill-only mask (so leaving the pill
+        // registers and closes it) and leaves the keyboard alone; click to pin it.
+        // A notification in the pill may carry an inline reply field: OnDemand
+        // lets a click on it take the keyboard without grabbing it otherwise.
+        WlrLayershell.keyboardFocus: root.expanded && !root.hoverOpened ? WlrKeyboardFocus.Exclusive
+            : root.notifInIsland || root.mode === "hub" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         mask: Region {
-            item: root.expanded ? catcher : island
+            item: root.expanded && !root.hoverOpened ? catcher : island
         }
 
         MouseArea {
@@ -773,7 +1233,8 @@ ShellRoot {
         Rectangle {
             id: island
 
-            readonly property Item page: ({
+            readonly property Item page: root.notifInIsland ? notifPage : ({
+                    hub: hubPage,
                     idle: idlePage,
                     volume: osdPage,
                     brightness: osdPage,
@@ -783,11 +1244,15 @@ ShellRoot {
                     wifi: wifiPage,
                     bluetooth: btPage,
                     output: outPage,
-                    input: inPage
+                    input: inPage,
+                    launcher: launcherPage,
+                    power: powerPage,
+                    polkit: polkitPage,
+                    clipboard: clipPage
                 })[root.mode]
 
             anchors.top: parent.top
-            anchors.topMargin: root.tucked ? 4 - height : Tokens.spacing.small
+            anchors.topMargin: root.tucked ? 4 - height : 0
             anchors.horizontalCenter: parent.horizontalCenter
 
             Behavior on anchors.topMargin {
@@ -797,7 +1262,7 @@ ShellRoot {
             }
 
             HoverHandler {
-                onHoveredChanged: root.hovered = hovered
+                onHoveredChanged: root.pillHovered = hovered
             }
             width: page.implicitWidth + Tokens.padding.large * 2
             height: page.implicitHeight + Tokens.padding.small * 2
@@ -808,6 +1273,19 @@ ShellRoot {
             focus: true
 
             Keys.onEscapePressed: root.show(root.subPages.includes(root.mode) ? "dashboard" : "idle")
+            Keys.onPressed: e => {
+                if (root.mode !== "power")
+                    return;
+                if (e.key === Qt.Key_Left)
+                    root.powerSel = Math.max(0, root.powerSel - 1);
+                else if (e.key === Qt.Key_Right)
+                    root.powerSel = Math.min(root.powerActions.length - 1, root.powerSel + 1);
+                else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter)
+                    root.powerPress(root.powerSel, false);
+                else
+                    return;
+                e.accepted = true;
+            }
 
             Behavior on width {
                 Anim {
@@ -824,7 +1302,8 @@ ShellRoot {
             // clicks from reaching the catcher behind.
             MouseArea {
                 anchors.fill: parent
-                onClicked: if (!root.expanded) root.show("dashboard")
+                // show() clears hoverOpened, so a click pins a hover-opened dashboard.
+                onClicked: if (!root.expanded || root.hoverOpened) root.show("dashboard")
             }
 
             Page {
@@ -852,6 +1331,267 @@ ShellRoot {
                 }
             }
 
+            // A single live notification, drawn inside the pill.
+            Page {
+                id: notifPage
+                active: island.page === notifPage
+
+                Item {
+                    width: 430
+                    height: islandCard.implicitHeight
+                    clip: true // the card slides in from the right
+                    Column {
+                        id: islandCard
+                        width: 430
+                        Repeater {
+                            model: ScriptModel {
+                                values: root.notifInIsland ? root.popups : []
+                            }
+                            NotifCard {
+                                implicitWidth: 430
+                                border.color: critical ? Colors.red : "transparent"
+                                onDismissed: root.dropNotif(modelData, expired)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Hover hub: media player (if any) above notification history.
+            Page {
+                id: hubPage
+                active: island.page === hubPage
+
+                Column {
+                    width: 448
+                    spacing: Tokens.spacing.small
+                    topPadding: Tokens.padding.small
+                    bottomPadding: Tokens.padding.small
+
+                    Rectangle {
+                        visible: root.player !== null
+                        width: 448
+                        height: 72
+                        radius: Tokens.rounding.large
+                        color: Colors.surface0
+                        Image {
+                            id: art
+                            x: Tokens.padding.small
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 56
+                            height: 56
+                            source: root.player?.trackArtUrl ?? ""
+                            sourceSize: Qt.size(112, 112)
+                            fillMode: Image.PreserveAspectCrop
+                            asynchronous: true
+                        }
+                        Column {
+                            x: art.x + art.width + Tokens.spacing.medium
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 448 - x - 120
+                            T {
+                                anchors.verticalCenter: undefined
+                                width: parent.width
+                                elide: Text.ElideRight
+                                font.bold: true
+                                text: root.player?.trackTitle || root.player?.identity || ""
+                            }
+                            T {
+                                anchors.verticalCenter: undefined
+                                width: parent.width
+                                elide: Text.ElideRight
+                                color: Colors.subtext0
+                                font.pixelSize: Tokens.fontSize.smaller
+                                text: root.player?.trackArtist ?? ""
+                            }
+                        }
+                        Row {
+                            anchors.right: parent.right
+                            anchors.rightMargin: Tokens.padding.medium
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: Tokens.spacing.medium
+                            T {
+                                text: root.glyph(0xF04AE)
+                                font.pixelSize: Tokens.fontSize.larger
+                                opacity: root.player?.canGoPrevious ? 1 : 0.4
+                                MouseArea {
+                                    anchors.fill: parent
+                                    anchors.margins: -6
+                                    onClicked: root.player?.previous()
+                                }
+                            }
+                            T {
+                                text: root.glyph(root.player?.isPlaying ? 0xF03E4 : 0xF040A)
+                                font.pixelSize: Tokens.fontSize.larger
+                                color: Colors.accent
+                                MouseArea {
+                                    anchors.fill: parent
+                                    anchors.margins: -6
+                                    onClicked: root.player?.togglePlaying()
+                                }
+                            }
+                            T {
+                                text: root.glyph(0xF04AD)
+                                font.pixelSize: Tokens.fontSize.larger
+                                opacity: root.player?.canGoNext ? 1 : 0.4
+                                MouseArea {
+                                    anchors.fill: parent
+                                    anchors.margins: -6
+                                    onClicked: root.player?.next()
+                                }
+                            }
+                        }
+                    }
+
+                    Item {
+                        width: 448
+                        height: 24
+                        T {
+                            text: "Notifications"
+                            font.bold: true
+                        }
+                        T {
+                            anchors.right: parent.right
+                            visible: root.history.length > 0
+                            text: "Clear"
+                            color: Colors.accent
+                            MouseArea {
+                                anchors.fill: parent
+                                anchors.margins: -6
+                                onClicked: root.clearHistory()
+                            }
+                        }
+                    }
+
+                    Scroll {
+                        visible: root.history.length > 0
+                        Repeater {
+                            model: root.history
+                            Rectangle {
+                                id: hrow
+                                required property var modelData
+                                property bool open: false
+                                width: 448
+                                height: hcol.implicitHeight + Tokens.padding.small * 2
+                                radius: Tokens.rounding.medium
+                                color: open ? Colors.surface1 : Colors.surface0
+                                // Click = default action, else focus the sender's window.
+                                // Right click = show the full text.
+                                MouseArea {
+                                    anchors.fill: parent
+                                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: e => {
+                                        if (e.button === Qt.RightButton) {
+                                            hrow.open = !hrow.open;
+                                            // Ready to type straight away, like the popup card.
+                                            if (hrow.open)
+                                                Qt.callLater(() => { if (histReply.visible) histReply.forceActiveFocus(); });
+                                        } else
+                                            root.histDefault(hrow.modelData);
+                                    }
+                                }
+                                Column {
+                                    id: hcol
+                                    x: Tokens.padding.medium
+                                    y: Tokens.padding.small
+                                    width: parent.width - Tokens.padding.medium * 2
+                                    T {
+                                        anchors.verticalCenter: undefined
+                                        width: parent.width
+                                        elide: Text.ElideRight
+                                        font.pixelSize: Tokens.fontSize.smaller
+                                        color: Colors.subtext0
+                                        text: (modelData.app || "?") + " · " + Qt.formatTime(modelData.time, "h:mm AP")
+                                    }
+                                    T {
+                                        anchors.verticalCenter: undefined
+                                        width: parent.width
+                                        elide: Text.ElideRight
+                                        wrapMode: hrow.open ? Text.Wrap : Text.NoWrap
+                                        font.bold: true
+                                        text: modelData.summary
+                                    }
+                                    T {
+                                        anchors.verticalCenter: undefined
+                                        visible: text !== ""
+                                        width: parent.width
+                                        wrapMode: Text.Wrap
+                                        maximumLineCount: hrow.open ? 1000 : 2
+                                        elide: Text.ElideRight
+                                        textFormat: Text.PlainText
+                                        color: Colors.subtext0
+                                        text: modelData.body
+                                    }
+                                    Flow {
+                                        width: parent.width
+                                        spacing: Tokens.spacing.small
+                                        topPadding: visible ? Tokens.spacing.small : 0
+                                        visible: chips.count > 0 || hrow.open
+                                        // Expanded: ✕ first, like the popup card.
+                                        HistChip {
+                                            visible: hrow.open
+                                            label: "✕"
+                                            onClicked: root.dismissHist(hrow.modelData)
+                                        }
+                                        Repeater {
+                                            id: chips
+                                            model: root.histActions(hrow.modelData.n)
+                                            HistChip {
+                                                required property var modelData
+                                                label: modelData.text
+                                                onClicked: root.invokeHist(hrow.modelData, modelData)
+                                            }
+                                        }
+                                        HistChip {
+                                            id: copyChip
+                                            visible: hrow.open
+                                            label: copyTimer.running ? "Copied" : "Copy"
+                                            onClicked: {
+                                                Quickshell.clipboardText = hrow.modelData.body;
+                                                copyTimer.restart();
+                                            }
+                                            Timer {
+                                                id: copyTimer
+                                                interval: 2000
+                                            }
+                                        }
+                                    }
+                                    Item {
+                                        width: parent.width
+                                        height: visible ? 34 + Tokens.spacing.small : 0
+                                        visible: hrow.open && (hrow.modelData.n?.hasInlineReply ?? false)
+                                        Rectangle {
+                                            anchors.bottom: parent.bottom
+                                            width: parent.width
+                                            height: 34
+                                            radius: Tokens.rounding.small
+                                            color: Colors.inputBg
+                                            StyledTextField {
+                                                id: histReply
+                                                anchors.fill: parent
+                                                font.family: "JetBrainsMono Nerd Font"
+                                                placeholderText: hrow.modelData.n?.inlineReplyPlaceholder || "Reply…"
+                                                // Keep the hub open on leave only once something is typed.
+                                                onActiveFocusChanged: root.histTyping = activeFocus && length > 0
+                                                onTextChanged: root.histTyping = activeFocus && length > 0
+                                                onAccepted: root.replyHist(hrow.modelData, text)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    T {
+                        anchors.verticalCenter: undefined
+                        visible: root.history.length === 0
+                        text: "No notifications"
+                        color: Colors.subtext0
+                    }
+                }
+            }
+
             Page {
                 id: osdPage
                 active: island.page === osdPage
@@ -871,6 +1611,311 @@ ShellRoot {
                     T {
                         text: Math.round(osdPage.value * 100) + "%"
                         width: 40
+                    }
+                }
+            }
+
+            Page {
+                id: launcherPage
+                active: island.page === launcherPage
+
+                Column {
+                    spacing: Tokens.spacing.small
+                    topPadding: Tokens.padding.small
+                    bottomPadding: Tokens.padding.small
+
+                    Rectangle {
+                        width: 480
+                        height: 44
+                        radius: Tokens.rounding.medium
+                        color: Colors.inputBg
+                        Row {
+                            anchors.fill: parent
+                            anchors.leftMargin: Tokens.padding.medium
+                            spacing: Tokens.spacing.small
+                            T {
+                                text: root.glyph(0xF0349)
+                                color: Colors.accent
+                                font.pixelSize: Tokens.fontSize.larger
+                            }
+                            StyledTextField {
+                                id: appSearch
+                                width: 480 - Tokens.padding.medium * 2 - 28
+                                anchors.verticalCenter: parent.verticalCenter
+                                font.family: "JetBrainsMono Nerd Font"
+                                font.pixelSize: Tokens.fontSize.normal
+                                background: null
+                                placeholderText: "Search applications…"
+                                onTextChanged: appList.currentIndex = 0
+                                Keys.onPressed: e => {
+                                    if (e.key === Qt.Key_Escape) {
+                                        root.show("idle");
+                                    } else if (e.key === Qt.Key_Down) {
+                                        appList.incrementCurrentIndex();
+                                    } else if (e.key === Qt.Key_Up) {
+                                        appList.decrementCurrentIndex();
+                                    } else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) {
+                                        const a = appList.model[appList.currentIndex];
+                                        if (a)
+                                            root.launchApp(a.file);
+                                    } else {
+                                        return;
+                                    }
+                                    e.accepted = true;
+                                }
+                            }
+                        }
+                    }
+
+                    ListView {
+                        id: appList
+                        width: 480
+                        height: Math.min(count, 8) * 44
+                        clip: true
+                        boundsBehavior: Flickable.StopAtBounds
+                        model: {
+                            const q = appSearch.text.toLowerCase();
+                            return q === "" ? root.apps : root.apps.filter(a => a.name.toLowerCase().includes(q));
+                        }
+                        onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
+                        delegate: Rectangle {
+                            required property int index
+                            required property var modelData
+                            width: ListView.view.width
+                            height: 44
+                            radius: Tokens.rounding.medium
+                            color: index === appList.currentIndex ? Colors.surface1 : "transparent"
+                            Row {
+                                x: Tokens.padding.medium
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: Tokens.spacing.medium
+                                Image {
+                                    width: 28
+                                    height: 28
+                                    source: Quickshell.iconPath(modelData.icon, "application-x-executable")
+                                    sourceSize: Qt.size(28, 28)
+                                    fillMode: Image.PreserveAspectFit
+                                }
+                                T {
+                                    text: modelData.name
+                                    width: 400
+                                    elide: Text.ElideRight
+                                }
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onEntered: appList.currentIndex = index
+                                onClicked: root.launchApp(modelData.file)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Page {
+                id: clipPage
+                active: island.page === clipPage
+
+                Column {
+                    spacing: Tokens.spacing.small
+                    topPadding: Tokens.padding.small
+                    bottomPadding: Tokens.padding.small
+
+                    Rectangle {
+                        width: 480
+                        height: 44
+                        radius: Tokens.rounding.medium
+                        color: Colors.inputBg
+                        Row {
+                            anchors.fill: parent
+                            anchors.leftMargin: Tokens.padding.medium
+                            spacing: Tokens.spacing.small
+                            T {
+                                text: root.glyph(0xF0147)
+                                color: Colors.accent
+                                font.pixelSize: Tokens.fontSize.larger
+                            }
+                            StyledTextField {
+                                id: clipSearch
+                                width: 480 - Tokens.padding.medium * 2 - 28
+                                anchors.verticalCenter: parent.verticalCenter
+                                font.family: "JetBrainsMono Nerd Font"
+                                font.pixelSize: Tokens.fontSize.normal
+                                background: null
+                                placeholderText: "Search clipboard…  (Shift+Del deletes)"
+                                onTextChanged: clipList.currentIndex = 0
+                                Keys.onPressed: e => {
+                                    const c = clipList.model[clipList.currentIndex];
+                                    if (e.key === Qt.Key_Escape) {
+                                        root.show("idle");
+                                    } else if (e.key === Qt.Key_Down) {
+                                        clipList.incrementCurrentIndex();
+                                    } else if (e.key === Qt.Key_Up) {
+                                        clipList.decrementCurrentIndex();
+                                    } else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) {
+                                        if (c)
+                                            root.pickClip(c);
+                                    } else if (e.key === Qt.Key_Delete && (e.modifiers & Qt.ShiftModifier)) {
+                                        if (c)
+                                            root.deleteClip(c);
+                                    } else {
+                                        return;
+                                    }
+                                    e.accepted = true;
+                                }
+                            }
+                        }
+                    }
+
+                    ListView {
+                        id: clipList
+                        width: 480
+                        // Same cap as 7 text rows; image rows are taller so thumbnails read.
+                        height: Math.min(contentHeight, 7 * 56)
+                        clip: true
+                        boundsBehavior: Flickable.StopAtBounds
+                        model: {
+                            const q = clipSearch.text.toLowerCase();
+                            return q === "" ? root.clips : root.clips.filter(c => c.text.toLowerCase().includes(q));
+                        }
+                        onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
+                        delegate: Rectangle {
+                            required property int index
+                            required property var modelData
+                            width: ListView.view.width
+                            height: modelData.image ? 112 : 56
+                            radius: Tokens.rounding.medium
+                            color: index === clipList.currentIndex ? Colors.surface1 : "transparent"
+                            Row {
+                                x: Tokens.padding.medium
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: Tokens.spacing.medium
+                                Image {
+                                    visible: modelData.image
+                                    width: visible ? 260 : 0
+                                    height: 100
+                                    source: modelData.image ? "file://" + root.clipCache + "/" + modelData.id : ""
+                                    sourceSize: Qt.size(520, 200)
+                                    fillMode: Image.PreserveAspectFit
+                                    asynchronous: true
+                                }
+                                T {
+                                    text: modelData.image ? modelData.text.replace(/^\[\[ binary data |\s*\]\]$/g, "")
+                                        : modelData.text.startsWith("file://") ? root.glyph(0xF0214) + "  " + modelData.text.replace(/^file:\/\//, "")
+                                        : modelData.text
+                                    width: modelData.image ? 170 : 440
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    elide: Text.ElideRight
+                                    maximumLineCount: 1
+                                    color: modelData.image ? Colors.subtext0 : Colors.fg
+                                }
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                onEntered: clipList.currentIndex = index
+                                onClicked: root.pickClip(modelData)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Page {
+                id: powerPage
+                active: island.page === powerPage
+
+                Row {
+                    spacing: Tokens.spacing.small
+                    Repeater {
+                        model: root.powerActions
+                        delegate: Rectangle {
+                            id: pbtn
+                            required property int index
+                            required property var modelData
+                            readonly property bool armed: root.powerArmed === index
+                            width: 88
+                            height: 76
+                            radius: Tokens.rounding.medium
+                            color: armed ? Colors.red : index === root.powerSel ? Colors.surface1 : "transparent"
+                            Column {
+                                anchors.centerIn: parent
+                                spacing: Tokens.spacing.extraSmall
+                                T {
+                                    anchors.verticalCenter: undefined
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: root.glyph(pbtn.modelData.icon)
+                                    font.pixelSize: Tokens.fontSize.large
+                                    color: pbtn.armed ? Colors.crust : Colors.fg
+                                }
+                                T {
+                                    anchors.verticalCenter: undefined
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: pbtn.armed ? "Again?" : pbtn.modelData.label
+                                    font.pixelSize: Tokens.fontSize.small
+                                    color: pbtn.armed ? Colors.crust : Colors.subtext0
+                                }
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                pressAndHoldInterval: 1000
+                                onEntered: root.powerSel = pbtn.index
+                                onClicked: root.powerPress(pbtn.index, false)
+                                onPressAndHold: root.powerPress(pbtn.index, true)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Page {
+                id: polkitPage
+                active: island.page === polkitPage
+                readonly property var flow: polkit.flow
+
+                Column {
+                    spacing: Tokens.spacing.small
+                    topPadding: Tokens.padding.small
+                    bottomPadding: Tokens.padding.small
+                    T {
+                        anchors.verticalCenter: undefined
+                        text: root.glyph(0xF033E) + "  Authentication required"
+                        font.bold: true
+                    }
+                    T {
+                        anchors.verticalCenter: undefined
+                        width: 448
+                        wrapMode: Text.Wrap
+                        text: polkitPage.flow?.message ?? ""
+                        color: Colors.subtext0
+                    }
+                    Rectangle {
+                        width: 448
+                        height: 40
+                        radius: Tokens.rounding.small
+                        color: Colors.inputBg
+                        StyledTextField {
+                            id: polkitField
+                            anchors.fill: parent
+                            font.family: "JetBrainsMono Nerd Font"
+                            background: null
+                            echoMode: polkitPage.flow?.responseVisible ? TextInput.Normal : TextInput.Password
+                            placeholderText: polkitPage.flow?.inputPrompt || "Password"
+                            onAccepted: {
+                                polkitPage.flow?.submit(text);
+                                text = "";
+                            }
+                        }
+                    }
+                    T {
+                        anchors.verticalCenter: undefined
+                        width: 448
+                        wrapMode: Text.Wrap
+                        visible: text !== ""
+                        text: polkitPage.flow?.failed ? "Wrong password, try again" : (polkitPage.flow?.supplementaryMessage ?? "")
+                        color: polkitPage.flow?.failed || polkitPage.flow?.supplementaryIsError ? Colors.red : Colors.subtext0
                     }
                 }
             }
@@ -982,14 +2027,16 @@ ShellRoot {
                             icon: root.glyph(on ? 0xF009B : 0xF009A)
                             title: "Do not disturb"
                             sub: on ? "On" : "Off"
-                            onToggled: root.runToggle(["qs", "-c", "notifications", "ipc", "call", "notifs", "dnd"])
+                            onToggled: root.dnd = !root.dnd
                         }
                         Tile {
                             on: root.night
                             icon: root.glyph(0xF0594)
                             title: "Night mode"
                             sub: on ? "On" : "Off"
-                            onToggled: root.runToggle(["dms", "ipc", "call", "night", "toggle"])
+                            // pkill returns before hyprsunset exits; wait it out so the
+                            // pgrep re-read sees the new state.
+                            onToggled: root.runToggle(["sh", "-c", "if pkill -x hyprsunset; then for i in $(seq 20); do pgrep -x hyprsunset >/dev/null || break; sleep 0.1; done; else setsid -f hyprsunset -t 4000 >/dev/null 2>&1; sleep 0.2; fi"])
                         }
                     }
                     Tray {}
@@ -1153,6 +2200,37 @@ ShellRoot {
                             icon: root.glyph(0xF140B)
                             value: (root.bat?.changeRate ?? 0).toFixed(1) + " W"
                             label: "Power"
+                        }
+                    }
+                    // Power profile (tlp-pd serves the power-profiles D-Bus API).
+                    Row {
+                        spacing: Tokens.spacing.small
+                        Repeater {
+                            model: [
+                                { p: PowerProfile.PowerSaver, icon: 0xF032A, label: "Saver" },
+                                { p: PowerProfile.Balanced, icon: 0xF04C5, label: "Balanced" },
+                                { p: PowerProfile.Performance, icon: 0xF0E7A, label: "Performance" }
+                            ]
+                            delegate: Rectangle {
+                                id: prof
+                                required property var modelData
+                                readonly property bool on: PowerProfiles.profile === modelData.p
+                                visible: modelData.p !== PowerProfile.Performance || PowerProfiles.hasPerformanceProfile
+                                width: 140
+                                height: 44
+                                radius: Tokens.rounding.large
+                                color: on ? Colors.accent : Colors.surface0
+                                T {
+                                    anchors.centerIn: parent
+                                    text: root.glyph(prof.modelData.icon) + "  " + prof.modelData.label
+                                    color: prof.on ? Colors.base : Colors.fg
+                                    font.bold: prof.on
+                                }
+                                StateLayer {
+                                    radius: prof.radius
+                                    onClicked: PowerProfiles.profile = prof.modelData.p
+                                }
+                            }
                         }
                     }
                     Repeater {

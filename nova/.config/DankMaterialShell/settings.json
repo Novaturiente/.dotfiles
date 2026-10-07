@@ -79,7 +79,9 @@
   "popupTransparency": 0.5,
   "dmsWindowsFloatingSeeded": [
     "niri",
-    "niri"
+    "niri",
+    "hyprland",
+    "hyprland"
   ],
   "widgetColorMode": "colorful",
   "niriLayoutRadiusOverride": 23,
@@ -250,7 +252,9 @@
   "notificationShowTimeoutBar": true,
   "osdAlwaysShowValue": true,
   "osdPosition": 4,
+  "osdVolumeEnabled": false,
   "osdMediaPlaybackEnabled": true,
+  "osdBrightnessEnabled": false,
   "osdPowerProfileEnabled": true,
   "barConfigs": [
     {
@@ -406,7 +410,7 @@
       "autoHide": false,
       "autoHideDelay": 250,
       "openOnOverview": true,
-      "visible": true,
+      "visible": false,
       "popupGapsAuto": true,
       "popupGapsManual": 4,
       "maximizeWidgetText": false,
