@@ -19,7 +19,7 @@
     "npm:@narumitw/pi-btw",
     "npm:@everyx/pi-read-doc",
     "npm:@juicesharp/rpiv-todo",
-    "npm:pi-background-tasks",
+    "npm:@aliou/pi-processes",
     "npm:pi-simplify",
     "npm:pi-agent-browser-native",
     "npm:@vndv/pi-codegraph",
