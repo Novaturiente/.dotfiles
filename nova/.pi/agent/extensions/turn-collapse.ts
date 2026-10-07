@@ -2,7 +2,8 @@
  * Collapse finished turns: once the agent finishes (or a newer prompt exists), each turn shows only
  *   your prompt · "▸ N tool calls · thinking … click to expand" · final reply text (thinking stripped).
  * User-facing parts stay visible and split the turn into several collapsed sections:
- *   text right before a question tool (ask_user_question etc.), the question/answer itself, the final reply.
+ *   the reply ending each agent run (last text before a message with no tool call), background-task
+ *   notifications, text right before a question tool (ask_user_question etc.), the question/answer itself.
  * Click the ▸ line to expand, click ▾ to collapse again. Alt+O flips every past turn.
  * Fullscreen tuiMode only. Nothing is removed: this only changes what the chat container renders.
  * ponytail: patches pi's chat Container.render (internal); a pi update may need this revisited.
@@ -59,11 +60,24 @@ const hasThinking = (a: any) => a.lastMessage?.content?.some((c: any) => c.type 
 // tools that talk to the user; ponytail: name heuristic, extend the regex for new question tools
 const isAsk = (c: any) => c instanceof ToolExecutionComponent && /ask_user|question/i.test((c as any).toolName ?? "");
 
-/** User-facing parts of a turn: final reply, question tools, and the text that introduced each question. */
+const hasCall = (a: any) => a.lastMessage?.content?.some((c: any) => c.type === "toolCall");
+const isNotice = (c: any) => c instanceof CustomMessageComponent && (c as any).message?.customType === "background-task-notification";
+
+/** User-facing parts of a turn: the reply ending each agent run,
+ *  question tools, and the text that introduced each question. */
 function anchorsOf(rest: any[]): Set<any> {
-	const final = rest.filter(isAssistant).reverse().find((a) => textOf(a.lastMessage));
-	const anchors = new Set<any>(final ? [final] : []);
+	const anchors = new Set<any>();
+	let lastText: any;
 	rest.forEach((c, i) => {
+		if (isAssistant(c)) {
+			if (textOf(c.lastMessage)) lastText = c;
+			// no tool call → run ends here; its last text-bearing message is for the user
+			if (!hasCall(c) && lastText) {
+				anchors.add(lastText);
+				lastText = undefined;
+			}
+			return;
+		}
 		// deep pass continues the turn → keep the reply before it visible too
 		if (c instanceof CustomMessageComponent && (c as any).message?.customType === "impeccable-deep-pass") {
 			const prev = rest.slice(0, i).reverse().find(isAssistant);
@@ -75,6 +89,7 @@ function anchorsOf(rest: any[]): Set<any> {
 		const caller = rest.slice(0, i).reverse().find(isAssistant); // message that issued the question call
 		if (caller && textOf(caller.lastMessage)) anchors.add(caller);
 	});
+	if (lastText) anchors.add(lastText); // turn ended mid-run (aborted/error)
 	return anchors;
 }
 
@@ -96,11 +111,12 @@ function viewTurn(turn: any[]): any[] {
 		const tools = seg.filter((x) => x instanceof ToolExecutionComponent).length;
 		const thinking = (isAssistant(c) && hasThinking(c)) || as.some(hasThinking);
 		const notes = as.filter((a) => textOf(a.lastMessage)).length;
+		const notices = seg.filter(isNotice).length;
 		const anchor = c ? [c] : [];
-		if (!tools && !thinking && !notes) out.push(...seg, ...tail, ...anchor);
+		if (!tools && !thinking && !notes && !notices) out.push(...seg, ...tail, ...anchor);
 		else if (isOpen(key)) out.push(line(theme.fg("dim", "▾ collapse"), () => flip(key)), ...seg, ...tail, ...anchor);
 		else {
-			const bits = [tools && `${tools} tool call${tools === 1 ? "" : "s"}`, thinking && "thinking", notes && `${notes} note${notes === 1 ? "" : "s"}`];
+			const bits = [tools && `${tools} tool call${tools === 1 ? "" : "s"}`, thinking && "thinking", notes && `${notes} note${notes === 1 ? "" : "s"}`, notices && `${notices} bg task${notices === 1 ? "" : "s"}`];
 			const summary = theme.fg("dim", `▸ ${bits.filter(Boolean).join(" · ")} · click to expand`);
 			out.push(new Spacer(1), line(summary, () => flip(key)), ...(c ? [isAssistant(c) ? replyClone(c) : c] : tail));
 		}
