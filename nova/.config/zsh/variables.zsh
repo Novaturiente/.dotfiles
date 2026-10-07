@@ -1,6 +1,6 @@
 # ---- Editor Configuration ----
-export VISUAL="emacsclient -t --alternate-editor="
-export EDITOR="emacsclient -t --alternate-editor="
+export VISUAL="nvim"
+export EDITOR="nvim"
 export NVIM_LOG_FILE="$HOME/.cache/nvim/my_custom_log.txt"  # Custom Neovim log file
 
 # ---- Man Page Formatting ----

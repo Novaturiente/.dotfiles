@@ -167,7 +167,6 @@ export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
 export CARAPACE_MATCH=1                          # case-insensitive, like fish
 zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
 _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/carapace.zsh" carapace _carapace zsh
-compdef _files emacs   # carapace's emacs completer drops the / on dirs and adds a space
 
 # -------------------------------------------------------------------
 # zoxide — MUST be initialized last (zoxide doctor requirement)

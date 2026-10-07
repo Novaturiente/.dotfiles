@@ -39,8 +39,8 @@ binds {
     Mod+Shift+D hotkey-overlay-title="File search" {
         spawn "~/.dotfiles/scripts/rofi/tv-edit.sh";
     }
-    Mod+N hotkey-overlay-title="Emacs" {
-        spawn "emacsclient" "-c" "--alternate-editor="
+    Mod+N hotkey-overlay-title="Neovim" {
+        spawn "ghostty" "-e" "nvim"
     }
     Mod+T hotkey-overlay-title="Task scratchpad" {
         spawn "~/.dotfiles/scripts/tasks.sh"

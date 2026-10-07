@@ -34,14 +34,14 @@ gui:
   # Files panel shows a collapsible file tree by default.
   showFileTree: true
   # Shrink the right main/diff panel to a sliver (lazygit has no option to
-  # fully hide it). Side list gets the space; review real diffs in Emacs
+  # fully hide it). Side list gets the space; review real diffs in Neovim
   # via `e`. Default sidePanelWidth is 0.3333.
   sidePanelWidth: 0.5
   # Hide the bottom command log / extras panel by default
   showCommandLog: false
 
 os:
-  # Open files in terminal Emacs in a NEW tmux window (lazygit stays in its
+  # Open files in Neovim in a NEW tmux window (lazygit stays in its
   # pane). editInTerminal false = lazygit does not grab the terminal; the
   # wrapper returns at once after spawning the tmux window. `o` uses the
   # same handler (plain `open`/xdg-open ran the editor without a TTY and

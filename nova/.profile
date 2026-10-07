@@ -1,6 +1,6 @@
 # Custom XDG Base Directories
-export EDITOR="emacsclient -t --alternate-editor="
-export VISUAL="emacsclient -t --alternate-editor="
+export EDITOR="nvim"
+export VISUAL="nvim"
 
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
