@@ -59,6 +59,7 @@ Config details (MCP merge, subagent grants, browser flow): `~/.pi/agent/docs/too
 - MCP tools (`mcp__<server>__<tool>`) → always via `codemode` (`searchTools()`/`describeTool()`); no server is `direct`. Never create `~/.pi/agent/mcp.json`.
 - Symbol/caller/impact questions → `codegraph_*` or Serena via codemode, or async subagent. Text/config/dir-map → `scout` or grep. Library docs → context7 via codemode.
 - Browser → native `agent_browser` only; never `agent-browser` via bash, no browser MCP, no Playwright.
+- Background processes (dev servers, builds, watchers, deploy watches) → `process` tool from pi-processes (`/ps` panel). Decided 2026-10-07: replaced pi-background-tasks, whose idle wake (`sendMessage`+`triggerTurn`) skipped `before_agent_start`, dropped extension prompt sections and broke the prompt cache. Never reinstall it or add a bg extension that wakes that way.
 - Review by intent: bugs/structure → `reviewer` subagent; over-engineering/bloat → `ponytail-review` / `ponytail-audit`. Don't run both by default.
 - Adding a skill/MCP server/extension → first check overlap with existing ones. Overlap → stop, show what each does and where they differ, ask user which wins; record the decision in this file. No silent duplicates.
 - Noisy output (tests, builds, lint, installs, `git log`/`diff`, logs) → filter at source: `2>&1 | tail -40` or `2>&1 | grep -iE "error|fail|warn" | head -50`; `git diff --stat` before full diff. Rerun unfiltered only if needed.
