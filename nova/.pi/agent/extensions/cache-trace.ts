@@ -129,21 +129,27 @@ export default function (pi: ExtensionAPI) {
 	});
 
 	pi.registerCommand("cache-audit", {
-		description: "Find prompt-cache misses in this session and have the agent explain them",
+		description: "Audit this session's prompt-cache misses in a new tmux pane (separate Pi session)",
 		handler: async (_args, ctx) => {
+			if (!process.env.TMUX) return ctx.ui.notify("/cache-audit needs tmux: it opens the audit in a new pane.", "error");
 			const sm = ctx.sessionManager;
+			const file = sm.getSessionFile();
 			const misses = findMisses(sm.getBranch(), traceRequests(sm.getSessionId()));
 			if (misses.length === 0) return ctx.ui.notify("No cache misses in this session.", "info");
 			const prompt = [
-				`Cache-miss audit for this session (${misses.length} misses). A miss = cacheRead fell >2000 tokens and >10% below the previous reply's cacheRead+cacheWrite.`,
-				`Session log: ${sm.getSessionFile() ?? "(in memory)"}. Trace log: ${LOG} (written by ~/.pi/agent/extensions/cache-trace.ts).`,
+				`Cache-miss audit of another Pi session (${misses.length} misses), not this one.`,
+				`A miss = cacheRead fell >2000 tokens and >10% below the previous reply's cacheRead+cacheWrite.`,
+				`Audited session log: ${file ?? "(in memory, not on disk)"}. Trace log: ${LOG} (written by ~/.pi/agent/extensions/cache-trace.ts).`,
 				"",
 				...misses,
 				"",
 				"For each miss, determine the root cause: what changed in the request prefix, and which extension, tool, setting or Pi feature changed it. Read the session log entries around each timestamp and the source of the extension involved where needed. Treat compaction, idle gaps past the TTL and model switches as expected; focus on the avoidable ones.",
 				"Report: a table of misses ranked by tokens lost with cause, then concrete fixes per cause (config, extension change, or habit). Do not edit any files.",
 			].join("\n");
-			pi.sendUserMessage(prompt, ctx.isIdle() ? undefined : { deliverAs: "followUp" });
+			// New pane, new session: the audit adds nothing to the audited session.
+			const r = await pi.exec("tmux", ["split-window", "-h", "-c", ctx.cwd, "-e", `PATH=${process.env.PATH ?? ""}`, "--", "pi", "--name", "cache-audit", prompt]);
+			if (r.code !== 0) return ctx.ui.notify(`tmux split-window failed: ${r.stderr.trim()}`, "error");
+			ctx.ui.notify(`Cache audit (${misses.length} misses) started in a new tmux pane.`, "info");
 		},
 	});
 }
