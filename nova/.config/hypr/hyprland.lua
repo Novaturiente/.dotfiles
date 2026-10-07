@@ -67,6 +67,12 @@ hl.config({
     },
 })
 
+-- ── Touchpad gestures (niri defaults) ─────────────────────────────────────────
+-- 3-finger horizontal scrolls the columns, 3-finger vertical switches workspaces.
+-- niri's 4-finger overview has no Hyprland equivalent.
+hl.gesture({ fingers = 3, direction = "horizontal", action = "scroll_move" })
+hl.gesture({ fingers = 3, direction = "vertical",   action = "workspace" })
+
 -- ── Animations (approximations of niri modules/layout.kdl) ───────────────────
 hl.curve("m3EffectsFast", { type = "bezier", points = { {0.31, 0.94}, {0.34, 1} } })
 -- niri springs: damping-ratio 1.0 = no bounce, 0.75 = light bounce.
@@ -109,16 +115,25 @@ hl.on("hyprland.start", function()
     -- Once DMS answers, hide its bar (the island replaces it here; niri's
     -- startup.kdl reveals it again), turn off DMS's volume/brightness OSD (the
     -- island shows its own; niri turns DMS's back on) and start the island.
-    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME QML2_IMPORT_PATH XCURSOR_THEME XCURSOR_SIZE"
+    -- DMS_DISABLE_POLKIT: the island is the polkit agent here (only one can
+    -- register); unset again on shutdown so niri's DMS gets its agent back.
+    hl.exec_cmd("systemctl --user set-environment DMS_DISABLE_POLKIT=1 && systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME QML2_IMPORT_PATH XCURSOR_THEME XCURSOR_SIZE"
         .. " && systemctl --user start hyprland-session.target"
         -- restart, not start: if DMS is still alive from an older session it
         -- would stay drawing on that compositor (no wallpaper/bar here).
-        .. " && systemctl --user restart quickshell-notifications.service dms.service"
+        -- The island is the notification server here: stop the standalone
+        -- daemon, start the island and wait until it owns the bus name, and
+        -- only then (re)start DMS, which would grab the name otherwise.
+        .. " && systemctl --user stop quickshell-notifications.service"
+        .. "; qs -c island -d"
+        .. "; for i in $(seq 50); do busctl --user status org.freedesktop.Notifications >/dev/null 2>&1 && break; sleep 0.1; done"
+        .. "; systemctl --user restart dms.service"
         .. "; for i in $(seq 50); do dms ipc call bar hide id default 2>/dev/null | grep -q SUCCESS && break; sleep 0.2; done"
-        .. "; dms ipc call settings set osdVolumeEnabled false; dms ipc call settings set osdBrightnessEnabled false"
-        .. "; qs -c island -d")
+        .. "; dms ipc call settings set osdVolumeEnabled false; dms ipc call settings set osdBrightnessEnabled false")
     hl.exec_cmd("swayidle")
     hl.exec_cmd("kdeconnectd")
+    -- Tray icon for the island's tray row (kdeconnectd itself has none).
+    hl.exec_cmd("kdeconnect-indicator")
     hl.exec_cmd("udiskie --no-tray --notify")
     hl.exec_cmd("sshfs nova@novahome:/home/nova /home/nova/server -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3")
 end)
@@ -128,7 +143,7 @@ end)
 -- after a newer one logged in must not tear down the newer session's target
 -- or wipe its env (that left kdeconnectd crash-looping on a dead display).
 hl.on("hyprland.shutdown", function()
-    hl.exec_cmd([[[ "$(systemctl --user show-environment | sed -n 's/^HYPRLAND_INSTANCE_SIGNATURE=//p')" = "$HYPRLAND_INSTANCE_SIGNATURE" ] && { systemctl --user stop hyprland-session.target; systemctl --user unset-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY; }]])
+    hl.exec_cmd([[[ "$(systemctl --user show-environment | sed -n 's/^HYPRLAND_INSTANCE_SIGNATURE=//p')" = "$HYPRLAND_INSTANCE_SIGNATURE" ] && { systemctl --user stop hyprland-session.target; systemctl --user unset-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY DMS_DISABLE_POLKIT; }]])
 end)
 
 require("colors")

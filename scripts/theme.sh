@@ -158,6 +158,12 @@ apply() {
 		info "zen: $(basename "$(dirname "$zen")")"
 	done
 
+	# GTK colours (replace DMS's dank-colors.css). gtk.css lives outside the
+	# stow tree because DMS rewrites it under niri; both feed the same palette.
+	for gtk in "$HOME"/.config/gtk-3.0 "$HOME"/.config/gtk-4.0; do
+		render_tree "$TEMPLATES/apps/gtk" "$gtk" "$VARLIST"
+	done
+
 	if [[ -n $system ]]; then
 		info "system files (sudo)"
 		render_tree "$TEMPLATES/system" "" "$VARLIST" sudo

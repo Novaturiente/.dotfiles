@@ -53,9 +53,11 @@ Files that are nothing but colour are generated whole: btop, atuin, television,
 eza, fast-syntax-highlighting, swaylock, the bat `.tmTheme`, lazygit, and the
 DankMaterialShell theme JSON.
 
-GTK needs no template. Both `gtk-3.0/gtk.css` and `gtk-4.0/gtk.css` import
-`dank-colors.css`, which DankMaterialShell regenerates as soon as the theme
-JSON is written — confirmed by watching `accent_bg_color` follow each switch.
+GTK is rendered from `templates/apps/gtk/` into `~/.config/gtk-3.0/` and
+`~/.config/gtk-4.0/` (outside the stow tree): `gtk.css` imports
+`theme-colors.css`, which uses the same colour mapping DankMaterialShell's
+`dank-colors.css` did. Under niri DMS may still rewrite `gtk.css` to import its
+own file; both come from the same palette, so the colours agree.
 GTK reads its CSS at startup, so an app already running keeps its old colours
 until it restarts.
 

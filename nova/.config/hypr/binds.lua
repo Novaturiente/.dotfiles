@@ -22,7 +22,7 @@ bind(M .. " + W",              run("zen-browser"))
 bind(M .. " + CTRL + W",       run("qutebrowser"))
 bind(M .. " + SHIFT + W",      run("vpn-run qutebrowser"))
 bind(M .. " + Return",         run("ghostty --title='tmux' -e zsh -ic tmux"))
-bind(M .. " + D",              run("dms ipc call spotlight toggle"))
+bind(M .. " + D",              run("qs -c island ipc call island toggle launcher || " .. S .. "quickshell/launcher.sh"))
 bind(M .. " + SHIFT + D",      run(S .. "rofi/tv-edit.sh"))
 bind(M .. " + N",              run("emacsclient -c --alternate-editor="))
 bind(M .. " + T",              run(S .. "tasks.sh"))
@@ -35,10 +35,10 @@ bind(M .. " + SHIFT + O",      run(S .. "ocr_select.sh"))
 bind(M .. " + S",              run(S .. "quickshell/zen-url.sh"))
 bind(M .. " + CTRL + G",       run(S .. "fix_grammar.sh"))
 bind(M .. " + SHIFT + C",      run(S .. "quickshell/cal.sh"))
-bind(M .. " + SHIFT + N",      run("dms ipc call notepad toggle"))
-bind(M .. " + V",              run("dms ipc call clipboard toggle"))
+bind(M .. " + SHIFT + N",      run(S .. "tasks.sh"))
+bind(M .. " + V",              run("qs -c island ipc call island toggle clipboard || dms ipc call clipboard toggle"))
 bind(M .. " + SHIFT + P",      run(S .. "quickshell/pass.sh"))
-bind(M .. " + CTRL + S",       run("dms ipc call control-center toggle"))
+bind(M .. " + CTRL + S",       run("qs -c island ipc call island toggle dashboard"))
 bind(M .. " + P",              run("scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --window-height=1150"))
 bind(M .. " + CTRL + P",       run("scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --new-display=1920x1080 --window-title 'dexmode'"))
 bind("ALT + space",            run("handy --toggle-transcription"))
@@ -61,7 +61,7 @@ bind(M .. " + CTRL + ALT + SHIFT + R",   run(S .. "record-script.sh --region-bot
 
 -- ── System controls ────────────────────────────────────────────────────────
 bind(M .. " + SHIFT + L",       run(S .. "lock.sh"))
-bind(M .. " + SHIFT + E",       run("dms ipc call powermenu toggle"))
+bind(M .. " + SHIFT + E",       run("qs -c island ipc call island toggle power || dms ipc call powermenu toggle"))
 bind(M .. " + Q",               dsp.window.close())
 bind(M .. " + BackSpace",       dsp.window.close())
 bind("CTRL + ALT + Delete",     dsp.exit())
@@ -78,16 +78,18 @@ hl.define_submap("passthru", function()
 end)
 
 -- ── Media keys ─────────────────────────────────────────────────────────────
-bind("XF86AudioRaiseVolume",         run("dms ipc call audio increment 5"), LOCK)
-bind("XF86AudioLowerVolume",         run("dms ipc call audio decrement 5"), LOCK)
+-- Volume goes through the island (Pipewire + its OSD); wpctl if it is not running.
+local VOL = "qs -c island ipc call island volume %s || wpctl %s"
+bind("XF86AudioRaiseVolume",         run(VOL:format("5", "set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+")),  LOCK)
+bind("XF86AudioLowerVolume",         run(VOL:format("-5", "set-volume @DEFAULT_AUDIO_SINK@ 5%-")),      LOCK)
 -- Brightness goes through the island so it flashes its OSD (sysfs has no change
 -- signal); falls back to the script if the island is not running.
 local BRIGHT = "qs -c island ipc call island brightness %s || " .. S .. "brightness.sh %s"
 bind("SHIFT + XF86AudioRaiseVolume", run(BRIGHT:format("up", "up")),     LOCK)
 bind("SHIFT + XF86AudioLowerVolume", run(BRIGHT:format("down", "down")), LOCK)
-bind("XF86AudioMute",                run("dms ipc call audio mute"),        { locked = true })
+bind("XF86AudioMute",                run(VOL:format("mute", "set-mute @DEFAULT_AUDIO_SINK@ toggle")),      { locked = true })
 bind("SHIFT + XF86AudioMute",        run("if pkill swayidle; then notify-send 'Suspend disabled'; else swayidle & notify-send 'Suspend enabled'; fi"), { locked = true })
-bind("XF86AudioMicMute",             run("dms ipc call audio micmute"),     { locked = true })
+bind("XF86AudioMicMute",             run(VOL:format("micmute", "set-mute @DEFAULT_AUDIO_SOURCE@ toggle")), { locked = true })
 bind("XF86MonBrightnessUp",          run(BRIGHT:format("up", "up")),     LOCK)
 bind("XF86MonBrightnessDown",        run(BRIGHT:format("down", "down")), LOCK)
 

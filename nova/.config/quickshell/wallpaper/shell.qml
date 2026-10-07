@@ -36,7 +36,8 @@ ShellRoot {
 
     Process {
         id: reader
-        command: ["dms", "ipc", "call", "wallpaper", "get"]
+        // Island draws the wallpaper under Hyprland; DMS under niri.
+        command: ["sh", "-c", "qs -c island ipc call island getWallpaper 2>/dev/null || dms ipc call wallpaper get"]
         stdout: StdioCollector { onStreamFinished: current = text.trim() }
     }
 
@@ -44,7 +45,7 @@ ShellRoot {
 
     function apply(path) {
         if (!path) return;
-        setter.command = ["dms", "ipc", "call", "wallpaper", "set", path];
+        setter.command = ["sh", "-c", "qs -c island ipc call island setWallpaper \"$1\" 2>/dev/null || dms ipc call wallpaper set \"$1\"", "sh", path];
         setter.running = true;
         current = path;
         win.shown = false;

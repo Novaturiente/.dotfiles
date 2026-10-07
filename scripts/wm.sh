@@ -4,9 +4,23 @@
 #   wm.sh windows      -> [{"id","app_id","title","pid","workspace_id","is_focused","focus_timestamp":{"secs"}}]
 #   wm.sh focus <id>   -> focus that window
 #   wm.sh dpms on|off  -> power monitors on/off
+#   wm.sh focus-app <name>...  -> focus the first window whose app_id (then
+#                      title) contains a name, case-insensitive; exit 1 if none
 # Hyprland is detected by a live socket, not just the env var: a stale
 # HYPRLAND_INSTANCE_SIGNATURE can linger in the systemd env after a session ends.
 set -euo pipefail
+
+if [[ ${1:-} == focus-app ]]; then
+    shift
+    wins=$("$(readlink -f "$0")" windows)
+    for name in "$@"; do
+        [[ -n $name ]] || continue
+        id=$(jq -r --arg n "${name,,}" '(map(select((.app_id // "") | ascii_downcase | contains($n)))
+            + map(select((.title // "") | ascii_downcase | contains($n)))) | .[0].id // empty' <<<"$wins")
+        [[ -n $id ]] && exec "$(readlink -f "$0")" focus "$id"
+    done
+    exit 1
+fi
 
 if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]] && hyprctl -j version >/dev/null 2>&1; then
     case "$1" in
