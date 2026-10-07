@@ -8,8 +8,8 @@
  * with its trace record, and asks the agent to explain causes and fixes.
  * Cross-session report: scripts/cache-audit.py
  */
-import { appendFileSync, readFileSync } from "node:fs";
-import { homedir } from "node:os";
+import { appendFileSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
@@ -147,7 +147,10 @@ export default function (pi: ExtensionAPI) {
 				"Report: a table of misses ranked by tokens lost with cause, then concrete fixes per cause (config, extension change, or habit). Do not edit any files.",
 			].join("\n");
 			// New pane, new session: the audit adds nothing to the audited session.
-			const r = await pi.exec("tmux", ["split-window", "-h", "-c", ctx.cwd, "-e", `PATH=${process.env.PATH ?? ""}`, "--", "pi", "--name", "cache-audit", prompt]);
+			// Prompt goes in a file: tmux rejects long commands ("command too long").
+			const promptFile = join(mkdtempSync(join(tmpdir(), "cache-audit-")), "audit.md");
+			writeFileSync(promptFile, prompt);
+			const r = await pi.exec("tmux", ["split-window", "-h", "-c", ctx.cwd, "-e", `PATH=${process.env.PATH ?? ""}`, "--", "pi", "--name", "cache-audit", `@${promptFile}`, "Carry out the cache-miss audit described in the attached file."]);
 			if (r.code !== 0) return ctx.ui.notify(`tmux split-window failed: ${r.stderr.trim()}`, "error");
 			ctx.ui.notify(`Cache audit (${misses.length} misses) started in a new tmux pane.`, "info");
 		},
