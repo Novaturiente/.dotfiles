@@ -17,125 +17,129 @@ hl.env("XCURSOR_SIZE", "25")
 
 -- ── Look ───────────────────────────────────────────────────────────────────
 hl.config({
-    general = {
-        layout      = "scrolling",
-        gaps_in     = 5,   -- niri `gaps 10` is the full gap between windows
-        gaps_out    = 10,
-        border_size = 2,   -- stands in for niri's focus ring
-        resize_on_border = true,
-    },
-    decoration = {
-        rounding = 0,
-        shadow   = { enabled = false },
-        blur     = { enabled = true, size = 3, passes = 4, noise = 0.0, vibrancy = 0.0 },
-    },
-    scrolling = {
-        column_width             = 0.75,              -- niri window-rule default
-        explicit_column_widths   = "0.5, 0.75, 0.333", -- niri preset-column-widths
-        fullscreen_on_one_column = false,
-        focus_fit_method         = 1,                 -- fit, like niri (no centering)
-        follow_focus             = true,
-        wrap_focus               = false,             -- niri stops at the ends
-        wrap_swapcol             = false,
-    },
-    input = {
-        kb_layout    = "us",
-        follow_mouse = 1,   -- focus-follows-mouse
-        sensitivity  = 0,
-        touchpad = {
-            tap_to_click         = true,
-            disable_while_typing = true,
-            natural_scroll       = true,
-        },
-    },
-    cursor = {
-        hide_on_key_press        = true,
-        warp_on_change_workspace = 1,
-    },
-    binds = {
-        scroll_event_delay = 150,   -- niri cooldown-ms=150 on wheel binds
-    },
-    misc = {
-        force_default_wallpaper = 0,
-        disable_hyprland_logo   = true,
-        disable_splash_rendering = true,
-        focus_on_activate       = true,
-    },
-    ecosystem = {
-        no_update_news    = true,
-        no_donation_nag   = true,
-    },
+	general = {
+		layout = "scrolling",
+		gaps_in = 5, -- niri `gaps 10` is the full gap between windows
+		gaps_out = 10,
+		border_size = 2, -- stands in for niri's focus ring
+		resize_on_border = true,
+	},
+	decoration = {
+		rounding = 0,
+		shadow = { enabled = false },
+		blur = { enabled = true, size = 4, passes = 2, noise = 0.0, vibrancy = 0.0 },
+	},
+	scrolling = {
+		column_width = 0.75, -- niri window-rule default
+		explicit_column_widths = "0.5, 0.75, 0.333", -- niri preset-column-widths
+		fullscreen_on_one_column = false,
+		focus_fit_method = 1, -- fit, like niri (no centering)
+		follow_focus = true,
+		wrap_focus = false, -- niri stops at the ends
+		wrap_swapcol = false,
+	},
+	input = {
+		kb_layout = "us",
+		follow_mouse = 1, -- focus-follows-mouse
+		sensitivity = 0,
+		touchpad = {
+			tap_to_click = true,
+			disable_while_typing = true,
+			natural_scroll = true,
+		},
+	},
+	cursor = {
+		hide_on_key_press = true,
+		warp_on_change_workspace = 1,
+	},
+	binds = {
+		scroll_event_delay = 150, -- niri cooldown-ms=150 on wheel binds
+	},
+	misc = {
+		force_default_wallpaper = 0,
+		disable_hyprland_logo = true,
+		disable_splash_rendering = true,
+		focus_on_activate = true,
+	},
+	ecosystem = {
+		no_update_news = true,
+		no_donation_nag = true,
+	},
 })
 
 -- ── Touchpad gestures (niri defaults) ─────────────────────────────────────────
 -- 3-finger horizontal scrolls the columns, 3-finger vertical switches workspaces.
 -- niri's 4-finger overview has no Hyprland equivalent.
 hl.gesture({ fingers = 3, direction = "horizontal", action = "scroll_move" })
-hl.gesture({ fingers = 3, direction = "vertical",   action = "workspace" })
+hl.gesture({ fingers = 3, direction = "vertical", action = "workspace" })
 
 -- ── Animations (approximations of niri modules/layout.kdl) ───────────────────
-hl.curve("m3EffectsFast", { type = "bezier", points = { {0.31, 0.94}, {0.34, 1} } })
+hl.curve("m3EffectsFast", { type = "bezier", points = { { 0.31, 0.94 }, { 0.34, 1 } } })
 -- niri springs: damping-ratio 1.0 = no bounce, 0.75 = light bounce.
-hl.curve("move",      { type = "spring", mass = 1, stiffness = 450, dampening = 42 })
-hl.curve("wsBounce",  { type = "spring", mass = 1, stiffness = 800, dampening = 42 })
+hl.curve("move", { type = "spring", mass = 1, stiffness = 450, dampening = 42 })
+hl.curve("wsBounce", { type = "spring", mass = 1, stiffness = 800, dampening = 42 })
 
 -- New window slides in on the same spring that pushes its neighbours aside,
 -- so the open reads as one smooth shove instead of an overshoot pop.
-hl.animation({ leaf = "windowsIn",   enabled = true, speed = 4,   spring = "move", style = "slide right" })
-hl.animation({ leaf = "windowsOut",  enabled = true, speed = 1.5, bezier = "m3EffectsFast", style = "slide right" })
-hl.animation({ leaf = "windowsMove", enabled = true, speed = 4,   spring = "move" })
-hl.animation({ leaf = "fadeIn",      enabled = true, speed = 3.5, bezier = "m3EffectsFast" })
-hl.animation({ leaf = "fadeOut",     enabled = true, speed = 1.5, bezier = "m3EffectsFast" })
-hl.animation({ leaf = "workspaces",  enabled = true, speed = 4,   spring = "wsBounce", style = "slidevert" })
-hl.animation({ leaf = "layers",      enabled = true, speed = 3,   bezier = "m3EffectsFast", style = "fade" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 4, spring = "move", style = "slide right" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.5, bezier = "m3EffectsFast", style = "slide right" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 4, spring = "move" })
+hl.animation({ leaf = "fadeIn", enabled = true, speed = 3.5, bezier = "m3EffectsFast" })
+hl.animation({ leaf = "fadeOut", enabled = true, speed = 1.5, bezier = "m3EffectsFast" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 4, spring = "wsBounce", style = "slidevert" })
+hl.animation({ leaf = "layers", enabled = true, speed = 3, bezier = "m3EffectsFast", style = "fade" })
 
 -- ── Workspaces: niri `workspace "Main"` / `workspace "Work"` ─────────────────
 hl.workspace_rule({ workspace = "1", default_name = "Main", persistent = true, default = true })
 hl.workspace_rule({ workspace = "2", default_name = "Work", persistent = true })
 
 -- ── Window rules (niri modules/window-rules.kdl) ────────────────────────────
-hl.window_rule({ match = { class = "^scrcpy$" },              scrolling_width = 0.3, workspace = "1" })
-hl.window_rule({ match = { title = "^dexmode$" },             maximize = true,       workspace = "1" })
-hl.window_rule({ match = { class = "^lin-whatsapp$" },        workspace = "1" })
-hl.window_rule({ match = { class = "^zen$" },                 workspace = "1" })
+hl.window_rule({ match = { class = "^scrcpy$" }, scrolling_width = 0.3, workspace = "1" })
+hl.window_rule({ match = { title = "^dexmode$" }, maximize = true, workspace = "1" })
+hl.window_rule({ match = { class = "^lin-whatsapp$" }, workspace = "1" })
+hl.window_rule({ match = { class = "^zen$" }, workspace = "1" })
 hl.window_rule({ match = { class = "^com.mitchellh.ghostty$" }, workspace = "2" })
-hl.window_rule({ match = { title = "^tmux$" },                scrolling_width = 1.0 })
-hl.window_rule({ match = { title = "^tasks-scratchpad$" },    float = true, size = {1200, 850}, center = true })
-hl.window_rule({ match = { class = "^satty$" },               float = true })
+hl.window_rule({ match = { title = "^tmux$" }, scrolling_width = 1.0 })
+hl.window_rule({ match = { title = "^tasks-scratchpad$" }, float = true, size = { 1200, 850 }, center = true })
+hl.window_rule({ match = { class = "^satty$" }, float = true })
 hl.window_rule({ match = { title = "^Select File to Attach$" }, float = true })
-hl.window_rule({ match = { class = "^zenity$" },              float = true })
-hl.window_rule({ match = { class = "^labwc$" },               maximize = true })
-hl.window_rule({ match = { class = "^com.danklinux.dms$" },   float = true })
+hl.window_rule({ match = { class = "^zenity$" }, float = true })
+hl.window_rule({ match = { class = "^labwc$" }, maximize = true })
+hl.window_rule({ match = { class = "^com.danklinux.dms$" }, float = true })
 
 -- ── Startup (niri modules/startup.kdl) ──────────────────────────────────────
 hl.on("hyprland.start", function()
-    -- DMS and the notification daemon hang off graphical-session.target.
-    -- Hand systemd this session's env, bring the target up through
-    -- hyprland-session.target, then start DMS (niri pulls it via niri.service.wants).
-    -- Once DMS answers, hide its bar (the island replaces it here; niri's
-    -- startup.kdl reveals it again), turn off DMS's volume/brightness OSD (the
-    -- island shows its own; niri turns DMS's back on) and start the island.
-    -- DMS_DISABLE_POLKIT: the island is the polkit agent here (only one can
-    -- register); unset again on shutdown so niri's DMS gets its agent back.
-    hl.exec_cmd("systemctl --user set-environment DMS_DISABLE_POLKIT=1 && systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME QML2_IMPORT_PATH XCURSOR_THEME XCURSOR_SIZE"
-        .. " && systemctl --user start hyprland-session.target"
-        -- restart, not start: if DMS is still alive from an older session it
-        -- would stay drawing on that compositor (no wallpaper/bar here).
-        -- The island is the notification server here: stop the standalone
-        -- daemon, start the island and wait until it owns the bus name, and
-        -- only then (re)start DMS, which would grab the name otherwise.
-        .. " && systemctl --user stop quickshell-notifications.service"
-        .. "; qs -c island -d"
-        .. "; for i in $(seq 50); do busctl --user status org.freedesktop.Notifications >/dev/null 2>&1 && break; sleep 0.1; done"
-        .. "; systemctl --user restart dms.service"
-        .. "; for i in $(seq 50); do dms ipc call bar hide id default 2>/dev/null | grep -q SUCCESS && break; sleep 0.2; done"
-        .. "; dms ipc call settings set osdVolumeEnabled false; dms ipc call settings set osdBrightnessEnabled false")
-    hl.exec_cmd("swayidle")
-    hl.exec_cmd("kdeconnectd")
-    -- Tray icon for the island's tray row (kdeconnectd itself has none).
-    hl.exec_cmd("kdeconnect-indicator")
-    hl.exec_cmd("udiskie --no-tray --notify")
-    hl.exec_cmd("sshfs nova@novahome:/home/nova /home/nova/server -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3")
+	-- DMS and the notification daemon hang off graphical-session.target.
+	-- Hand systemd this session's env, bring the target up through
+	-- hyprland-session.target, then start DMS (niri pulls it via niri.service.wants).
+	-- Once DMS answers, hide its bar (the island replaces it here; niri's
+	-- startup.kdl reveals it again), turn off DMS's volume/brightness OSD (the
+	-- island shows its own; niri turns DMS's back on) and start the island.
+	-- DMS_DISABLE_POLKIT: the island is the polkit agent here (only one can
+	-- register); unset again on shutdown so niri's DMS gets its agent back.
+	hl.exec_cmd(
+		"systemctl --user set-environment DMS_DISABLE_POLKIT=1 && systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME QML2_IMPORT_PATH XCURSOR_THEME XCURSOR_SIZE"
+			.. " && systemctl --user start hyprland-session.target"
+			-- restart, not start: if DMS is still alive from an older session it
+			-- would stay drawing on that compositor (no wallpaper/bar here).
+			-- The island is the notification server here: stop the standalone
+			-- daemon, start the island and wait until it owns the bus name, and
+			-- only then (re)start DMS, which would grab the name otherwise.
+			.. " && systemctl --user stop quickshell-notifications.service"
+			.. "; qs -c island -d"
+			.. "; for i in $(seq 50); do busctl --user status org.freedesktop.Notifications >/dev/null 2>&1 && break; sleep 0.1; done"
+			.. "; systemctl --user restart dms.service"
+			.. "; for i in $(seq 50); do dms ipc call bar hide id default 2>/dev/null | grep -q SUCCESS && break; sleep 0.2; done"
+			.. "; dms ipc call settings set osdVolumeEnabled false; dms ipc call settings set osdBrightnessEnabled false"
+	)
+	hl.exec_cmd("swayidle")
+	hl.exec_cmd("kdeconnectd")
+	-- Tray icon for the island's tray row (kdeconnectd itself has none).
+	hl.exec_cmd("kdeconnect-indicator")
+	hl.exec_cmd("udiskie --no-tray --notify")
+	hl.exec_cmd(
+		"sshfs nova@novahome:/home/nova /home/nova/server -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3"
+	)
 end)
 
 -- Leave no Hyprland socket behind for a later niri session's DMS to latch onto.
@@ -143,7 +147,9 @@ end)
 -- after a newer one logged in must not tear down the newer session's target
 -- or wipe its env (that left kdeconnectd crash-looping on a dead display).
 hl.on("hyprland.shutdown", function()
-    hl.exec_cmd([[[ "$(systemctl --user show-environment | sed -n 's/^HYPRLAND_INSTANCE_SIGNATURE=//p')" = "$HYPRLAND_INSTANCE_SIGNATURE" ] && { systemctl --user stop hyprland-session.target; systemctl --user unset-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY DMS_DISABLE_POLKIT; }]])
+	hl.exec_cmd(
+		[[[ "$(systemctl --user show-environment | sed -n 's/^HYPRLAND_INSTANCE_SIGNATURE=//p')" = "$HYPRLAND_INSTANCE_SIGNATURE" ] && { systemctl --user stop hyprland-session.target; systemctl --user unset-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY DMS_DISABLE_POLKIT; }]]
+	)
 end)
 
 require("colors")
