@@ -1,7 +1,7 @@
 # Hyprland's stand-in for niri.service: graphical-session.target refuses a manual
 # start (RefuseManualStart=yes), so this target pulls it in through BindsTo.
 # Started and stopped from ~/.config/hypr/hyprland.lua. Stopping it lets
-# graphical-session.target (StopWhenUnneeded=yes) stop DMS, Emacs and the rest.
+# graphical-session.target (StopWhenUnneeded=yes) stop DMS and the rest.
 [Unit]
 Description=Hyprland session
 BindsTo=graphical-session.target

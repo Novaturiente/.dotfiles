@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# lazygit edit/open handler. Opens the file in a terminal frame of the Emacs
-# daemon, in a NEW tmux window (so lazygit stays visible in its pane). Falls
-# back to the current terminal if not in tmux.
+# lazygit edit/open handler. Opens the file in Neovim in a NEW tmux window
+# (so lazygit stays visible in its pane). Falls back to the current terminal
+# if not in tmux.
 #
 # Usage: lazygit-edit.sh <filename> [line]
 
@@ -12,22 +12,13 @@ file="${1:-}"
 line="${2:-}"
 [[ -z "$file" ]] && exit 0
 
-# lazygit runs this from the repo root; keep that as the working dir so the
-# (relative) filename resolves.
-workdir="$PWD"
-
-# Build the emacsclient command safely (handles spaces in paths)
-qfile="$(printf '%q' "$file")"
-ecmd="exec emacsclient -t --alternate-editor="
-[[ -n "$line" ]] && ecmd="$ecmd +$line"
-ecmd="$ecmd -- $qfile"
+args=()
+[[ -n "$line" ]] && args+=("+$line")
+args+=(-- "$file")
 
 if [[ -n "${TMUX:-}" ]]; then
-	tmux new-window -c "$workdir" -n "edit:$(basename "$file")" "$ecmd"
+	# lazygit runs this from the repo root, so the relative filename resolves.
+	tmux new-window -c "$PWD" -n "edit:$(basename "$file")" "exec nvim $(printf '%q ' "${args[@]}")"
 else
-	if [[ -n "$line" ]]; then
-		exec emacsclient -t --alternate-editor= +"$line" -- "$file"
-	else
-		exec emacsclient -t --alternate-editor= -- "$file"
-	fi
+	exec nvim "${args[@]}"
 fi

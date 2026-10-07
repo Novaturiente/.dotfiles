@@ -1,7 +1,6 @@
 # Editor and system update aliases
 # alias vi="nvim"
 alias vi="nvim"
-alias emacs="emacs -nw"   # terminal Emacs from the shell; the desktop entry still opens a window
 alias inova="sudo novarch install"
 alias unova="sudo novarch update"
 alias anova="sudo novarch add"

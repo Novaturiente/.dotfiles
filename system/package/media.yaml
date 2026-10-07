@@ -10,8 +10,6 @@
 - gst-libav
 - zathura
 - zathura-pdf-mupdf
-# Emacs pdf-tools: its epdfinfo server links against poppler-glib at runtime.
-- poppler-glib
 
 # Intel graphics, video decode and codecs (declared 2026-09-26 so novarch keeps them)
 - mesa

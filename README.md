@@ -121,14 +121,8 @@ stow -d ~/.dotfiles -t ~ -D nova
 - **Config:** `nova/.config/nvim/` (Lua-based, lazy.nvim)
 - **Leader:** Space
 - **Tabs:** 4 spaces
-- **GUI:** Neovide (90% opacity, blur, cursor trail)
-- **Modules:** `plugins.lua`, `keybindinds.lua`, `ui.lua`, `coding.lua`, `autostart.lua`, `orgsetup.lua`
-
-### Emacs (secondary)
-
-- **Config:** `nova/.config/emacs/` (vanilla, built-in `package.el` + `use-package`)
-- **Evil mode** (vim keybindings)
-- **Theme:** follows `scripts/theme.sh` via the generated `theme.el`
+- **GUI:** none; Mod+N opens `ghostty -e nvim`
+- **Layout:** `init.lua`, `lua/config/keymaps.lua`, one spec per plugin in `lua/plugins/`
 
 ## Package Management
 
@@ -240,7 +234,7 @@ Auto-extracts keybindings from niri, neovim, and qutebrowser configs into a unif
 
 - **Primary:** Yazi (custom keybindings: mount menu, SMB shares, drag-drop)
 - **Secondary:** Ranger (miller columns, kitty image preview)
-- **MIME defaults:** Zen (web), Emacs (PDF, Markdown, CSV, plain text), zathura (epub), imv (images), mpv (media), nvim (code), Ranger (dirs)
+- **MIME defaults:** Zen (web), nvim (text, Markdown, CSV, code), zathura (PDF, epub), imv (images), mpv (media), Ranger (dirs)
 
 ## Hardware
 

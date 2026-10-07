@@ -109,7 +109,7 @@ hl.window_rule({ match = { class = "^com.danklinux.dms$" },   float = true })
 
 -- ── Startup (niri modules/startup.kdl) ──────────────────────────────────────
 hl.on("hyprland.start", function()
-    -- DMS, Emacs and the notification daemon hang off graphical-session.target.
+    -- DMS and the notification daemon hang off graphical-session.target.
     -- Hand systemd this session's env, bring the target up through
     -- hyprland-session.target, then start DMS (niri pulls it via niri.service.wants).
     -- Once DMS answers, hide its bar (the island replaces it here; niri's
