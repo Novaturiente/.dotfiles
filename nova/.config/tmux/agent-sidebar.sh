@@ -6,10 +6,10 @@
 # Keys in the sidebar: 1-9 jump to that agent, q closes.
 WIDTH=12%
 
-# Agent panes, in sidebar order: id, name, state, session:window, folder.
+# Agent panes, in sidebar order: id, name, state, session:window, folder, command, bg count.
 # ponytail: pane whose foreground is a shell = agent exited without reporting off; hidden, not cleared
 agents() {
-	tmux list-panes -a -F '#{pane_id}	#{@agent}	#{@agent_state}	#{session_name}:#{window_index}	#{b:pane_current_path}	#{pane_current_command}' |
+	tmux list-panes -a -F '#{pane_id}	#{@agent}	#{@agent_state}	#{session_name}:#{window_index}	#{b:pane_current_path}	#{pane_current_command}	#{@agent_bg}' |
 		awk -F'\t' -v OFS='\t' '
 			# Known agent not yet reported via hook (e.g. agy before its first prompt): show as idle.
 			$2 == "" && $6 ~ /^(agy|claude|pi|codex)$/ { $2 = $6; $3 = "idle" }
@@ -190,7 +190,7 @@ while :; do
 			lines+=("$(printf '   %s%.24s%s' "$dim" "${first[$name]}" "$off")") rows+=("s:$name")
 		fi
 		for k in "${!mine[@]}"; do
-			IFS=$'\t' read -r id agent state loc dir _ <<<"${mine[k]}"
+			IFS=$'\t' read -r id agent state loc dir _ nbg <<<"${mine[k]}"
 			ids+=("$id") rows+=("p:$id" "p:$id")
 			c=${col[$state]:-${col[idle]}}
 			case $state in
@@ -205,7 +205,10 @@ while :; do
 			g=' ' b=''
 			[ "$id" = "$sel" ] && g=$'\e[38;2;203;166;247m▎\e[0m' b=$'\e[1m'
 			lines+=("$(printf '%s%s%s%s %s%s %s%-9.9s%s \e[38;2;%sm%s%s' "$g" "$dim" "$br" "$off" "$ic" "$off" "$b" "$agent" "$off" "$c" "$sw" "$off")")
-			lines+=("$(printf '%s%s%s%s   \e[38;2;166;173;200m%.20s%s' "$g" "$dim" "$cont" "$off" "$dir" "$off")")
+			# Background processes (@agent_bg): blue gear + count before the folder, apart from the state.
+			bgm='' dw=20
+			[ -n "$nbg" ] && bgm=$'\e[38;2;137;180;250m⚙'$nbg' ' dw=$((20 - ${#nbg} - 2))
+			lines+=("$(printf '%s%s%s%s   %s\e[38;2;166;173;200m%.*s%s' "$g" "$dim" "$cont" "$off" "$bgm" "$dw" "$dir" "$off")")
 		done
 		lines+=("") rows+=("")
 	done < <(tmux list-sessions -F '#{session_name}	#{session_windows}	#{session_attached}')

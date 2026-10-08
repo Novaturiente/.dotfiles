@@ -1,7 +1,8 @@
 /**
  * Reports Pi's state to the tmux agent sidebar via ~/.config/tmux/agent-state.sh.
- * working = turn running or a pi-processes background process alive,
- * blocked = waiting on an ask-user answer, idle = settled.
+ * working = turn running, blocked = waiting on an ask-user answer, idle = settled.
+ * Running pi-processes count goes to @agent_bg, kept apart from the state so a
+ * long-lived dev server never blocks the done alert.
  */
 import { execFile, execFileSync } from "node:child_process";
 import { homedir } from "node:os";
@@ -35,7 +36,7 @@ export default function (pi: ExtensionAPI) {
 	};
 
 	const publish = () => {
-		const state = blocked > 0 ? "blocked" : active || running.size > 0 ? "working" : "idle";
+		const state = blocked > 0 ? "blocked" : active ? "working" : "idle";
 		const key = `${state} ${ref} ${cwd}`;
 		if (key === last) return;
 		last = key;
@@ -52,15 +53,21 @@ export default function (pi: ExtensionAPI) {
 		publish();
 	});
 
+	const bg = () => {
+		const pane = process.env.TMUX_PANE!;
+		const args = running.size > 0 ? ["set", "-p", "-t", pane, "@agent_bg", String(running.size)] : ["set", "-p", "-t", pane, "-u", "@agent_bg"];
+		execFile("tmux", args, () => {});
+	};
+
 	pi.events.on("processes:started", (info: { id?: string }) => {
 		if (!info?.id) return;
 		running.add(info.id);
-		if (root) publish();
+		if (root) bg();
 	});
 	pi.events.on("processes:ended", (info: { id?: string }) => {
 		if (!info?.id) return;
 		running.delete(info.id);
-		if (root) publish();
+		if (root) bg();
 	});
 
 	// Active model as "provider/id" on the pane; the sidebar shows that provider's usage.
@@ -79,6 +86,7 @@ export default function (pi: ExtensionAPI) {
 		if (ctx?.mode !== "tui") return;
 		root = true;
 		model(ctx);
+		bg();
 		track(ctx);
 		active = ctx?.isIdle?.() === false;
 		publish();
@@ -101,7 +109,7 @@ export default function (pi: ExtensionAPI) {
 	pi.on("session_shutdown", () => {
 		if (!root) return;
 		try {
-			execFileSync("tmux", ["set", "-p", "-t", process.env.TMUX_PANE!, "-u", "@agent_model"]);
+			execFileSync("tmux", ["set", "-p", "-t", process.env.TMUX_PANE!, "-u", "@agent_model", ";", "set", "-p", "-t", process.env.TMUX_PANE!, "-u", "@agent_bg"]);
 			execFileSync(SCRIPT, ["pi", "off"]);
 		} catch {
 			// tmux server already gone on shutdown: nothing left to clear.
