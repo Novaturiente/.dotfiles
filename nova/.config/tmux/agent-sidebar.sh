@@ -4,7 +4,7 @@
 # agent-sidebar.sh resize -> window-resized hook: keep the sidebar at WIDTH.
 # agent-sidebar.sh next|prev <pane> -> prefix+j/k: jump to the next/previous agent.
 # Keys in the sidebar: 1-9 jump to that agent, q closes.
-WIDTH=12%
+WIDTH=15%
 
 # Agent panes, in sidebar order: id, name, state, session:window, folder, command, bg count.
 # ponytail: pane whose foreground is a shell = agent exited without reporting off; hidden, not cleared
