@@ -66,7 +66,7 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 | Idle/Lock | **swayidle**: lock with swaylock (`scripts/lock.sh`) at 5 min, screen off at 10 min, never suspends on idle | `nova/.config/swayidle/config` |
 | Screenshots | grim + slurp + satty | bound in niri config |
 | Screen Record | wf-recorder (region/audio), wl-screenrec (fullscreen) | `scripts/record-script.sh` |
-| Clipboard | DMS clipboard history (Mod+V → `dms ipc call clipboard toggle`) | `nova/.config/DankMaterialShell/` |
+| Clipboard | **cliphist** stores history (`wl-paste --watch cliphist store`, run by the island shell `qs -c island`); Mod+V → `dms ipc call clipboard toggle`. `clip-push.service` (`scripts/clip-push.sh`) is a second watcher that pushes copied images to novahome | `nova/.config/quickshell/island/shell.qml`, `nova/.config/niri/dms/binds.kdl` |
 
 ## Shell & Terminal
 
