@@ -1,4 +1,4 @@
-nova/.config/qutebrowser/__pycache__/
+__pycache__/
 .aider*
 temp/
 docs/
