@@ -1,6 +1,7 @@
 /**
  * Reports Pi's state to the tmux agent sidebar via ~/.config/tmux/agent-state.sh.
- * working = turn running, blocked = waiting on an ask-user answer, idle = settled.
+ * working = turn running or a pi-processes background process alive,
+ * blocked = waiting on an ask-user answer, idle = settled.
  */
 import { execFile, execFileSync } from "node:child_process";
 import { homedir } from "node:os";
@@ -14,6 +15,8 @@ export default function (pi: ExtensionAPI) {
 	let root = false;
 	let active = false;
 	let blocked = 0;
+	// pi-processes ids still running; ended may fire twice, a Set absorbs that.
+	const running = new Set<string>();
 	let last = "";
 	let ref = "";
 	let cwd = "";
@@ -32,7 +35,7 @@ export default function (pi: ExtensionAPI) {
 	};
 
 	const publish = () => {
-		const state = blocked > 0 ? "blocked" : active ? "working" : "idle";
+		const state = blocked > 0 ? "blocked" : active || running.size > 0 ? "working" : "idle";
 		const key = `${state} ${ref} ${cwd}`;
 		if (key === last) return;
 		last = key;
@@ -47,6 +50,17 @@ export default function (pi: ExtensionAPI) {
 		if (!root) return;
 		blocked = data?.active ? blocked + 1 : Math.max(0, blocked - 1);
 		publish();
+	});
+
+	pi.events.on("processes:started", (info: { id?: string }) => {
+		if (!info?.id) return;
+		running.add(info.id);
+		if (root) publish();
+	});
+	pi.events.on("processes:ended", (info: { id?: string }) => {
+		if (!info?.id) return;
+		running.delete(info.id);
+		if (root) publish();
 	});
 
 	// Active model as "provider/id" on the pane; the sidebar shows that provider's usage.
