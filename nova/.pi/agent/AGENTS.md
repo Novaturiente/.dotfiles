@@ -75,14 +75,16 @@ Config details (MCP merge, subagent grants, browser flow): `~/.pi/agent/docs/too
 - Claude provider bug: never `subagent({workflow: true})` (arrives as string → `Unknown workflow resource 'true'`). Use separate `async: true` calls, or write script to file and pass `workflow: "./path.js"`. Max one foreground subagent call per turn.
 - Child questions (`need_decision`/`interview_request` via `contact_supervisor`): don't answer yourself unless already settled in this conversation or AGENTS.md. Relay with `ask_user_question` (prefix header/question with agent name), reply via `subagent_supervisor({action:"reply", replyTo:<request id>, message})`. Several pending → `subagent_supervisor({action:"pending"})`, batch into one `ask_user_question` (≤4), reply per id. `progress_update` → no reply.
 
-## Worktrees (mandatory for edits in a repo)
-- Any file edit in a git project → `enter_worktree` (leave via `exit_worktree`). Never `git checkout -b`/`switch` in main checkout unless user asked.
+## Worktrees (for large changes only)
+- Small quick change → edit main checkout directly on the branch already checked out, no worktree. Small = one or two files, a few lines, no new file/route/table/dependency, no long-running build or test work.
+- Large change → `enter_worktree` (leave via `exit_worktree`). Large = anything not small: multi-file features, refactors, migrations, new files, dependency changes, or work spanning several turns.
+- Another session has uncommitted edits in a file you'd touch (`git status --porcelain`) → worktree even for a small change.
+- Never `git checkout -b`/`switch` in main checkout unless user asked.
 - Assume other agents run in the repo: no stash/reset/clean/rebase in main checkout.
 - Worktrees live in `<repo>/.claude/worktrees/`, shared with Claude Code sessions. Reuse one only if ALL hold, else make a new one:
   1. No other session inside: `for p in $(pgrep -x claude; pgrep -x pi); do readlink /proc/$p/cwd; done` lists no path under it (ignore your own pid). Pi may not change process cwd on `enter_worktree`, so also ask yourself whether another session could be using it — in doubt, new worktree.
   2. Clean: `git -C <wt> status --porcelain` empty.
   3. Its branch is the right target (or disposable and user said so).
-- Main checkout gets writes only when user explicitly asked, in that message, on the branch already checked out.
 - Copy `.env` in fresh worktrees. Install deps only if the repo has no warm-up script (e.g. EEC-Learning `scripts/worktree-warm.sh`) or `package.json`/lockfile differs from main — worktrees under the main checkout resolve its `node_modules` by upward lookup. Say which worktree you're in. Remove after merge.
 - Never worktrees in Docker stacks or novahome's `~/Automation/`.
 
