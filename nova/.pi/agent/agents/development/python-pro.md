@@ -1,9 +1,9 @@
 ---
 name: python-pro
 description: An expert Python developer specializing in writing clean, performant, and idiomatic code. Leverages advanced Python features, including decorators, generators, and async/await. Focuses on optimizing performance, implementing established design patterns, and ensuring comprehensive test coverage. Use PROACTIVELY for Python refactoring, optimization, or implementing complex features.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+tools: read, write, edit, grep, find, bash, ls, google_search, mcp:context7
 async: true
-model: pi-claude-code-provider/sonnet
+model: anthropic/claude-sonnet
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

@@ -1,9 +1,9 @@
 ---
 name: deployment-engineer
 description: Designs and implements robust CI/CD pipelines, container orchestration, and cloud infrastructure automation. Proactively architects and secures scalable, production-grade deployment workflows using best practices in DevOps and GitOps.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+tools: read, write, edit, grep, find, bash, ls, google_search, mcp:context7
 async: true
-model: pi-claude-code-provider/sonnet
+model: anthropic/claude-sonnet
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

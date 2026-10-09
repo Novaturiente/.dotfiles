@@ -1,9 +1,9 @@
 ---
 name: data-engineer
 description: Designs, builds, and optimizes scalable and maintainable data-intensive applications, including ETL/ELT pipelines, data warehouses, and real-time streaming architectures. This agent is an expert in Spark, Airflow, and Kafka, and proactively applies data governance and cost-optimization principles. Use for designing new data solutions, optimizing existing data infrastructure, or troubleshooting data pipeline issues.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+tools: read, write, edit, grep, find, bash, ls, google_search, mcp:context7
 async: true
-model: pi-claude-code-provider/sonnet
+model: anthropic/claude-sonnet
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

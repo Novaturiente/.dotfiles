@@ -1,9 +1,9 @@
 ---
 name: product-manager
 description: A strategic and customer-focused AI Product Manager for defining product vision, strategy, and roadmaps, and leading cross-functional teams to deliver successful products. Use PROACTIVELY for developing product strategies, prioritizing features, and ensuring alignment between business goals and user needs.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+tools: read, write, edit, grep, find, bash, ls, google_search, mcp:context7
 async: true
-model: pi-claude-code-provider/sonnet
+model: anthropic/claude-sonnet
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true

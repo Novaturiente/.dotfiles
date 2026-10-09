@@ -1,9 +1,9 @@
 ---
 name: nextjs-pro
 description: An expert Next.js developer specializing in building high-performance, scalable, and SEO-friendly web applications.Leverages the full potential of Next.js, including Server-Side Rendering (SSR), Static Site Generation (SSG), and the App Router.Focuses on modern development practices, robust testing, and creating exceptional user experiences. Use PROACTIVELY for architecting new Next.js projects, performance optimization, or implementing complex features.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+tools: read, write, edit, grep, find, bash, ls, google_search, mcp:context7
 async: true
-model: pi-claude-code-provider/sonnet
+model: anthropic/claude-sonnet
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

@@ -3,7 +3,7 @@ name: documentation-expert
 description: A sophisticated AI Software Documentation Expert for designing, creating, and maintaining comprehensive and user-friendly software documentation. Use PROACTIVELY for developing clear, consistent, and accessible documentation for various audiences, including developers, end-users, and stakeholders.
 tools: read, write, edit, grep, find, bash, ls, mcp:context7
 async: true
-model: pi-claude-code-provider/sonnet
+model: anthropic/claude-sonnet
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

@@ -2,16 +2,14 @@ import type { BeforeProviderRequestEvent, ExtensionAPI } from "@earendil-works/p
 
 /**
  * Extension: claude-oauth-clean
- * 
- * 1. Resolves Anthropic third-party app rejection on OAuth:
- *    - Strips pi's built-in <docs> block from the outgoing system prompt.
+ *
+ * Resolves Anthropic third-party app rejection on OAuth:
+ *    - (Disabled) Strip pi's built-in <docs> block — see sanitizeSystem to re-enable.
  *    - Injects the official Claude Code CLI billing attribution header.
- * 
- * 2. Implements jcode-style prompt caching optimizations:
- *    - Keeps static prompt and tools cached.
- *    - Implements a sliding 2-breakpoint window on recent conversation turns
- *      (read previous turn, write current turn) staying within Anthropic's 4-breakpoint limit.
- *    - Supports 1-hour extended TTL when PI_CACHE_RETENTION=long is set.
+ *
+ * Prompt caching is left to pi itself: it already marks system, tools and the last
+ * message (4 = Anthropic's max) and honours PI_CACHE_RETENTION=long. Adding marks
+ * here caused "A maximum of 4 blocks with cache_control may be provided. Found 5."
  */
 
 const BILLING_HEADER = "x-anthropic-billing-header: cc_version=2.1.280; cc_entrypoint=sdk-cli; cch=33f85;";
@@ -22,44 +20,25 @@ interface AnthropicSystemBlock {
 	cache_control?: { type: "ephemeral"; ttl?: string };
 }
 
-interface AnthropicContentPart {
-	type: string;
-	text?: string;
-	cache_control?: { type: "ephemeral"; ttl?: string };
-	[key: string]: unknown;
-}
-
-interface AnthropicMessage {
-	role: string;
-	content: string | AnthropicContentPart[];
-	[key: string]: unknown;
-}
-
 interface AnthropicPayload {
 	model?: string;
 	system?: AnthropicSystemBlock[];
-	tools?: Array<{ name: string; cache_control?: { type: "ephemeral"; ttl?: string }; [key: string]: unknown }>;
-	messages?: AnthropicMessage[];
 	[key: string]: unknown;
 }
 
-function getCacheControl(): { type: "ephemeral"; ttl?: string } {
-	if (process.env.PI_CACHE_RETENTION === "long") {
-		return { type: "ephemeral", ttl: "1h" };
-	}
-	return { type: "ephemeral" };
-}
-
-function sanitizeSystem(system: AnthropicSystemBlock[], cacheControl: { type: "ephemeral"; ttl?: string }): AnthropicSystemBlock[] {
-	const sanitizedBlocks = system.map((block) => {
-		if (block && typeof block.text === "string") {
-			return {
-				...block,
-				text: block.text.replace(/<docs>[\s\S]*?<\/docs>/g, ""),
-			};
-		}
-		return block;
-	});
+function sanitizeSystem(system: AnthropicSystemBlock[]): AnthropicSystemBlock[] {
+	// <docs> stripping disabled: tested 2026-10-10 — billing header alone avoids the third-party rejection.
+	// If the rejection returns, delete the next line and uncomment the block below.
+	const sanitizedBlocks = [...system];
+	// const sanitizedBlocks = system.map((block) => {
+	// 	if (block && typeof block.text === "string") {
+	// 		return {
+	// 			...block,
+	// 			text: block.text.replace(/<docs>[\s\S]*?<\/docs>/g, ""),
+	// 		};
+	// 	}
+	// 	return block;
+	// });
 
 	const hasBilling = sanitizedBlocks.some(
 		(b) => typeof b.text === "string" && b.text.includes("x-anthropic-billing-header"),
@@ -71,48 +50,7 @@ function sanitizeSystem(system: AnthropicSystemBlock[], cacheControl: { type: "e
 		});
 	}
 
-	const instructionBlock = sanitizedBlocks.at(-1);
-	if (instructionBlock && !instructionBlock.cache_control) {
-		instructionBlock.cache_control = cacheControl;
-	}
-
 	return sanitizedBlocks;
-}
-
-function applySlidingMessageCache(messages: AnthropicMessage[], cacheControl: { type: "ephemeral"; ttl?: string }): void {
-	// Clear existing cache markers
-	for (const msg of messages) {
-		if (Array.isArray(msg.content)) {
-			for (const part of msg.content) {
-				if (part && typeof part === "object" && part.cache_control) {
-					part.cache_control = undefined;
-				}
-			}
-		}
-	}
-
-	const markMessage = (msg: AnthropicMessage | undefined) => {
-		if (!msg) return;
-		if (Array.isArray(msg.content) && msg.content.length > 0) {
-			const lastPart = msg.content.at(-1);
-			if (lastPart && typeof lastPart === "object") {
-				lastPart.cache_control = cacheControl;
-			}
-		} else if (typeof msg.content === "string") {
-			msg.content = [
-				{
-					type: "text",
-					text: msg.content,
-					cache_control: cacheControl,
-				},
-			];
-		}
-	};
-
-	if (messages.length >= 3) {
-		markMessage(messages.at(-2));
-	}
-	markMessage(messages.at(-1));
 }
 
 export default function (pi: ExtensionAPI) {
@@ -128,14 +66,8 @@ export default function (pi: ExtensionAPI) {
 
 		if (!isAnthropic) return;
 
-		const cacheControl = getCacheControl();
-
 		if (Array.isArray(payload.system)) {
-			payload.system = sanitizeSystem(payload.system, cacheControl);
-		}
-
-		if (Array.isArray(payload.messages) && payload.messages.length > 0) {
-			applySlidingMessageCache(payload.messages, cacheControl);
+			payload.system = sanitizeSystem(payload.system);
 		}
 
 		return payload;

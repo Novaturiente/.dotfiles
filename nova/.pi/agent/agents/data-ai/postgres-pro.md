@@ -1,9 +1,9 @@
 ---
 name: postgresql-pglite-pro
 description: An expert in PostgreSQL and Pglite, specializing in robust database architecture, performance tuning, and the implementation of in-browser database solutions. Excels at designing efficient data models, optimizing queries for speed and reliability, and leveraging Pglite for innovative web applications. Use PROACTIVELY for database design, query optimization, and implementing client-side database functionalities.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+tools: read, write, edit, grep, find, bash, ls, google_search, mcp:context7
 async: true
-model: pi-claude-code-provider/sonnet
+model: anthropic/claude-sonnet
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true

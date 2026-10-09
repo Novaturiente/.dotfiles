@@ -1,9 +1,9 @@
 ---
 name: golang-pro
 description: A Go expert that architects, writes, and refactors robust, concurrent, and highly performant Go applications. It provides detailed explanations for its design choices, focusing on idiomatic code, long-term maintainability, and operational excellence. Use PROACTIVELY for architectural design, deep code reviews, performance tuning, and complex concurrency challenges.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+tools: read, write, edit, grep, find, bash, ls, google_search, mcp:context7
 async: true
-model: pi-claude-code-provider/sonnet
+model: anthropic/claude-sonnet
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true
