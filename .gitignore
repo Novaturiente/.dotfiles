@@ -1,10 +1,6 @@
 __pycache__/
 .aider*
 temp/
-docs/
-docs/*
-!nova/.pi/agent/docs/
-.superpowers/
 
 # Password store (sensitive metadata)
 nova/.password-store/

@@ -3,13 +3,19 @@
 # `refresh` re-runs the per-app extractors (with the CORRECT config paths, incl.
 # niri's binds now living in modules/binds.kdl); `list` emits every app's
 # bindings as JSON for the tabbed UI. Source of truth: scripts/keybindings/bindings/*.txt
+# Only the running compositor's tab is shown (hyprland.txt or niri.txt).
 set -euo pipefail
 
 KB="$HOME/.dotfiles/scripts/keybindings"
 BIN="$KB/bindings"
+WM_NAMES=(hyprland niri)
+WM=$(bash "$HOME/.dotfiles/scripts/wm.sh" name)
 
 cmd_refresh() {
-    bash "$KB/extract-niri-keybindings.sh"       "$HOME/.config/niri/modules/binds.kdl"        >/dev/null 2>&1 || true
+    case "$WM" in
+    hyprland) bash "$KB/extract-hyprland-keybindings.sh" "$HOME/.config/hypr/binds.lua"   >/dev/null 2>&1 || true ;;
+    niri)     bash "$KB/extract-niri-keybindings.sh"     "$HOME/.config/niri/modules/binds.kdl" >/dev/null 2>&1 || true ;;
+    esac
     bash "$KB/extract-neovim-keybindings.sh"                                                     >/dev/null 2>&1 || true
     bash "$KB/extract-qutebrowser-keybindings.sh" "$HOME/.config/qutebrowser/config.py" >/dev/null 2>&1 || true
 }
@@ -18,12 +24,11 @@ cmd_refresh() {
 cmd_list() {
     local first=1
     printf '['
-    # niri first, the rest alphabetical. The UI opens on the first entry, and on
-    # this machine that should be the window manager, not whatever sorts first.
-    local files=()
-    if [[ -f "$BIN/niri.txt" ]]; then files+=("$BIN/niri.txt"); fi
+    # Running WM first, the rest alphabetical; other WMs' files are skipped. The UI
+    # opens on the first entry, and that should be the window manager.
+    local files=("$BIN/$WM.txt")
     for f in "$BIN"/*.txt; do
-        [[ "$f" == "$BIN/niri.txt" ]] || files+=("$f")
+        [[ " ${WM_NAMES[*]} " == *" $(basename "$f" .txt) "* ]] || files+=("$f")
     done
     for f in "${files[@]}"; do
         [[ -f "$f" ]] || continue

@@ -71,7 +71,8 @@ scheme (`MateriaDark`). The GTK widget theme (`adw-gtk3-dark`) and icon theme
 The seven Quickshell menus share `nova/.config/quickshell/common/Colors.qml`.
 Quickshell only auto-registers singletons inside a config's own root, so the
 shared one is reached as a QML module: `import common`, which needs
-`QML2_IMPORT_PATH=~/.config/quickshell` — set in niri's `modules/environment.kdl`.
+`QML2_IMPORT_PATH=~/.config/quickshell` — set in `hypr/hyprland.lua` (`hl.env`) under
+Hyprland and in niri's `modules/environment.kdl` under niri.
 
 ## Known gaps
 

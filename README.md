@@ -15,16 +15,20 @@ Complete system configuration for an Arch Linux (CachyOS kernel) setup on a Leno
 │   ├── .zshrc             # Main shell config
 │   └── .tmux.conf         # Tmux configuration
 ├── scripts/               # Custom utility scripts
-│   ├── rofi/              # Rofi launcher menus
-│   └── keybindings/       # Auto-extract keybindings from app configs
+│   ├── quickshell/        # Launchers/controllers for the Quickshell menus
+│   ├── rofi/              # Rofi menus (calendar, passwords, niri window switcher, tv-edit)
+│   ├── keybindings/       # Extract keybindings from Hyprland/niri/nvim/qutebrowser configs
+│   └── wm.sh              # Compositor shim: same answers under Hyprland and niri
 ├── system/
 │   ├── novarch            # Compiled Rust binary — declarative package manager
 │   ├── package/           # YAML package lists (one file per category)
 │   ├── system/            # System config files (mirrors / filesystem)
-│   │   ├── boot/          # GRUB theme (CyberSynchro)
-│   │   └── etc/           # TLP, Ly, systemd services, GRUB defaults
+│   │   ├── etc/           # TLP, PAM, sudoers, systemd units, udev, docker
+│   │   └── usr/           # /usr/local/bin helpers (battery-limit, vpn-run, howdy-ir-pre)
+│   ├── themes/            # Palettes + templates rendered by scripts/theme.sh
 │   └── setup.sh           # First-boot system setup script
-└── CLAUDE.md
+├── CLAUDE.md              # Agent guide: rules and orientation
+└── CLAUDE-reference.md    # Detailed reference (scripts, system config, theming, hardware)
 ```
 
 `nova/` mirrors the home directory — `nova/.config/ghostty/config` becomes `~/.config/ghostty/config` via stow.
@@ -41,11 +45,11 @@ cd ~/.dotfiles/system
 
 **The setup script will:**
 - Copy `novarch` to `/usr/bin/` and run `novarch init`
-- Deploy system configs (TLP, Ly, systemd services) to `/etc/`
+- Deploy system configs (`sudo cp -r system/system/. /`)
 - Symlink home directory configs via `stow -d ~/.dotfiles -t ~ nova`
-- Enable systemd services (Ly display manager, batsignal, battery-limit timer)
+- Enable systemd services (`ly@tty2`, `battery-limit.timer`, `paccache.timer`, `pkgfile-update.timer`)
 - Set zsh as default shell
-- Configure iptables firewall
+- Configure the ufw firewall
 - Reboot
 
 ### Stow Management
@@ -62,31 +66,29 @@ stow -d ~/.dotfiles -t ~ -D nova
 
 | Layer | Tool | Config |
 |-------|------|--------|
-| Window Manager | **Niri** (Wayland tiling compositor) | `nova/.config/niri/config.kdl` |
-| Alt WM | Hyprland | `nova/.config/hypr/` |
+| Window Manager | **Hyprland** (scrolling layout, Lua config) | `nova/.config/hypr/` |
+| Fallback WM | Niri + DankMaterialShell | `nova/.config/niri/`, `nova/.config/DankMaterialShell/` |
 | Login Manager | **Ly** (TUI, CMatrix animation) | `system/system/etc/ly/config.ini` |
-| Panel | **Waybar** + DankMaterialShell | `nova/.config/waybar/` |
-| Notifications | **swaync** | `nova/.config/swaync/` |
-| Launcher | **Rofi** (Wayland) | `nova/.config/rofi/` |
-| Wallpaper | **wpaperd** (random, 15min cycle) | `nova/.config/wpaperd/` |
-| Idle/Lock | **swayidle** (5min lock, 10min suspend) | `nova/.config/swayidle/` |
-| Screenshots | grim + slurp + satty | keybindings in niri config |
-| Screen Record | wl-screenrec | `scripts/record-script.sh` |
-| Clipboard | wl-clipboard + cliphist | autostarted in WM config |
+| Shell (bar, OSD, notifications, launcher, wallpaper, power menu, clipboard) | **Quickshell island** (`qs -c island`) | `nova/.config/quickshell/island/` |
+| Other menus | Quickshell (on demand) + Rofi | `nova/.config/quickshell/`, `nova/.config/rofi/` |
+| Idle/Lock | **swayidle** + swaylock (5min lock, 10min screen off, no idle suspend) | `nova/.config/swayidle/` |
+| Screenshots | grim + slurp + satty | `nova/.config/hypr/binds.lua` |
+| Screen Record | wf-recorder, wl-screenrec | `scripts/record-script.sh` |
+| Clipboard | wl-clipboard + cliphist | run by the island |
 
 ### Theming
 
-- **GTK/Qt:** Materia theme, WhiteSur icons, Bibata cursor
-- **Terminal font:** IosevkaTerm Nerd Font (size 13)
+- **Colours:** one palette drives everything. `scripts/theme.sh <name>` renders every themed config from `system/themes/templates/`; `Mod+Shift+T` opens a picker. Themes: catppuccin, tokyonight, rosepine, space-galaxy. See `system/themes/README.md`
+- **GTK:** `adw-gtk3-dark` widgets, breeze-dark icons, Bibata cursor
+- **Terminal font:** ZedMono Nerd Font (size 13)
 - **Editor font:** JetBrains Mono NL Nerd Font (size 13–15)
-- **Color schemes:** Catppuccin Mocha (Ghostty)
 
 ## Shell & Terminal
 
 | Tool | Details |
 |------|---------|
 | Shell | **zsh** (vi mode, custom powerline prompt) |
-| Terminal | **Ghostty** (Catppuccin Mocha, 50% opacity, blur) |
+| Terminal | **Ghostty** (themed by `scripts/theme.sh`, transparent background, blur) |
 | Multiplexer | **tmux** (prefix: backtick `` ` ``, vi mode) |
 | History | **atuin** (synced) |
 | Navigation | **zoxide**, **fzf** |
@@ -101,8 +103,8 @@ stow -d ~/.dotfiles -t ~ -D nova
 2. `.zprofile` — login shell overrides
 3. `.zshrc` — sources `.profile`, then loads from `~/.config/zsh/`:
    - `variables.zsh` — editor, PATH, locale
-   - `aliases.zsh` — 80+ aliases (eza, trash-put, rsync, git, podman)
-   - `pluginload.zsh` — autopair, fast-syntax-highlighting, autosuggestions, autocomplete
+   - `aliases.zsh` — aliases and helper functions (eza, trash, git, ssh, `cproj`)
+   - `pluginload.zsh` — autopair, syntax-highlighting, inline suggestions; the Tab menu is native `menu select`
    - `prompt.zsh` — powerline prompt with git branch and language detection
 
 ### Notable Aliases
@@ -136,26 +138,31 @@ Packages are organized into YAML files in `system/package/`. Each file is a simp
 | File | Contents |
 |------|----------|
 | `base-system.yaml` | Kernel, firmware, networking, audio (pipewire), filesystems, power (TLP) |
-| `terminal-tools.yaml` | zsh, ghostty, tmux, neovim, yazi, CLI tools (bat, fd, ripgrep, fzf, eza) |
-| `windowmanager.yaml` | Niri, Ly, Waybar, Rofi, fonts, themes, screenshot/recording/OCR tools |
+| `terminal-tools.yaml` | zsh, ghostty, tmux, neovim, CLI tools (bat, fd, ripgrep, fzf, eza) |
+| `windowmanager.yaml` | Niri, Ly, Quickshell, DMS, Rofi, fonts, themes, screenshot/recording/OCR tools (Hyprland is in `manual-install.yaml`) |
 | `development.yaml` | Build tools, Rust/Python/Node/Go/Lua, LSPs, linters, lazygit |
 | `work.yaml` | Java, Docker, databases (PostgreSQL, MySQL), Chrome, WPS Office, Zoom |
 | `internet.yaml` | Qutebrowser, Zen Browser, KDE Connect, LocalSend, Thunderbird |
 | `media.yaml` | mpv, playerctl, imv, imagemagick, easyeffects |
+| `manual-install.yaml` | Packages installed by hand, incl. Hyprland, hyprpm, xdg-desktop-portal-hyprland, hyprsunset |
 | `nvidia.yaml` | NVIDIA drivers (currently all disabled — Intel iGPU only) |
-| `virtualization.yaml` | Empty |
+| `virtualization.yaml` | QEMU for local VMs |
 
 ### novarch
 
 Custom Rust binary that reads the YAML files and syncs installed packages declaratively:
 
 ```bash
-novarch init    # Bootstrap — install all packages from all YAML files
+novarch init     # Bootstrap — install all packages from all YAML files
+novarch diff     # Preview what a sync would install/remove
+novarch install  # Sync; removes tracked packages that no YAML declares any more
 ```
 
 **AUR helper:** paru
 
 ## Scripts
+
+Full list with details: `CLAUDE-reference.md` → Scripts.
 
 ### System Control (`scripts/`)
 
@@ -163,11 +170,9 @@ novarch init    # Bootstrap — install all packages from all YAML files
 |--------|---------|
 | `brightness.sh` | Adaptive brightness (1% step below 32%, 5% above) via brightnessctl |
 | `volume.sh` | Media volume via playerctl |
-| `mute.sh` | Mute toggle via pamixer |
-| `idle.sh` | Toggle swayidle daemon |
-| `battery-limit.sh` | Lenovo IdeaPad battery conservation mode |
+| `battery-limit.sh` | Lenovo IdeaPad battery conservation mode (in `system/system/usr/local/bin/`) |
 | `dns.sh` | Toggle Adguard DNS on a NetworkManager connection |
-| `wallpaper.sh` | Random wallpaper rotation (30min, swaybg) |
+| `wm.sh` | Compositor shim (focused window, window list, focus, dpms, session name) for Hyprland and niri |
 
 ### Productivity
 
@@ -177,20 +182,20 @@ novarch init    # Bootstrap — install all packages from all YAML files
 | `ocr_select.sh` | Region select → screenshot → RapidOCR → clipboard |
 | `file_picker.sh` | Zenity file dialog → clipboard → ydotool paste |
 | `calendar-notify.sh` | Parse khal events → schedule 10min-before notifications via `at` |
-| `record-script.sh` | wl-screenrec wrapper (full/region/audio modes) |
+| `record-script.sh` | wf-recorder / wl-screenrec wrapper (full/region/audio modes) |
 
 ### Rofi Menus (`scripts/rofi/`)
 
 | Script | Purpose |
 |--------|---------|
-| `bookmarks.sh` | Browser bookmark manager with title fetching |
-| `find.sh` | File finder in dotfiles → open in neovide |
-| `power.sh` | Logout/shutdown/reboot with confirmation |
-| `tools.sh` | File operations (copy, move, rename, delete, restore via trash) |
+| `calendar.sh` | khal calendar front-end |
+| `passrofi.sh` | rbw password picker with per-domain autofill |
+| `windows.sh` | Window switcher for niri |
+| `tv-edit.sh` | Edit the TV output configuration |
 
-### Keybinding Extractors (`scripts/keybindings/`)
+### Keybindings cheat-sheet (`scripts/keybindings/`)
 
-Auto-extracts keybindings from niri, neovim, and qutebrowser configs into a unified rofi menu via `keybindings.sh`.
+`Mod+Shift+/` opens a Quickshell cheat-sheet (`scripts/quickshell/keybindings.sh`). Its backend `scripts/quickshell/kbctl.sh` re-runs the extractors and shows the running compositor's binds (Hyprland or niri, picked by `wm.sh name`) plus neovim, qutebrowser and csvlens.
 
 ## System Configuration
 
@@ -203,38 +208,39 @@ Auto-extracts keybindings from niri, neovim, and qutebrowser configs into a unif
 | Platform Profile | performance | low-power |
 | WiFi Power Save | off | on |
 | Turbo Boost | on | on |
-| Battery Charge | Start: 75%, Stop: 80% | |
 | Sleep Mode | s2idle (modern standby) | |
+
+No charge thresholds in TLP; `battery-limit.timer` toggles IdeaPad conservation mode instead.
 
 ### Boot
 
-- GRUB with CyberSynchro theme, 3s timeout
-- Kernel params: `loglevel=3 quiet splash i915.enable_psr=1`
+- systemd-boot (managed by `systemd-boot-manager`); no GRUB
+- Kernel params: `zswap.enabled=0 nowatchdog quiet splash`
 
 ### Systemd Services
 
 | Service | Purpose |
 |---------|---------|
 | `battery-limit.timer` | Runs battery limit script every 5 min |
-| `batsignal.service` | Battery notifications (critical: 10%, warning: 30%, full: 95%) |
+| `paccache.timer` | Weekly; keeps 2 versions of installed packages |
 
-### Firewall (iptables)
+Battery alerts come from the DMS `dankBatteryAlerts` plugin.
 
-- INPUT: DROP by default
-- Allow: established/related connections, loopback, KDE Connect (1714–1764), SSH (22)
-- OUTPUT: ACCEPT
+### Firewall (ufw)
+
+- Incoming and routed: DROP by default; outgoing: ACCEPT
+- Allow: SSH (22), KDE Connect (1714–1764 tcp/udp), 3000, 3001, mDNS/SSDP and 192.168.220.0/24 on wlan0
 
 ## Browsers
 
 - **Primary:** Zen Browser
-- **Secondary:** Qutebrowser (keyboard-driven, dark mode, city-lights theme)
-- **Work:** Google Chrome, Thorium (separate qutebrowser profile)
+- **Secondary:** Qutebrowser (keyboard-driven, dark mode, follows the active theme)
+- **Work:** Google Chrome
 
 ## File Management
 
-- **Primary:** Yazi (custom keybindings: mount menu, SMB shares, drag-drop)
-- **Secondary:** Ranger (miller columns, kitty image preview)
-- **MIME defaults:** Zen (web), nvim (text, Markdown, CSV, code), zathura (PDF, epub), imv (images), mpv (media), Ranger (dirs)
+- No terminal file manager package is installed; `Mod+E` opens `explorenova` in Ghostty
+- **MIME defaults:** Zen (web), nvim (text, Markdown, CSV, code), zathura (PDF, epub), imv (images), mpv (media)
 
 ## Hardware
 
@@ -250,14 +256,14 @@ Auto-extracts keybindings from niri, neovim, and qutebrowser configs into a unif
 | **RAM** | 16 GB (15.2 GiB usable), soldered |
 | **Storage** | Samsung PM9C1a 1 TB NVMe SSD (DRAM-less) |
 | | Partition layout: 2 GB EFI (`/boot`, vfat) + 952 GB root/home (btrfs) |
-| **Swap** | 15.2 GB zram (compressed RAM swap) + 24 GB swap file/partition |
+| **Swap** | 7.6 GB zram (zstd) + 8 GB swap file (`/swap/swapfile`) |
 | **WiFi** | Intel AX211 (WiFi 6E, CNVi, Meteor Lake PCH) |
 | **Bluetooth** | Intel AX211 (BT 5.3) |
 | **Webcam** | Bison Integrated RGB Camera (USB) |
 | **Card Reader** | O2 Micro SD/MMC Controller |
 | **Ports** | Thunderbolt 4 (USB-C), USB 3.2 Gen 2x1 |
 | **Display** | 14" 1920x1080 @ 60 Hz (eDP-1), intel_backlight |
-| **Kernel** | linux-cachyos 6.19.x (PREEMPT_DYNAMIC, built with clang/LLD) |
+| **Kernel** | linux-cachyos 7.2.x (PREEMPT_DYNAMIC, built with clang/LLD) |
 | **Filesystem** | Btrfs (root + home on single partition) |
 | **Networking** | Tailscale VPN, Docker/Podman bridge networks |
 
@@ -294,7 +300,7 @@ cd ~/.dotfiles/system
 
 ## Notes
 
-- **Wayland-native** — all scripts assume Wayland (wl-copy, slurp, grim, ydotool)
-- **Nerd Fonts required** — icons used in rofi, prompts, waybar, and terminal configs
+- **Wayland-native** — all scripts assume Wayland (wl-copy, slurp, grim, ydotool, hyprctl / niri msg via `scripts/wm.sh`)
+- **Nerd Fonts required** — icons used in rofi, Quickshell, prompts, and terminal configs
 - System setup requires root privileges
 - Sensitive files (.env, API keys, credentials) are not committed

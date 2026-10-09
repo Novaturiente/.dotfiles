@@ -21,7 +21,8 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 │   └── .tmux.conf         # Tmux config (backtick prefix, vi mode)
 ├── scripts/               # Custom utility scripts
 │   ├── rofi/              # Rofi menus (calendar, password, window switcher, tv-edit)
-│   ├── quickshell/        # Quickshell menu launchers/controllers (bound in niri)
+│   ├── quickshell/        # Quickshell menu launchers/controllers (bound in hypr/binds.lua)
+│   ├── wm.sh              # Compositor shim: same answers under Hyprland and niri
 │   └── keybindings/       # Auto-extract keybindings from niri/nvim/qutebrowser
 ├── system/
 │   ├── novarch            # Compiled Rust binary - declarative package manager
@@ -55,18 +56,21 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 
 ## Desktop Environment Stack
 
+Primary session is **Hyprland** with the **Quickshell island** as the shell. The old **niri** + DankMaterialShell session is still in the repo and still works as a fallback; scripts that talk to the compositor go through `scripts/wm.sh` so they run under both. Rows below describe Hyprland; niri differences are noted.
+
 | Layer | Tool | Config Location |
 |-------|------|-----------------|
-| Window Manager | **Niri** (Wayland tiling compositor) | `nova/.config/niri/config.kdl` |
+| Window Manager | **Hyprland** (Lua config, `scrolling` layout ported from niri; binds mirror niri's). Fallback: **niri** (`nova/.config/niri/config.kdl`) | `nova/.config/hypr/hyprland.lua`, `binds.lua`, `colors.lua` (generated) |
+| Session startup | `hyprland.lua` `hyprland.start` hook: imports env into systemd, starts `hyprland-session.target` (pulls `graphical-session.target`), starts the island, restarts DMS with its bar and OSD hidden. Shutdown hook stops the target | `nova/.config/hypr/hyprland.lua`, `nova/.config/systemd/user/hyprland-session.target` |
 | Login Manager | **Ly** (TUI greeter on tty2, `ly@tty2.service`) | `system/system/etc/ly/config.ini` |
-| Panel / Wallpaper / Lock / OSD | **DankMaterialShell** (`dms`, Quickshell-based) | `nova/.config/DankMaterialShell/`, `nova/.config/niri/dms/` |
-| Notifications | Own Quickshell daemon, ported from caelestia-shell. Runs as `quickshell-notifications.service`, **not** under niri startup. | `nova/.config/quickshell/notifications/` |
-| Launcher / menus | **Quickshell** menus, started on demand by `scripts/quickshell/*.sh` and quit once closed and idle (nothing resident); Rofi for a few helpers | `nova/.config/quickshell/`, `nova/.config/rofi/` |
+| Bar / OSD / Notifications / Polkit / Wallpaper / Launcher / Power menu / Clipboard | **Quickshell island** (`qs -c island`): top-centre pill that morphs into pages, driven by `qs -c island ipc call island …`. Owns `org.freedesktop.Notifications` and the polkit agent under Hyprland | `nova/.config/quickshell/island/` |
+| DankMaterialShell | Still runs under Hyprland (bar hidden, OSD off, polkit disabled via `DMS_DISABLE_POLKIT=1`); binds fall back to `dms ipc` if the island doesn't answer. Under niri it is the full panel/wallpaper/OSD | `nova/.config/DankMaterialShell/`, `nova/.config/hypr/dms/` (DMS-generated), `nova/.config/niri/dms/` |
+| Other menus | **Quickshell** configs (keybindings, calendar, pass, switcher, zen-url, theme under niri), started on demand by `scripts/quickshell/*.sh` and quit once closed and idle; Rofi for a few helpers | `nova/.config/quickshell/`, `nova/.config/rofi/` |
 | Menu motion / widgets | `common/` QML module: Material 3 Expressive curves (`Tokens`, `Anim`), ripple (`StateLayer`), and the `Styled*` widget set. Ported by hand from [caelestia-shell](https://github.com/caelestia-dots/shell); no compiled plugin. | `nova/.config/quickshell/common/` |
 | Idle/Lock | **swayidle**: lock with swaylock (`scripts/lock.sh`) at 5 min, screen off at 10 min, never suspends on idle | `nova/.config/swayidle/config` |
-| Screenshots | grim + slurp + satty | bound in niri config |
+| Screenshots | grim + slurp + satty | `nova/.config/hypr/binds.lua` |
 | Screen Record | wf-recorder (region/audio), wl-screenrec (fullscreen) | `scripts/record-script.sh` |
-| Clipboard | **cliphist** stores history (`wl-paste --watch cliphist store`, run by the island shell `qs -c island`); Mod+V → `dms ipc call clipboard toggle`. `clip-push.service` (`scripts/clip-push.sh`) is a second watcher that pushes copied images to novahome | `nova/.config/quickshell/island/shell.qml`, `nova/.config/niri/dms/binds.kdl` |
+| Clipboard | **cliphist** stores history (`wl-paste --watch cliphist store`, run by the island); Mod+V → island `clipboard` page (falls back to `dms ipc call clipboard toggle`). `clip-push.service` (`scripts/clip-push.sh`) is a second watcher that pushes copied images to novahome | `nova/.config/quickshell/island/shell.qml`, `nova/.config/hypr/binds.lua` |
 
 ## Reference (read on demand)
 
@@ -76,10 +80,12 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 
 Rules you must know without reading it:
 - **Theming:** never hand-edit a generated config (header says "generated by scripts/theme.sh"); edit `system/themes/templates/` or `system/themes/palettes/` and run `scripts/theme.sh <name>`.
-- **Notifications:** popups come from `quickshell-notifications.service`, not DMS; DMS's notification centre is intentionally empty. Don't "fix" that without reading the Notifications section.
+- **Notifications:** under Hyprland the island is the notification server (startup stops `quickshell-notifications.service` and starts the island before DMS). Under niri popups come from `quickshell-notifications.service`. DMS's notification centre is intentionally empty either way. Don't "fix" that without reading the Notifications section.
+- **Compositor calls:** use `scripts/wm.sh` instead of raw `hyprctl`/`niri msg` in shared scripts, so they keep working under both sessions.
 
 ## Important Notes
 
-- **Wayland-native:** All scripts assume Wayland (wl-copy, slurp, grim, ydotool, niri msg)
+- **Wayland-native:** All scripts assume Wayland (wl-copy, slurp, grim, ydotool, hyprctl / niri msg via `scripts/wm.sh`)
+- **Hyprland packages** (`hyprland`, `hyprpm`, `xdg-desktop-portal-hyprland`, `hyprsunset`) are in `manual-install.yaml`; niri stays in `windowmanager.yaml`. The `hyprglass` plugin is built by hand into `~/.local/share/hyprglass/`
 - **Nerd Fonts required:** Icons used throughout rofi, quickshell, prompts, and terminal configs
 - **Sensitive files:** API keys and credentials are stored in `.profile` and `.env` files — never commit actual values
