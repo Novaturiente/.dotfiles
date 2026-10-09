@@ -1,0 +1,137 @@
+Alt+Print                   screenshot window
+Alt+space                   handy --toggle-transcription
+Alt+Tab                     quickshell/switcher.sh
+Ctrl+Alt+Delete             exit
+Ctrl+Alt+W                  island toggle wallpaper
+Ctrl+Print                  screenshot screen
+Mod+1                       focus workspace=1
+Mod+2                       focus workspace=2
+Mod+3                       focus workspace=3
+Mod+4                       focus workspace=4
+Mod+5                       focus workspace=5
+Mod+6                       focus workspace=6
+Mod+7                       focus workspace=7
+Mod+8                       focus workspace=8
+Mod+9                       focus workspace=9
+Mod+Alt+R                   layout promote
+Mod+BackSpace               window.close
+Mod+B                       island toggleAutoHide
+Mod+bracketleft             layout consume_or_expel prev
+Mod+bracketright            layout consume_or_expel next
+Mod+C                       layout fit active
+Mod+comma                   layout consume
+Mod+Ctrl+1                  window.move workspace=1
+Mod+Ctrl+2                  window.move workspace=2
+Mod+Ctrl+3                  window.move workspace=3
+Mod+Ctrl+4                  window.move workspace=4
+Mod+Ctrl+5                  window.move workspace=5
+Mod+Ctrl+6                  window.move workspace=6
+Mod+Ctrl+7                  window.move workspace=7
+Mod+Ctrl+8                  window.move workspace=8
+Mod+Ctrl+9                  window.move workspace=9
+Mod+Ctrl+Alt+R              record-script.sh --fullscreen-both
+Mod+Ctrl+Alt+Shift+R        record-script.sh --region-both
+Mod+Ctrl+C                  layout fit visible
+Mod+Ctrl+down               window.move direction=d
+Mod+Ctrl+F                  window.float action=toggle
+Mod+Ctrl+G                  fix_grammar.sh
+Mod+Ctrl+H                  layout swapcol l
+Mod+Ctrl+I                  window.move workspace=r-1
+Mod+Ctrl+J                  window.move direction=d
+Mod+Ctrl+K                  window.move direction=u
+Mod+Ctrl+left               layout swapcol l
+Mod+Ctrl+L                  layout swapcol r
+Mod+Ctrl+mouse_down         focus workspace=r+1
+Mod+Ctrl+mouse_left         layout swapcol l
+Mod+Ctrl+mouse_right        layout swapcol r
+Mod+Ctrl+mouse_up           focus workspace=r-1
+Mod+Ctrl+Page_Down          window.move workspace=r+1
+Mod+Ctrl+Page_Up            window.move workspace=r-1
+Mod+Ctrl+P                  scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --...
+Mod+Ctrl+right              layout swapcol r
+Mod+Ctrl+R                  record-script.sh
+Mod+Ctrl+Shift+mouse_down   layout swapcol r
+Mod+Ctrl+Shift+mouse_up     layout swapcol l
+Mod+Ctrl+Shift+P            dpms action=off
+Mod+Ctrl+Shift+R            record-script.sh --region
+Mod+Ctrl+S                  island toggle dashboard
+Mod+Ctrl+T                  ~/.local/bin/tv-remote
+Mod+Ctrl+up                 window.move direction=u
+Mod+Ctrl+U                  window.move workspace=r+1
+Mod+Ctrl+W                  qutebrowser
+Mod+D                       island toggle launcher
+Mod+down                    focus workspace=r+1
+Mod+E                       ghostty -e explorenova
+Mod+equal                   layout colresize +0.1
+Mod+Escape                  submap passthru
+Mod+F                       layout colresize 1.0
+Mod+H                       focus direction=l
+Mod+J                       focus workspace=r+1
+Mod+K                       focus workspace=r-1
+Mod+left                    focus direction=l
+Mod+L                       focus direction=r
+Mod+minus                   layout colresize -0.1
+Mod+mouse:272               window.drag
+Mod+mouse:273               window.resize
+Mod+mouse_down              focus direction=r
+Mod+mouse_left              window.move workspace=r-1
+Mod+mouse_right             window.move workspace=r+1
+Mod+mouse_up                focus direction=l
+Mod+N                       ghostty -e nvim
+Mod+O                       file_picker.sh
+Mod+Page_Down               focus workspace=r+1
+Mod+Page_Up                 focus workspace=r-1
+Mod+period                  layout expel
+Mod+P                       scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --...
+Mod+Q                       window.close
+Mod+Return                  ghostty --title='tmux' -e zsh -ic tmux
+Mod+right                   focus direction=r
+Mod+R                       layout colresize +conf
+Mod+Shift+C                 quickshell/cal.sh
+Mod+Shift+Ctrl+down         window.move monitor=d
+Mod+Shift+Ctrl+H            window.move monitor=l
+Mod+Shift+Ctrl+J            window.move monitor=d
+Mod+Shift+Ctrl+K            window.move monitor=u
+Mod+Shift+Ctrl+left         window.move monitor=l
+Mod+Shift+Ctrl+L            window.move monitor=r
+Mod+Shift+Ctrl+right        window.move monitor=r
+Mod+Shift+Ctrl+up           window.move monitor=u
+Mod+Shift+D                 rofi/tv-edit.sh
+Mod+Shift+E                 island toggle power
+Mod+Shift+equal             window.resize relative=true x=0 y=100
+Mod+Shift+F                 window.fullscreen mode=fullscreen
+Mod+Shift+left              focus monitor=l
+Mod+Shift+L                 lock.sh
+Mod+Shift+minus             window.resize relative=true x=0 y=-100
+Mod+Shift+mouse_down        focus direction=r
+Mod+Shift+mouse_up          focus direction=l
+Mod+Shift+N                 tasks.sh
+Mod+Shift+O                 ocr_select.sh
+Mod+Shift+P                 quickshell/pass.sh
+Mod+Shift+right             focus monitor=r
+Mod+Shift+R                 window.resize relative=true x=0 y=-100
+Mod+Shift+slash             quickshell/keybindings.sh
+Mod+Shift+S                 screenshot region -> satty
+Mod+Shift+Tab               switch focus floating/tiling
+Mod+Shift+T                 island toggle theme
+Mod+Shift+W                 vpn-run qutebrowser
+Mod+space                   ghostty
+Mod+S                       quickshell/zen-url.sh
+Mod+Tab                     quickshell/switcher.sh
+Mod+T                       tasks.sh
+Mod+up                      focus workspace=r-1
+Mod+V                       island toggle clipboard
+Mod+W                       zen-browser
+[passthru] Mod+Escape       submap reset
+Print                       screenshot region
+Shift+XF86AudioLowerVolume  island brightness down
+Shift+XF86AudioMute         if pkill swayidle; then notify-send 'Suspend disabled'; e...
+Shift+XF86AudioRaiseVolume  island brightness up
+switch:on:Lid Switch        systemctl suspend-then-hibernate
+XF86AudioLowerVolume        island volume -5
+XF86AudioMicMute            island volume micmute
+XF86AudioMute               island volume mute
+XF86AudioRaiseVolume        island volume 5
+XF86MonBrightnessDown       island brightness down
+XF86MonBrightnessUp         island brightness up
+XF86PowerOff                systemctl suspend-then-hibernate

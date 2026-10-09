@@ -48,10 +48,10 @@ local shot = "~/Desktop/Screenshots/Screenshot\\ from\\ $(date +%Y-%m-%d\\ %H-%M
 local function save(geom) -- grim to file + clipboard, like niri's screenshot actions
     return run("mkdir -p ~/Desktop/Screenshots && f=" .. shot .. " && grim " .. geom .. " \"$f\" && wl-copy < \"$f\"")
 end
-bind(M .. " + SHIFT + S", run("grim -g \"$(slurp)\" - | satty -f - --copy-command 'wl-copy'"))
-bind("Print",             save("-g \"$(slurp)\""))
-bind("CTRL + Print",      save("-o \"$(hyprctl -j monitors | jq -r '.[] | select(.focused).name')\""))
-bind("ALT + Print",       save("-g \"$(hyprctl -j activewindow | jq -r '\"\\(.at[0]),\\(.at[1]) \\(.size[0])x\\(.size[1])\"')\""))
+bind(M .. " + SHIFT + S", run("grim -g \"$(slurp)\" - | satty -f - --copy-command 'wl-copy'"), { description = "screenshot region -> satty" })
+bind("Print",             save("-g \"$(slurp)\""), { description = "screenshot region" })
+bind("CTRL + Print",      save("-o \"$(hyprctl -j monitors | jq -r '.[] | select(.focused).name')\""), { description = "screenshot screen" })
+bind("ALT + Print",       save("-g \"$(hyprctl -j activewindow | jq -r '\"\\(.at[0]),\\(.at[1]) \\(.size[0])x\\(.size[1])\"')\""), { description = "screenshot window" })
 
 -- ── Screen recording ───────────────────────────────────────────────────────
 bind(M .. " + CTRL + R",                 run(S .. "record-script.sh"))
@@ -174,4 +174,4 @@ bind(M .. " + SHIFT + Tab", function()
     local w = hl.get_active_window()
     local floating = w ~= nil and w.floating
     hl.dispatch(dsp.window.cycle_next({ tiled = floating, floating = not floating }))
-end)
+end, { description = "switch focus floating/tiling" })

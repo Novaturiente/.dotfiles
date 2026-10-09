@@ -7,7 +7,7 @@ Detail split out of `CLAUDE.md` to keep the always-loaded context small. Read th
 | Tool | Details |
 |------|---------|
 | **Shell** | zsh (primary, default login shell); fish config is kept but unused |
-| **Terminal** | Ghostty (ZedMono Nerd Font, size 13, themed by `scripts/theme.sh`, 90% opacity) |
+| **Terminal** | Ghostty (ZedMono Nerd Font, size 13, themed by `scripts/theme.sh`, `background-opacity = 0.0` + blur) |
 | **Multiplexer** | tmux (prefix: backtick `` ` ``, vi mode) |
 | **History** | atuin (synced) |
 | **Navigation** | zoxide (cd replacement), fzf (fuzzy finder) |
@@ -37,7 +37,7 @@ Detail split out of `CLAUDE.md` to keep the always-loaded context small. Read th
 
 ### Neovim (only editor; Emacs removed 2026-10-07)
 - `$EDITOR`/`$VISUAL`, `tv-edit.sh` (Mod+Shift+D), lazygit (`scripts/lazygit-edit.sh`, new tmux window) and Mod+N (`ghostty -e nvim`) all run plain `nvim`
-- MIME defaults use `nvim.desktop` (overridden in `nova/.local/share/applications/`: the stock entry is `Terminal=true`, which glib cannot open under niri). PDFs go to zathura
+- MIME defaults use `nvim.desktop` (overridden in `nova/.local/share/applications/`: the stock entry is `Terminal=true`, which glib cannot open without a desktop environment). PDFs go to zathura
 - Config: `nova/.config/nvim/` (Lua-based)
 - Plugin manager: lazy.nvim
 - Leader key: Space
@@ -54,7 +54,8 @@ Detail split out of `CLAUDE.md` to keep the always-loaded context small. Read th
 | `volume.sh` | playerctl volume adjust |
 | `battery-limit.sh` | Lenovo IdeaPad conservation mode (70%+ → enable). Lives in `system/system/usr/local/bin/`; the root timer runs the root-owned copy in `/usr/local/bin`, never the user-writable repo file |
 | `dns.sh` | Toggle Adguard DNS on NetworkManager connection |
-| `tv-only-output.sh` | Switch niri output to the TV only |
+| `tv-only-output.sh` | Switch niri output to the TV only (niri-only; uses `niri msg`) |
+| `wm.sh` | Compositor shim: `focused`, `windows`, `focus <id>`, `focus-app <name>`, `dpms on\|off`. Returns niri's JSON shape under both Hyprland (`hyprctl`) and niri. Detects Hyprland by a live socket, not just `HYPRLAND_INSTANCE_SIGNATURE` |
 
 ### Productivity
 | Script | Purpose |
@@ -70,11 +71,14 @@ Detail split out of `CLAUDE.md` to keep the always-loaded context small. Read th
 |--------|---------|
 | `calendar.sh` | khal calendar front-end |
 | `passrofi.sh` | rbw password picker with per-domain autofill |
-| `windows.sh` | Window switcher for niri |
+| `windows.sh` | Window switcher for niri (Hyprland uses `scripts/quickshell/switcher.sh` on Mod+Tab / Alt+Tab) |
 | `tv-edit.sh` | Edit the TV output configuration |
 
 ### Keybinding Extractors (`scripts/keybindings/`)
-Auto-extract and display keybindings from niri, neovim, and qutebrowser configs into a unified rofi menu.
+One extractor per app writes `bindings/<app>.txt`: `extract-hyprland-keybindings.sh`, `extract-niri-keybindings.sh`, neovim, qutebrowser (csvlens is hand-written).
+- **Hyprland:** `hyprctl binds` shows every action as `__lua`, so the extractor runs `hypr/binds.lua` under plain `lua` with a stub `hl` that records each `hl.bind()`. A bind whose derived label is unclear gets `{ description = "..." }` in `binds.lua`; the extractor prefers it.
+- **Viewer:** Mod+Shift+/ opens the Quickshell cheat-sheet (`scripts/quickshell/keybindings.sh`, `qs -c keybindings`). Its backend `scripts/quickshell/kbctl.sh` refreshes and lists bindings, showing only the running compositor's file (`wm.sh name` → `hyprland` or `niri`), first.
+- `keybindings.sh` (rofi) is the older viewer; nothing binds it and it still only refreshes niri.
 
 ## System Configuration
 
@@ -103,7 +107,7 @@ Auto-extract and display keybindings from niri, neovim, and qutebrowser configs 
 
 Colours are switchable across the whole desktop. `system/themes/palettes/<name>.env`
 holds the only hand-written colours; `scripts/theme.sh <name>` renders every
-themed config from `system/themes/templates/` with `envsubst`, and `Mod+Shift+T`
+themed config (including `nova/.config/hypr/colors.lua`) from `system/themes/templates/` with `envsubst`, and `Mod+Shift+T`
 opens a picker that drives the same script (island `theme` page under Hyprland,
 standalone `qs -c theme` under niri). Adding a theme means
 adding one palette file. See `system/themes/README.md`.
@@ -118,13 +122,22 @@ adding one palette file. See `system/themes/README.md`.
 - **Qt:** left to DMS's own qt5ct/qt6ct templates and the xdg portal; not templated here
 - **Terminal font:** ZedMono Nerd Font (size 13)
 - **Editor font:** JetBrains Mono NL Nerd Font (size 13-15)
-- **Icon theme:** Cool-Dark-Icons (Rofi), WhiteSur (GTK)
+- **Icon theme:** Cool-Dark-Icons (Rofi), breeze-dark (GTK)
 
 ## Notifications
 
-Notification popups come from `nova/.config/quickshell/notifications/`, ported by
+**Under Hyprland** the island (`nova/.config/quickshell/island/`) is the
+notification server. `hyprland.lua`'s startup hook stops
+`quickshell-notifications.service`, starts `qs -c island -d`, waits until the
+island owns `org.freedesktop.Notifications`, and only then restarts DMS, so DMS
+loses the race for the name. One popup morphs the idle pill into a card; two or
+more stack at the right edge. Hovering the idle pill for 300 ms opens `hub`
+(media player + in-memory notification history, lost on island restart).
+
+**Under niri** popups come from `nova/.config/quickshell/notifications/`, ported by
 hand from caelestia-shell. Popups only — there is no notification centre and no
-history, so a dismissed notification is gone.
+history, so a dismissed notification is gone. The rest of this section is about
+that niri setup.
 
 **Why it is a systemd unit and not a niri `spawn-at-startup`.** Only one process
 can own `org.freedesktop.Notifications`, and DMS claims it unconditionally: its
@@ -142,8 +155,8 @@ handover is arranged in systemd instead:
 - The unit sets `QML2_IMPORT_PATH` itself. niri's `environment {}` block only
   reaches processes niri spawns, so it does not cover systemd user services.
 
-**What this costs.** DMS's notification centre on Mod+N still opens but is
-permanently empty, its island notification badges never light up, and its
+**What this costs.** DMS's notification centre still opens but is
+permanently empty, its notification badges never light up, and its
 do-not-disturb controls do nothing. Everything else in DMS is unaffected.
 Do-not-disturb is now `qs -c notifications ipc call notifs dnd`; `status` reports
 it and `clear` dismisses whatever is on screen. Nothing is bound to those yet.
@@ -208,7 +221,6 @@ which is deliberate.
 ### Hardware-Specific Config Notes
 - **TLP** is tuned for Meteor Lake: s2idle sleep, Intel HWP, NatACPI enabled (charge limit handled by `battery-limit.timer`)
 - **Battery conservation** managed via Lenovo IdeaPad ACPI sysfs (`/sys/bus/platform/drivers/ideapad_acpi/`)
-- **i915 PSR** (Panel Self Refresh) enabled in kernel params for display power saving
 - **intel-compute-runtime** + **intel-media-driver** installed for OpenCL and media acceleration
 - NPU: kernel driver (`intel_vpu`) loaded; the userspace `intel-npu-driver` is not installed
 - **No NVIDIA or gaming packages** — nvidia.yaml is fully commented out; gaming.yaml and Steam were removed 2026-09-26

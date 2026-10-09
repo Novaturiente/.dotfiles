@@ -8,6 +8,16 @@ Three of those four work from one edit to `/etc/pam.d/system-auth`. The `dms`
 lock screen needs its own config and its own `pam_howdy` options — that is the
 single most surprising part of this setup and has its own section below.
 
+**Current lock screen is swaylock, not dms.** Under both Hyprland and niri,
+swayidle and Mod+Shift+L run `scripts/lock.sh`, which execs `swaylock`. Its
+PAM file `/etc/pam.d/swaylock` (owned by `swaylock-effects`, listed as a pacman
+backup file, so upgrades write a `.pacnew` instead of overwriting it) holds
+the same stack as `system/system/etc/pam.d/dankshell`, including the
+no-`workaround=` rule from Problem 2 below. It is not tracked in this repo; on
+a fresh install copy it with
+`sudo install -m 644 system/system/etc/pam.d/dankshell /etc/pam.d/swaylock`.
+The dms sections below still apply if the dms lock screen is used again.
+
 Set up 2026-08-27 on CachyOS. An earlier attempt (Jan 2026) failed and this
 document exists mainly to record *why*, because the failure modes are silent
 and cost hours to rediscover.
