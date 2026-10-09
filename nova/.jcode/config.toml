@@ -152,10 +152,11 @@ post_tool = "/home/nova/.jcode/hooks/coolify-push-monitor.sh"
 pre_tool_timeout_ms = 5000
 
 [skills]
-# jcode owns its skill set independently. Claude Code plugins stay installed
-# and keep working there; jcode just does not read them.
+# jcode owns its global skill set independently: Claude Code plugins stay
+# installed and keep working there, jcode does not read them. Project-local
+# ./.claude/skills ARE loaded (repo conventions shared with Claude Code).
 claude_plugins = false
-claude_project = false
+claude_project = true
 import_external = false
 
 [ambient]
