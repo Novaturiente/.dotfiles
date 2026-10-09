@@ -50,9 +50,13 @@ export async function cachedClaudeUsage(maxAge = POLL_MS): Promise<Cached> {
 	c.backoffUntil = now + 15_000;
 	await save();
 	try {
-		const creds = JSON.parse(await readFile(`${homedir()}/.claude/.credentials.json`, "utf8"));
+		const piAuth = await readJson(`${homedir()}/.pi/agent/auth.json`);
+		const claudeCreds = piAuth?.anthropic?.access ? undefined : await readJson(`${homedir()}/.claude/.credentials.json`);
+		const token = piAuth?.anthropic?.access ?? claudeCreds?.claudeAiOauth?.accessToken;
+		if (!token) throw new Error("No Anthropic OAuth credentials found");
+
 		const res = await fetch("https://api.anthropic.com/api/oauth/usage", {
-			headers: { Authorization: `Bearer ${creds.claudeAiOauth.accessToken}`, "anthropic-beta": "oauth-2025-04-20" },
+			headers: { Authorization: `Bearer ${token}`, "anthropic-beta": "oauth-2025-04-20" },
 			signal: AbortSignal.timeout(10_000),
 		});
 		if (!res.ok) throw new Error(`usage endpoint HTTP ${res.status}`);

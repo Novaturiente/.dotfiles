@@ -1,14 +1,17 @@
 {
   "lastChangelogVersion": "1.1.0",
   "theme": "catppuccin-dark",
-  "defaultProvider": "pi-claude-code-provider",
-  "defaultModel": "opus",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-5-5",
+  "defaultThinkingLevel": "medium",
   "defaultTools": [
     "+codemode"
   ],
   "showCacheMissNotices": true,
+  "warnings": {
+    "anthropicExtraUsage": false
+  },
   "packages": [
-    "git:github.com/chem/pi-claude-code-provider",
     "npm:pi-subagents",
     "npm:@dietrichgebert/ponytail",
     "npm:pi-powerline-footer",
@@ -92,7 +95,7 @@
   "subagents": {
     "agentOverrides": {
       "scout": {
-        "model": "pi-claude-code-provider/haiku",
+        "model": "anthropic/claude-haiku-4-5",
         "inheritSkills": true,
         "tools": [
           "read",
