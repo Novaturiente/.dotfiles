@@ -4,7 +4,7 @@ Read with `lesson-format.md` when building a browser lesson. The template (`asse
 
 ## Design read
 
-A self-study coding lesson for one learner, in a dark terminal setup. It should feel **calm, focused and encouraging**: a good textbook page, not a landing page. No hype, no gamification, no confetti.
+A self-study lesson for one learner (any subject), in a dark terminal setup. It should feel **calm, focused and encouraging**: a good textbook page, not a landing page. No hype, no gamification, no confetti.
 
 | Dial | Value | Meaning |
 |---|---|---|
@@ -36,7 +36,7 @@ The template adds the meta line, outline, progress bar, numbering and the Send p
 
 ### Copy
 
-- Plain, warm, direct. Write like a patient friend who codes, not a course brochure.
+- Plain, warm, direct. Write like a patient friend who knows the subject, not a course brochure.
 - Encourage effort, not talent: "Take a guess first" beats "You've got this!".
 - No filler verbs (master, unlock, elevate, seamless, journey). No fake numbers or time estimates.
 - **No em-dashes or en-dashes anywhere.** Use a colon, comma, full stop or brackets.
@@ -56,7 +56,7 @@ The template adds the meta line, outline, progress bar, numbering and the Send p
 
 - [ ] `h1` + `p.goal` present, goal starts "By the end you will".
 - [ ] Exactly one `.key` per section at most.
-- [ ] Every `<code>` block has `class="language-xxx"`; every `complete`/`order` div has `data-lang`.
+- [ ] Every `<code>` block has `class="language-xxx"`; every `complete`/`order` div has `data-lang` (`plaintext` for non-code).
 - [ ] 3-6 exercises, at least 3 types, first one easy.
 - [ ] No `—`, `–`, emoji, or hint text that gives an answer away.
 - [ ] `<`, `>`, `&` escaped inside `<code>` and `<li>`.

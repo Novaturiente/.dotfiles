@@ -7,10 +7,13 @@
  *
  * While on: injects ~/.pi/agent/skills/teach/SKILL.md into the system prompt every
  * turn (survives compaction) and blocks write/edit so the learner types the code.
+ * Progress is kept in <cwd>/.teach/progress.md (git-excluded locally) so learning
+ * can stop and resume across sessions.
  */
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { join, resolve, sep } from "node:path";
+import { dirname, join, resolve, sep } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const SKILL_PATH = join(homedir(), ".pi", "agent", "skills", "teach", "SKILL.md");
@@ -19,10 +22,29 @@ const STOP_PHRASE = /^\s*stop teaching[.!\s]*$/i;
 // Lesson pages are the one place the agent may write while teaching.
 const LESSONS = "/tmp/teach-lessons";
 
-function isLessonPath(p: unknown, cwd: string): boolean {
+// Progress tracking lives in the project, so each project resumes independently.
+const progressDir = (cwd: string) => join(cwd, ".teach");
+
+function isAllowedPath(p: unknown, cwd: string): boolean {
 	if (typeof p !== "string" || !p) return false;
 	const abs = resolve(cwd, p.replace(/^~(?=\/)/, homedir()));
-	return abs.startsWith(LESSONS + sep);
+	return abs.startsWith(LESSONS + sep) || abs.startsWith(progressDir(cwd) + sep);
+}
+
+// Keep .teach/ out of commits without touching the project's .gitignore.
+function excludeFromGit(cwd: string) {
+	try {
+		const rel = execFileSync("git", ["rev-parse", "--git-path", "info/exclude"], {
+			cwd,
+			encoding: "utf8",
+			stdio: ["ignore", "pipe", "ignore"],
+		}).trim();
+		const file = resolve(cwd, rel);
+		const text = existsSync(file) ? readFileSync(file, "utf8") : "";
+		if (!/^\/?\.teach\/?$/m.test(text)) appendFileSync(file, (text && !text.endsWith("\n") ? "\n" : "") + ".teach/\n");
+	} catch {
+		// Not a git repo (or no git): nothing to exclude.
+	}
 }
 
 function skillBody(): string {
@@ -55,7 +77,7 @@ export default function teach(pi: ExtensionAPI) {
 	pi.on("session_tree", async (_e, ctx) => restore(ctx));
 
 	pi.registerCommand("teach", {
-		description: "Teach mode: guide, don't write code. Args: off | status",
+		description: "Teach mode: guide, don't write code. Args: off | status | review",
 		handler: async (args, ctx) => {
 			const arg = String(args ?? "").trim().toLowerCase();
 			if (arg === "status" || (!arg && on)) {
@@ -63,8 +85,19 @@ export default function teach(pi: ExtensionAPI) {
 				return;
 			}
 			if (arg === "off" || arg === "stop") return set(false, ctx);
-			if (!arg || arg === "on") return set(true, ctx);
-			ctx.ui.notify(`Unknown: "${arg}". Use /teach, /teach off, /teach status.`, "warning");
+			if (!arg || arg === "on") {
+				excludeFromGit(ctx?.cwd ?? process.cwd());
+				return set(true, ctx);
+			}
+			if (arg === "review") {
+				if (!on) {
+					excludeFromGit(ctx?.cwd ?? process.cwd());
+					set(true, ctx);
+				}
+				// Same phrase the skill recognises in other harnesses.
+				return pi.sendUserMessage("Review session: quiz me only on concepts that are due for review.");
+			}
+			ctx.ui.notify(`Unknown: "${arg}". Use /teach, /teach off, /teach status, /teach review.`, "warning");
 		},
 	});
 
@@ -73,26 +106,30 @@ export default function teach(pi: ExtensionAPI) {
 		return { action: "continue" };
 	});
 
-	pi.on("before_agent_start", async (event) => {
+	pi.on("before_agent_start", async (event, ctx) => {
 		const sections = event.systemPromptOptions.sections;
 		if (!on) {
 			delete sections.teach;
 			return;
 		}
+		const dir = progressDir(ctx?.cwd ?? process.cwd());
+		const state = (f: string) => `${join(dir, f)} (${existsSync(join(dir, f)) ? "exists" : "not created yet"})`;
 		sections.teach =
 			"TEACH MODE IS ON. It overrides CAVEMAN MODE (write full plain sentences) and ponytail's " +
 			"instruction to write code. Follow these rules for every reply until the user turns it off:\n\n" +
-			skillBody();
+			skillBody() +
+			`\n\nSkill folder (for references/, scripts/, assets/): ${dirname(SKILL_PATH)}. ` +
+			`.teach/ is already git-excluded. Brief: ${state("brief.md")}. Progress: ${state("progress.md")}.`;
 	});
 
 	pi.on("tool_call", async (event, ctx) => {
 		if (!on || (event.toolName !== "write" && event.toolName !== "edit")) return;
-		if (isLessonPath((event.input as { path?: unknown })?.path, ctx?.cwd ?? process.cwd())) return;
+		if (isAllowedPath((event.input as { path?: unknown })?.path, ctx?.cwd ?? process.cwd())) return;
 		return {
 			block: true,
 			reason:
-				"Teach mode is on: do not write the learner's files (only /tmp/teach-lessons/ is allowed). " +
-				"Show the code in chat and have the learner type it. " +
+				"Teach mode is on: do not write the learner's files (only /tmp/teach-lessons/ and the project's .teach/ are allowed). " +
+				"Show it in chat and have the learner do it themselves. " +
 				"The learner can run /teach off to let you edit files.",
 		};
 	});
