@@ -21,12 +21,20 @@ hl.config({
 		layout = "scrolling",
 		gaps_in = 5, -- niri `gaps 10` is the full gap between windows
 		gaps_out = 10,
-		border_size = 2, -- stands in for niri's focus ring
+		border_size = 0, -- no window borders
 		resize_on_border = true,
 	},
 	decoration = {
 		rounding = 0,
-		shadow = { enabled = false },
+		-- Dark drop shadow, pushed down so windows look lifted off the wallpaper.
+		shadow = {
+			enabled = true,
+			range = 20,
+			render_power = 3,
+			offset = "0 6",
+			color = "rgba(000000cc)",
+			color_inactive = "rgba(00000088)",
+		},
 		blur = { enabled = true, size = 4, passes = 2, noise = 0.0, vibrancy = 0.0 },
 	},
 	scrolling = {
@@ -132,6 +140,10 @@ hl.on("hyprland.start", function()
 			.. "; for i in $(seq 50); do dms ipc call bar hide id default 2>/dev/null | grep -q SUCCESS && break; sleep 0.2; done"
 			.. "; dms ipc call settings set osdVolumeEnabled false; dms ipc call settings set osdBrightnessEnabled false"
 	)
+	-- hyprglass is built by hand (hyprpm can't clone Hyprland over the flaky
+	-- GitHub route). Reload afterwards so the hl.plugin.hyprglass guard below
+	-- sees the plugin; on first parse it isn't loaded yet.
+	hl.exec_cmd("hyprctl plugin load /home/nova/.local/share/hyprglass/hyprglass.so && hyprctl reload")
 	hl.exec_cmd("swayidle")
 	hl.exec_cmd("kdeconnectd")
 	-- Tray icon for the island's tray row (kdeconnectd itself has none).
@@ -154,3 +166,20 @@ end)
 
 require("colors")
 require("binds")
+
+-- ── hyprglass (Liquid Glass plugin) ──────────────────────────────────────────
+-- Only shows behind translucent windows; opaque ones are skipped.
+if hl.plugin.hyprglass then
+	hl.plugin.hyprglass.config({
+		default_theme = "dark",
+		default_preset = "default",
+		-- Dark glass: black edge glow, dim highlight, dark tint.
+		dark = {
+			fresnel_color = 0x000000ff, -- alpha ff = glow fully black instead of white
+			fresnel_strength = 0.5,
+			specular_strength = 0.15,
+			tint_color = 0x0a0a1466,
+			brightness = 0.7,
+		},
+	})
+end

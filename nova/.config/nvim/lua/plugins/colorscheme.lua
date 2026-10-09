@@ -18,7 +18,7 @@ return {
 	priority = 1000, -- load before other plugins
 	opts = {
 		flavour = "mocha",
-		transparent_background = false,
+		transparent_background = true, -- let Ghostty's opacity / hyprglass show through
 		color_overrides = {
 			mocha = theme.palette,
 		},

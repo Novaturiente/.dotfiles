@@ -27,10 +27,15 @@
 // Resting the pointer on the idle pill for 300 ms opens `hub` (media player +
 // in-memory notification history); leaving it closes again.
 //
+// wallpaper (Ctrl+Alt+W): strip of images in ~/Pictures; Left/Right, Enter sets,
+// Esc closes.
+// theme (Mod+Shift+T): palettes from scripts/theme.sh --list; Left/Right, Enter applies.
+//
 // Adding a mode: add its name to `modes`, a Page below, and a line in `page`.
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
 import Quickshell.Services.SystemTray
@@ -40,12 +45,13 @@ import Quickshell.Services.Mpris
 import Quickshell.Networking
 import Quickshell.Bluetooth
 import QtQuick
+import Qt.labs.folderlistmodel
 import common
 
 ShellRoot {
     id: root
 
-    readonly property var modes: ["idle", "volume", "brightness", "dashboard", "tray", "battery", "wifi", "bluetooth", "output", "input", "launcher", "power", "polkit", "clipboard", "hub"]
+    readonly property var modes: ["idle", "volume", "brightness", "dashboard", "tray", "battery", "wifi", "bluetooth", "output", "input", "launcher", "power", "polkit", "clipboard", "wallpaper", "theme", "hub"]
     readonly property var subPages: ["battery", "wifi", "bluetooth", "output", "input"]
     property string mode: "idle"
     // Anything bigger than the pill or an OSD: grabs the keyboard and closes on
@@ -145,6 +151,18 @@ ShellRoot {
             clipList.currentIndex = 0;
             clipLister.running = true;
             Qt.callLater(() => clipSearch.forceActiveFocus());
+        } else if (m === "theme") {
+            themeLister.running = true;
+            Qt.callLater(() => themeList.forceActiveFocus());
+        } else if (m === "wallpaper") {
+            // Land on the wallpaper that is already set.
+            let i = 0;
+            for (let j = 0; j < wpFiles.count; j++)
+                if (wpFiles.get(j, "filePath") === root.wallpaper)
+                    i = j;
+            wallList.currentIndex = i;
+            wallList.positionViewAtIndex(i, PathView.Center); // jump, don't scroll there
+            Qt.callLater(() => wallList.forceActiveFocus());
         } else {
             if (m === "power") {
                 powerSel = 0;
@@ -252,6 +270,36 @@ ShellRoot {
         // Copied files go back as text/uri-list so file managers paste files.
         const type = c.text.startsWith("file://") ? "-t text/uri-list" : "";
         Quickshell.execDetached(["sh", "-c", "printf '%s\\n' \"$1\" | cliphist decode | wl-copy " + type, "sh", c.line]);
+        show("idle");
+    }
+
+    // --- Theme picker (Mod+Shift+T) ----------------------------------------
+    // Front end for scripts/theme.sh. First output line is the active theme,
+    // the rest are `--list` rows: name label desc accent base text dots (tab-separated).
+    readonly property string themeScript: Quickshell.env("HOME") + "/.dotfiles/scripts/theme.sh"
+    property string themeCurrent: ""
+    property var themes: [] // [{name,label,desc,accent,base,text,dots}]
+    Process {
+        id: themeLister
+        command: ["sh", "-c", "bash \"$1\" --current; bash \"$1\" --list", "sh", root.themeScript]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const lines = text.split("\n").filter(l => l.trim() !== "");
+                root.themeCurrent = lines.shift() || "";
+                root.themes = lines.map(l => {
+                    const f = l.split("\t");
+                    return { name: f[0], label: f[1], desc: f[2], accent: f[3], base: f[4], text: f[5], dots: (f[6] || "").split(",") };
+                });
+                const i = Math.max(0, root.themes.findIndex(t => t.name === root.themeCurrent));
+                themeList.currentIndex = i;
+                themeList.positionViewAtIndex(i, PathView.Center); // jump, don't scroll there
+            }
+        }
+    }
+    function applyTheme(name: string): void {
+        // Detached: the apply rewrites common/Colors.qml, which reloads this
+        // shell and would kill a child Process halfway through.
+        Quickshell.execDetached(["bash", themeScript, name]);
         show("idle");
     }
     Process {
@@ -626,15 +674,26 @@ ShellRoot {
             return root.wallpaper;
         }
         function setWallpaper(path: string): void {
-            wpFile.setText(path);
-            root.wallpaper = path;
+            root.setWallpaper(path);
         }
     }
 
     // --- Wallpaper ---------------------------------------------------------
     // One fixed image (no shuffle). Path lives in ~/.local/state/island/wallpaper;
-    // the Mod+Alt+W picker and lock.sh go through getWallpaper/setWallpaper.
+    // the wallpaper page sets it, lock.sh reads it over IPC (getWallpaper).
     property string wallpaper: ""
+    function setWallpaper(path: string): void {
+        wpFile.setText(path);
+        root.wallpaper = path;
+    }
+    // Top level of ~/Pictures only.
+    FolderListModel {
+        id: wpFiles
+        folder: "file://" + Quickshell.env("HOME") + "/Pictures"
+        nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.webp", "*.bmp"]
+        showDirs: false
+        sortField: FolderListModel.Name
+    }
     FileView {
         id: wpFile
         path: Quickshell.env("HOME") + "/.local/state/island/wallpaper"
@@ -645,7 +704,9 @@ ShellRoot {
     // Inline components cannot see `root`, so they take everything as props.
     component T: Text {
         color: Colors.fg
-        font.family: "JetBrainsMono Nerd Font"
+        // UI font for words; Nerd Font icons come via fontconfig fallback.
+        font.family: "SF Pro Display"
+        font.features: { "tnum": 1 } // fixed-width digits so the clock doesn't shift
         font.pixelSize: Tokens.fontSize.normal
         anchors.verticalCenter: parent ? parent.verticalCenter : undefined
     }
@@ -1176,12 +1237,17 @@ ShellRoot {
         exclusiveZone: 0
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.namespace: "island-notifications"
-        // OnDemand: clicking a card's inline reply field gives it the keyboard.
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+        // OnDemand only while hovered: Hyprland focuses an OnDemand layer when it
+        // maps, so an always-OnDemand stack steals focus on every new popup.
+        // ponytail: moving the mouse off the card mid-reply drops the keyboard.
+        WlrLayershell.keyboardFocus: stackHover.hovered ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
         Column {
             id: notifStack
             width: parent.width
+            HoverHandler {
+                id: stackHover
+            }
             spacing: Tokens.spacing.medium
             move: Transition {
                 Anim {
@@ -1219,7 +1285,7 @@ ShellRoot {
         // A notification in the pill may carry an inline reply field: OnDemand
         // lets a click on it take the keyboard without grabbing it otherwise.
         WlrLayershell.keyboardFocus: root.expanded && !root.hoverOpened ? WlrKeyboardFocus.Exclusive
-            : root.notifInIsland || root.mode === "hub" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+            : (root.notifInIsland || root.mode === "hub") && root.pillHovered ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         mask: Region {
             item: root.expanded && !root.hoverOpened ? catcher : island
         }
@@ -1248,7 +1314,9 @@ ShellRoot {
                     launcher: launcherPage,
                     power: powerPage,
                     polkit: polkitPage,
-                    clipboard: clipPage
+                    clipboard: clipPage,
+                    wallpaper: wallPage,
+                    theme: themePage
                 })[root.mode]
 
             anchors.top: parent.top
@@ -1312,17 +1380,91 @@ ShellRoot {
 
                 Row {
                     spacing: Tokens.spacing.medium
+
+                    // Workspace dots: focused one is a wide accent pill.
+                    Row {
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 5
+                        Repeater {
+                            model: ScriptModel {
+                                values: Hyprland.workspaces.values.filter(w => w.id > 0).sort((a, b) => a.id - b.id)
+                            }
+                            Rectangle {
+                                required property var modelData
+                                readonly property bool cur: modelData.id === Hyprland.focusedWorkspace?.id
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: cur ? 16 : 7
+                                height: 7
+                                radius: 3.5
+                                color: cur ? Colors.accent : Colors.overlay1
+                                Behavior on width {
+                                    Anim {
+                                        type: Anim.FastSpatial
+                                    }
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    anchors.margins: -3
+                                    onClicked: Hyprland.dispatch("workspace " + parent.modelData.id)
+                                }
+                            }
+                        }
+                    }
+
                     T {
+                        anchors.verticalCenter: parent.verticalCenter
                         text: Qt.formatDateTime(clock.date, "h:mm AP")
                         font.bold: true
                     }
-                    T {
-                        text: Qt.formatDateTime(clock.date, "ddd d MMM")
-                        color: Colors.subtext0
+
+                    // Horizontal battery: outline, fill by charge, nub on the right.
+                    Item {
+                        id: batIcon
+                        // 80% is the charge cap, so treat it as full.
+                        readonly property real level: Math.min(1, root.batPct / 80)
+                        // red -> yellow -> green as level goes 0 -> 0.5 -> 1
+                        readonly property color tint: {
+                            const lo = level < 0.5;
+                            const a = lo ? Colors.red : Colors.yellow;
+                            const b = lo ? Colors.yellow : Colors.green;
+                            const t = lo ? level * 2 : level * 2 - 1;
+                            return Qt.rgba(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, 1);
+                        }
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: batRow.width
+                        height: batRow.height
+                    Row {
+                        id: batRow
+                        spacing: 4
+                        Row {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 1
+                            // Solid body: dim track for the empty part, fill flush to the edges.
+                            Rectangle {
+                                width: 22
+                                height: 11
+                                radius: 3
+                                color: Qt.rgba(batIcon.tint.r, batIcon.tint.g, batIcon.tint.b, 0.3)
+                                Rectangle {
+                                    height: parent.height
+                                    width: Math.max(parent.radius * 2, parent.width * batIcon.level)
+                                    radius: parent.radius
+                                    color: batIcon.tint
+                                }
+                            }
+                            Rectangle {
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: 2
+                                height: 5
+                                radius: 1
+                                color: batIcon.tint
+                            }
+                        }
+                        T {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: root.batPct + "%"
+                        }
                     }
-                    T {
-                        text: root.glyph(root.charging ? 0xF0084 : 0xF0079) + " " + root.batPct + "%"
-                        color: !root.charging && root.batPct <= 15 ? Colors.red : Colors.fg
                         MouseArea {
                             anchors.fill: parent
                             onClicked: root.show("battery")
@@ -1818,6 +1960,211 @@ ShellRoot {
                                 onClicked: root.pickClip(modelData)
                             }
                         }
+                    }
+                }
+            }
+
+            Page {
+                id: themePage
+                active: island.page === themePage
+
+                Column {
+                    spacing: Tokens.spacing.small
+                    topPadding: Tokens.padding.small
+                    bottomPadding: Tokens.padding.small
+
+                    // Same strip as the wallpaper page: PathView wraps, the
+                    // selected card stays in the middle. Each card is painted in
+                    // the theme's own colours. Esc falls through to the island.
+                    PathView {
+                        id: themeList
+                        readonly property int cardW: 200
+                        readonly property real step: cardW + Tokens.spacing.small
+                        function pick(): void {
+                            if (root.themes[currentIndex])
+                                root.applyTheme(root.themes[currentIndex].name);
+                        }
+                        width: 3 * step - Tokens.spacing.small
+                        height: 88
+                        clip: true
+                        model: root.themes
+                        // 3, not 5: with only four themes, 5 slots would show one twice.
+                        pathItemCount: 3
+                        preferredHighlightBegin: 0.5
+                        preferredHighlightEnd: 0.5
+                        highlightRangeMode: PathView.StrictlyEnforceRange
+                        snapMode: PathView.SnapOneItem
+                        highlightMoveDuration: 220
+                        path: Path {
+                            startX: themeList.width / 2 - 1.5 * themeList.step
+                            startY: themeList.height / 2
+                            PathLine {
+                                x: themeList.width / 2 + 1.5 * themeList.step
+                                y: themeList.height / 2
+                            }
+                        }
+                        Keys.onLeftPressed: decrementCurrentIndex()
+                        Keys.onRightPressed: incrementCurrentIndex()
+                        Keys.onReturnPressed: pick()
+                        Keys.onEnterPressed: pick()
+                        delegate: Rectangle {
+                            required property int index
+                            required property var modelData
+                            readonly property bool sel: index === themeList.currentIndex
+                            width: themeList.cardW
+                            height: themeList.height
+                            radius: Tokens.rounding.medium
+                            color: modelData.base
+                            border.color: sel ? Colors.accent : Colors.outline
+                            border.width: sel ? 2 : 1
+                            opacity: sel ? 1 : 0.6
+                            Column {
+                                x: Tokens.padding.medium
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: Tokens.spacing.small
+                                T {
+                                    anchors.verticalCenter: undefined
+                                    width: themeList.cardW - 2 * Tokens.padding.medium - 20
+                                    elide: Text.ElideRight
+                                    text: modelData.label
+                                    color: modelData.text
+                                }
+                                Row {
+                                    spacing: 6
+                                    Repeater {
+                                        model: modelData.dots
+                                        Rectangle {
+                                            required property string modelData
+                                            width: 14
+                                            height: 14
+                                            radius: 7
+                                            color: modelData
+                                        }
+                                    }
+                                }
+                            }
+                            // Marks the active theme.
+                            T {
+                                anchors.verticalCenter: undefined
+                                anchors.top: parent.top
+                                anchors.right: parent.right
+                                anchors.margins: Tokens.padding.small
+                                visible: modelData.name === root.themeCurrent
+                                text: "✓"
+                                color: modelData.accent
+                                font.pixelSize: Tokens.fontSize.large
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: sel ? themeList.pick() : themeList.currentIndex = index
+                            }
+                        }
+                    }
+
+                    T {
+                        anchors.verticalCenter: undefined
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: themeList.width
+                        horizontalAlignment: Text.AlignHCenter
+                        elide: Text.ElideRight
+                        text: root.themes[themeList.currentIndex] ? root.themes[themeList.currentIndex].desc : ""
+                        color: Colors.subtext0
+                    }
+                }
+            }
+
+            Page {
+                id: wallPage
+                active: island.page === wallPage
+
+                Column {
+                    spacing: Tokens.spacing.small
+                    topPadding: Tokens.padding.small
+                    bottomPadding: Tokens.padding.small
+
+                    // PathView wraps around, so the selected card always sits in
+                    // the middle with neighbours on both sides. Esc falls
+                    // through to the island.
+                    PathView {
+                        id: wallList
+                        readonly property int cardW: 160
+                        readonly property real step: cardW + Tokens.spacing.small
+                        function pick(): void {
+                            if (!wpFiles.count)
+                                return;
+                            root.setWallpaper(wpFiles.get(currentIndex, "filePath"));
+                            root.show("idle");
+                        }
+                        width: 5 * step - Tokens.spacing.small
+                        height: cardW * 9 / 16
+                        clip: true
+                        model: wpFiles
+                        pathItemCount: 5
+                        preferredHighlightBegin: 0.5
+                        preferredHighlightEnd: 0.5
+                        highlightRangeMode: PathView.StrictlyEnforceRange
+                        snapMode: PathView.SnapOneItem
+                        highlightMoveDuration: 220
+                        // Five slots of `step`; slot centres land on the card positions.
+                        path: Path {
+                            startX: wallList.width / 2 - 2.5 * wallList.step
+                            startY: wallList.height / 2
+                            PathLine {
+                                x: wallList.width / 2 + 2.5 * wallList.step
+                                y: wallList.height / 2
+                            }
+                        }
+                        Keys.onLeftPressed: decrementCurrentIndex()
+                        Keys.onRightPressed: incrementCurrentIndex()
+                        Keys.onReturnPressed: pick()
+                        Keys.onEnterPressed: pick()
+                        delegate: Rectangle {
+                            required property int index
+                            required property string filePath
+                            width: wallList.cardW
+                            height: wallList.height
+                            radius: Tokens.rounding.medium
+                            color: Colors.surface1
+                            border.color: index === wallList.currentIndex ? Colors.accent : Colors.outline
+                            border.width: index === wallList.currentIndex ? 2 : 1
+                            clip: true
+                            Image {
+                                anchors.fill: parent
+                                anchors.margins: 2
+                                source: "file://" + filePath
+                                // Decode at card size; the originals are multi-megapixel.
+                                sourceSize.width: wallList.cardW * 2
+                                fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                            }
+                            // Marks the wallpaper that is already set.
+                            Rectangle {
+                                visible: filePath === root.wallpaper
+                                anchors.top: parent.top
+                                anchors.right: parent.right
+                                anchors.margins: 6
+                                width: 20
+                                height: 20
+                                radius: 10
+                                color: Colors.accent
+                                T {
+                                    anchors.centerIn: parent
+                                    text: "✓"
+                                    color: Colors.bg
+                                }
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: index === wallList.currentIndex ? wallList.pick() : wallList.currentIndex = index
+                            }
+                        }
+                    }
+
+                    T {
+                        anchors.verticalCenter: undefined
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: wpFiles.count ? wpFiles.get(wallList.currentIndex, "fileName") + "   (" + (wallList.currentIndex + 1) + "/" + wpFiles.count + ")" : "no images in ~/Pictures"
+                        color: Colors.subtext0
                     }
                 }
             }

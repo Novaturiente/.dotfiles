@@ -73,8 +73,10 @@ list_themes() {
 	local palette
 	for palette in "$PALETTES"/*.env; do
 		( load_palette "$palette"
-		  printf '%s\t%s\t%s\t#%s\t#%s\n' \
-		    "$THEME_NAME" "$THEME_LABEL" "$THEME_DESC" "$ACCENT" "$BASE" )
+		  # Columns 6-7 (text colour, comma-separated accent dots) feed the island's swatch cards.
+		  printf '%s\t%s\t%s\t#%s\t#%s\t#%s\t%s\n' \
+		    "$THEME_NAME" "$THEME_LABEL" "$THEME_DESC" "$ACCENT" "$BASE" "$TEXT" \
+		    "#$RED,#$PEACH,#$YELLOW,#$GREEN,#$TEAL,#$BLUE,#$MAUVE,#$PINK" )
 	done
 }
 
@@ -178,7 +180,8 @@ apply() {
 
 reload() {
 	# Niri and Quickshell both watch their files and reload on write.
-	command -v bat >/dev/null && bat cache --build >/dev/null 2>&1 || true
+	# bat's rebuild takes ~0.75 s and nothing waits on it; run it in the background.
+	command -v bat >/dev/null && { bat cache --build >/dev/null 2>&1 & } || true
 	# DankMaterialShell needs no poke: its theme FileView sets watchChanges and
 	# reloads on write. Do NOT clear customThemeFile to force a re-read — an
 	# empty path makes DMS JSON.parse("") and toast "Invalid JSON format".
