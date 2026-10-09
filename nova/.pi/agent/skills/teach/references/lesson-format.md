@@ -1,18 +1,21 @@
 # Browser lesson format
 
-Read this only when building a browser lesson. Chat and popups do not need it. Also read `lesson-design.md` for the content and copy rules that make the page feel inviting.
+Read this only when building a browser lesson. Chat and quick questions do not need it. Paths below are relative to the skill folder (the folder holding `SKILL.md`), written `<skill>/`. Also read `lesson-design.md` for the content and copy rules that make the page feel inviting.
 
 ## Steps
 
 1. Pick a topic slug: lowercase letters, digits, hyphens (`python-loops`).
 2. Write **only the lesson body** to `/tmp/teach-lessons/<slug>/lesson.html`. No `<html>`, `<head>`, CSS or JS: the server wraps it in `assets/lesson-template.html`, which adds highlighting, line numbers, the outline rail, progress, widgets, confidence buttons and the Submit panel.
-3. Make sure the server is running (one per session):
-   - `process list`: if a `teach-lessons` process is running, reuse it.
-   - Otherwise check the port: `ss -ltn | grep 8765`. Port taken by something else → tell the learner, do not kill it.
-   - Start: `process start`, name `teach-lessons`, command `python3 ~/.pi/agent/skills/teach/scripts/lesson_server.py`, with `notify.logMatches: [{pattern: "SUBMITTED", on: "turn", repeat: true}]`.
-4. Open it: `xdg-open http://127.0.0.1:8765/<slug>/`.
-5. Tell the learner in one or two lines what the page covers and that you will reply once they click **Submit**. End your turn. Do not poll.
-6. When the `SUBMITTED` notice arrives, `read /tmp/teach-lessons/<slug>/answers.json` and give feedback in chat (see "Feedback" below).
+3. Make sure the server is running (one per session). The command is `python3 <skill>/scripts/lesson_server.py`; it prints `SUBMITTED <slug> <path>` on every submit.
+   - Already running? Reuse it. Check your harness's process list if it has one, else `curl -s http://127.0.0.1:8765/ >/dev/null && echo up`.
+   - Port 8765 taken by something else (`ss -ltn | grep 8765`, or `lsof -i :8765` on macOS) → tell the learner, do not kill it.
+   - **Harness has a background-process tool that can wake you on a log line** (pi: `process start`, name `teach-lessons`, `notify.logMatches: [{pattern: "SUBMITTED", on: "turn", repeat: true}]`): use it.
+   - **Otherwise** start it detached from the shell: `nohup python3 <skill>/scripts/lesson_server.py >/tmp/teach-lessons.log 2>&1 &`.
+4. Open it: `xdg-open http://127.0.0.1:8765/<slug>/` on Linux, `open ...` on macOS. If no browser can be opened, give the learner the URL.
+5. Tell the learner in one or two lines what the page covers. If you get woken on submit, say you will reply once they click **Submit**. If not, ask them to click **Submit** and then type "submitted" in chat. End your turn. Do not poll.
+6. On the `SUBMITTED` notice or the learner's "submitted", read `/tmp/teach-lessons/<slug>/answers.json` and give feedback in chat (see "Feedback" below).
+
+No way to run a background process at all? Skip the page and use chat questions instead (see "Asking questions" in `SKILL.md`).
 
 ## Body building blocks
 
@@ -30,7 +33,7 @@ Escape `<`, `>` and `&` as `&lt;`, `&gt;`, `&amp;` inside `<code>` and `<li>`. T
     print(name)</code></pre>
 ```
 
-Always set `class="language-xxx"` on code blocks. Keep explanation short: one idea, one example, then an exercise. `p.goal` must follow the `h1` directly. Each `h2` becomes an outline entry; `div.key` renders as a "Key idea" box.
+Always set `class="language-xxx"` on code blocks; for non-code material (sentences, equations, steps) use `language-plaintext`, or skip the `<pre>` and use normal paragraphs. Keep explanation short: one idea, one example, then an exercise. `p.goal` must follow the `h1` directly. Each `h2` becomes an outline entry; `div.key` renders as a "Key idea" box.
 
 ### Exercises
 
@@ -39,9 +42,9 @@ Every exercise is a `<div class="ex TYPE">` whose **first `<p>` is the prompt** 
 | Type | Use for | Markup inside the div |
 |---|---|---|
 | `quiz` | Multiple choice; misconceptions as wrong options | `<p>` prompt, optional `<pre><code>`, then `<ul><li>` options (may contain `<code>`) |
-| `predict` | "What does this print?" | `<p>` prompt + `<pre><code>` snippet. Answer box is added for you |
-| `complete` | Fill in missing code | `<p>` prompt + `<textarea>` with starter code, `___` marking blanks. Add `data-lang="python"` on the div |
-| `order` | Parsons problem: arrange shuffled lines | `<p>` prompt + `<ol><li>` lines **in the correct order** (the page shuffles them). Keep indentation. Add `data-lang` |
+| `predict` | "What does this print?", "What happens if...?" | `<p>` prompt + `<pre><code>` snippet. Answer box is added for you |
+| `complete` | Fill in missing code, words or steps | `<p>` prompt + `<textarea>` with starter text, `___` marking blanks. Add `data-lang="python"` (or `"plaintext"`) on the div |
+| `order` | Arrange shuffled lines or steps (Parsons problem for code) | `<p>` prompt + `<ol><li>` items **in the correct order** (the page shuffles them). Keep indentation. Add `data-lang` (`"plaintext"` for non-code) |
 | `explain-back` | Teach-it-back in their own words | `<p>` prompt only |
 
 ```html
@@ -76,7 +79,8 @@ print(total)</textarea>
 `answers.json` has `answers: [{id, type, prompt, answer, confidence}]`.
 
 - Go exercise by exercise in chat, short: ✅ right / ❌ wrong + the one-line why.
-- For `complete`, run their code when it is runnable and show the real output.
+- For `complete`, run their code when it is runnable and show the real output. For non-code answers, check each blank against the source.
+- Record the score in the progress file's session log (see "Progress tracking" in `SKILL.md`).
 - For `order`, compare to the correct order you wrote.
 - Use `confidence`: **right but "guessed"** = not learned yet; **wrong but "sure"** = a misconception, the most valuable thing to fix. Name both explicitly.
 - Then update the knowledge map and teach the first gap.
