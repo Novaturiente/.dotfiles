@@ -170,7 +170,8 @@ Auto-extract and display keybindings from niri, neovim, and qutebrowser configs 
 Colours are switchable across the whole desktop. `system/themes/palettes/<name>.env`
 holds the only hand-written colours; `scripts/theme.sh <name>` renders every
 themed config from `system/themes/templates/` with `envsubst`, and `Mod+Shift+T`
-opens the Quickshell picker that drives the same script. Adding a theme means
+opens a picker that drives the same script (island `theme` page under Hyprland,
+standalone `qs -c theme` under niri). Adding a theme means
 adding one palette file. See `system/themes/README.md`.
 
 - **Themes:** `catppuccin` (stock Mocha), `tokyonight` (Night), `rosepine`

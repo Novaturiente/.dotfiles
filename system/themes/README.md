@@ -11,8 +11,9 @@ scripts/theme.sh --current             # the active theme
 scripts/theme.sh --check               # validate palettes and templates
 ```
 
-`Mod+Shift+T` opens the Quickshell picker (`nova/.config/quickshell/theme/`),
-which is a front end for the same script.
+`Mod+Shift+T` opens a front end for the same script: the island's `theme` page
+under Hyprland (`nova/.config/quickshell/island/shell.qml`), the standalone
+Quickshell picker (`nova/.config/quickshell/theme/`) under niri.
 
 ## Layout
 

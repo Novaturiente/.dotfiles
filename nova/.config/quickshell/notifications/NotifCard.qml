@@ -579,7 +579,7 @@ StyledRect {
         }
     }
 
-    readonly property string uiFont: "JetBrainsMono Nerd Font"
+    readonly property string uiFont: "SF Pro Display"
 
     // Small rounded button used for close, copy and each notification action.
     component PillButton: StyledRect {

@@ -13,8 +13,8 @@ local REPEAT = { repeating = true }
 
 -- ── Help / theme ───────────────────────────────────────────────────────────
 bind(M .. " + SHIFT + slash", run(S .. "quickshell/keybindings.sh"))
-bind(M .. " + SHIFT + T",     run(S .. "quickshell/theme.sh"))
-bind(M .. " + ALT + W",       run(S .. "quickshell/wallpaper.sh"))
+bind(M .. " + SHIFT + T",     run("qs -c island ipc call island toggle theme"))
+bind("CTRL + ALT + W",         run("qs -c island ipc call island toggle wallpaper"))
 
 -- ── Applications ───────────────────────────────────────────────────────────
 bind(M .. " + space",          run("ghostty"))
