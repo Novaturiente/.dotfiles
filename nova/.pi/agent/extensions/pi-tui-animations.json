@@ -1,0 +1,8 @@
+{
+  "workingAnim": "dev-constellation",
+  "thinkingAnim": "neural-pulse",
+  "toolAnim": "pacman",
+  "width": "default",
+  "randomMode": false,
+  "enabled": true
+}

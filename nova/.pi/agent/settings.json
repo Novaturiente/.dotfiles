@@ -44,25 +44,9 @@
     "context": {
       "format": "percent"
     },
-    "cache_read": {
-      "format": "percent"
-    },
     "layout": {
-      "left": [
-        "custom:wtpath",
-        "git",
-        "model",
-        "shell_mode",
-        "queue",
-        "custom:ctx",
-        "cache_read",
-        "cost",
-        "custom:usage",
-        "extension_statuses",
-        "time_spent",
-        "custom:turn",
-        "custom:bg"
-      ],
+      "left": [],
+      "right": [],
       "secondary": []
     },
     "customItems": [
