@@ -95,7 +95,7 @@
   "subagents": {
     "agentOverrides": {
       "scout": {
-        "model": "anthropic/claude-haiku-4-5",
+        "model": "anthropic/claude-haiku",
         "inheritSkills": true,
         "tools": [
           "read",
@@ -234,7 +234,6 @@
           "mcp:serena/find_file",
           "mcp:context7",
           "google_search",
-          "pi_claude_code_provider_web_search",
           "subagent",
           "subagent_supervisor"
         ],
@@ -251,7 +250,6 @@
           "write",
           "contact_supervisor",
           "google_search",
-          "pi_claude_code_provider_web_search",
           "agent_browser",
           "agent_browser_code",
           "agent_browser_tools",

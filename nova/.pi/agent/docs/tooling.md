@@ -18,7 +18,7 @@ Pointed to from `~/.pi/agent/AGENTS.md`. Read when editing MCP/subagent config o
 - `subagents.agentOverrides` in `settings.json` grants scout/worker/reviewer/oracle/researcher: codegraph_*, codemode, lens_diagnostics, agent_browser*, `mcp:context7`, `inheritSkills: true`.
 - Serena: full `mcp:serena` for worker only; scout/reviewer/oracle get read-only `mcp:serena/<tool>` selectors.
 - Web search: oracle/researcher only.
-- Scout pinned to `pi-claude-code-provider/haiku`.
+- Scout uses `anthropic/claude-haiku`; specialist agents in `agents/` use `anthropic/claude-sonnet`. These are version-less aliases from `extensions/latest-models.ts`, which routes each to the newest undated `claude-<family>-N[-M]` model at request time. Without that extension pi-subagents rejects them ("Unknown subagent model").
 
 ## Browser (agent_browser) quick flow
 `["open","<url>"]` → `["snapshot","-i"]` → `["click","@eN"]` / `["fill","@eN","text"]` → re-snapshot after page changes → `["close"]`. Fixed sequences → `batch --bail`; loops/branches → `agent_browser_code`; QA/Electron/extras → `agent_browser_tools`. `sessionMode: "fresh"` for clean launch (e.g. `--headed`). Localhost reachable directly.

@@ -55,7 +55,7 @@ Overrides ponytail's "≤3 lines" and caveman terseness for the final message on
 
 ## Tools
 Config details (MCP merge, subagent grants, browser flow): `~/.pi/agent/docs/tooling.md` — read only when editing that config or a tool seems missing.
-- Web search → `google_search`; `pi_claude_code_provider_web_search` only if no other search tool exists.
+- Web search → `google_search` (pass `urls` to fetch/analyse specific pages); interactive browsing → `agent_browser`.
 - MCP tools (`mcp__<server>__<tool>`) → always via `codemode` (`searchTools()`/`describeTool()`); no server is `direct`. Never create `~/.pi/agent/mcp.json`.
 - Symbol/caller/impact questions → `codegraph_*` or Serena via codemode, or async subagent. Text/config/dir-map → `scout` or grep. Library docs → context7 via codemode.
 - Browser → native `agent_browser` only; never `agent-browser` via bash, no browser MCP, no Playwright.
@@ -71,7 +71,7 @@ Config details (MCP merge, subagent grants, browser flow): `~/.pi/agent/docs/too
 - Explicit request needed for fan-outs (`/parallel-review`, `/review-loop`, `/parallel-research`, council) — cost real money.
 - Recon → `scout` (Haiku; don't override model up unless its summary proved insufficient): exploration >3 files, dir/architecture mapping, "where/how is X done", long logs/docs. Ask for compact summary with file:line refs. Main thread reads only files it edits or must quote. Exceptions: symbol questions, one known file, whole-session-state repros.
 - Always launch scout/worker/reviewer/oracle/researcher with `async: true` (their MCP/extension tools load only in background children; foreground fails).
-- Researcher lacks `web_search`/`fetch_content`/`source_check` → tell it to use `google_search` (fallback `pi_claude_code_provider_web_search`) and `agent_browser`.
+- Researcher lacks `web_search`/`fetch_content`/`source_check` → tell it to use `google_search` and `agent_browser`.
 - Claude provider bug: never `subagent({workflow: true})` (arrives as string → `Unknown workflow resource 'true'`). Use separate `async: true` calls, or write script to file and pass `workflow: "./path.js"`. Max one foreground subagent call per turn.
 - Child questions (`need_decision`/`interview_request` via `contact_supervisor`): don't answer yourself unless already settled in this conversation or AGENTS.md. Relay with `ask_user_question` (prefix header/question with agent name), reply via `subagent_supervisor({action:"reply", replyTo:<request id>, message})`. Several pending → `subagent_supervisor({action:"pending"})`, batch into one `ask_user_question` (≤4), reply per id. `progress_update` → no reply.
 

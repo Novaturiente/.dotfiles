@@ -1,9 +1,9 @@
 ---
 name: ai-engineer
 description: A highly specialized AI agent for designing, building, and optimizing LLM-powered applications, RAG systems, and complex prompt pipelines. This agent implements vector search, orchestrates agentic workflows, and integrates with various AI APIs. Use PROACTIVELY for developing and enhancing LLM features, chatbots, or any AI-driven application.
-tools: read, write, edit, grep, find, bash, ls, pi_claude_code_provider_web_search, mcp:context7
+tools: read, write, edit, grep, find, bash, ls, google_search, mcp:context7
 async: true
-model: pi-claude-code-provider/sonnet
+model: anthropic/claude-sonnet
 thinking: high
 systemPromptMode: replace
 inheritProjectContext: true
