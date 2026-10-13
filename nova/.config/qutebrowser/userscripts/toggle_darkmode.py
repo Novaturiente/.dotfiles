@@ -13,7 +13,7 @@ def send_to_qute(command):
     if not QUTE_FIFO:
         print("Error: QUTE_FIFO not set. Are you running this from qutebrowser?", file=sys.stderr)
         return
-    
+
     with open(QUTE_FIFO, "w") as f:
         f.write(command + "\n")
 
@@ -37,7 +37,7 @@ def main():
         if not domain:
             send_to_qute("message-error 'Error: Invalid URL or Domain'")
             sys.exit(1)
-        
+
         # Ensure the file exists
         if not os.path.exists(EXCLUDE_FILE):
             open(EXCLUDE_FILE, "a").close()
@@ -64,14 +64,14 @@ def main():
             # Dark mode disabled -> set to False
             cmd_value = "false"
 
-        # Apply runtime change immediately
+        # Apply now; -t keeps it out of autoconfig.yml (darkmode_excludes is the store)
         pattern = f"*://{domain}/*"
-        send_to_qute(f"set colors.webpage.darkmode.enabled {cmd_value} -u '{pattern}'")
-        
+        send_to_qute(f"set -t -u '{pattern}' colors.webpage.darkmode.enabled {cmd_value}")
+
         # Reload page
         send_to_qute("reload")
         send_to_qute(f"message-info 'Dark Mode {action} for {domain}'")
-        
+
     except Exception as e:
         send_to_qute(f"message-error 'Dark Mode Script Error: {e}'")
         sys.exit(1)

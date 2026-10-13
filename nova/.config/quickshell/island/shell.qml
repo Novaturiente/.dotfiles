@@ -1411,6 +1411,36 @@ ShellRoot {
                         }
                     }
 
+                    // Scratchpad (Mod+grave): square while it holds windows;
+                    // accent when shown over the workspace, dim when hidden.
+                    Rectangle {
+                        id: scratchDot
+                        readonly property var ws: Hyprland.workspaces.values.find(w => w.name === "special:scratch") ?? null
+                        // shortcut: starts false until the next toggle if the island restarts while it is shown.
+                        property bool shown: false
+                        visible: (ws?.toplevels.values.length ?? 0) > 0
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 7
+                        height: 7
+                        radius: 1.5
+                        color: shown ? Colors.accent : "transparent"
+                        border.width: 1.5
+                        border.color: shown ? Colors.accent : Colors.overlay1
+                        Connections {
+                            target: Hyprland
+                            // data: "special:scratch,eDP-1" when shown, ",eDP-1" when hidden
+                            function onRawEvent(ev) {
+                                if (ev.name === "activespecial")
+                                    scratchDot.shown = ev.data.startsWith("special:scratch,");
+                            }
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -3
+                            onClicked: Hyprland.dispatch("hl.dsp.workspace.toggle_special(\"scratch\")")
+                        }
+                    }
+
                     T {
                         anchors.verticalCenter: parent.verticalCenter
                         text: Qt.formatDateTime(clock.date, "h:mm AP")

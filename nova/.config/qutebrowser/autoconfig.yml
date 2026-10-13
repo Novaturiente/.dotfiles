@@ -6,12 +6,6 @@
 
 config_version: 2
 settings:
-  colors.webpage.darkmode.enabled:
-    '*://dash.cloudflare.com/*': true
-    '*://dmat-practice.eecglobal.com/*': false
-    '*://dunenovels.com/*': false
-    '*://mail.google.com/*': true
-    '*://www.bookseriesinorder.com/*': false
   content.javascript.clipboard:
     https://gemini.google.com: access-paste
     https://github.com: access-paste

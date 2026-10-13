@@ -114,18 +114,50 @@ for k, d in pairs({ left = "l", down = "d", up = "u", right = "r", H = "l", J = 
     bind(M .. " + SHIFT + CTRL + " .. k, dsp.window.move({ monitor = d }))
 end
 
--- ── Workspaces (niri vertical workspaces → relative ids) ─────────────────────
--- r+1 also opens the next empty workspace, like niri's trailing empty one.
-for _, k in ipairs({ "down", "J", "Page_Down" }) do bind(M .. " + " .. k, dsp.focus({ workspace = "r+1" })) end
-for _, k in ipairs({ "up",   "K", "Page_Up" })   do bind(M .. " + " .. k, dsp.focus({ workspace = "r-1" })) end
-for _, k in ipairs({ "Page_Down", "U" }) do bind(M .. " + CTRL + " .. k, dsp.window.move({ workspace = "r+1" })) end
-for _, k in ipairs({ "Page_Up",   "I" }) do bind(M .. " + CTRL + " .. k, dsp.window.move({ workspace = "r-1" })) end
+-- ── Workspaces (niri vertical workspaces) ────────────────────────────────────
+-- Up/down only visit workspaces that hold windows, plus one empty after the
+-- last of them (niri's trailing empty workspace). Empty gaps are skipped.
+-- Returns the target id, or nil when there is nowhere to go.
+local function ws_step(dir, moving)
+    local cur = hl.get_active_workspace()
+    if not cur then return nil end
+    local ids = {}
+    for _, ws in ipairs(hl.get_workspaces()) do
+        -- a window being moved off its workspace doesn't keep that one alive
+        local n = ws.windows - ((moving and ws.id == cur.id) and 1 or 0)
+        if not ws.special and ws.id > 0 and n > 0 then ids[#ids + 1] = ws.id end
+    end
+    table.sort(ids)
+    if dir > 0 then
+        for _, id in ipairs(ids) do if id > cur.id then return id end end
+        local tail = (ids[#ids] or 0) + 1
+        return tail > cur.id and tail or nil
+    end
+    for i = #ids, 1, -1 do if ids[i] < cur.id then return ids[i] end end
+end
+local function ws_focus(dir) return function()
+    local id = ws_step(dir, false)
+    if id then hl.dispatch(dsp.focus({ workspace = id })) end
+end end
+local function ws_move(dir) return function()
+    local id = ws_step(dir, true)
+    if id then hl.dispatch(dsp.window.move({ workspace = id })) end
+end end
+
+for _, k in ipairs({ "down", "J", "Page_Down" }) do bind(M .. " + " .. k, ws_focus(1)) end
+for _, k in ipairs({ "up",   "K", "Page_Up" })   do bind(M .. " + " .. k, ws_focus(-1)) end
+for _, k in ipairs({ "Page_Down", "U" }) do bind(M .. " + CTRL + " .. k, ws_move(1)) end
+for _, k in ipairs({ "Page_Up",   "I" }) do bind(M .. " + CTRL + " .. k, ws_move(-1)) end
 -- niri move-workspace-up/down (Mod+Shift+U/I, Page_Up/Down): no Hyprland equivalent, unbound.
 
 for i = 1, 9 do
     bind(M .. " + " .. i,          dsp.focus({ workspace = i }))
     bind(M .. " + CTRL + " .. i,   dsp.window.move({ workspace = i }))
 end
+
+-- Scratchpad: hidden special workspace shown over the current one.
+bind(M .. " + grave",         dsp.workspace.toggle_special("scratch"))
+bind(M .. " + SHIFT + grave", dsp.window.move({ workspace = "special:scratch" }))
 
 -- Window switcher (Mod+Tab) and niri's overview slot (Alt+Tab).
 bind(M .. " + Tab",  run(S .. "quickshell/switcher.sh"))
@@ -134,10 +166,10 @@ bind("ALT + Tab",    run(S .. "quickshell/switcher.sh"))
 -- ── Mouse wheel ────────────────────────────────────────────────────────────
 bind(M .. " + mouse_down",                dsp.focus({ direction = "r" }))
 bind(M .. " + mouse_up",                  dsp.focus({ direction = "l" }))
-bind(M .. " + CTRL + mouse_down",         dsp.focus({ workspace = "r+1" }))
-bind(M .. " + CTRL + mouse_up",           dsp.focus({ workspace = "r-1" }))
-bind(M .. " + mouse_right",               dsp.window.move({ workspace = "r+1" }))
-bind(M .. " + mouse_left",                dsp.window.move({ workspace = "r-1" }))
+bind(M .. " + CTRL + mouse_down",         ws_focus(1))
+bind(M .. " + CTRL + mouse_up",           ws_focus(-1))
+bind(M .. " + mouse_right",               ws_move(1))
+bind(M .. " + mouse_left",                ws_move(-1))
 bind(M .. " + CTRL + mouse_right",        dsp.layout("swapcol r"))
 bind(M .. " + CTRL + mouse_left",         dsp.layout("swapcol l"))
 bind(M .. " + SHIFT + mouse_down",        dsp.focus({ direction = "r" }))

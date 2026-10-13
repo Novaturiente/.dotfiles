@@ -1,5 +1,4 @@
 - ttf-zed-mono-nerd
-- helium-browser-bin
 - superfile
 - bitwarden
 - android-tv-remote
@@ -10,3 +9,7 @@
 - hyprsunset
 - cliphist
 - uwsm
+- aria2
+- csvlens
+- ghidra
+- android-sdk-build-tools

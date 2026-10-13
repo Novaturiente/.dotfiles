@@ -11,7 +11,7 @@ config.load_autoconfig(True)
 import theme
 import theme_colors
 
-theme.setup(c)
+# theme.setup(c)
 
 
 # ============================================================================
@@ -62,8 +62,20 @@ c.messages.timeout = 4000  # 2s default is too quick to actually read
 # ============================================================================
 c.zoom.default = "100%"
 c.zoom.levels = [
-    "25%", "33%", "50%", "67%", "75%", "90%",
-    "100%", "110%", "125%", "150%", "175%", "200%", "250%", "300%",
+    "25%",
+    "33%",
+    "50%",
+    "67%",
+    "75%",
+    "90%",
+    "100%",
+    "110%",
+    "125%",
+    "150%",
+    "175%",
+    "200%",
+    "250%",
+    "300%",
 ]
 
 
@@ -77,27 +89,23 @@ c.auto_save.session = True
 # Dark Mode Settings
 # ============================================================================
 # Ask sites for their own dark theme first. Sites that have one (github, etc.)
-# use it as-is: Chromium's smart page policy skips force-darkening them.
+# use it as-is: Blink skips force-darkening pages that declare a dark color-scheme.
 c.colors.webpage.preferred_color_scheme = "dark"
 
 # Force-dark the rest. lightness-cielab inverts lightness in CIELAB space, which
 # keeps hues intact; smart image policy leaves photos alone but darkens diagrams.
 c.colors.webpage.darkmode.enabled = True
 c.colors.webpage.darkmode.algorithm = "lightness-cielab"
-c.colors.webpage.darkmode.policy.page = "smart"
 c.colors.webpage.darkmode.policy.images = "smart"
 
 # Sites that look wrong force-darkened. Toggle with <Space>td (toggle_darkmode.py
-# userscript), which rewrites this file; we re-apply it here on every start
-# because runtime ":set -u" only reaches autoconfig.yml, which is not loaded.
+# userscript), which rewrites this file and applies the change with ":set -t" so
+# autoconfig.yml stays out of it. This file is the only store; re-applied here.
 _darkmode_excludes = config.configdir / "darkmode_excludes"
 if _darkmode_excludes.exists():
     for _domain in _darkmode_excludes.read_text().split():
         with config.pattern(f"*://{_domain}/*") as p:
             p.colors.webpage.darkmode.enabled = False
-
-# Toggle dark mode binding
-# Toggle dark mode binding (Moved to Aliases section below)
 
 # ============================================================================
 # Input Mode Settings
@@ -119,10 +127,10 @@ c.scrolling.smooth = True
 c.qt.args = [
     "enable-gpu-rasterization",
     "enable-zero-copy",
-    # vaapi crashes on Intel Meteor Lake + Mesa 26, so video hwdec stays off
-    "disable-features=VaapiVideoDecoder,VaapiVideoEncoder,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxZeroCopyGL,UseChromeOSDirectVideoDecoder",
-    # WebRTCPipeWireCapturer: required for screen sharing on Wayland
-    "enable-features=WebRTCPipeWireCapturer,CanvasOopRasterization,ParallelDownloading",
+    # VA-API video decode: crashed on Mesa 26.0 (2026-06); retested OK 2026-10-10 on
+    # Mesa 26.2.4 + intel-media-driver 26.3.5 (chrome://gpu: Video Decode hw accelerated).
+    # If video tabs crash again, drop the Vaapi/AcceleratedVideo features below.
+    "enable-features=ParallelDownloading,VaapiVideoDecoder,VaapiVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxZeroCopyGL",
 ]
 c.qt.chromium.low_end_device_mode = "never"
 
@@ -159,7 +167,6 @@ c.content.blocking.adblock.lists = [
     "https://secure.fanboy.co.nz/fanboy-cookiemonster.txt",
 ]
 c.content.canvas_reading = True  # off breaks reCAPTCHA and Google sign-in
-c.content.dns_prefetch = False
 c.content.autoplay = False
 c.content.tls.certificate_errors = "ask-block-thirdparty"
 
@@ -194,14 +201,10 @@ c.content.javascript.can_open_tabs_automatically = False
 
 c.content.fullscreen.window = True
 c.content.pdfjs = False
-# Open downloaded PDFs (and other files via :download-open) in zathura
-c.downloads.open_dispatcher = "zathura"
 # all-interfaces leaks every NIC (incl. Tailscale) to any page's JS
 c.content.webrtc_ip_handling_policy = "default-public-interface-only"
 c.content.webgl = True  # off breaks Meet, Maps, Jira dashboards
-c.content.local_storage = True
 c.content.site_specific_quirks.enabled = True  # required for Google login
-c.content.prefers_reduced_motion = False
 c.content.default_encoding = "utf-8"
 c.content.local_content_can_access_file_urls = True
 c.content.unknown_url_scheme_policy = "allow-from-user-interaction"

@@ -1,0 +1,21 @@
+# A local ignore file replaces Stow's built-in list, so the defaults are repeated here.
+RCS
+.+,v
+CVS
+\.\#.+
+\.cvsignore
+\.svn
+_darcs
+\.hg
+\.git
+\.gitignore
+\.gitmodules
+.+~
+\#.*\#
+^/README.*
+^/LICENSE.*
+^/COPYING
+^/\.stow-local-ignore
+
+# pi-plan-mode opens its settings with O_NOFOLLOW and rejects symlinks; keep a real copy in ~/.pi/agent.
+^/\.pi/agent/pi-plan-mode\.json

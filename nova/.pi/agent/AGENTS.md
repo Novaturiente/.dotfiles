@@ -56,6 +56,7 @@ Overrides ponytail's "≤3 lines" and caveman terseness for the final message on
 ## Tools
 Config details (MCP merge, subagent grants, browser flow): `~/.pi/agent/docs/tooling.md` — read only when editing that config or a tool seems missing.
 - Web search → `google_search` (pass `urls` to fetch/analyse specific pages); interactive browsing → `agent_browser`.
+  - Always pass `thinking: true`. Decided 2026-10-10: pi-antigravity 0.10.0 default sends `thinkingBudget: 0`, which Antigravity rejects with `Request contains an invalid argument.`. Drop this rule once a plain query works after an update.
 - MCP tools (`mcp__<server>__<tool>`) → always via `codemode` (`searchTools()`/`describeTool()`); no server is `direct`. Never create `~/.pi/agent/mcp.json`.
 - Symbol/caller/impact questions → `codegraph_*` or Serena via codemode, or async subagent. Text/config/dir-map → `scout` or grep. Library docs → context7 via codemode.
 - Browser → native `agent_browser` only; never `agent-browser` via bash, no browser MCP, no Playwright.
