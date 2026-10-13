@@ -6,6 +6,7 @@
  */
 import { execFile, execFileSync } from "node:child_process";
 import { homedir } from "node:os";
+import { resolve } from "node:path";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const SCRIPT = `${homedir()}/.config/tmux/agent-state.sh`;
@@ -76,6 +77,17 @@ export default function (pi: ExtensionAPI) {
 		if (!m?.provider) return;
 		execFile("tmux", ["set", "-p", "-t", process.env.TMUX_PANE!, "@agent_model", `${m.provider}/${m.id ?? ""}`], () => {});
 	};
+
+	// Edited file -> @agent_project (its git repo), so the sidebar shows where work happens
+	// even when pi never left ~.
+	pi.on("tool_result", (event, ctx) => {
+		if (!root || event.isError || (event.toolName !== "edit" && event.toolName !== "write")) return;
+		const p = String(event.input.path ?? "");
+		if (!p) return;
+		const state = blocked > 0 ? "blocked" : active ? "working" : "idle";
+		const args = ["pi", state, ref, cwd, resolve(ctx.cwd, p)];
+		queue = queue.then(() => new Promise<void>((done) => execFile(SCRIPT, args, () => done())));
+	});
 
 	pi.on("model_select", (_e, ctx) => {
 		if (root) model(ctx);

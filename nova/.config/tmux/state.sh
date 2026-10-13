@@ -22,7 +22,7 @@ flush() {
 	# Only a server whose state we restored may overwrite the file.
 	[ -n "$(tmux show -gqv @state-started 2>/dev/null)" ] || return 0
 	[ -n "$(tmux show -gqv @restoring)" ] && return 0
-	f="#{pane_pid}$tab#{pane_current_path}$tab#{session_name}$tab#{window_index}$tab#{window_name}$tab#{window_active}$tab#{window_layout}$tab#{automatic-rename}$tab#{pane_index}$tab#{pane_active}$tab#{pane_current_command}$tab#{@sidebar}$tab#{@agent}$tab#{@agent_session}$tab#{@agent_cwd}"
+	f="#{pane_pid}$tab#{pane_current_path}$tab#{session_name}$tab#{window_index}$tab#{window_name}$tab#{window_active}$tab#{window_layout}$tab#{automatic-rename}$tab#{pane_index}$tab#{pane_active}$tab#{pane_current_command}$tab#{@sidebar}$tab#{@agent}$tab#{@agent_session}$tab#{@agent_cwd}$tab#{@filetree}"
 	# Fails with zero sessions too. Server still answering = everything closed by
 	# hand: save an empty state. Server gone (shutdown) = keep the file.
 	if ! panes=$(tmux list-panes -a -F "$f" 2>/dev/null); then
@@ -46,14 +46,14 @@ flush() {
 		def agent:
 			(if .[12] != "" then .[12] elif (.[10] | test("^(agy|claude|pi|codex)$")) then .[10] else "" end) as $n
 			| if $n == "" or (.[10] | test("^(zsh|bash|fish|sh)$")) then null
-			  else {name: $n, conversation: (.[13] | nz), cwd: (.[14] | nz), command: (.[16] | nz)} end;
+			  else {name: $n, conversation: (.[13] | nz), cwd: (.[14] | nz), command: (.[17] | nz)} end;
 		[split("\n")[] | select(length > 0) | split("\t")]
 		| {saved: $t, sessions: [group_by(.[2])[] | {name: .[0][2], windows: [group_by(.[3] | tonumber)[] | {
 			index: (.[0][3] | tonumber), name: .[0][4], auto_name: (.[0][7] == "1"),
 			active: (.[0][5] == "1"), layout: .[0][6],
 			panes: [sort_by(.[8] | tonumber)[] | {
-				index: (.[8] | tonumber), active: (.[9] == "1"), cwd: .[1], branch: (.[15] | nz),
-				sidebar: (.[11] == "1"), agent: agent}]}]}]}' >"$tmp"; then
+				index: (.[8] | tonumber), active: (.[9] == "1"), cwd: .[1], branch: (.[16] | nz),
+				sidebar: (.[11] == "1"), filetree: (.[15] == "1"), agent: agent}]}]}]}' >"$tmp"; then
 		[ -f "$file" ] && cp "$file" "$file.bak"
 		mv "$tmp" "$file" # atomic: a crash never leaves a half-written file
 	else
@@ -120,6 +120,10 @@ finish() {
 			tmux respawn-pane -k -t "$f_p" "$sidebar" \; set -p -t "$f_p" @sidebar 1
 			continue
 		fi
+		if [ "$f_sb" = 2 ]; then
+			tmux respawn-pane -k -t "$f_p" "$dir/file-tree.py" \; set -p -t "$f_p" @filetree 1
+			continue
+		fi
 		[ "$f_miss" = - ] || tmux send-keys -t "$f_p" -l "echo 'restore: $f_miss no longer exists, opened its nearest parent'" \; send-keys -t "$f_p" Enter
 		[ "$f_an" = - ] && continue
 		[ "$f_ac" = - ] && f_ac=''
@@ -140,7 +144,7 @@ restore() {
 	[ -s "$file" ] && rows=$(jq -r '.sessions[] as $s | $s.windows[] as $w | $w.panes[] | [
 		$s.name, ($w.index | tostring), (if $w.name == "" then "-" else $w.name end),
 		(if $w.auto_name then "1" else "0" end), $w.layout, (if $w.active then "1" else "0" end),
-		(if .active then "1" else "0" end), .cwd, (if .sidebar then "1" else "0" end),
+		(if .active then "1" else "0" end), .cwd, (if .sidebar then "1" elif .filetree then "2" else "0" end),
 		(.agent.name // "-"), (.agent.conversation // "-"), (.agent.command // "-")] | join("\t")' "$file" 2>/dev/null)
 	if [ -n "$rows" ]; then
 		# Starting session out of the way (saved names may include "0"); dropped after.
