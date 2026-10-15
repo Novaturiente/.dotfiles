@@ -143,13 +143,16 @@ if [ "$1" = open ]; then
 	[ -n "$(tmux show -wqv -t "$2" @sidebar_off)" ] && exit 0 # closed by hand in this window
 fi
 if [ "$1" = toggle ] || [ "$1" = resize ] || [ "$1" = open ]; then
+	# new-window fires after-new-window and session-window-changed together; without the
+	# lock both opens see no sidebar and each splits one.
+	exec 9>"${XDG_RUNTIME_DIR:-/tmp}/tmux-agent-sidebar.lock" && flock 9
 	sb=$(tmux list-panes -t "$2" -F '#{pane_id} #{@sidebar}' | awk '$2 == 1 {print $1}')
 	if [ "$1" = resize ]; then
 		[ -n "$sb" ] && tmux resize-pane -t "$sb" -x "$WIDTH"
 	elif [ -n "$sb" ]; then
 		if [ "$1" = toggle ]; then tmux kill-pane -t "$sb" \; set -w -t "$2" @sidebar_off 1; fi
 	elif [ "$1" = toggle ] || [ -z "$(tmux show -gqv @restoring)" ]; then
-		# Mark at once so a second open racing this one sees it.
+		# Mark before the lock drops so the next open sees it.
 		new=$(tmux split-window -t "$2" -hbfdP -F '#{pane_id}' -l "$WIDTH" "$0") &&
 			tmux set -p -t "$new" @sidebar 1 \; set -wu -t "$2" @sidebar_off
 	fi
