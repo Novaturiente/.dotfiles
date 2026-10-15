@@ -9,7 +9,6 @@
 # @agent_project = git repo (main checkout name, so worktrees map back) of the
 # last edited file, or of the folder after a folder change; a folder outside any
 # repo clears it. The sidebar shows it on the session row.
-# An edit opens the git file tree in the agent's window (file-tree.sh open).
 # A change of agent, conversation or folder saves tmux state (state.sh save).
 # Entering done or blocked on an unwatched pane sends a desktop notification
 # (OSC 777) to every attached client's terminal, so it reaches the laptop over SSH.
@@ -47,8 +46,6 @@ if [ -n "$file" ] && pr=$(project "$(dirname "$file")") && [ -n "$pr" ]; then
 elif [ -n "$cwd" ] && [ "$cwd" != "${old##*"$tab"}" ]; then
 	if pr=$(project "$cwd") && [ -n "$pr" ]; then tmux set $p @agent_project "$pr"; else tmux set $p -u @agent_project; fi
 fi
-
-[ -n "$file" ] && "$dir/file-tree.sh" open "$(tmux display -p -t "$TMUX_PANE" '#{window_id}')"
 
 prev=$(tmux show $p -qv @agent_state)
 [ "$state" = - ] && state=${prev:-idle}

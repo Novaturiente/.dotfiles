@@ -3,7 +3,8 @@
  * tool execution (per tool, edit+write split out), blocking UI prompts, idle — for the current/last
  * agent run and the whole session. Background tasks (bg_run) run concurrently, so they're listed
  * separately (from their completion notifications), not in the wall-clock split.
- * Same layout swap as usage-panel.ts/diff-panel.ts; shares the ORIGINAL symbol → one side pane at a time.
+ * Shares the ORIGINAL layout symbol with status-panel.ts → one side pane at a time; while shown,
+ * status-panel's widgets fall back to the dock.
  * Needs "tuiMode": "fullscreen".
  *   Ctrl+Alt+T / /timing        show / hide
  *   Alt+T / /timing focus       focus pane (opens it if hidden); Alt+T again → back to editor
@@ -128,7 +129,7 @@ function bodyLines(w: number): string[] {
 	return out;
 }
 
-// ---------- layout (mirrors usage-panel.ts) ----------
+// ---------- layout ----------
 
 class Lines {
 	constructor(private fn: (w: number) => string[]) {}
@@ -246,7 +247,8 @@ export default function (pi: ExtensionAPI) {
 		// undo a pane left behind by a previous load (e.g. /reload)
 		const f = tui.getFocusedComponent();
 		if (f?.[PREV_FOCUS]) tui.setFocus(f[PREV_FOCUS]);
-		if (tui.layoutRoot[ORIGINAL]) tui.setLayoutRoot(tui.layoutRoot[ORIGINAL]);
+		const lr = tui.layoutRoot;
+		if (lr[ORIGINAL] && !lr[Symbol.for("status-panel.root")]) tui.setLayoutRoot(lr[ORIGINAL]);
 	});
 
 	pi.on("agent_start", () => {

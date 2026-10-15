@@ -41,7 +41,10 @@ export default function (pi: ExtensionAPI) {
 			servers[name] = { cwd: projectDir, ...config };
 		}
 	}
+	// Set by pi-swarm for subagents: only the servers the subagent needs (comma list).
+	const only = process.env.PI_MCP_ONLY?.split(",").filter(Boolean);
 	for (const [name, config] of Object.entries(servers)) {
+		if (only && !only.includes(name)) continue;
 		try {
 			pi.registerMcpServer(name, config);
 		} catch (e) {

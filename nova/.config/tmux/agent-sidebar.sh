@@ -15,7 +15,8 @@ agents() {
 			$2 == "" && $6 ~ /^(agy|claude|pi|codex)$/ { $2 = $6; $3 = "idle" }
 			# Empty field would collapse under IFS=tab in read and shift the columns.
 			$3 == "" { $3 = "idle" }
-			$2 != "" && $6 !~ /^(zsh|bash|fish|sh)$/'
+			# swarm-* = hidden pi-swarm subagent sessions, shown in the swarm panel instead.
+			$2 != "" && $6 !~ /^(zsh|bash|fish|sh)$/ && $4 !~ /^swarm-/'
 }
 
 # Claude subscription windows from pi's claude-usage.ts caches (pi and Claude Code
@@ -86,6 +87,7 @@ sessions() {
 	local -A gi=()
 	local n=0 i=0 g name wins pj
 	while IFS=$'\t' read -r name wins; do
+		[[ $name == swarm-* || $name == pi-panels ]] && continue
 		pj=${aproj[$name]:-${sproj[$name]}} g=99999
 		if [ -n "$pj" ]; then
 			[ -n "${gi[$pj]+x}" ] || gi[$pj]=$((n++))
@@ -121,10 +123,10 @@ if [ "$1" = next ] || [ "$1" = prev ]; then
 	goto "${ids[i]}"
 	exit
 fi
-# reap <window>: pane-exited/after-kill-pane hook. Only sidebars/file tree left ->
+# reap <window>: pane-exited/after-kill-pane hook. Only sidebars/pi panel tabs left ->
 # close the window, so a session dies with its last real pane.
 if [ "$1" = reap ]; then
-	tmux list-panes -t "$2" -F '#{@sidebar}#{@filetree}' 2>/dev/null | grep -qvx 1 || tmux kill-window -t "$2" 2>/dev/null
+	tmux list-panes -t "$2" -F '#{@sidebar}#{?#{@slot},1,}' 2>/dev/null | grep -qvx 1 || tmux kill-window -t "$2" 2>/dev/null
 	exit 0
 fi
 # poke: session-closed hook. SIGUSR1 to each sidebar's draw loop = redraw now,
@@ -134,16 +136,22 @@ if [ "$1" = poke ]; then
 	exit 0
 fi
 # open <window>: hooks. Like toggle but never closes, and skipped mid-restore.
+# Only while some agent exists, and never in hidden sessions (pi swarm children, parked pi tabs).
+if [ "$1" = open ]; then
+	case $(tmux display -p -t "$2" '#{session_name}' 2>/dev/null) in swarm-* | pi-panels | '') exit 0 ;; esac
+	[ -n "$(agents)" ] || exit 0
+	[ -n "$(tmux show -wqv -t "$2" @sidebar_off)" ] && exit 0 # closed by hand in this window
+fi
 if [ "$1" = toggle ] || [ "$1" = resize ] || [ "$1" = open ]; then
 	sb=$(tmux list-panes -t "$2" -F '#{pane_id} #{@sidebar}' | awk '$2 == 1 {print $1}')
 	if [ "$1" = resize ]; then
 		[ -n "$sb" ] && tmux resize-pane -t "$sb" -x "$WIDTH"
 	elif [ -n "$sb" ]; then
-		if [ "$1" = toggle ]; then tmux kill-pane -t "$sb"; fi
+		if [ "$1" = toggle ]; then tmux kill-pane -t "$sb" \; set -w -t "$2" @sidebar_off 1; fi
 	elif [ "$1" = toggle ] || [ -z "$(tmux show -gqv @restoring)" ]; then
 		# Mark at once so a second open racing this one sees it.
 		new=$(tmux split-window -t "$2" -hbfdP -F '#{pane_id}' -l "$WIDTH" "$0") &&
-			tmux set -p -t "$new" @sidebar 1
+			tmux set -p -t "$new" @sidebar 1 \; set -wu -t "$2" @sidebar_off
 	fi
 	exit 0
 fi

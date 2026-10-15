@@ -3,7 +3,7 @@
  *   your prompt · "▸ N tool calls · thinking … click to expand" · final reply text (thinking stripped).
  * User-facing parts stay visible and split the turn into several collapsed sections:
  *   the reply ending each agent run (last text before a message with no tool call), background-task
- *   notifications, text right before a question tool (ask_user_question etc.), the question/answer itself.
+ *   notifications ([swarm] reports fold into the ▸ line), text right before a question tool (ask_user_question etc.), the question/answer itself.
  * Click the ▸ line to expand, click ▾ to collapse again. Alt+O flips every past turn.
  * Fullscreen tuiMode only. Nothing is removed: this only changes what the chat container renders.
  * ponytail: patches pi's chat Container.render (internal); a pi update may need this revisited.
@@ -62,6 +62,7 @@ const isAsk = (c: any) => c instanceof ToolExecutionComponent && /ask_user|quest
 
 const hasCall = (a: any) => a.lastMessage?.content?.some((c: any) => c.type === "toolCall");
 const isNotice = (c: any) => c instanceof CustomMessageComponent && (c as any).message?.customType === "background-task-notification";
+const isSwarm = (c: any) => c instanceof CustomMessageComponent && (c as any).message?.customType === "swarm";
 
 /** User-facing parts of a turn: the reply ending each agent run,
  *  question tools, and the text that introduced each question. */
@@ -112,11 +113,12 @@ function viewTurn(turn: any[]): any[] {
 		const thinking = (isAssistant(c) && hasThinking(c)) || as.some(hasThinking);
 		const notes = as.filter((a) => textOf(a.lastMessage)).length;
 		const notices = seg.filter(isNotice).length;
+		const swarm = seg.filter(isSwarm).length;
 		const anchor = c ? [c] : [];
-		if (!tools && !thinking && !notes && !notices) out.push(...seg, ...tail, ...anchor);
+		if (!tools && !thinking && !notes && !notices && !swarm) out.push(...seg, ...tail, ...anchor);
 		else if (isOpen(key)) out.push(line(theme.fg("dim", "▾ collapse"), () => flip(key)), ...seg, ...tail, ...anchor);
 		else {
-			const bits = [tools && `${tools} tool call${tools === 1 ? "" : "s"}`, thinking && "thinking", notes && `${notes} note${notes === 1 ? "" : "s"}`, notices && `${notices} bg task${notices === 1 ? "" : "s"}`];
+			const bits = [tools && `${tools} tool call${tools === 1 ? "" : "s"}`, thinking && "thinking", notes && `${notes} note${notes === 1 ? "" : "s"}`, notices && `${notices} bg task${notices === 1 ? "" : "s"}`, swarm && `${swarm} swarm report${swarm === 1 ? "" : "s"}`];
 			const summary = theme.fg("dim", `▸ ${bits.filter(Boolean).join(" · ")} · click to expand`);
 			out.push(new Spacer(1), line(summary, () => flip(key)), ...(c ? [isAssistant(c) ? replyClone(c) : c] : tail));
 		}
@@ -160,17 +162,19 @@ function findChat(n: any, seen = new Set<any>()): any {
 	}
 }
 
-function attach(ctx: ExtensionContext) {
-	if (ctx.mode !== "tui") return;
+/** Returns true once the chat is patched (or can never be: non-TUI / regular mode). */
+function attach(ctx: ExtensionContext): boolean {
+	if (ctx.mode !== "tui") return true;
 	ctx.ui.setWidget("turn-collapse-probe", (t, th) => {
 		tui = t;
 		theme = th;
 		return { render: () => [], invalidate() {} };
 	});
 	ctx.ui.setWidget("turn-collapse-probe", undefined);
-	if (typeof tui?.setLayoutRoot !== "function") return; // regular mode: scrollback can't be re-rendered
+	if (typeof tui?.setLayoutRoot !== "function") return true; // regular mode: scrollback can't be re-rendered
 	const chat = findChat(tui.layoutRoot);
-	if (!chat || chat[PATCH] === TOKEN) return;
+	if (!chat) return false;
+	if (chat[PATCH] === TOKEN) return true;
 	chat[PATCH] = TOKEN;
 	chat.render = render;
 	const inv = Object.getPrototypeOf(chat).invalidate;
@@ -179,14 +183,18 @@ function attach(ctx: ExtensionContext) {
 		inv.call(this);
 	};
 	tui.requestRender();
+	return true;
 }
 
 export default function (pi: ExtensionAPI) {
 	pi.on("session_start", (_e, ctx) => {
 		allExpanded = false;
 		flipped = new WeakSet();
-		attach(ctx);
-		setTimeout(() => attach(ctx), 300); // ponytail: resumed history may render after session_start
+		// resumed history renders after session_start (long sessions take seconds): retry until the chat
+		// has a user message to find, for up to 10s; an empty new session gets patched on turn_start instead
+		let tries = 0;
+		const retry = () => !attach(ctx) && ++tries < 40 && setTimeout(retry, 250);
+		retry();
 	});
 	pi.on("turn_start", (_e, ctx) => attach(ctx));
 	pi.on("agent_start", (_e, ctx) => {

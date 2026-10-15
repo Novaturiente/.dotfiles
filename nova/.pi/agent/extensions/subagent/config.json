@@ -1,4 +1,5 @@
 {
   "toolDescriptionMode": "compact",
-  "maxSubagentDepth": 2
+  "maxSubagentDepth": 2,
+  "asyncWidgetLayout": "rows"
 }

@@ -164,6 +164,15 @@ export default function (pi: ExtensionAPI) {
 			const r = update.apply(this, a);
 			this.contentBox?.setBgFn(undefined);
 			this.contentText?.setCustomBgFn(undefined);
+			// no blank padding rows above/below the call (they only made the bar taller)
+			if (this.contentBox && this.contentBox.paddingY) {
+				this.contentBox.paddingY = 0;
+				this.contentBox.invalidateCache?.();
+			}
+			if (this.contentText && this.contentText.paddingY) {
+				this.contentText.paddingY = 0;
+				this.contentText.invalidate?.();
+			}
 			return r;
 		};
 		const render = TEP.render;
@@ -171,7 +180,7 @@ export default function (pi: ExtensionAPI) {
 			const lines: string[] = render.call(this, w);
 			const t = TEP.__barTheme;
 			if (!t || (this.hasRendererDefinition() && this.getRenderShell() === "self")) return lines;
-			const bar = t.fg(this.isPartial ? "muted" : this.result?.isError ? "error" : "success", "▎");
+			const bar = t.fg(this.isPartial ? "muted" : this.result?.isError ? "error" : "success", "▏");
 			// line 0 = spacer between calls; skip image escape lines; replace the 1-col left pad
 			return lines.map((l, i) =>
 				i === 0 || l[0] !== " " || /\x1b_G|\x1b\]1337/.test(l) ? l : bar + l.slice(1),
