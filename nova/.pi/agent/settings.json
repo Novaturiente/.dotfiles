@@ -12,7 +12,12 @@
     "anthropicExtraUsage": false
   },
   "packages": [
-    "npm:pi-subagents",
+    {
+      "source": "npm:pi-subagents",
+      "extensions": [],
+      "skills": [],
+      "prompts": []
+    },
     "npm:@dietrichgebert/ponytail",
     "npm:pi-powerline-footer",
     "npm:pi-caveman",
@@ -21,7 +26,10 @@
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:@narumitw/pi-btw",
     "npm:@everyx/pi-read-doc",
-    "npm:@juicesharp/rpiv-todo",
+    {
+      "source": "npm:@juicesharp/rpiv-todo",
+      "extensions": []
+    },
     "npm:@aliou/pi-processes",
     "npm:pi-simplify",
     "npm:pi-agent-browser-native",

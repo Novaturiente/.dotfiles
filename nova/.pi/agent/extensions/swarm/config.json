@@ -1,0 +1,31 @@
+{
+	"maxDepth": 2,
+	"defaultModel": "anthropic/claude-sonnet",
+	"maxConcurrent": 6,
+	"maxSpawnsPerRoot": 30,
+	"reapAfterMin": 0,
+	"timeoutMin": 45,
+	"stallMin": 10,
+	"inlineChars": 1500,
+	"agentDirs": [
+		"~/.pi/agent/agents"
+	],
+	"skillDirs": [
+		"~/.pi/agent/skills",
+		"~/.agents/skills",
+		"~/.pi/agent/npm/node_modules"
+	],
+	"childExtensions": [
+		"~/.pi/agent/extensions/claude-oauth-clean.ts",
+		"~/.pi/agent/extensions/project-mcp.ts",
+		"builtin:mcp",
+		"builtin:codemode"
+	],
+	"toolExtensions": {
+		"google_search": "~/.pi/agent/npm/node_modules/pi-antigravity",
+		"generate_image": "~/.pi/agent/npm/node_modules/pi-antigravity",
+		"codegraph_*": "~/.pi/agent/npm/node_modules/@vndv/pi-codegraph",
+		"lens_*": "~/.pi/agent/npm/node_modules/pi-lens",
+		"agent_browser*": "~/.pi/agent/npm/node_modules/pi-agent-browser-native"
+	}
+}

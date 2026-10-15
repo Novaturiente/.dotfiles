@@ -9,8 +9,5 @@
   ],
   "tui.altScreen.bottom": [
     "shift+end"
-  ],
-  "tui.editor.deleteWordForward": [
-    "alt+delete"
   ]
 }
