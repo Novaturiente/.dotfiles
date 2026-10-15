@@ -29,5 +29,4 @@ nova/.config/gtk-4.0/servers
 # KDE Connect identity: private key and its certificate are per-machine secrets
 nova/.config/kdeconnect/privateKey.pem
 nova/.config/kdeconnect/certificate.pem
-/.serena
 /.pi/tasks/01a1153c-7b67-71dd-82bd-fcf6745a44b3-535412

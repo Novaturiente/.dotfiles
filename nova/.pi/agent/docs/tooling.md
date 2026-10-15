@@ -6,7 +6,7 @@ Pointed to from `~/.pi/agent/AGENTS.md`. Read when editing MCP/subagent config o
 - Pi built-in MCP (no `mcp` gateway tool).
 - `extensions/project-mcp.ts` merges global `~/.pi/agent/mcp-global.json` with nearest `.mcp.json` for repos under `~/Projects/`; same server name → project wins.
 - Never create `~/.pi/agent/mcp.json` — pi makes it beat project servers.
-- Tools named `mcp__<server>__<tool>`, called from `codemode` (find with `searchTools()`; usage notes + tool list via `describeNamespace("serena")`).
+- Tools named `mcp__<server>__<tool>`, called from `codemode` (find with `searchTools()`; usage notes + tool list via `describeNamespace("<server>")`).
 - Every server uses default `codemode` exposure (none `direct`); don't add `exposure` fields. `"defaultTools": ["+codemode"]` in settings keeps codemode on.
 - Status: footer `🔌 MCP: <servers> (<connected>)` from `extensions/mcp-status.ts`; details in `/mcp`. `pi mcp list` doesn't see extension servers.
 
@@ -16,7 +16,6 @@ Pointed to from `~/.pi/agent/AGENTS.md`. Read when editing MCP/subagent config o
 
 ## Subagent tool grants
 - `subagents.agentOverrides` in `settings.json` grants scout/worker/reviewer/oracle/researcher: codegraph_*, codemode, lens_diagnostics, agent_browser*, `mcp:context7`, `inheritSkills: true`.
-- Serena: full `mcp:serena` for worker only; scout/reviewer/oracle get read-only `mcp:serena/<tool>` selectors.
 - Web search: oracle/researcher only.
 - Scout uses `anthropic/claude-haiku`; specialist agents in `agents/` use `anthropic/claude-sonnet`. These are version-less aliases from `extensions/latest-models.ts`, which routes each to the newest undated `claude-<family>-N[-M]` model at request time. Without that extension pi-subagents rejects them ("Unknown subagent model").
 

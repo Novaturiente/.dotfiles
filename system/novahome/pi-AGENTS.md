@@ -64,7 +64,7 @@ Overrides ponytail's "≤3 lines" and caveman terseness for the final message on
 Config details (MCP merge, subagent grants, browser flow): `~/.pi/agent/docs/tooling.md` — read only when editing that config or a tool seems missing.
 - Web search → `google_search`; `pi_claude_code_provider_web_search` only if no other search tool exists.
 - MCP tools (`mcp__<server>__<tool>`) → call via `codemode` (`searchTools()`), except context7: call directly. Never create `~/.pi/agent/mcp.json`.
-- Symbol/caller/impact questions → `codegraph_*` or Serena via codemode, or async subagent. Text/config/dir-map → `scout` or grep. Library docs → context7.
+- Symbol/caller/impact questions → `codegraph_*` or async subagent. Text/config/dir-map → `scout` or grep. Library docs → context7.
 - Browser → native `agent_browser` only; never `agent-browser` via bash, no browser MCP, no Playwright.
 - Noisy output (tests, builds, lint, installs, `git log`/`diff`, logs) → filter at source: `2>&1 | tail -40` or `2>&1 | grep -iE "error|fail|warn" | head -50`; `git diff --stat` before full diff. Rerun unfiltered only if needed.
 

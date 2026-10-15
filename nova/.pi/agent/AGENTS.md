@@ -58,7 +58,7 @@ Config details (MCP merge, subagent grants, browser flow): `~/.pi/agent/docs/too
 - Web search → `google_search` (pass `urls` to fetch/analyse specific pages); interactive browsing → `agent_browser`.
   - Always pass `thinking: true`. Decided 2026-10-10: pi-antigravity 0.10.0 default sends `thinkingBudget: 0`, which Antigravity rejects with `Request contains an invalid argument.`. Drop this rule once a plain query works after an update.
 - MCP tools (`mcp__<server>__<tool>`) → always via `codemode` (`searchTools()`/`describeTool()`); no server is `direct`. Never create `~/.pi/agent/mcp.json`.
-- Symbol/caller/impact questions → `codegraph_*` or Serena via codemode, or async subagent. Text/config/dir-map → `scout` or grep. Library docs → context7 via codemode.
+- Symbol/caller/impact questions → `codegraph_*` or async subagent. Text/config/dir-map → `scout` or grep. Library docs → context7 via codemode.
 - Browser → native `agent_browser` only; never `agent-browser` via bash, no browser MCP, no Playwright.
 - Background processes (dev servers, builds, watchers, deploy watches) → `process` tool from pi-processes (`/ps` panel). Decided 2026-10-07: replaced pi-background-tasks, whose idle wake (`sendMessage`+`triggerTurn`) skipped `before_agent_start`, dropped extension prompt sections and broke the prompt cache. Never reinstall it or add a bg extension that wakes that way.
 - Review by intent: bugs/structure → `reviewer` subagent; over-engineering/bloat → `ponytail-review` / `ponytail-audit`. Don't run both by default.
