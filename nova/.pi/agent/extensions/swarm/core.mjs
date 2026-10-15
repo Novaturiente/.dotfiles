@@ -308,7 +308,7 @@ export function piArgs(root, id, { message, resume } = {}) {
 	const servers = mcpServers(meta, def);
 	const tools = [...(def?.tools ?? [])];
 	if (tools.length) for (const s of meta.mcp ?? []) tools.push(`mcp:${s}`);
-	// Each MCP server is a process (serena alone is hundreds of MB): start none unless asked for.
+	// Each MCP server is a process (some are hundreds of MB): start none unless asked for.
 	const exts = [...cfg.childExtensions, ...(def?.extensions ?? [])].filter((e) => servers.length || !(e === "builtin:mcp" || e.endsWith("project-mcp.ts")));
 	for (const t of tools) for (const [pat, ext] of Object.entries(cfg.toolExtensions)) if (globMatch(pat, t)) exts.push(ext);
 	exts.push(EXTENSION);
