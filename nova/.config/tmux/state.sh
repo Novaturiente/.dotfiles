@@ -44,7 +44,7 @@ flush() {
 		# Reported via hook (@agent), or a known agent that has not reported yet.
 		# Foreground back to a shell = the agent exited.
 		def agent:
-			(if .[12] != "" then .[12] elif (.[10] | test("^(agy|claude|pi|codex)$")) then .[10] else "" end) as $n
+			(if .[12] != "" then .[12] elif (.[10] | test("^(agy|claude|pi|codex|novacode)$")) then .[10] else "" end) as $n
 			| if $n == "" or (.[10] | test("^(zsh|bash|fish|sh)$")) then null
 			  else {name: $n, conversation: (.[13] | nz), cwd: (.[14] | nz), command: (.[17] | nz)} end;
 		# swarm-* = pi subagent sessions, pi-panels = parked pi panel tabs, @slot = a pi panel tab
@@ -103,6 +103,7 @@ resume_cmd() {
 	pi) if [ -n "$2" ]; then echo "pi --session '$2'"; else echo "pi -c"; fi ;;
 	agy) if [ -n "$2" ]; then echo "agy --conversation '$2'"; else echo "agy -c"; fi ;;
 	codex) if [ -n "$2" ]; then echo "codex resume '$2'"; else echo "codex resume --last"; fi ;;
+	novacode) if [ -n "$2" ]; then echo "novacode -r '$2'"; else echo "novacode -c"; fi ;;
 	claude)
 		fl=$(claude_flags "$3")
 		if [ -n "$2" ]; then echo "claude$fl --resume '$2'"; else echo "claude$fl --continue"; fi

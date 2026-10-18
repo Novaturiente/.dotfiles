@@ -12,7 +12,7 @@ agents() {
 	tmux list-panes -a -F '#{pane_id}	#{@agent}	#{@agent_state}	#{session_name}:#{window_index}	#{b:pane_current_path}	#{pane_current_command}	#{@agent_bg}' |
 		awk -F'\t' -v OFS='\t' '
 			# Known agent not yet reported via hook (e.g. agy before its first prompt): show as idle.
-			$2 == "" && $6 ~ /^(agy|claude|pi|codex)$/ { $2 = $6; $3 = "idle" }
+			$2 == "" && $6 ~ /^(agy|claude|pi|codex|novacode)$/ { $2 = $6; $3 = "idle" }
 			# Empty field would collapse under IFS=tab in read and shift the columns.
 			$3 == "" { $3 = "idle" }
 			# swarm-* = hidden pi-swarm subagent sessions, shown in the swarm panel instead.
@@ -72,7 +72,7 @@ projects() {
 		[ -n "${first[$s]+x}" ] || first[$s]=$d
 		rp=$ap
 		[ -n "$rp" ] || repo "${acwd:-$full}"
-		if [ -n "$ag" ] || [[ $cmd =~ ^(agy|claude|pi|codex)$ ]]; then
+		if [ -n "$ag" ] || [[ $cmd =~ ^(agy|claude|pi|codex|novacode)$ ]]; then
 			[ -n "${aproj[$s]}" ] || aproj[$s]=$rp
 		else
 			[ -n "${sproj[$s]}" ] || sproj[$s]=$rp
