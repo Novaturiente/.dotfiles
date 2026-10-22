@@ -132,7 +132,8 @@ fi
 # poke: session-closed hook. SIGUSR1 to each sidebar's draw loop = redraw now,
 # no 1s polling lag and no keys typed into any pane.
 if [ "$1" = poke ]; then
-	tmux list-panes -a -F '#{@sidebar} #{pane_pid}' | awk '$1 == 1 {print $2}' | xargs -r kill -USR1 2>/dev/null
+	# @sidebar_pid, not pane_pid: under fish pane_pid is the `fish -c` wrapper, which USR1 kills.
+	tmux list-panes -a -F '#{@sidebar} #{@sidebar_pid}' | awk '$1 == 1 && $2 {print $2}' | xargs -r kill -USR1 2>/dev/null
 	exit 0
 fi
 # open <window>: hooks. Like toggle but never closes, and skipped mid-restore.
@@ -159,7 +160,7 @@ if [ "$1" = toggle ] || [ "$1" = resize ] || [ "$1" = open ]; then
 	exit 0
 fi
 
-tmux set -p -t "$TMUX_PANE" @sidebar 1 \; select-pane -t "$TMUX_PANE" -T agents
+tmux set -p -t "$TMUX_PANE" @sidebar 1 \; set -p -t "$TMUX_PANE" @sidebar_pid $$ \; select-pane -t "$TMUX_PANE" -T agents
 # Hide cursor, no line wrap (long rows clip instead of breaking the layout);
 # SGR mouse reporting so clicks reach the draw loop.
 printf '\e[?25l\e[?7l\e[?1000h\e[?1006h'
