@@ -86,10 +86,9 @@ ShellRoot {
         onTriggered: root.hovered = false
     }
 
-    // Hover hub: 300 ms dwell on the idle pill opens it, leaving closes it.
-    // With no history and no media the hub would be empty, so the dashboard
-    // opens instead; a hover-opened dashboard also closes on leave (a clicked
-    // one, or one you navigate inside, stays).
+    // Hover: 300 ms dwell on the idle pill opens the dashboard, leaving closes
+    // it (a clicked one, or one you navigate inside, stays). The dashboard's
+    // bell opens the hub (media + notification history), which also closes on leave.
     property bool hoverOpened: false
     readonly property bool hoverPage: mode === "hub" || (hoverOpened && mode === "dashboard")
     onPillHoveredChanged: {
@@ -109,8 +108,7 @@ ShellRoot {
         onTriggered: {
             if (root.mode !== "idle" || root.notifInIsland)
                 return;
-            const empty = root.history.length === 0 && root.player === null;
-            root.show(empty ? "dashboard" : "hub");
+            root.show("dashboard");
             root.hoverOpened = true;
         }
     }
@@ -1492,6 +1490,12 @@ ShellRoot {
                         }
                         T {
                             anchors.verticalCenter: parent.verticalCenter
+                            visible: root.bat?.state === UPowerDeviceState.Charging
+                            text: root.glyph(0xF140B)
+                            color: batIcon.tint
+                        }
+                        T {
+                            anchors.verticalCenter: parent.verticalCenter
                             text: root.batPct + "%"
                         }
                     }
@@ -2301,7 +2305,22 @@ ShellRoot {
                 id: dashPage
                 active: island.page === dashPage
 
+                // Bell, top-right: opens the notification hub.
+                T {
+                    anchors.right: dashCol.right
+                    anchors.top: dashCol.top
+                    text: root.glyph(0xF009A)
+                    font.pixelSize: Tokens.fontSize.large
+                    color: root.history.length > 0 ? Colors.accent : Colors.subtext0
+                    MouseArea {
+                        anchors.fill: parent
+                        anchors.margins: -6
+                        onClicked: root.show("hub")
+                    }
+                }
+
                 Column {
+                    id: dashCol
                     spacing: Tokens.spacing.medium
 
                     Row {

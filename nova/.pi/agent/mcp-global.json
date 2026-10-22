@@ -2,18 +2,11 @@
   "mcpServers": {
     "context7": {
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp@4.0.3"],
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@4.0.3"
+      ],
       "description": "Up-to-date library/framework docs: resolve-library-id, then query-docs"
-    },
-    "rea": {
-      "command": "npx",
-      "args": ["-y", "rea-agents@6.4.0", "mcp"],
-      "env": {
-        "GHIDRA_INSTALL_DIR": "/opt/ghidra",
-        "REA_JADX_MCP_JAR": "/home/nova/tools/jadx-headless-mcp-0.7.1-all.jar",
-        "REA_JADX_HEAP_MIB": "6144"
-      },
-      "description": "REA reverse engineering: inspect native binaries, JS/Electron apps, .NET assemblies, websites; decompile and trace with evidence"
     },
     "gsc": {
       "command": "searchconsole-mcp",

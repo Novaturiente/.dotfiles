@@ -18,9 +18,9 @@ bind("CTRL + ALT + W",         run("qs -c island ipc call island toggle wallpape
 
 -- ── Applications ───────────────────────────────────────────────────────────
 bind(M .. " + space",          run("ghostty"))
-bind(M .. " + W",              run("zen-browser"))
-bind(M .. " + CTRL + W",       run("qutebrowser"))
-bind(M .. " + SHIFT + W",      run("vpn-run qutebrowser"))
+bind(M .. " + W",              run("novabrowser"))
+bind(M .. " + CTRL + W",       run("novabrowser --profile=Work"))
+bind(M .. " + SHIFT + W",      run("novabrowser --profile=personal"))
 bind(M .. " + Return",         run("ghostty --title='tmux' -e zsh -ic tmux"))
 bind(M .. " + D",              run("qs -c island ipc call island toggle launcher || " .. S .. "quickshell/launcher.sh"))
 bind(M .. " + SHIFT + D",      run(S .. "rofi/tv-edit.sh"))
