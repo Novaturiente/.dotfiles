@@ -36,17 +36,17 @@ Mod+Ctrl+down               window.move direction=d
 Mod+Ctrl+F                  window.float action=toggle
 Mod+Ctrl+G                  fix_grammar.sh
 Mod+Ctrl+H                  layout swapcol l
-Mod+Ctrl+I                  window.move workspace=r-1
+Mod+Ctrl+I                  lua function
 Mod+Ctrl+J                  window.move direction=d
 Mod+Ctrl+K                  window.move direction=u
 Mod+Ctrl+left               layout swapcol l
 Mod+Ctrl+L                  layout swapcol r
-Mod+Ctrl+mouse_down         focus workspace=r+1
+Mod+Ctrl+mouse_down         lua function
 Mod+Ctrl+mouse_left         layout swapcol l
 Mod+Ctrl+mouse_right        layout swapcol r
-Mod+Ctrl+mouse_up           focus workspace=r-1
-Mod+Ctrl+Page_Down          window.move workspace=r+1
-Mod+Ctrl+Page_Up            window.move workspace=r-1
+Mod+Ctrl+mouse_up           lua function
+Mod+Ctrl+Page_Down          lua function
+Mod+Ctrl+Page_Up            lua function
 Mod+Ctrl+P                  scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --...
 Mod+Ctrl+right              layout swapcol r
 Mod+Ctrl+R                  record-script.sh
@@ -56,31 +56,32 @@ Mod+Ctrl+Shift+P            dpms action=off
 Mod+Ctrl+Shift+R            record-script.sh --region
 Mod+Ctrl+S                  island toggle dashboard
 Mod+Ctrl+T                  ~/.local/bin/tv-remote
+Mod+Ctrl+U                  lua function
 Mod+Ctrl+up                 window.move direction=u
-Mod+Ctrl+U                  window.move workspace=r+1
-Mod+Ctrl+W                  qutebrowser
+Mod+Ctrl+W                  novabrowser --profile=Work
 Mod+D                       island toggle launcher
-Mod+down                    focus workspace=r+1
+Mod+down                    lua function
 Mod+E                       ghostty -e explorenova
 Mod+equal                   layout colresize +0.1
 Mod+Escape                  submap passthru
 Mod+F                       layout colresize 1.0
+Mod+grave                   workspace.toggle_special scratch
 Mod+H                       focus direction=l
-Mod+J                       focus workspace=r+1
-Mod+K                       focus workspace=r-1
+Mod+J                       lua function
+Mod+K                       lua function
 Mod+left                    focus direction=l
 Mod+L                       focus direction=r
 Mod+minus                   layout colresize -0.1
 Mod+mouse:272               window.drag
 Mod+mouse:273               window.resize
 Mod+mouse_down              focus direction=r
-Mod+mouse_left              window.move workspace=r-1
-Mod+mouse_right             window.move workspace=r+1
+Mod+mouse_left              lua function
+Mod+mouse_right             lua function
 Mod+mouse_up                focus direction=l
 Mod+N                       ghostty -e nvim
 Mod+O                       file_picker.sh
-Mod+Page_Down               focus workspace=r+1
-Mod+Page_Up                 focus workspace=r-1
+Mod+Page_Down               lua function
+Mod+Page_Up                 lua function
 Mod+period                  layout expel
 Mod+P                       scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --...
 Mod+Q                       window.close
@@ -100,6 +101,7 @@ Mod+Shift+D                 rofi/tv-edit.sh
 Mod+Shift+E                 island toggle power
 Mod+Shift+equal             window.resize relative=true x=0 y=100
 Mod+Shift+F                 window.fullscreen mode=fullscreen
+Mod+Shift+grave             window.move workspace=special:scratch
 Mod+Shift+left              focus monitor=l
 Mod+Shift+L                 lock.sh
 Mod+Shift+minus             window.resize relative=true x=0 y=-100
@@ -114,14 +116,14 @@ Mod+Shift+slash             quickshell/keybindings.sh
 Mod+Shift+S                 screenshot region -> satty
 Mod+Shift+Tab               switch focus floating/tiling
 Mod+Shift+T                 island toggle theme
-Mod+Shift+W                 vpn-run qutebrowser
+Mod+Shift+W                 novabrowser --profile=personal
 Mod+space                   ghostty
-Mod+S                       quickshell/zen-url.sh
+Mod+S                       quickshell/browser-url.sh
 Mod+Tab                     quickshell/switcher.sh
 Mod+T                       tasks.sh
-Mod+up                      focus workspace=r-1
+Mod+up                      lua function
 Mod+V                       island toggle clipboard
-Mod+W                       zen-browser
+Mod+W                       novabrowser
 [passthru] Mod+Escape       submap reset
 Print                       screenshot region
 Shift+XF86AudioLowerVolume  island brightness down

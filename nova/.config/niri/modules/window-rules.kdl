@@ -31,7 +31,7 @@ window-rule {
     open-on-workspace "Main"
 }
 window-rule {
-    match app-id="zen"
+    match app-id="novabrowser"
     draw-border-with-background false
     open-on-workspace "Main"
 }

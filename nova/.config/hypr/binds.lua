@@ -32,7 +32,7 @@ bind(M .. " + E",              run("ghostty -e explorenova"))
 -- ── Utilities & menus ──────────────────────────────────────────────────────
 bind(M .. " + O",              run(S .. "file_picker.sh"))
 bind(M .. " + SHIFT + O",      run(S .. "ocr_select.sh"))
-bind(M .. " + S",              run(S .. "quickshell/zen-url.sh"))
+bind(M .. " + S",              run(S .. "quickshell/browser-url.sh"))
 bind(M .. " + CTRL + G",       run(S .. "fix_grammar.sh"))
 bind(M .. " + SHIFT + C",      run(S .. "quickshell/cal.sh"))
 bind(M .. " + SHIFT + N",      run(S .. "tasks.sh"))

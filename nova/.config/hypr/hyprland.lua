@@ -105,7 +105,7 @@ hl.workspace_rule({ workspace = "2", default_name = "Work", persistent = true })
 hl.window_rule({ match = { class = "^scrcpy$" }, scrolling_width = 0.3, workspace = "1" })
 hl.window_rule({ match = { title = "^dexmode$" }, maximize = true, workspace = "1" })
 hl.window_rule({ match = { class = "^lin-whatsapp$" }, workspace = "1" })
-hl.window_rule({ match = { class = "^zen$" }, workspace = "1" })
+hl.window_rule({ match = { class = "^novabrowser$" }, workspace = "1" })
 hl.window_rule({ match = { class = "^com.mitchellh.ghostty$" }, workspace = "2" })
 hl.window_rule({ match = { title = "^tmux$" }, scrolling_width = 1.0 })
 -- Opens in the Mod+grave scratchpad; after the ghostty rule so it wins over workspace 2.

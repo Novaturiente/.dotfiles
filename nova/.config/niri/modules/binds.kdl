@@ -57,8 +57,8 @@ binds {
     Mod+Shift+O hotkey-overlay-title="Text extractor" {
         spawn-sh "~/.dotfiles/scripts/ocr_select.sh"
     }
-    Mod+S hotkey-overlay-title="Zen URL bar" {
-        spawn "~/.dotfiles/scripts/quickshell/zen-url.sh"
+    Mod+S hotkey-overlay-title="Browser URL bar" {
+        spawn "~/.dotfiles/scripts/quickshell/browser-url.sh"
     }
     Mod+Ctrl+G hotkey-overlay-title="Grammar fix" {
         spawn-sh "~/.dotfiles/scripts/fix_grammar.sh"
