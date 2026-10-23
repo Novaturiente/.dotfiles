@@ -174,7 +174,8 @@ icon name the theme actually has; a missing one falls back to a lettered badge,
 which is deliberate.
 
 ## Browsers
-- **Primary:** Zen Browser (Wayland)
+- **Primary:** novabrowser (`/usr/sbin/novabrowser`, CEF-based, qutebrowser-style config in `~/.config/novabrowser/`). Default for web links via `mimeapps.list` and `$BROWSER` (`.profile`); Mod+W. Mod+S opens the `browser-url` Quickshell menu (`scripts/quickshell/browser-url*.sh`, `browser-open.sh`) over its bookmarks and history
+- **Previous:** Zen Browser; still installed, its theme templates remain in `system/themes/templates/apps/zen-browser/`
 - **Secondary:** Qutebrowser (keyboard-driven, dark mode, follows the active theme)
 - **Work:** Google Chrome
 
@@ -191,7 +192,7 @@ which is deliberate.
 
 ## File Management
 - No terminal file manager is installed; browse from the shell or `broot`.
-- **MIME defaults** (`nova/.config/mimeapps.list`): zen (web), Neovim (Markdown, CSV/TSV, Org, plain text, logs, code, config), zathura (PDF, epub, PostScript), imv (images), mpv (video/audio). Without a desktop environment, `xdg-open` detects type by content (`file`), so small scripts can read as `text/plain` and open in Neovim; GTK apps detect by extension and are unaffected
+- **MIME defaults** (`nova/.config/mimeapps.list`): novabrowser (web), Neovim (Markdown, CSV/TSV, Org, plain text, logs, code, config), zathura (PDF, epub, PostScript), imv (images), mpv (video/audio). Without a desktop environment, `xdg-open` detects type by content (`file`), so small scripts can read as `text/plain` and open in Neovim; GTK apps detect by extension and are unaffected
 
 ## Hardware Specifications
 
