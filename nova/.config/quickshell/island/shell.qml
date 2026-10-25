@@ -1,7 +1,7 @@
 //@ pragma UseQApplication
 // Dynamic island — Quickshell. A pill at the top centre that shows the time,
-// date and battery, and morphs into other pages on demand. Replaces the DMS bar
-// on Hyprland (hyprland.lua hides the bar and starts this).
+// date and battery, and morphs into other pages on demand. The session shell
+// under Hyprland and niri (hyprland.lua / niri startup.kdl start it).
 //
 // Start by hand (not autostarted yet):  qs -c island -d
 //
@@ -45,13 +45,14 @@ import Quickshell.Services.Mpris
 import Quickshell.Networking
 import Quickshell.Bluetooth
 import QtQuick
+import QtQuick.Effects
 import Qt.labs.folderlistmodel
 import common
 
 ShellRoot {
     id: root
 
-    readonly property var modes: ["idle", "volume", "brightness", "dashboard", "tray", "battery", "wifi", "bluetooth", "output", "input", "launcher", "power", "polkit", "clipboard", "wallpaper", "theme", "hub"]
+    readonly property var modes: ["idle", "volume", "brightness", "dashboard", "tray", "battery", "wifi", "bluetooth", "output", "input", "launcher", "power", "polkit", "clipboard", "wallpaper", "theme", "hub", "browser", "switcher", "calendar", "pass", "keybindings"]
     readonly property var subPages: ["battery", "wifi", "bluetooth", "output", "input"]
     property string mode: "idle"
     // Anything bigger than the pill or an OSD: grabs the keyboard and closes on
@@ -137,18 +138,16 @@ ShellRoot {
         // Text fields must own the keyboard while their page is up; everywhere
         // else the island takes it back so Esc keeps working.
         if (m === "launcher") {
-            appSearch.text = "";
-            appList.currentIndex = 0;
+            appSearch.reset();
             appLister.running = true;
-            Qt.callLater(() => appSearch.forceActiveFocus());
+            Qt.callLater(() => appSearch.focusField());
         } else if (m === "polkit") {
             polkitField.text = "";
             Qt.callLater(() => polkitField.forceActiveFocus());
         } else if (m === "clipboard") {
-            clipSearch.text = "";
-            clipList.currentIndex = 0;
+            clipSearch.reset();
             clipLister.running = true;
-            Qt.callLater(() => clipSearch.forceActiveFocus());
+            Qt.callLater(() => clipSearch.focusField());
         } else if (m === "theme") {
             themeLister.running = true;
             Qt.callLater(() => themeList.forceActiveFocus());
@@ -168,6 +167,8 @@ ShellRoot {
             }
             island.forceActiveFocus();
         }
+        // Pages in their own files reset, reload and take the keyboard on this.
+        island.page.opened();
     }
 
     // OSD pages only flash when nothing bigger is open.
@@ -339,7 +340,7 @@ ShellRoot {
 
     // --- Polkit ------------------------------------------------------------
     // The island is the session's password agent. Only one agent can register,
-    // so DMS's is switched off under Hyprland (DMS_DISABLE_POLKIT=1, hyprland.lua).
+    // so no other agent may be started alongside it.
     PolkitAgent {
         id: polkit
         onAuthenticationRequestStarted: root.show("polkit")
@@ -352,7 +353,7 @@ ShellRoot {
         }
     }
 
-    // --- Low-battery alerts (were DMS's dankBatteryAlerts plugin) -----------
+    // --- Low-battery alerts --------------------------------------------------
     // One notification per threshold per discharge; plugging in re-arms them.
     property int batAlerted: 100
     onBatPctChanged: checkBattery()
@@ -503,9 +504,8 @@ ShellRoot {
     }
 
     // --- Notifications -----------------------------------------------------
-    // hyprland.lua stops quickshell-notifications.service before starting the
-    // island, so this server owns org.freedesktop.Notifications here (niri keeps
-    // that daemon). History is memory only, newest first, capped at 50.
+    // hyprland.lua and niri's startup.kdl stop quickshell-notifications.service
+    // before starting the island, so this server owns org.freedesktop.Notifications. History is memory only, newest first, capped at 50.
     // DND hides popups but still records history; critical always shows.
     // A popup that times out is NOT closed: the app's notification stays alive
     // in history (entry.n) so its actions still work; it is closed when the
@@ -514,7 +514,8 @@ ShellRoot {
     property var popups: [] // live Notification objects, oldest first
     property var history: [] // [{key, n, app, summary, body, time}]; n null once closed
     property int notifSeq: 0
-    readonly property bool notifInIsland: popups.length === 1 && mode === "idle"
+    // Popups always go to the top-right stack, never into the pill.
+    readonly property bool notifInIsland: false
     // Players without a track title (e.g. a WhatsApp web tab) are not media.
     readonly property var player: {
         const ps = Mpris.players.values.filter(p => p.trackTitle);
@@ -646,6 +647,12 @@ ShellRoot {
         function open(m: string): void {
             root.show(m);
         }
+        // Mod+Shift+P via scripts/quickshell/pass.sh, which captures the focused
+        // browser's domain first.
+        function pass(domain: string): void {
+            passPage.prefill = domain;
+            root.show("pass");
+        }
         function idle(): void {
             root.show("idle");
         }
@@ -700,29 +707,7 @@ ShellRoot {
 
     // --- Building blocks ---------------------------------------------------
     // Inline components cannot see `root`, so they take everything as props.
-    component T: Text {
-        color: Colors.fg
-        // UI font for words; Nerd Font icons come via fontconfig fallback.
-        font.family: "SF Pro Display"
-        font.features: { "tnum": 1 } // fixed-width digits so the clock doesn't shift
-        font.pixelSize: Tokens.fontSize.normal
-        anchors.verticalCenter: parent ? parent.verticalCenter : undefined
-    }
-
-    // One island page: fades in when active, sizes itself to its content.
-    component Page: Item {
-        property bool active
-        anchors.centerIn: parent
-        implicitWidth: childrenRect.width
-        implicitHeight: childrenRect.height
-        opacity: active ? 1 : 0
-        visible: opacity > 0
-        Behavior on opacity {
-            Anim {
-                type: Anim.FastEffects
-            }
-        }
-    }
+    // T (text), Page and SearchList live in their own files in this folder.
 
     // Plain slider; emits moved(0..1) on press and drag.
     component Bar: Item {
@@ -995,7 +980,7 @@ ShellRoot {
         width: 448
         height: 44
         radius: Tokens.rounding.medium
-        color: active ? Colors.surface1 : hover.containsMouse ? Colors.surface0 : "transparent"
+        color: active ? Colors.surface2 : hover.containsMouse ? Colors.surface1 : "transparent"
 
         MouseArea {
             id: hover
@@ -1160,8 +1145,7 @@ ShellRoot {
     }
 
     // --- Windows -----------------------------------------------------------
-    // Wallpaper, one per screen. Bottom layer so it sits above DMS's own
-    // wallpaper (Background) while DMS still runs, and below every window.
+    // Wallpaper, one per screen. Bottom layer, below every window.
     Variants {
         model: Quickshell.screens
         PanelWindow {
@@ -1220,15 +1204,14 @@ ShellRoot {
         }
     }
 
-    // Two or more popups (or any while the island is busy) stack at the right
-    // edge, out of the way of whatever is in the middle.
+    // Popups stack at the top-right edge, out of the way of the island.
     PanelWindow {
         visible: !root.notifInIsland && root.popups.length > 0
         anchors.top: true
         anchors.right: true
         margins.top: Tokens.padding.medium
         margins.right: Tokens.padding.medium
-        implicitWidth: 430
+        implicitWidth: 440
         implicitHeight: Math.max(1, notifStack.implicitHeight)
         color: "transparent"
         exclusionMode: ExclusionMode.Normal
@@ -1257,7 +1240,7 @@ ShellRoot {
                     values: root.notifInIsland ? [] : root.popups
                 }
                 NotifCard {
-                    implicitWidth: 430
+                    implicitWidth: 440
                     onDismissed: root.dropNotif(modelData, expired)
                 }
             }
@@ -1294,6 +1277,16 @@ ShellRoot {
             onClicked: root.show("idle")
         }
 
+        // Soft drop shadow; a sibling because the pill clips its children.
+        RectangularShadow {
+            anchors.fill: island
+            radius: island.radius
+            offset.y: 6
+            blur: 24
+            spread: -2
+            color: Colors.shadow
+        }
+
         Rectangle {
             id: island
 
@@ -1314,7 +1307,12 @@ ShellRoot {
                     polkit: polkitPage,
                     clipboard: clipPage,
                     wallpaper: wallPage,
-                    theme: themePage
+                    theme: themePage,
+                    browser: browserPage,
+                    switcher: switcherPage,
+                    calendar: calendarPage,
+                    pass: passPage,
+                    keybindings: keybindsPage
                 })[root.mode]
 
             anchors.top: parent.top
@@ -1330,8 +1328,9 @@ ShellRoot {
             HoverHandler {
                 onHoveredChanged: root.pillHovered = hovered
             }
-            width: page.implicitWidth + Tokens.padding.large * 2
-            height: page.implicitHeight + Tokens.padding.small * 2
+            // Open pages get a wider margin so content clears the 28px corners.
+            width: page.implicitWidth + (root.expanded ? Tokens.padding.largeIncreased : Tokens.padding.large) * 2
+            height: page.implicitHeight + (root.expanded ? Tokens.padding.large : Tokens.padding.small) * 2
             radius: Math.min(height / 2, Tokens.rounding.extraLarge)
             color: Colors.bg
             border.color: Colors.outline
@@ -1795,97 +1794,24 @@ ShellRoot {
                 id: launcherPage
                 active: island.page === launcherPage
 
-                Column {
-                    spacing: Tokens.spacing.small
-                    topPadding: Tokens.padding.small
-                    bottomPadding: Tokens.padding.small
-
-                    Rectangle {
-                        width: 480
-                        height: 44
-                        radius: Tokens.rounding.medium
-                        color: Colors.inputBg
-                        Row {
-                            anchors.fill: parent
-                            anchors.leftMargin: Tokens.padding.medium
-                            spacing: Tokens.spacing.small
-                            T {
-                                text: root.glyph(0xF0349)
-                                color: Colors.accent
-                                font.pixelSize: Tokens.fontSize.larger
-                            }
-                            StyledTextField {
-                                id: appSearch
-                                width: 480 - Tokens.padding.medium * 2 - 28
-                                anchors.verticalCenter: parent.verticalCenter
-                                font.family: "JetBrainsMono Nerd Font"
-                                font.pixelSize: Tokens.fontSize.normal
-                                background: null
-                                placeholderText: "Search applications…"
-                                onTextChanged: appList.currentIndex = 0
-                                Keys.onPressed: e => {
-                                    if (e.key === Qt.Key_Escape) {
-                                        root.show("idle");
-                                    } else if (e.key === Qt.Key_Down) {
-                                        appList.incrementCurrentIndex();
-                                    } else if (e.key === Qt.Key_Up) {
-                                        appList.decrementCurrentIndex();
-                                    } else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) {
-                                        const a = appList.model[appList.currentIndex];
-                                        if (a)
-                                            root.launchApp(a.file);
-                                    } else {
-                                        return;
-                                    }
-                                    e.accepted = true;
-                                }
-                            }
-                        }
+                SearchList {
+                    id: appSearch
+                    glyph: root.glyph(0xF0349)
+                    placeholder: "Search applications…"
+                    model: {
+                        const q = text.toLowerCase();
+                        return root.apps.filter(a => q === "" || a.name.toLowerCase().includes(q)).map(a => ({
+                                    title: a.name,
+                                    sub: a.comment || "",
+                                    icon: Quickshell.iconPath(a.icon, "application-x-executable"),
+                                    file: a.file
+                                }));
                     }
-
-                    ListView {
-                        id: appList
-                        width: 480
-                        height: Math.min(count, 8) * 44
-                        clip: true
-                        boundsBehavior: Flickable.StopAtBounds
-                        model: {
-                            const q = appSearch.text.toLowerCase();
-                            return q === "" ? root.apps : root.apps.filter(a => a.name.toLowerCase().includes(q));
-                        }
-                        onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
-                        delegate: Rectangle {
-                            required property int index
-                            required property var modelData
-                            width: ListView.view.width
-                            height: 44
-                            radius: Tokens.rounding.medium
-                            color: index === appList.currentIndex ? Colors.surface1 : "transparent"
-                            Row {
-                                x: Tokens.padding.medium
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: Tokens.spacing.medium
-                                Image {
-                                    width: 28
-                                    height: 28
-                                    source: Quickshell.iconPath(modelData.icon, "application-x-executable")
-                                    sourceSize: Qt.size(28, 28)
-                                    fillMode: Image.PreserveAspectFit
-                                }
-                                T {
-                                    text: modelData.name
-                                    width: 400
-                                    elide: Text.ElideRight
-                                }
-                            }
-                            MouseArea {
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                onEntered: appList.currentIndex = index
-                                onClicked: root.launchApp(modelData.file)
-                            }
-                        }
+                    onAccepted: (i, row) => {
+                        if (row)
+                            root.launchApp(row.file);
                     }
+                    onEscaped: root.show("idle")
                 }
             }
 
@@ -1893,109 +1819,64 @@ ShellRoot {
                 id: clipPage
                 active: island.page === clipPage
 
-                Column {
-                    spacing: Tokens.spacing.small
-                    topPadding: Tokens.padding.small
-                    bottomPadding: Tokens.padding.small
-
-                    Rectangle {
-                        width: 480
-                        height: 44
-                        radius: Tokens.rounding.medium
-                        color: Colors.inputBg
-                        Row {
-                            anchors.fill: parent
-                            anchors.leftMargin: Tokens.padding.medium
-                            spacing: Tokens.spacing.small
-                            T {
-                                text: root.glyph(0xF0147)
-                                color: Colors.accent
-                                font.pixelSize: Tokens.fontSize.larger
-                            }
-                            StyledTextField {
-                                id: clipSearch
-                                width: 480 - Tokens.padding.medium * 2 - 28
-                                anchors.verticalCenter: parent.verticalCenter
-                                font.family: "JetBrainsMono Nerd Font"
-                                font.pixelSize: Tokens.fontSize.normal
-                                background: null
-                                placeholderText: "Search clipboard…  (Shift+Del deletes)"
-                                onTextChanged: clipList.currentIndex = 0
-                                Keys.onPressed: e => {
-                                    const c = clipList.model[clipList.currentIndex];
-                                    if (e.key === Qt.Key_Escape) {
-                                        root.show("idle");
-                                    } else if (e.key === Qt.Key_Down) {
-                                        clipList.incrementCurrentIndex();
-                                    } else if (e.key === Qt.Key_Up) {
-                                        clipList.decrementCurrentIndex();
-                                    } else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) {
-                                        if (c)
-                                            root.pickClip(c);
-                                    } else if (e.key === Qt.Key_Delete && (e.modifiers & Qt.ShiftModifier)) {
-                                        if (c)
-                                            root.deleteClip(c);
-                                    } else {
-                                        return;
-                                    }
-                                    e.accepted = true;
-                                }
-                            }
+                SearchList {
+                    id: clipSearch
+                    glyph: root.glyph(0xF0147)
+                    placeholder: "Search clipboard…"
+                    countText: "Shift+Del deletes · " + model.length
+                    maxRows: 7
+                    model: {
+                        const q = text.toLowerCase();
+                        return root.clips.filter(c => q === "" || c.text.toLowerCase().includes(q)).map(c => {
+                            const file = c.text.startsWith("file://");
+                            return {
+                                title: c.image ? "Image" : file ? c.text.replace(/^file:\/\//, "") : c.text,
+                                sub: c.image ? c.text.replace(/^\[\[ binary data |\s*\]\]$/g, "") : file ? "File" : "",
+                                glyph: root.glyph(file ? 0xF0214 : 0xF0147),
+                                thumb: c.image ? "file://" + root.clipCache + "/" + c.id : "",
+                                clip: c
+                            };
+                        });
+                    }
+                    onKeyPressed: e => {
+                        if (e.key === Qt.Key_Delete && (e.modifiers & Qt.ShiftModifier)) {
+                            if (current)
+                                root.deleteClip(current.clip);
+                            e.accepted = true;
                         }
                     }
-
-                    ListView {
-                        id: clipList
-                        width: 480
-                        // Same cap as 7 text rows; image rows are taller so thumbnails read.
-                        height: Math.min(contentHeight, 7 * 56)
-                        clip: true
-                        boundsBehavior: Flickable.StopAtBounds
-                        model: {
-                            const q = clipSearch.text.toLowerCase();
-                            return q === "" ? root.clips : root.clips.filter(c => c.text.toLowerCase().includes(q));
-                        }
-                        onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
-                        delegate: Rectangle {
-                            required property int index
-                            required property var modelData
-                            width: ListView.view.width
-                            height: modelData.image ? 112 : 56
-                            radius: Tokens.rounding.medium
-                            color: index === clipList.currentIndex ? Colors.surface1 : "transparent"
-                            Row {
-                                x: Tokens.padding.medium
-                                anchors.verticalCenter: parent.verticalCenter
-                                spacing: Tokens.spacing.medium
-                                Image {
-                                    visible: modelData.image
-                                    width: visible ? 260 : 0
-                                    height: 100
-                                    source: modelData.image ? "file://" + root.clipCache + "/" + modelData.id : ""
-                                    sourceSize: Qt.size(520, 200)
-                                    fillMode: Image.PreserveAspectFit
-                                    asynchronous: true
-                                }
-                                T {
-                                    text: modelData.image ? modelData.text.replace(/^\[\[ binary data |\s*\]\]$/g, "")
-                                        : modelData.text.startsWith("file://") ? root.glyph(0xF0214) + "  " + modelData.text.replace(/^file:\/\//, "")
-                                        : modelData.text
-                                    width: modelData.image ? 170 : 440
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    elide: Text.ElideRight
-                                    maximumLineCount: 1
-                                    color: modelData.image ? Colors.subtext0 : Colors.fg
-                                }
-                            }
-                            MouseArea {
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                onEntered: clipList.currentIndex = index
-                                onClicked: root.pickClip(modelData)
-                            }
-                        }
+                    onAccepted: (i, row) => {
+                        if (row)
+                            root.pickClip(row.clip);
                     }
+                    onEscaped: root.show("idle")
                 }
+            }
+
+            BrowserPage {
+                id: browserPage
+                active: island.page === browserPage
+                onCloseRequested: root.show("idle")
+            }
+            SwitcherPage {
+                id: switcherPage
+                active: island.page === switcherPage
+                onCloseRequested: root.show("idle")
+            }
+            CalendarPage {
+                id: calendarPage
+                active: island.page === calendarPage
+                onCloseRequested: root.show("idle")
+            }
+            PassPage {
+                id: passPage
+                active: island.page === passPage
+                onCloseRequested: root.show("idle")
+            }
+            KeybindsPage {
+                id: keybindsPage
+                active: island.page === keybindsPage
+                onCloseRequested: root.show("idle")
             }
 
             Page {

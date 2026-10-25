@@ -1,6 +1,6 @@
 Alt+Print                   screenshot window
 Alt+space                   handy --toggle-transcription
-Alt+Tab                     quickshell/switcher.sh
+Alt+Tab                     island toggle switcher
 Ctrl+Alt+Delete             exit
 Ctrl+Alt+W                  island toggle wallpaper
 Ctrl+Print                  screenshot screen
@@ -88,7 +88,7 @@ Mod+Q                       window.close
 Mod+Return                  ghostty --title='tmux' -e zsh -ic tmux
 Mod+right                   focus direction=r
 Mod+R                       layout colresize +conf
-Mod+Shift+C                 quickshell/cal.sh
+Mod+Shift+C                 island toggle calendar
 Mod+Shift+Ctrl+down         window.move monitor=d
 Mod+Shift+Ctrl+H            window.move monitor=l
 Mod+Shift+Ctrl+J            window.move monitor=d
@@ -112,14 +112,14 @@ Mod+Shift+O                 ocr_select.sh
 Mod+Shift+P                 quickshell/pass.sh
 Mod+Shift+right             focus monitor=r
 Mod+Shift+R                 window.resize relative=true x=0 y=-100
-Mod+Shift+slash             quickshell/keybindings.sh
+Mod+Shift+slash             island toggle keybindings
 Mod+Shift+S                 screenshot region -> satty
 Mod+Shift+Tab               switch focus floating/tiling
 Mod+Shift+T                 island toggle theme
 Mod+Shift+W                 novabrowser --profile=personal
+Mod+S                       island toggle browser
 Mod+space                   ghostty
-Mod+S                       quickshell/browser-url.sh
-Mod+Tab                     quickshell/switcher.sh
+Mod+Tab                     island toggle switcher
 Mod+T                       tasks.sh
 Mod+up                      lua function
 Mod+V                       island toggle clipboard

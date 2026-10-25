@@ -67,7 +67,7 @@ stow -d ~/.dotfiles -t ~ -D nova
 | Layer | Tool | Config |
 |-------|------|--------|
 | Window Manager | **Hyprland** (scrolling layout, Lua config) | `nova/.config/hypr/` |
-| Fallback WM | Niri + DankMaterialShell | `nova/.config/niri/`, `nova/.config/DankMaterialShell/` |
+| Fallback WM | Niri + the Quickshell island | `nova/.config/niri/` |
 | Login Manager | **Ly** (TUI, CMatrix animation) | `system/system/etc/ly/config.ini` |
 | Shell (bar, OSD, notifications, launcher, wallpaper, power menu, clipboard) | **Quickshell island** (`qs -c island`) | `nova/.config/quickshell/island/` |
 | Other menus | Quickshell (on demand) + Rofi | `nova/.config/quickshell/`, `nova/.config/rofi/` |
@@ -139,7 +139,7 @@ Packages are organized into YAML files in `system/package/`. Each file is a simp
 |------|----------|
 | `base-system.yaml` | Kernel, firmware, networking, audio (pipewire), filesystems, power (TLP) |
 | `terminal-tools.yaml` | zsh, ghostty, tmux, neovim, CLI tools (bat, fd, ripgrep, fzf, eza) |
-| `windowmanager.yaml` | Niri, Ly, Quickshell, DMS, Rofi, fonts, themes, screenshot/recording/OCR tools (Hyprland is in `manual-install.yaml`) |
+| `windowmanager.yaml` | Niri, Ly, Quickshell, Rofi, fonts, themes, screenshot/recording/OCR tools (Hyprland is in `manual-install.yaml`) |
 | `development.yaml` | Build tools, Rust/Python/Node/Go/Lua, LSPs, linters, lazygit |
 | `work.yaml` | Java, Docker, databases (PostgreSQL, MySQL), Chrome, WPS Office, Zoom |
 | `internet.yaml` | Qutebrowser, Zen Browser, KDE Connect, LocalSend, Thunderbird |
@@ -195,7 +195,7 @@ Full list with details: `CLAUDE-reference.md` → Scripts.
 
 ### Keybindings cheat-sheet (`scripts/keybindings/`)
 
-`Mod+Shift+/` opens a Quickshell cheat-sheet (`scripts/quickshell/keybindings.sh`). Its backend `scripts/quickshell/kbctl.sh` re-runs the extractors and shows the running compositor's binds (Hyprland or niri, picked by `wm.sh name`) plus neovim, qutebrowser and csvlens.
+`Mod+Shift+/` opens the island's keybindings page (`nova/.config/quickshell/island/KeybindsPage.qml`). Its backend `scripts/quickshell/kbctl.sh` re-runs the extractors and shows the running compositor's binds (Hyprland or niri, picked by `wm.sh name`) plus neovim, qutebrowser and csvlens.
 
 ## System Configuration
 
@@ -224,7 +224,7 @@ No charge thresholds in TLP; `battery-limit.timer` toggles IdeaPad conservation 
 | `battery-limit.timer` | Runs battery limit script every 5 min |
 | `paccache.timer` | Weekly; keeps 2 versions of installed packages |
 
-Battery alerts come from the DMS `dankBatteryAlerts` plugin.
+Battery alerts come from the Quickshell island.
 
 ### Firewall (ufw)
 

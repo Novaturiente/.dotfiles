@@ -51,28 +51,28 @@ block from `modules/layout.kdl`), rofi (`@import "current"`), Neovim
 (`theme_colors.py`).
 
 Files that are nothing but colour are generated whole: btop, atuin, television,
-eza, fast-syntax-highlighting, swaylock, the bat `.tmTheme`, lazygit, and the
-DankMaterialShell theme JSON.
+eza, fast-syntax-highlighting, swaylock, the bat `.tmTheme` and lazygit.
 
 GTK is rendered from `templates/apps/gtk/` into `~/.config/gtk-3.0/` and
 `~/.config/gtk-4.0/` (outside the stow tree): `gtk.css` imports
-`theme-colors.css`, which uses the same colour mapping DankMaterialShell's
-`dank-colors.css` did. Under niri DMS may still rewrite `gtk.css` to import its
-own file; both come from the same palette, so the colours agree.
+`theme-colors.css`.
 GTK reads its CSS at startup, so an app already running keeps its old colours
 until it restarts.
 
-Qt is left to DankMaterialShell's own qt5ct/qt6ct templates and the
-`xdgdesktopportal` platform theme; nothing here templates it, and it has not
+Qt is left to the `xdgdesktopportal` platform theme; nothing here templates it, and it has not
 been verified to follow a switch. `kdeglobals` still names a fixed colour
 scheme (`MateriaDark`). The GTK widget theme (`adw-gtk3-dark`) and icon theme
 (`breeze-dark`) are likewise fixed — only their colours change.
 
-The seven Quickshell menus share `nova/.config/quickshell/common/Colors.qml`.
+The Quickshell configs (island, launcher, theme, notifications) share `nova/.config/quickshell/common/Colors.qml`.
 Quickshell only auto-registers singletons inside a config's own root, so the
 shared one is reached as a QML module: `import common`, which needs
 `QML2_IMPORT_PATH=~/.config/quickshell` — set in `hypr/hyprland.lua` (`hl.env`) under
 Hyprland and in niri's `modules/environment.kdl` under niri.
+Its greys and text colours are fixed neutrals on every theme (Apple-style, for
+contrast); only `accent` and the hues (`red`, `green`, …) follow the palette.
+The panel colour `bg` is 90% opaque, and Hyprland blurs what shows through
+(the `layer_rule` for `island` and `quickshell-*` in `hypr/hyprland.lua`).
 
 ## Known gaps
 

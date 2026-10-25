@@ -93,7 +93,7 @@ StyledRect {
     readonly property real progress: modelData.hints?.value ?? -1
     readonly property bool hasProgress: progress >= 0
 
-    readonly property int imageSize: 42
+    readonly property int imageSize: 48
     readonly property int badgeSize: 20
 
     // The height the card wants right now. Kept separate from implicitHeight so the
@@ -128,7 +128,8 @@ StyledRect {
     // construction time, so it has to be a real number by then, not a later binding.
     implicitHeight: Math.max(imageSize + inner.anchors.margins * 2, targetHeight)
 
-    // Slide in from off the right edge on the decelerating emphasized curve.
+    // Slide in from off the right edge (the stack sits top-right) on the
+    // decelerating emphasized curve.
     x: implicitWidth
     Component.onCompleted: x = 0
 
@@ -246,7 +247,7 @@ StyledRect {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.margins: Tokens.padding.medium
+            anchors.margins: Tokens.padding.large
 
             implicitHeight: root.targetHeight
 
@@ -382,7 +383,7 @@ StyledRect {
                 text: root.modelData.appName
                 color: Colors.subtext
                 font.family: root.uiFont
-                font.pixelSize: 12
+                font.pixelSize: 13
                 elide: Text.ElideRight
                 width: expandBtn.x - x - Tokens.spacing.small
                 opacity: root.expanded ? 1 : 0
@@ -407,8 +408,8 @@ StyledRect {
                 text: root.modelData.summary
                 color: Colors.fg
                 font.family: root.uiFont
-                font.pixelSize: 14
-                font.bold: true
+                font.pixelSize: 15
+                font.weight: Font.DemiBold
                 elide: Text.ElideRight
                 maximumLineCount: root.expanded ? 3 : 1
                 wrapMode: root.expanded ? Text.WrapAtWordBoundaryOrAnywhere : Text.NoWrap
@@ -427,7 +428,7 @@ StyledRect {
                     text: "▾"
                     color: Colors.subtext
                     font.family: root.uiFont
-                    font.pixelSize: 12
+                    font.pixelSize: 13
                     rotation: root.expanded ? 180 : 0
 
                     Behavior on rotation {
@@ -452,9 +453,9 @@ StyledRect {
                 anchors.top: summary.bottom
 
                 text: root.modelData.body
-                color: Colors.subtext
+                color: Colors.subtext1
                 font.family: root.uiFont
-                font.pixelSize: 12
+                font.pixelSize: 14
                 elide: Text.ElideRight
                 maximumLineCount: 1
                 opacity: root.expanded ? 0 : 1
@@ -476,9 +477,10 @@ StyledRect {
 
                 textFormat: root.bodyTextFormat
                 text: root.modelData.body
-                color: Colors.subtext
+                color: Colors.subtext1
                 font.family: root.uiFont
-                font.pixelSize: 12
+                font.pixelSize: 14
+                lineHeight: 1.15
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 onLinkActivated: link => {
                     Qt.openUrlExternally(link);
@@ -601,7 +603,7 @@ StyledRect {
             text: btn.label
             color: Colors.fg
             font.family: root.uiFont
-            font.pixelSize: 12
+            font.pixelSize: 13
             horizontalAlignment: Text.AlignHCenter
             elide: Text.ElideRight
         }

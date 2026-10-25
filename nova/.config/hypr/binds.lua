@@ -12,7 +12,7 @@ local LOCK   = { locked = true, repeating = true }
 local REPEAT = { repeating = true }
 
 -- ── Help / theme ───────────────────────────────────────────────────────────
-bind(M .. " + SHIFT + slash", run(S .. "quickshell/keybindings.sh"))
+bind(M .. " + SHIFT + slash", run("qs -c island ipc call island toggle keybindings"))
 bind(M .. " + SHIFT + T",     run("qs -c island ipc call island toggle theme"))
 bind("CTRL + ALT + W",         run("qs -c island ipc call island toggle wallpaper"))
 
@@ -32,11 +32,11 @@ bind(M .. " + E",              run("ghostty -e explorenova"))
 -- ── Utilities & menus ──────────────────────────────────────────────────────
 bind(M .. " + O",              run(S .. "file_picker.sh"))
 bind(M .. " + SHIFT + O",      run(S .. "ocr_select.sh"))
-bind(M .. " + S",              run(S .. "quickshell/browser-url.sh"))
+bind(M .. " + S",              run("qs -c island ipc call island toggle browser"))
 bind(M .. " + CTRL + G",       run(S .. "fix_grammar.sh"))
-bind(M .. " + SHIFT + C",      run(S .. "quickshell/cal.sh"))
+bind(M .. " + SHIFT + C",      run("qs -c island ipc call island toggle calendar"))
 bind(M .. " + SHIFT + N",      run(S .. "tasks.sh"))
-bind(M .. " + V",              run("qs -c island ipc call island toggle clipboard || dms ipc call clipboard toggle"))
+bind(M .. " + V",              run("qs -c island ipc call island toggle clipboard"))
 bind(M .. " + SHIFT + P",      run(S .. "quickshell/pass.sh"))
 bind(M .. " + CTRL + S",       run("qs -c island ipc call island toggle dashboard"))
 bind(M .. " + P",              run("scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --window-height=1150"))
@@ -61,7 +61,7 @@ bind(M .. " + CTRL + ALT + SHIFT + R",   run(S .. "record-script.sh --region-bot
 
 -- ── System controls ────────────────────────────────────────────────────────
 bind(M .. " + SHIFT + L",       run(S .. "lock.sh"))
-bind(M .. " + SHIFT + E",       run("qs -c island ipc call island toggle power || dms ipc call powermenu toggle"))
+bind(M .. " + SHIFT + E",       run("qs -c island ipc call island toggle power"))
 bind(M .. " + Q",               dsp.window.close())
 bind(M .. " + BackSpace",       dsp.window.close())
 bind("CTRL + ALT + Delete",     dsp.exit())
@@ -160,8 +160,8 @@ bind(M .. " + grave",         dsp.workspace.toggle_special("scratch"))
 bind(M .. " + SHIFT + grave", dsp.window.move({ workspace = "special:scratch" }))
 
 -- Window switcher (Mod+Tab) and niri's overview slot (Alt+Tab).
-bind(M .. " + Tab",  run(S .. "quickshell/switcher.sh"))
-bind("ALT + Tab",    run(S .. "quickshell/switcher.sh"))
+bind(M .. " + Tab",  run("qs -c island ipc call island toggle switcher"))
+bind("ALT + Tab",    run("qs -c island ipc call island toggle switcher"))
 
 -- ── Mouse wheel ────────────────────────────────────────────────────────────
 bind(M .. " + mouse_down",                dsp.focus({ direction = "r" }))

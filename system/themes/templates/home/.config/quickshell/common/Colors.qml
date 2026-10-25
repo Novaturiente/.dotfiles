@@ -7,31 +7,36 @@ import QtQuick
 Singleton {
     readonly property string themeName: "${THEME_NAME}"
 
-    // Roles the menus actually use. The alpha prefixes keep the translucent
-    // look the hand-written palettes had: e6 on the panel, d0 on input fields.
-    readonly property color bg:      "#e6${BASE}"
-    readonly property color inputBg: "#d0${SURFACE0}"
-    readonly property color outline: "#${SURFACE1}"
+    // Greys and text are fixed Apple-style neutrals on every theme, for contrast;
+    // only the accent and the hues below follow the palette.
+    // Panel is 90% opaque: Hyprland blurs what shows through (layer_rule in
+    // hypr/hyprland.lua), and dim text still clears 4.5:1 over a white wallpaper.
+    readonly property color bg:      "#e6121214"
+    readonly property color inputBg: "#1c1c1f"
+    // 12% white hairline: reads as a lit edge on any wallpaper.
+    readonly property color outline: "#1fffffff"
     readonly property color accent:  "#${ACCENT}"
-    readonly property color selBg:   "#${SURFACE1}"
-    readonly property color fg:      "#${TEXT}"
-    readonly property color subtext: "#${OVERLAY1}"
-    // 8% text, for alternating list rows.
-    readonly property color zebra:   "#14${TEXT}"
+    readonly property color selBg:   "#323237"
+    readonly property color fg:      "#f5f5f7"
+    readonly property color subtext: "#8e8e93"
+    // 5% white, for alternating list rows.
+    readonly property color zebra:   "#0dffffff"
+    // Drop shadow under panels.
+    readonly property color shadow:  "#99000000"
 
-    // Full palette, for menus that need more than the seven roles above.
-    readonly property color crust:    "#${CRUST}"
-    readonly property color mantle:   "#${MANTLE}"
-    readonly property color base:     "#${BASE}"
-    readonly property color surface0: "#${SURFACE0}"
-    readonly property color surface1: "#${SURFACE1}"
-    readonly property color surface2: "#${SURFACE2}"
-    readonly property color overlay0: "#${OVERLAY0}"
-    readonly property color overlay1: "#${OVERLAY1}"
-    readonly property color overlay2: "#${OVERLAY2}"
-    readonly property color subtext0: "#${SUBTEXT0}"
-    readonly property color subtext1: "#${SUBTEXT1}"
-    readonly property color text:     "#${TEXT}"
+    // Full palette, for menus that need more than the roles above.
+    readonly property color crust:    "#000000"
+    readonly property color mantle:   "#0a0a0b"
+    readonly property color base:     "#121214"
+    readonly property color surface0: "#1c1c1f"
+    readonly property color surface1: "#26262a"
+    readonly property color surface2: "#323237"
+    readonly property color overlay0: "#48484d"
+    readonly property color overlay1: "#8e8e93"
+    readonly property color overlay2: "#a1a1a6"
+    readonly property color subtext0: "#aeaeb2"
+    readonly property color subtext1: "#c7c7cc"
+    readonly property color text:     "#f5f5f7"
     readonly property color red:      "#${RED}"
     readonly property color maroon:   "#${MAROON}"
     readonly property color peach:    "#${PEACH}"

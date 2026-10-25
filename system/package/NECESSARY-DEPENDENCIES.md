@@ -8,7 +8,7 @@ These packages **are not in your package list** but **are required** by packages
 
 | Package | Required by (from your list) |
 |--------|-------------------------------|
-| **accountsservice** | dms-shell-git |
+| **accountsservice** | libmalcontent |
 | **bluez** | blueman |
 | **bluez-libs** | blueman |
 | **device-mapper** | docker |

@@ -9,6 +9,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
 import QtQuick
+import QtQuick.Effects
 import common
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -25,7 +26,7 @@ ShellRoot {
     readonly property color selBg:   Colors.selBg
     readonly property color fg:      Colors.fg
     readonly property color subtext: Colors.subtext
-    readonly property string uiFont: "JetBrainsMono Nerd Font"
+    readonly property string uiFont: "SF Pro Display"
 
     property int sel: 0
     property var rows: []            // [{name,label,desc,accent,base}]
@@ -90,8 +91,9 @@ ShellRoot {
         onVisibleChanged: if (!visible) quitter.start()
         Timer { id: quitter; interval: 200; repeat: true; onTriggered: if (win.visible) stop(); else if (!(lister.running || reader.running || applier.running)) Qt.quit() }
         anchors { top: false; bottom: false; left: false; right: false }
-        implicitWidth: 620
-        implicitHeight: 92 + Math.max(1, rows.length) * 64
+        // +48: 24px each side for the panel's drop shadow.
+        implicitWidth: 620 + 48
+        implicitHeight: 48 + (92 + Math.max(1, rows.length) * 64)
         color: "transparent"
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
@@ -109,14 +111,17 @@ ShellRoot {
 
         Rectangle {
             anchors.fill: parent
-            transform: Scale { origin.y: win.height / 2; yScale: win.anim }
+            anchors.margins: 24
+            transform: Scale { origin.y: win.height / 2 - 24; yScale: win.anim }
             // Fade alongside the scale, as caelestia's panels do. Clamped because the
             // spatial curve overshoots past 1 on the way in.
             opacity: Math.min(1, win.anim)
-            radius: 4
+            radius: Tokens.rounding.largeIncreased
             color: bg
             border.color: outline
             border.width: 1
+            // z -1 draws under the panel and follows its scale and fade.
+            RectangularShadow { anchors.fill: parent; z: -1; radius: parent.radius; offset.y: 8; blur: 32; spread: -4; color: Colors.shadow }
 
             FocusScope {
                 id: keys
@@ -139,8 +144,8 @@ ShellRoot {
                     spacing: 10
 
                     Rectangle {
-                        Layout.fillWidth: true; implicitHeight: 48; radius: 0
-                        color: inputBg; border.color: accent; border.width: 1
+                        Layout.fillWidth: true; implicitHeight: 48; radius: Tokens.rounding.medium
+                        color: inputBg; border.color: outline; border.width: 1
                         RowLayout {
                             anchors.fill: parent; anchors.leftMargin: 14; anchors.rightMargin: 14; spacing: 10
                             Text { text: "󰏘"; color: accent; font.family: uiFont; font.pixelSize: 18 }
@@ -150,7 +155,7 @@ ShellRoot {
                             }
                             Text {
                                 text: current === "" ? "" : "current: " + current
-                                color: subtext; font.family: uiFont; font.pixelSize: 13
+                                color: subtext; font.family: uiFont; font.pixelSize: 14
                             }
                         }
                     }
@@ -166,7 +171,7 @@ ShellRoot {
                         delegate: StyledRect {
                             required property int index
                             required property var modelData
-                            width: ListView.view.width; height: 64; radius: 0
+                            width: ListView.view.width; height: 64; radius: Tokens.rounding.medium
                             color: index === sel ? selBg : "transparent"
                             RowLayout {
                                 anchors.fill: parent; anchors.leftMargin: 14; anchors.rightMargin: 14; spacing: 14
@@ -194,7 +199,7 @@ ShellRoot {
                                     Text {
                                         text: modelData.desc
                                         color: index === sel ? fg : subtext
-                                        font.family: uiFont; font.pixelSize: 12
+                                        font.family: uiFont; font.pixelSize: 13
                                         elide: Text.ElideRight; Layout.fillWidth: true
                                     }
                                 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # applaunch — headless backend for the Quickshell app launcher (drun replacement).
-#   list          -> JSON [{id,name,icon,file}] of visible apps, most-used first
+#   list          -> JSON [{id,name,icon,file,comment}] of visible apps, most-used first
 #   launch <file> -> bump its use count and launch it (respects Terminal=, Exec codes)
 # Icons: QML resolves the Icon name via Quickshell.iconPath(); we just pass the name.
 set -euo pipefail
@@ -38,7 +38,8 @@ for d in dirs:
         if e.get("Hidden", "false").lower() == "true": continue
         name = e.get("Name", did)
         if not name: continue
-        seen[did] = {"id": did, "name": name, "icon": e.get("Icon", ""), "file": path}
+        seen[did] = {"id": did, "name": name, "icon": e.get("Icon", ""), "file": path,
+                     "comment": e.get("Comment") or e.get("GenericName", "")}
 
 apps = list(seen.values())
 # most-used first, then alphabetical

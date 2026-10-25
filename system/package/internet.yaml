@@ -1,7 +1,5 @@
 - python-adblock
-- qutebrowser
 - zen-browser-bin
-- google-chrome
 - firefoxpwa
 - browserpass
 - thunderbird
@@ -10,6 +8,4 @@
 - localsend
 - cryptomator
 - cryptomator-cli
-
-# Remote desktop (declared 2026-09-26)
 - anydesk-bin

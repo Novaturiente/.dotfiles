@@ -9,6 +9,8 @@ switch-events {
 }
 cursor {
     xcursor-theme "Bibata-Modern-Classic"
+    xcursor-size 25
+    hide-when-typing
 }
 // Global background-blur tuning (niri 26.04+). This only sets HOW blur looks;
 // blur is turned ON per-window/layer via `background-effect { blur true }`.

@@ -1,8 +1,7 @@
 //@ pragma UseQApplication
-// Notification popups — Quickshell. Replaces DankMaterialShell's notification
-// popups; see CLAUDE.md for why the two cannot both run.
+// Notification popups — Quickshell. Fallback for when the island is not running
+// (the island stops quickshell-notifications.service at session start).
 //
-// This daemon owns org.freedesktop.Notifications, so it must start before DMS.
 // Popups only: there is no notification centre and no history. Once a card is
 // dismissed or expires it is gone.
 //
@@ -93,6 +92,7 @@ ShellRoot {
 
         // Only mapped while something is showing, so it never sits in the way.
         visible: root.popups.length > 0
+        // Top-right, matching the island's popup stack.
         anchors { top: true; right: true }
         margins { top: root.edgeMargin; right: root.edgeMargin }
 

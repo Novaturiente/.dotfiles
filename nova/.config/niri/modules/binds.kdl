@@ -4,7 +4,7 @@
 binds {
     // Help
     Mod+Shift+Slash {
-        spawn "~/.dotfiles/scripts/quickshell/keybindings.sh"
+        spawn "qs" "-c" "island" "ipc" "call" "island" "toggle" "keybindings"
     }
     Mod+Shift+T hotkey-overlay-title="Theme picker" {
         spawn "~/.dotfiles/scripts/quickshell/theme.sh"
@@ -28,7 +28,7 @@ binds {
 		spawn-sh "ghostty --title='tmux' -e zsh -ic tmux"
     }
     Mod+D hotkey-overlay-title="Application launcher" {
-        spawn "dms" "ipc" "call" "spotlight" "toggle"
+        spawn-sh "qs -c island ipc call island toggle launcher"
     }
     // Mod+P hotkey-overlay-title="Phone (calls + SMS)" {
     //     spawn "~/.local/bin/ac-phone"
@@ -58,25 +58,22 @@ binds {
         spawn-sh "~/.dotfiles/scripts/ocr_select.sh"
     }
     Mod+S hotkey-overlay-title="Browser URL bar" {
-        spawn "~/.dotfiles/scripts/quickshell/browser-url.sh"
+        spawn "qs" "-c" "island" "ipc" "call" "island" "toggle" "browser"
     }
     Mod+Ctrl+G hotkey-overlay-title="Grammar fix" {
         spawn-sh "~/.dotfiles/scripts/fix_grammar.sh"
     }
     Mod+Shift+C hotkey-overlay-title="Calendar" {
-        spawn "~/.dotfiles/scripts/quickshell/cal.sh"
-    }
-    Mod+Shift+N hotkey-overlay-title="Notepad" {
-      spawn "dms" "ipc" "call" "notepad" "toggle";
+        spawn "qs" "-c" "island" "ipc" "call" "island" "toggle" "calendar"
     }
     Mod+V hotkey-overlay-title="Clipboard Manager" {
-        spawn "dms" "ipc" "call" "clipboard" "toggle";
+        spawn-sh "qs -c island ipc call island toggle clipboard";
     }
     Mod+Shift+P hotkey-overlay-title="Password Manager" {
         spawn "~/.dotfiles/scripts/quickshell/pass.sh"
     }
     Mod+Ctrl+S hotkey-overlay-title="Control centre" {
-        spawn "dms" "ipc" "call" "control-center" "toggle";
+        spawn-sh "qs -c island ipc call island toggle dashboard";
     }
     Mod+P hotkey-overlay-title="Phone mirror" {
         spawn-sh "scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --window-height=1150"
@@ -124,7 +121,7 @@ binds {
         spawn-sh "~/.dotfiles/scripts/lock.sh"
     }
     Mod+Shift+E hotkey-overlay-title="Power menu" {
-        spawn "dms" "ipc" "call" "powermenu" "toggle";
+        spawn-sh "qs -c island ipc call island toggle power";
     }
     // Mod+T        { toggle-column-tabbed-display; }
     Alt+Tab repeat=false {
@@ -149,17 +146,17 @@ binds {
         spawn "systemctl suspend-then-hibernate"
     }
     Mod+B hotkey-overlay-title="Toggle bar auto-hide" {
-        spawn-sh "dms ipc call bar toggleAutoHide id default"
+        spawn-sh "qs -c island ipc call island toggleAutoHide"
     }
     // ┌─────────────────────────────────────────────────────────────────────────────────────┐
     // │ MEDIA KEYS                                                                          │
     // └─────────────────────────────────────────────────────────────────────────────────────┘
     // Volume controls
     XF86AudioRaiseVolume allow-when-locked=true {
-        spawn-sh "dms ipc call audio increment 5"
+        spawn-sh "qs -c island ipc call island volume 5"
     }
     XF86AudioLowerVolume allow-when-locked=true {
-        spawn-sh "dms ipc call audio decrement 5"
+        spawn-sh "qs -c island ipc call island volume -5"
     }
     // Shift+wheel = brightness
     Shift+XF86AudioRaiseVolume allow-when-locked=true {
@@ -169,14 +166,14 @@ binds {
         spawn-sh "~/.dotfiles/scripts/brightness.sh down"
     }
     XF86AudioMute allow-when-locked=true {
-        spawn-sh "dms ipc call audio mute"
+        spawn-sh "qs -c island ipc call island volume mute"
     }
     // Shift+wheel-press = toggle swayidle (auto-lock + suspend-then-hibernate)
     Shift+XF86AudioMute allow-when-locked=true {
         spawn-sh "if pkill swayidle; then notify-send 'Suspend disabled'; else swayidle & notify-send 'Suspend enabled'; fi"
     }
     XF86AudioMicMute allow-when-locked=true {
-        spawn-sh "dms ipc call audio micmute"
+        spawn-sh "qs -c island ipc call island volume micmute"
     }
     // Brightness controls
     XF86MonBrightnessUp allow-when-locked=true {
@@ -282,7 +279,7 @@ binds {
         focus-workspace-up
     }
     Mod+Tab hotkey-overlay-title="Window switcher" {
-        spawn "~/.dotfiles/scripts/quickshell/switcher.sh"
+        spawn "qs" "-c" "island" "ipc" "call" "island" "toggle" "switcher"
     }
     Mod+Ctrl+Page_Down {
         move-column-to-workspace-down

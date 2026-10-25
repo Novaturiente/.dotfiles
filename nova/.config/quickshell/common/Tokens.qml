@@ -60,6 +60,6 @@ Singleton {
     })
 
     readonly property var fontSize: ({
-        small: 11, smaller: 12, normal: 13, larger: 15, large: 18, extraLarge: 28
+        small: 12, smaller: 13, normal: 14, larger: 16, large: 18, extraLarge: 28
     })
 }

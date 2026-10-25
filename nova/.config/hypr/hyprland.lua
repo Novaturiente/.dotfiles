@@ -87,13 +87,13 @@ hl.curve("m3EffectsFast", { type = "bezier", points = { { 0.31, 0.94 }, { 0.34, 
 hl.curve("move", { type = "spring", mass = 1, stiffness = 450, dampening = 42 })
 hl.curve("wsBounce", { type = "spring", mass = 1, stiffness = 800, dampening = 42 })
 
--- New window slides in on the same spring that pushes its neighbours aside,
--- so the open reads as one smooth shove instead of an overshoot pop.
-hl.animation({ leaf = "windowsIn", enabled = true, speed = 4, spring = "move", style = "slide right" })
-hl.animation({ leaf = "windowsOut", enabled = true, speed = 1.5, bezier = "m3EffectsFast", style = "slide right" })
+-- New window zooms out from its centre while windowsMove pushes the current
+-- window left on the same spring; closing windows slide down off screen.
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 4, spring = "move", style = "popin 0%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 3.5, bezier = "m3EffectsFast", style = "slide bottom" })
 hl.animation({ leaf = "windowsMove", enabled = true, speed = 4, spring = "move" })
 hl.animation({ leaf = "fadeIn", enabled = true, speed = 3.5, bezier = "m3EffectsFast" })
-hl.animation({ leaf = "fadeOut", enabled = true, speed = 1.5, bezier = "m3EffectsFast" })
+hl.animation({ leaf = "fadeOut", enabled = true, speed = 3.5, bezier = "m3EffectsFast" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 4, spring = "wsBounce", style = "slidevert" })
 hl.animation({ leaf = "layers", enabled = true, speed = 3, bezier = "m3EffectsFast", style = "fade" })
 
@@ -105,6 +105,7 @@ hl.workspace_rule({ workspace = "2", default_name = "Work", persistent = true })
 hl.window_rule({ match = { class = "^scrcpy$" }, scrolling_width = 0.3, workspace = "1" })
 hl.window_rule({ match = { title = "^dexmode$" }, maximize = true, workspace = "1" })
 hl.window_rule({ match = { class = "^lin-whatsapp$" }, workspace = "1" })
+hl.window_rule({ match = { class = "^io\\.github\\.nova\\.LinWhatsappNative$" }, workspace = "1" })
 hl.window_rule({ match = { class = "^novabrowser$" }, workspace = "1" })
 hl.window_rule({ match = { class = "^com.mitchellh.ghostty$" }, workspace = "2" })
 hl.window_rule({ match = { title = "^tmux$" }, scrolling_width = 1.0 })
@@ -114,32 +115,24 @@ hl.window_rule({ match = { class = "^satty$" }, float = true })
 hl.window_rule({ match = { title = "^Select File to Attach$" }, float = true })
 hl.window_rule({ match = { class = "^zenity$" }, float = true })
 hl.window_rule({ match = { class = "^labwc$" }, maximize = true })
-hl.window_rule({ match = { class = "^com.danklinux.dms$" }, float = true })
+
+-- Frosted Quickshell panels: blur only where the panel is (90% alpha), not the
+-- transparent window around it or the drop shadow (at most 60%).
+hl.layer_rule({ match = { namespace = "^(island|island-notifications|quickshell-.+)$" }, blur = true, ignore_alpha = 0.8 })
 
 -- ── Startup (niri modules/startup.kdl) ──────────────────────────────────────
 hl.on("hyprland.start", function()
-	-- DMS and the notification daemon hang off graphical-session.target.
+	-- The notification daemon hangs off graphical-session.target.
 	-- Hand systemd this session's env, bring the target up through
-	-- hyprland-session.target, then start DMS (niri pulls it via niri.service.wants).
-	-- Once DMS answers, hide its bar (the island replaces it here; niri's
-	-- startup.kdl reveals it again), turn off DMS's volume/brightness OSD (the
-	-- island shows its own; niri turns DMS's back on) and start the island.
-	-- DMS_DISABLE_POLKIT: the island is the polkit agent here (only one can
-	-- register); unset again on shutdown so niri's DMS gets its agent back.
+	-- hyprland-session.target, then start the island (bar, OSD, polkit,
+	-- wallpaper; niri's startup.kdl starts it the same way).
 	hl.exec_cmd(
-		"systemctl --user set-environment DMS_DISABLE_POLKIT=1 && systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME QML2_IMPORT_PATH XCURSOR_THEME XCURSOR_SIZE"
+		"systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE QT_QPA_PLATFORM QT_QPA_PLATFORMTHEME QML2_IMPORT_PATH XCURSOR_THEME XCURSOR_SIZE"
 			.. " && systemctl --user start hyprland-session.target"
-			-- restart, not start: if DMS is still alive from an older session it
-			-- would stay drawing on that compositor (no wallpaper/bar here).
 			-- The island is the notification server here: stop the standalone
-			-- daemon, start the island and wait until it owns the bus name, and
-			-- only then (re)start DMS, which would grab the name otherwise.
+			-- daemon so the island can own the bus name.
 			.. " && systemctl --user stop quickshell-notifications.service"
 			.. "; qs -c island -d"
-			.. "; for i in $(seq 50); do busctl --user status org.freedesktop.Notifications >/dev/null 2>&1 && break; sleep 0.1; done"
-			.. "; systemctl --user restart dms.service"
-			.. "; for i in $(seq 50); do dms ipc call bar hide id default 2>/dev/null | grep -q SUCCESS && break; sleep 0.2; done"
-			.. "; dms ipc call settings set osdVolumeEnabled false; dms ipc call settings set osdBrightnessEnabled false"
 	)
 	-- hyprglass is built by hand (hyprpm can't clone Hyprland over the flaky
 	-- GitHub route). Reload afterwards so the hl.plugin.hyprglass guard below
@@ -155,13 +148,13 @@ hl.on("hyprland.start", function()
 	)
 end)
 
--- Leave no Hyprland socket behind for a later niri session's DMS to latch onto.
+-- Leave no Hyprland socket behind for a later niri session to latch onto.
 -- Only when systemd still points at *this* instance: an older session exiting
 -- after a newer one logged in must not tear down the newer session's target
 -- or wipe its env (that left kdeconnectd crash-looping on a dead display).
 hl.on("hyprland.shutdown", function()
 	hl.exec_cmd(
-		[[[ "$(systemctl --user show-environment | sed -n 's/^HYPRLAND_INSTANCE_SIGNATURE=//p')" = "$HYPRLAND_INSTANCE_SIGNATURE" ] && { systemctl --user stop hyprland-session.target; systemctl --user unset-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY DMS_DISABLE_POLKIT; }]]
+		[[[ "$(systemctl --user show-environment | sed -n 's/^HYPRLAND_INSTANCE_SIGNATURE=//p')" = "$HYPRLAND_INSTANCE_SIGNATURE" ] && { systemctl --user stop hyprland-session.target; systemctl --user unset-environment HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY; }]]
 	)
 end)
 

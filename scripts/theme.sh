@@ -54,8 +54,8 @@ render_tree() {
 	while IFS= read -r -d '' src; do
 		rel="${src#"$root"/}"
 		dst="$out/$rel"
-		# Rendered through a temp file and moved into place: DMS, niri and
-		# Quickshell all watch these files, and a plain redirect truncates
+		# Rendered through a temp file and moved into place: niri and
+		# Quickshell both watch these files, and a plain redirect truncates
 		# first, so a watcher can read a half-written config.
 		if [[ -n $as_root ]]; then
 			sudo mkdir -p "$(dirname "$dst")"
@@ -160,8 +160,8 @@ apply() {
 		info "zen: $(basename "$(dirname "$zen")")"
 	done
 
-	# GTK colours (replace DMS's dank-colors.css). gtk.css lives outside the
-	# stow tree because DMS rewrites it under niri; both feed the same palette.
+	# GTK colours. gtk.css is rendered straight into ~/.config, outside the
+	# stow tree; both gtk-3.0 and gtk-4.0 feed the same palette.
 	for gtk in "$HOME"/.config/gtk-3.0 "$HOME"/.config/gtk-4.0; do
 		render_tree "$TEMPLATES/apps/gtk" "$gtk" "$VARLIST"
 	done
@@ -182,9 +182,6 @@ reload() {
 	# Niri and Quickshell both watch their files and reload on write.
 	# bat's rebuild takes ~0.75 s and nothing waits on it; run it in the background.
 	command -v bat >/dev/null && { bat cache --build >/dev/null 2>&1 & } || true
-	# DankMaterialShell needs no poke: its theme FileView sets watchChanges and
-	# reloads on write. Do NOT clear customThemeFile to force a re-read — an
-	# empty path makes DMS JSON.parse("") and toast "Invalid JSON format".
 	# ponytail: Ghostty has no reload IPC, so open terminals keep the old
 	# palette until ctrl+a>r or a new window. Nothing to do about it here.
 }

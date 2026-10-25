@@ -56,21 +56,20 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 
 ## Desktop Environment Stack
 
-Primary session is **Hyprland** with the **Quickshell island** as the shell. The old **niri** + DankMaterialShell session is still in the repo and still works as a fallback; scripts that talk to the compositor go through `scripts/wm.sh` so they run under both. Rows below describe Hyprland; niri differences are noted.
+Primary session is **Hyprland** with the **Quickshell island** as the shell. The old **niri** session is still in the repo as a fallback and runs the same island (DankMaterialShell was removed); scripts that talk to the compositor go through `scripts/wm.sh` so they run under both. Rows below describe Hyprland; niri differences are noted.
 
 | Layer | Tool | Config Location |
 |-------|------|-----------------|
 | Window Manager | **Hyprland** (Lua config, `scrolling` layout ported from niri; binds mirror niri's). Fallback: **niri** (`nova/.config/niri/config.kdl`) | `nova/.config/hypr/hyprland.lua`, `binds.lua`, `colors.lua` (generated) |
-| Session startup | `hyprland.lua` `hyprland.start` hook: imports env into systemd, starts `hyprland-session.target` (pulls `graphical-session.target`), starts the island, restarts DMS with its bar and OSD hidden. Shutdown hook stops the target | `nova/.config/hypr/hyprland.lua`, `nova/.config/systemd/user/hyprland-session.target` |
+| Session startup | `hyprland.lua` `hyprland.start` hook: imports env into systemd, starts `hyprland-session.target` (pulls `graphical-session.target`), stops `quickshell-notifications.service` and starts the island (niri's `modules/startup.kdl` does the same). Shutdown hook stops the target | `nova/.config/hypr/hyprland.lua`, `nova/.config/systemd/user/hyprland-session.target` |
 | Login Manager | **Ly** (TUI greeter on tty2, `ly@tty2.service`) | `system/system/etc/ly/config.ini` |
-| Bar / OSD / Notifications / Polkit / Wallpaper / Launcher / Power menu / Clipboard | **Quickshell island** (`qs -c island`): top-centre pill that morphs into pages, driven by `qs -c island ipc call island …`. Owns `org.freedesktop.Notifications` and the polkit agent under Hyprland | `nova/.config/quickshell/island/` |
-| DankMaterialShell | Still runs under Hyprland (bar hidden, OSD off, polkit disabled via `DMS_DISABLE_POLKIT=1`); binds fall back to `dms ipc` if the island doesn't answer. Under niri it is the full panel/wallpaper/OSD | `nova/.config/DankMaterialShell/`, `nova/.config/hypr/dms/` (DMS-generated), `nova/.config/niri/dms/` |
-| Other menus | **Quickshell** configs (keybindings, calendar, pass, switcher, browser-url, theme under niri), started on demand by `scripts/quickshell/*.sh` and quit once closed and idle; Rofi for a few helpers | `nova/.config/quickshell/`, `nova/.config/rofi/` |
+| Bar / OSD / Notifications / Polkit / Wallpaper / Launcher / Power menu / Clipboard / URL bar / Window switcher / Calendar / Passwords / Keybindings | **Quickshell island** (`qs -c island`): top-centre pill that morphs into pages, driven by `qs -c island ipc call island toggle <page>` (`pass <domain>` via `scripts/quickshell/pass.sh`). List pages share `island/SearchList.qml`; larger pages live in `island/*Page.qml`. Notification popups stack top-right, never in the pill. Owns `org.freedesktop.Notifications` and the polkit agent under Hyprland. These pages don't exist under niri, whose binds call the same IPC | `nova/.config/quickshell/island/` |
+| Other menus | **Quickshell** configs `launcher` and `theme` (fallbacks when the island isn't running), started on demand by `scripts/quickshell/*.sh` and quit once closed and idle; Rofi for a few helpers | `nova/.config/quickshell/`, `nova/.config/rofi/` |
 | Menu motion / widgets | `common/` QML module: Material 3 Expressive curves (`Tokens`, `Anim`), ripple (`StateLayer`), and the `Styled*` widget set. Ported by hand from [caelestia-shell](https://github.com/caelestia-dots/shell); no compiled plugin. | `nova/.config/quickshell/common/` |
 | Idle/Lock | **swayidle**: lock with swaylock (`scripts/lock.sh`) at 5 min, screen off at 10 min, never suspends on idle | `nova/.config/swayidle/config` |
 | Screenshots | grim + slurp + satty | `nova/.config/hypr/binds.lua` |
 | Screen Record | wf-recorder (region/audio), wl-screenrec (fullscreen) | `scripts/record-script.sh` |
-| Clipboard | **cliphist** stores history (`wl-paste --watch cliphist store`, run by the island); Mod+V → island `clipboard` page (falls back to `dms ipc call clipboard toggle`). `clip-push.service` (`scripts/clip-push.sh`) is a second watcher that pushes copied images to novahome | `nova/.config/quickshell/island/shell.qml`, `nova/.config/hypr/binds.lua` |
+| Clipboard | **cliphist** stores history (`wl-paste --watch cliphist store`, run by the island); Mod+V → island `clipboard` page. `clip-push.service` (`scripts/clip-push.sh`) is a second watcher that pushes copied images to novahome | `nova/.config/quickshell/island/shell.qml`, `nova/.config/hypr/binds.lua` |
 
 ## Reference (read on demand)
 
@@ -80,7 +79,7 @@ Primary session is **Hyprland** with the **Quickshell island** as the shell. The
 
 Rules you must know without reading it:
 - **Theming:** never hand-edit a generated config (header says "generated by scripts/theme.sh"); edit `system/themes/templates/` or `system/themes/palettes/` and run `scripts/theme.sh <name>`.
-- **Notifications:** under Hyprland the island is the notification server (startup stops `quickshell-notifications.service` and starts the island before DMS). Under niri popups come from `quickshell-notifications.service`. DMS's notification centre is intentionally empty either way. Don't "fix" that without reading the Notifications section.
+- **Notifications:** the island is the notification server under both Hyprland and niri (startup stops `quickshell-notifications.service`, then starts the island). Read the Notifications section before changing that.
 - **Compositor calls:** use `scripts/wm.sh` instead of raw `hyprctl`/`niri msg` in shared scripts, so they keep working under both sessions.
 
 ## Important Notes

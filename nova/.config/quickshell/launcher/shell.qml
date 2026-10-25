@@ -8,6 +8,7 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
 import QtQuick
+import QtQuick.Effects
 import common
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -24,7 +25,7 @@ ShellRoot {
     readonly property color selBg:   Colors.selBg
     readonly property color fg:      Colors.fg
     readonly property color subtext: Colors.subtext
-    readonly property string uiFont: "JetBrainsMono Nerd Font"
+    readonly property string uiFont: "SF Pro Display"
 
     property var apps: []          // [{id,name,icon,file}]
 
@@ -60,9 +61,10 @@ ShellRoot {
         onVisibleChanged: if (!visible) quitter.start()
         Timer { id: quitter; interval: 200; repeat: true; onTriggered: if (win.visible) stop(); else if (!(lister.running || launcher.running)) Qt.quit() }
         anchors { top: false; bottom: false; left: false; right: false }
-        implicitWidth: 680
+        // +48: 24px each side for the panel's drop shadow.
+        implicitWidth: 680 + 48
         readonly property int maxH: 560
-        implicitHeight: Math.min(maxH, 104 + Math.max(1, appList.count) * 52)
+        implicitHeight: 48 + (Math.min(maxH, 104 + Math.max(1, appList.count) * 52))
         color: "transparent"
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.keyboardFocus: shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
@@ -80,14 +82,17 @@ ShellRoot {
 
         Rectangle {
             anchors.fill: parent
-            transform: Scale { origin.y: win.height / 2; yScale: win.anim }
+            anchors.margins: 24
+            transform: Scale { origin.y: win.height / 2 - 24; yScale: win.anim }
             // Fade alongside the scale, as caelestia's panels do. Clamped because the
             // spatial curve overshoots past 1 on the way in.
             opacity: Math.min(1, win.anim)
-            radius: 4
+            radius: Tokens.rounding.largeIncreased
             color: bg
             border.color: outline
             border.width: 1
+            // z -1 draws under the panel and follows its scale and fade.
+            RectangularShadow { anchors.fill: parent; z: -1; radius: parent.radius; offset.y: 8; blur: 32; spread: -4; color: Colors.shadow }
 
             ColumnLayout {
                 anchors.fill: parent
@@ -96,8 +101,8 @@ ShellRoot {
 
                 // search
                 Rectangle {
-                    Layout.fillWidth: true; implicitHeight: 50; radius: 0
-                    color: inputBg; border.color: accent; border.width: 1
+                    Layout.fillWidth: true; implicitHeight: 50; radius: Tokens.rounding.medium
+                    color: inputBg; border.color: outline; border.width: 1
                     RowLayout {
                         anchors.fill: parent; anchors.leftMargin: 14; anchors.rightMargin: 14; spacing: 10
                         Text { text: ""; color: accent; font.family: uiFont; font.pixelSize: 20 }
@@ -119,7 +124,7 @@ ShellRoot {
                                 }
                             }
                         }
-                        Text { text: appList.count + ""; color: subtext; font.family: uiFont; font.pixelSize: 13 }
+                        Text { text: appList.count + ""; color: subtext; font.family: uiFont; font.pixelSize: 14 }
                     }
                 }
 
@@ -141,7 +146,7 @@ ShellRoot {
                         required property int index
                         required property var modelData
                         property var rowData: modelData
-                        width: ListView.view.width; height: 52; radius: 0
+                        width: ListView.view.width; height: 52; radius: Tokens.rounding.medium
                         color: index === appList.currentIndex ? selBg : "transparent"
                         RowLayout {
                             anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 12; spacing: 14
