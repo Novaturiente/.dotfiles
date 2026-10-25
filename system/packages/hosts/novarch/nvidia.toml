@@ -1,0 +1,11 @@
+# Ported from ~/.dotfiles/system/package/nvidia.yaml on 2026-10-26.
+packages = [
+  # NVIDIA/Graphics
+  # "nvidia-utils",
+  # "lib32-nvidia-utils",
+  # "nvidia-container-toolkit",
+  # "nvidia-settings",
+  # "lib32-libglvnd",
+  # "vulkan-icd-loader",
+  # "acer-wmi-battery-dkms-git",
+]

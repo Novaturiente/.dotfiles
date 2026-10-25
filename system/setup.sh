@@ -2,19 +2,24 @@
 # First-boot setup. Every path below is relative to the repo root.
 cd ~/.dotfiles || exit 1
 
-sudo cp system/novarch /usr/bin/novarch
-
-# Point novarch at the package lists (no prompt), then install everything they
-# declare: stow, zsh, ly, ufw, tlp, pkgfile and Hyprland are all needed below.
-novarch init -f ~/.dotfiles/system/package
-novarch install
+# novarch (https://github.com/Novaturiente/novarch): install it as a pacman package
+# from the latest release, point it at the TOML package lists (no prompt), then install
+# everything they declare: stow, zsh, ly, ufw, tlp, pkgfile and Hyprland are all needed
+# below. sync shows its plan and asks before it changes anything.
+# (Download, then run: with `curl | sh` a failed download would still exit 0.)
+curl -fsSL -o /tmp/novarch-install.sh https://raw.githubusercontent.com/Novaturiente/novarch/main/install.sh &&
+	sh /tmp/novarch-install.sh || exit 1
+mkdir -p ~/.config/novarch
+[ -e ~/.config/novarch/config.toml ] ||
+	echo "packages_dir = \"$HOME/.dotfiles/system/packages\"" >~/.config/novarch/config.toml
+novarch sync || exit 1
 
 # System files: system/system mirrors /, so copy the whole tree onto it
 # (tlp.conf, sleep.conf, zram, docker, udev, units, /usr/local helpers, polkit, pam).
 sudo cp -r system/system/. /
 sudo chmod 0440 /etc/sudoers.d/vpn-run
 
-# Login manager: Ly (installed from package/windowmanager.yaml).
+# Login manager: Ly (installed from packages/windowmanager.toml).
 # Ly is a TUI greeter running on its own VT; it needs no dedicated user.
 sudo mkdir -p /etc/ly
 

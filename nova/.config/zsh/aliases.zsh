@@ -1,10 +1,11 @@
 # Editor and system update aliases
 # alias vi="nvim"
 alias vi="nvim"
-alias inova="sudo novarch install"
-alias unova="sudo novarch update"
-alias anova="sudo novarch add"
-alias rnova="sudo novarch remove"
+# no sudo: novarch refuses root and calls sudo itself
+alias inova="novarch sync"
+alias unova="novarch upgrade"
+alias anova="novarch add"
+alias rnova="novarch remove"
 
 alias cedit="nvim -c 'enew | put + | setlocal buftype=nofile bufhidden=wipe noswapfile'"
 
@@ -108,7 +109,7 @@ alias winrestart="ssh nova@novahome docker restart windows"
 alias winsopen="ssh nova@novahome docker start windows && winapps windows"
 
 # alias novarch="uv run --project ~/.dotfiles/novarch ~/.dotfiles/novarch/run.py"
-alias editsystem="nvim ~/.dotfiles/novarch"
+alias editsystem="nvim ~/.dotfiles/system/packages"
 alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && paru -Syu"
 
 alias clear-cache="rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp"

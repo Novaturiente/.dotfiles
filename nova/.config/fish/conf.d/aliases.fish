@@ -8,11 +8,12 @@ alias vi      'nvim'
 alias cedit   "nvim -c 'enew | put + | setlocal buftype=nofile bufhidden=wipe noswapfile'"
 
 # ---- novarch (declarative package manager) ----
-alias inova   'sudo novarch install'
-alias unova   'sudo novarch update'
-alias anova   'sudo novarch add'
-alias rnova   'sudo novarch remove'
-alias editsystem 'nvim ~/.dotfiles/novarch'
+# no sudo: novarch refuses root and calls sudo itself
+alias inova   'novarch sync'
+alias unova   'novarch upgrade'
+alias anova   'novarch add'
+alias rnova   'novarch remove'
+alias editsystem 'nvim ~/.dotfiles/system/packages'
 alias systemupdate 'sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && paru -Syu'
 
 # ---- ls (eza) ----

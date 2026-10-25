@@ -1,0 +1,25 @@
+# This laptop's hardware: kernel, firmware, microcode, Intel GPU, IR camera / howdy,
+# TPM and laptop power management. Moved here from the shared files on 2026-10-26 so
+# another machine using these dotfiles does not get them.
+packages = [
+  "linux-cachyos", # from base-system.yaml
+  "linux-cachyos-headers", # from base-system.yaml
+  "linux-firmware-intel", # from base-system.yaml
+  "linux-firmware-whence", # from base-system.yaml
+  "intel-ucode", # from base-system.yaml
+  "tpm2-tools", # from base-system.yaml
+  "linux-enable-ir-emitter-git", # from base-system.yaml
+  "howdy-next-git", # from base-system.yaml
+  "sof-firmware", # from base-system.yaml
+  "alsa-ucm-conf", # from base-system.yaml
+  "intel-compute-runtime", # from base-system.yaml
+  "intel-media-driver", # from base-system.yaml
+  "vulkan-intel", # from base-system.yaml
+  "libva-utils", # from base-system.yaml
+  "intel-gpu-tools", # from base-system.yaml
+  "tlp", # from base-system.yaml
+  "tlp-rdw", # from base-system.yaml
+  "tlp-pd", # from base-system.yaml
+  "powertop", # from base-system.yaml
+  "vpl-gpu-rt", # from media.yaml
+]

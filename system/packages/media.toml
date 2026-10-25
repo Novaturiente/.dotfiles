@@ -1,0 +1,26 @@
+# Ported from ~/.dotfiles/system/package/media.yaml on 2026-10-26.
+packages = [
+  "playerctl",
+  "mpv",
+  "imv",
+  "imagemagick",
+  "easyeffects",
+  "espeak-ng",
+  "handy-bin",
+  "gst-plugins-good",
+  "gst-plugins-bad",
+  "gst-libav",
+  "zathura",
+  "zathura-pdf-mupdf",
+
+  # Intel graphics, video decode and codecs (declared 2026-09-26 so novarch keeps them)
+  "mesa",
+  "mesa-utils",
+  "vulkan-icd-loader",
+  "opencl-mesa",
+  "gst-plugin-va",
+  "gst-plugin-pipewire",
+  "gst-plugins-ugly",
+  "libvpx",
+  "libdvdcss",
+]

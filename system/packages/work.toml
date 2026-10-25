@@ -1,0 +1,15 @@
+# Ported from ~/.dotfiles/system/package/work.yaml on 2026-10-26.
+packages = [
+  "jdk-openjdk",
+  "docker",
+  "docker-compose",
+  "mysql",
+  "postgresql",
+  "pgvector",
+  "lazysql",
+  "gobang-bin",
+  "csvlens",
+  "ttf-wps-fonts",
+  "rustdesk-bin",
+  "freerdp",
+]

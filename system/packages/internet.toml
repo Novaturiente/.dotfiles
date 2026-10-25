@@ -1,0 +1,14 @@
+# Ported from ~/.dotfiles/system/package/internet.yaml on 2026-10-26.
+packages = [
+  "python-adblock",
+  "zen-browser-bin",
+  "firefoxpwa",
+  "browserpass",
+  "thunderbird",
+  "wireguard-tools",
+  "kdeconnect",
+  "localsend",
+  "cryptomator",
+  "cryptomator-cli",
+  "anydesk-bin",
+]
