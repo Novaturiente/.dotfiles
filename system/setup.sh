@@ -1,8 +1,13 @@
 #!/usr/bin/env sh
+# First-boot setup. Every path below is relative to the repo root.
+cd ~/.dotfiles || exit 1
 
-sudo cp novarch /usr/bin/novarch
+sudo cp system/novarch /usr/bin/novarch
 
-novarch init
+# Point novarch at the package lists (no prompt), then install everything they
+# declare: stow, zsh, ly, ufw, tlp, pkgfile and Hyprland are all needed below.
+novarch init -f ~/.dotfiles/system/package
+novarch install
 
 # System files: system/system mirrors /, so copy the whole tree onto it
 # (tlp.conf, sleep.conf, zram, docker, udev, units, /usr/local helpers, polkit, pam).
@@ -17,6 +22,13 @@ mkdir -p ~/.config
 
 stow -d ~/.dotfiles -t ~ nova
 
+# Mount point for novahome's home (sshfs in hyprland.lua; reached over Tailscale).
+mkdir -p ~/server
+
+# docker: run containers without sudo. input: ydotool. video: backlight.
+# tss: TPM access for the rbw face unlock (usr/local/libexec/rbw-tpm-face-unseal).
+sudo usermod -aG docker,input,video,tss "$(whoami)"
+
 # Colours for every application, plus /etc/ly/config.ini and the Plymouth boot
 # splash. Reads system/themes/current, so a fresh machine comes up on whichever
 # theme is committed. Switch later with scripts/theme.sh <name> or Mod+Shift+T.
@@ -29,6 +41,12 @@ systemctl --user mask pulseaudio.service pulseaudio.socket
 
 sudo systemctl enable battery-limit.timer paccache.timer
 
+# Services this laptop runs. tailscaled carries the sshfs mount to novahome,
+# linux-enable-ir-emitter powers the IR camera for face unlock.
+sudo systemctl enable NetworkManager.service bluetooth.service sshd.service \
+	docker.service tailscaled.service tlp.service mullvad-netns.service \
+	linux-enable-ir-emitter.service
+
 # Set zsh as default login shell
 chsh "$(whoami)" -s "$(which zsh)"
 
@@ -36,6 +54,15 @@ chsh "$(whoami)" -s "$(which zsh)"
 sudo pkgfile --update
 sudo systemctl enable --now pkgfile-update.timer
 
+# NOT automated, check by hand on new hardware:
+# - /etc/mkinitcpio.conf HOOKS need `plymouth` (boot splash) and `resume`
+#   (hibernate, with a swap file such as /swap/swapfile and resume= on the
+#   kernel command line), and the kernel command line needs `quiet splash`.
+# - Face unlock for sudo/swaylock needs the hand edits to /etc/pam.d/system-auth
+#   described in system/HOWDY-FACE-AUTH.md.
+# - The hyprglass Hyprland plugin is built by hand into
+#   ~/.local/share/hyprglass/ (hyprland.lua loads it at startup).
+# - After reboot: `sudo tailscale up` once, so the ~/server mount can reach novahome.
 sudo mkinitcpio -P
 
 # Firewall: ufw, deny incoming by default
