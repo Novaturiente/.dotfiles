@@ -194,5 +194,5 @@ which is deliberate.
 - **Battery conservation** managed via Lenovo IdeaPad ACPI sysfs (`/sys/bus/platform/drivers/ideapad_acpi/`)
 - **intel-compute-runtime** + **intel-media-driver** installed for OpenCL and media acceleration
 - NPU: kernel driver (`intel_vpu`) loaded; the userspace `intel-npu-driver` is not installed
-- **No NVIDIA or gaming packages** — nvidia.yaml is fully commented out; gaming.yaml and Steam were removed 2026-09-26
+- **No NVIDIA or gaming packages** — system/packages/hosts/novarch/nvidia.toml is fully commented out; gaming.yaml and Steam were removed 2026-09-26
 

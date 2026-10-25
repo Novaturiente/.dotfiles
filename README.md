@@ -20,8 +20,7 @@ Complete system configuration for an Arch Linux (CachyOS kernel) setup on a Leno
 │   ├── keybindings/       # Extract keybindings from Hyprland/niri/nvim/qutebrowser configs
 │   └── wm.sh              # Compositor shim: same answers under Hyprland and niri
 ├── system/
-│   ├── novarch            # Compiled Rust binary — declarative package manager
-│   ├── package/           # YAML package lists (one file per category)
+│   ├── packages/          # novarch TOML package lists (shared + hosts/<hostname>/)
 │   ├── system/            # System config files (mirrors / filesystem)
 │   │   ├── etc/           # TLP, PAM, sudoers, systemd units, udev, docker
 │   │   └── usr/           # /usr/local/bin helpers (battery-limit, vpn-run, howdy-ir-pre)
@@ -44,7 +43,7 @@ cd ~/.dotfiles/system
 ```
 
 **The setup script will:**
-- Copy `novarch` to `/usr/bin/` and run `novarch init`
+- Install novarch as a pacman package (curl `install.sh` from its GitHub release), point it at `system/packages/` and run `novarch sync`
 - Deploy system configs (`sudo cp -r system/system/. /`)
 - Symlink home directory configs via `stow -d ~/.dotfiles -t ~ nova`
 - Enable systemd services (`ly@tty2`, `battery-limit.timer`, `paccache.timer`, `pkgfile-update.timer`)
@@ -128,34 +127,39 @@ stow -d ~/.dotfiles -t ~ -D nova
 
 ## Package Management
 
-Packages are organized into YAML files in `system/package/`. Each file is a simple list:
+Packages are organized into TOML files in `system/packages/`. Each file has one list; files at the top level are shared, `hosts/<hostname>/*.toml` apply to that machine only:
 
-```yaml
-- package-name
-#- disabled-package
+```toml
+packages = [
+  "package-name",
+  # "disabled-package",
+]
 ```
 
 | File | Contents |
 |------|----------|
-| `base-system.yaml` | Kernel, firmware, networking, audio (pipewire), filesystems, power (TLP) |
-| `terminal-tools.yaml` | zsh, ghostty, tmux, neovim, CLI tools (bat, fd, ripgrep, fzf, eza) |
-| `windowmanager.yaml` | Niri, Ly, Quickshell, Rofi, fonts, themes, screenshot/recording/OCR tools (Hyprland is in `manual-install.yaml`) |
-| `development.yaml` | Build tools, Rust/Python/Node/Go/Lua, LSPs, linters, lazygit |
-| `work.yaml` | Java, Docker, databases (PostgreSQL, MySQL), Chrome, WPS Office, Zoom |
-| `internet.yaml` | Qutebrowser, Zen Browser, KDE Connect, LocalSend, Thunderbird |
-| `media.yaml` | mpv, playerctl, imv, imagemagick, easyeffects |
-| `manual-install.yaml` | Packages installed by hand, incl. Hyprland, hyprpm, xdg-desktop-portal-hyprland, hyprsunset |
-| `nvidia.yaml` | NVIDIA drivers (currently all disabled — Intel iGPU only) |
-| `virtualization.yaml` | QEMU for local VMs |
+| `base-system.toml` | Base install, CachyOS tooling, networking, audio (pipewire), filesystems |
+| `hosts/novarch/hardware.toml` | This laptop: kernel, firmware, microcode, Intel GPU, IR camera / howdy, TPM, power (TLP) |
+| `terminal-tools.toml` | zsh, ghostty, tmux, neovim, CLI tools (bat, fd, ripgrep, fzf, eza) |
+| `windowmanager.toml` | Niri, Ly, Quickshell, Rofi, fonts, themes, screenshot/recording/OCR tools (Hyprland is in `manual-installs.toml`) |
+| `development.toml` | Build tools, Rust/Python/Node/Go/Lua, LSPs, linters, lazygit |
+| `work.toml` | Java, Docker, databases (PostgreSQL, MySQL), Chrome, WPS Office, Zoom |
+| `internet.toml` | Qutebrowser, Zen Browser, KDE Connect, LocalSend, Thunderbird |
+| `media.toml` | mpv, playerctl, imv, imagemagick, easyeffects |
+| `manual-installs.toml` | Packages added with `novarch add`, incl. Hyprland, hyprpm, xdg-desktop-portal-hyprland, hyprsunset |
+| `hosts/novarch/nvidia.toml` | NVIDIA drivers (currently all disabled — Intel iGPU only) |
+| `virtualization.toml` | QEMU for local VMs |
 
 ### novarch
 
-Custom Rust binary that reads the YAML files and syncs installed packages declaratively:
+Declarative package manager ([github.com/Novaturiente/novarch](https://github.com/Novaturiente/novarch)), installed as a pacman package. Config: `~/.config/novarch/config.toml`; what it owns: `~/.local/state/novarch/managed.json`. Run as your user, never with sudo:
 
 ```bash
-novarch init     # Bootstrap — install all packages from all YAML files
-novarch diff     # Preview what a sync would install/remove
-novarch install  # Sync; removes tracked packages that no YAML declares any more
+novarch diff            # Preview what a sync would install/adopt/remove
+novarch sync            # Upgrade, install listed packages, remove managed ones no file lists
+novarch add PKG         # Install, then append to manual-installs.toml (--to FILE for another)
+novarch remove PKG      # Drop from the files, then uninstall
+novarch status          # Explicitly installed packages that no file lists
 ```
 
 **AUR helper:** paru

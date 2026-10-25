@@ -25,9 +25,7 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 │   ├── wm.sh              # Compositor shim: same answers under Hyprland and niri
 │   └── keybindings/       # Auto-extract keybindings from niri/nvim/qutebrowser
 ├── system/
-│   ├── novarch            # Compiled Rust binary - declarative package manager
-│   ├── novarch.back       # Backup of previous novarch version
-│   ├── package/           # YAML package lists (one file per category)
+│   ├── packages/          # novarch TOML package lists (shared + hosts/<hostname>/)
 │   ├── system/            # System config files (mirrors /etc structure)
 │   │   ├── etc/           # TLP, Ly, PAM, systemd services, udev, sudoers
 │   │   └── usr/           # /usr/local helpers (vpn-run, mullvad-netns, howdy-ir-pre)
@@ -37,11 +35,10 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 
 ## Key Tools & Conventions
 
-### Package Management (`system/package/`)
-- **Format:** Simple YAML lists — each file is an array of package names (`- package-name`)
-- **Commented packages** (`#- package-name`) are disabled/not installed
-- **Categories:** base-system, terminal-tools, windowmanager, development, work, internet, media, manual-install, nvidia (disabled), virtualization
-- **novarch** reads these YAML files and syncs installed packages declaratively. `novarch install` **removes** any package it tracks (state in `/var/lib/novarch/state.yaml`) that no YAML declares, so declare a package before relying on it; `novarch diff` previews the sync
+### Package Management (`system/packages/`)
+- **Format:** TOML, one key per file: `packages = ["name", ...]`; comments allowed, `# "name",` = disabled
+- **Layout:** top-level files are shared (base-system, terminal-tools, windowmanager, development, work, internet, media, manual-installs, virtualization); `hosts/novarch/` holds this laptop's hardware (`hardware.toml`, `nvidia.toml` disabled)
+- **novarch** (pacman package, github.com/Novaturiente/novarch) syncs installed packages declaratively. `novarch sync` **removes** any package it owns (state in `~/.local/state/novarch/managed.json`) that no file lists, so declare a package before relying on it; `novarch diff` previews the sync. Run it as the user, never with sudo
 - **paru** is the AUR helper
 
 ### Dotfile Deployment
@@ -85,6 +82,6 @@ Rules you must know without reading it:
 ## Important Notes
 
 - **Wayland-native:** All scripts assume Wayland (wl-copy, slurp, grim, ydotool, hyprctl / niri msg via `scripts/wm.sh`)
-- **Hyprland packages** (`hyprland`, `hyprpm`, `xdg-desktop-portal-hyprland`, `hyprsunset`) are in `manual-install.yaml`; niri stays in `windowmanager.yaml`. The `hyprglass` plugin is built by hand into `~/.local/share/hyprglass/`
+- **Hyprland packages** (`hyprland`, `hyprpm`, `xdg-desktop-portal-hyprland`, `hyprsunset`) are in `manual-installs.toml`; niri stays in `windowmanager.toml`. The `hyprglass` plugin is built by hand into `~/.local/share/hyprglass/`
 - **Nerd Fonts required:** Icons used throughout rofi, quickshell, prompts, and terminal configs
 - **Sensitive files:** API keys and credentials are stored in `.profile` and `.env` files — never commit actual values

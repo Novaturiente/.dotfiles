@@ -15,7 +15,7 @@ DOT="$(cd "$(dirname "$0")/.." && pwd)"          # repo root, wherever it's clon
 CONF_SRC="${1:?usage: sudo bash install-vpn-netns.sh /path/to/mullvad.conf}"
 [[ -r "$CONF_SRC" ]] || { echo "config not readable: $CONF_SRC" >&2; exit 1; }
 
-# 1. WireGuard userspace tools (also listed in package/internet.yaml for novarch)
+# 1. WireGuard userspace tools (also listed in packages/internet.toml for novarch)
 pacman -S --needed --noconfirm wireguard-tools
 
 # 2. Scripts (root-owned, executable)
