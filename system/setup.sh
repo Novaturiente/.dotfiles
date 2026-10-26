@@ -23,9 +23,24 @@ sudo chmod 0440 /etc/sudoers.d/vpn-run
 # Ly is a TUI greeter running on its own VT; it needs no dedicated user.
 sudo mkdir -p /etc/ly
 
-mkdir -p ~/.config
+# ~/.novacode must be a real folder before stow, or stow links the whole folder
+# into the repo and novacode's sessions, logins and logs land in git.
+mkdir -p ~/.config ~/.novacode
 
 stow -d ~/.dotfiles -t ~ nova
+
+# novacode (https://github.com/Novaturiente/novacode): the release binary goes to
+# ~/.local/bin; its config (AGENTS.md, settings, MCP servers, skills) is stowed above.
+curl -fsSL -o /tmp/novacode-install.sh https://raw.githubusercontent.com/Novaturiente/novacode/main/scripts/install.sh &&
+	sh /tmp/novacode-install.sh || exit 1
+# Packages at the tags pinned in the repo's lock file. Source and ref joined by '|',
+# since git@ URLs contain '@'.
+for p in $(jq -r 'to_entries[] | "\(.value.source)|\(.value.tag // .value.rev)"' nova/.novacode/packages.lock.json); do
+	~/.local/bin/novacode install "${p%|*}" --ref "${p##*|}" || exit 1
+done
+# install rewrites the lock file by rename, which replaces the stowed symlink with a
+# real file; put the link back (same pins, so nothing is lost).
+ln -sf ~/.dotfiles/nova/.novacode/packages.lock.json ~/.novacode/packages.lock.json
 
 # Mount point for novahome's home (sshfs in hyprland.lua; reached over Tailscale).
 mkdir -p ~/server
@@ -68,6 +83,7 @@ sudo systemctl enable --now pkgfile-update.timer
 # - The hyprglass Hyprland plugin is built by hand into
 #   ~/.local/share/hyprglass/ (hyprland.lua loads it at startup).
 # - After reboot: `sudo tailscale up` once, so the ~/server mount can reach novahome.
+# - `novacode login claude` once (settings.json picks a claude/ model).
 sudo mkinitcpio -P
 
 # Firewall: ufw, deny incoming by default

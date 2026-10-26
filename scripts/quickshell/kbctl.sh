@@ -17,7 +17,6 @@ cmd_refresh() {
     niri)     bash "$KB/extract-niri-keybindings.sh"     "$HOME/.config/niri/modules/binds.kdl" >/dev/null 2>&1 || true ;;
     esac
     bash "$KB/extract-neovim-keybindings.sh"                                                     >/dev/null 2>&1 || true
-    bash "$KB/extract-qutebrowser-keybindings.sh" "$HOME/.config/qutebrowser/config.py" >/dev/null 2>&1 || true
 }
 
 # JSON: [{app, count, bindings:[{key,desc}]}]  (skips *-default.txt merge bases)

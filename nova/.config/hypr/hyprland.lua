@@ -86,15 +86,17 @@ hl.curve("m3EffectsFast", { type = "bezier", points = { { 0.31, 0.94 }, { 0.34, 
 -- niri springs: damping-ratio 1.0 = no bounce, 0.75 = light bounce.
 hl.curve("move", { type = "spring", mass = 1, stiffness = 450, dampening = 42 })
 hl.curve("wsBounce", { type = "spring", mass = 1, stiffness = 800, dampening = 42 })
+-- Column scroll / window move: damping ratio ~0.75 (32 / 2*sqrt(450)), a light overshoot that settles.
+hl.curve("moveBounce", { type = "spring", mass = 1, stiffness = 450, dampening = 32 })
 
 -- New window zooms out from its centre while windowsMove pushes the current
--- window left on the same spring; closing windows slide down off screen.
+-- window left with a light bounce; closing windows slide down off screen.
 hl.animation({ leaf = "windowsIn", enabled = true, speed = 4, spring = "move", style = "popin 0%" })
 hl.animation({ leaf = "windowsOut", enabled = true, speed = 3.5, bezier = "m3EffectsFast", style = "slide bottom" })
-hl.animation({ leaf = "windowsMove", enabled = true, speed = 4, spring = "move" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 4, spring = "moveBounce" })
 hl.animation({ leaf = "fadeIn", enabled = true, speed = 3.5, bezier = "m3EffectsFast" })
 hl.animation({ leaf = "fadeOut", enabled = true, speed = 3.5, bezier = "m3EffectsFast" })
-hl.animation({ leaf = "workspaces", enabled = true, speed = 4, spring = "wsBounce", style = "slidevert" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 4, spring = "wsBounce", style = "slidefadevert" })
 hl.animation({ leaf = "layers", enabled = true, speed = 3, bezier = "m3EffectsFast", style = "fade" })
 
 -- ── Workspaces: niri `workspace "Main"` / `workspace "Work"` ─────────────────

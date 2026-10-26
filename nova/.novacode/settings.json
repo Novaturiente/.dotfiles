@@ -1,0 +1,10 @@
+{
+  "model": "claude/claude-opus-5-5",
+  "cacheRetention": "long",
+  "agents": {
+    "env": {
+      "CAVEMAN_DEFAULT_MODE": "off",
+      "PONYTAIL_SUBAGENT_MATCHER": "^$"
+    }
+  }
+}

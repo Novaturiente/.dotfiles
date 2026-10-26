@@ -12,43 +12,26 @@ agents() {
 	tmux list-panes -a -F '#{pane_id}	#{@agent}	#{@agent_state}	#{session_name}:#{window_index}	#{b:pane_current_path}	#{pane_current_command}	#{@agent_bg}' |
 		awk -F'\t' -v OFS='\t' '
 			# Known agent not yet reported via hook (e.g. agy before its first prompt): show as idle.
-			$2 == "" && $6 ~ /^(agy|claude|pi|codex|novacode)$/ { $2 = $6; $3 = "idle" }
+			$2 == "" && $6 ~ /^(agy|claude|codex|novacode)$/ { $2 = $6; $3 = "idle" }
 			# Empty field would collapse under IFS=tab in read and shift the columns.
 			$3 == "" { $3 = "idle" }
-			# swarm-* = hidden pi-swarm subagent sessions, shown in the swarm panel instead.
-			$2 != "" && $6 !~ /^(zsh|bash|fish|sh)$/ && $4 !~ /^swarm-/'
+			$2 != "" && $6 !~ /^(zsh|bash|fish|sh)$/'
 }
 
-# Claude subscription windows from pi's claude-usage.ts caches (pi and Claude Code
-# share one subscription). Newer of endpoint cache / per-response live file wins,
-# same as withLive(). Rows: name, percent, reset epoch (0 = unknown), data epoch.
+# Subscription windows from novacode's quota cache (~/.novacode/cache/usage/<provider>-<account>.json
+# per login, <provider>.json = copy for the account used last; refreshed by running novacode
+# sessions; Claude Code/codex share the same subscription). $1 = file name without .json.
+# Claude: five_hour/seven_day. Codex: primary/secondary window, named by length.
+# Rows: name, percent, reset epoch (0 = unknown), data epoch.
 usage() {
-	cat ~/.cache/claude-usage.json ~/.cache/claude-usage-live.json 2>/dev/null | jq -rs '
-		(map(select(.data))[0] // {}) as $c | (map(select(.windows))[0] // {}) as $l |
-		["five_hour","5h"], ["seven_day","wk"] | . as [$k,$n] |
-		if ($l.at // 0) > ($c.at // 0) and ($l.windows[$k].utilization | type) == "number" then
-			[$n, $l.windows[$k].utilization * 100,
-			 ($l.windows[$k].resetsAt // 0 | if . < 1e11 then . else . / 1000 end), $l.at]
+	jq -r '(.at_ms / 1000 | floor) as $at | .data as $d |
+		(if $d.rate_limit then
+			$d.rate_limit.primary_window, $d.rate_limit.secondary_window | select(. != null) |
+			[(if .limit_window_seconds <= 18000 then "5h" else "wk" end), .used_percent, (.reset_at // 0)]
 		else
-			[$n, $c.data[$k].utilization,
-			 ($c.data[$k].resets_at | if . == null then 0 else sub("\\.[0-9]+"; "") | sub("\\+00:00$"; "Z") | fromdateiso8601 end), $c.at]
-		end | select(.[1] != null) |
-		"\(.[0])\t\(.[1] | round)\t\(.[2] | floor)\t\(.[3] / 1000 | floor)"' 2>/dev/null
-}
-
-# Antigravity quota from pi's cache, same rows. Group picked by model id like
-# antigravityWindows(): Claude/GPT models -> "Claude and GPT", else Gemini.
-usage_agy() {
-	jq -r --arg m "$1" '
-		.at as $at |
-		(if ($m | test("claude|gpt|sonnet|opus"; "i")) then "claude|gpt" else "gemini" end) as $re |
-		(.data.groups // []) as $g |
-		(first($g[] | select(.displayName | test($re; "i"))) // $g[0] // {}) as $grp |
-		["5h","5h"], ["weekly","wk"] | . as [$w,$n] |
-		first($grp.buckets[]? | select(.window == $w or (.bucketId | test($w)))) // empty |
-		select(.remainingFraction != null) |
-		"\($n)\t\((1 - .remainingFraction) * 100 | round)\t\(.resetTime | if . == null then 0 else sub("\\.[0-9]+"; "") | fromdateiso8601 end)\t\($at / 1000 | floor)"' \
-		~/.cache/antigravity-usage.json 2>/dev/null
+			["five_hour", "5h"], ["seven_day", "wk"] | . as [$k, $n] | $d[$k] | select(.utilization != null) |
+			[$n, .utilization, (.resets_at | if . == null then 0 else sub("\\.[0-9]+"; "") | sub("\\+00:00$"; "Z") | fromdateiso8601 end)]
+		end) | "\(.[0])\t\(.[1] | round)\t\(.[2] | floor)\t\($at)"' ~/.novacode/cache/usage/"$1".json 2>/dev/null
 }
 
 # Folder -> git repo name (main checkout, so worktrees map back; empty = not a repo).
@@ -72,7 +55,7 @@ projects() {
 		[ -n "${first[$s]+x}" ] || first[$s]=$d
 		rp=$ap
 		[ -n "$rp" ] || repo "${acwd:-$full}"
-		if [ -n "$ag" ] || [[ $cmd =~ ^(agy|claude|pi|codex|novacode)$ ]]; then
+		if [ -n "$ag" ] || [[ $cmd =~ ^(agy|claude|codex|novacode)$ ]]; then
 			[ -n "${aproj[$s]}" ] || aproj[$s]=$rp
 		else
 			[ -n "${sproj[$s]}" ] || sproj[$s]=$rp
@@ -87,7 +70,6 @@ sessions() {
 	local -A gi=()
 	local n=0 i=0 g name wins pj
 	while IFS=$'\t' read -r name wins; do
-		[[ $name == swarm-* || $name == pi-panels ]] && continue
 		pj=${aproj[$name]:-${sproj[$name]}} g=99999
 		if [ -n "$pj" ]; then
 			[ -n "${gi[$pj]+x}" ] || gi[$pj]=$((n++))
@@ -123,7 +105,7 @@ if [ "$1" = next ] || [ "$1" = prev ]; then
 	goto "${ids[i]}"
 	exit
 fi
-# reap <window>: pane-exited/after-kill-pane hook. Only sidebars/pi panel tabs left ->
+# reap <window>: pane-exited/after-kill-pane hook. Only sidebars/novacode panels (@slot) left ->
 # close the window, so a session dies with its last real pane.
 if [ "$1" = reap ]; then
 	tmux list-panes -t "$2" -F '#{@sidebar}#{?#{@slot},1,}' 2>/dev/null | grep -qvx 1 || tmux kill-window -t "$2" 2>/dev/null
@@ -137,9 +119,9 @@ if [ "$1" = poke ]; then
 	exit 0
 fi
 # open <window>: hooks. Like toggle but never closes, and skipped mid-restore.
-# Only while some agent exists, and never in hidden sessions (pi swarm children, parked pi tabs).
+# Only while some agent exists.
 if [ "$1" = open ]; then
-	case $(tmux display -p -t "$2" '#{session_name}' 2>/dev/null) in swarm-* | pi-panels | '') exit 0 ;; esac
+	[ -n "$(tmux display -p -t "$2" '#{session_name}' 2>/dev/null)" ] || exit 0
 	[ -n "$(agents)" ] || exit 0
 	[ -n "$(tmux show -wqv -t "$2" @sidebar_off)" ] && exit 0 # closed by hand in this window
 fi
@@ -172,13 +154,15 @@ trap 'wake=1' USR1
 # Catppuccin Mocha: yellow, red, green, overlay0
 declare -A col=([working]='249;226;175' [blocked]='243;139;168' [done]='166;227;161' [idle]='108;112;134')
 # Agent logo before its name (Nerd Font): Claude and OpenAI logos are real; no
-# Antigravity or pi logo exists, so a Gemini-style sparkle and a pi sign.
+# Antigravity logo exists, so a Gemini-style sparkle; novacode gets a
+# four-point star in its logo's lavender.
 declare -A logo=(
 	[claude]=$'\e[38;2;217;119;87m\uec82' [codex]=$'\e[38;2;205;214;244m\uec81'
-	[agy]=$'\e[38;2;137;180;250m\uec21' [pi]=$'\e[38;2;148;226;213m\U000f03ff'
+	[agy]=$'\e[38;2;137;180;250m\uec21'
+	[novacode]=$'\e[38;2;180;167;214m\U000f0ae2'
 )
 dim=$'\e[38;2;108;112;134m' off=$'\e[0m'
-next_usage=0 src=claude shown='' upane=''
+next_usage=0 src='' shown='-' upane=''
 # Animation: working = braille spinner, blocked = red icon fading in and out.
 # Lines carry @W@/@B@ placeholders, swapped for the current frame at each redraw.
 spin=(⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏)
@@ -195,42 +179,39 @@ while :; do
 	# Selected agent = active pane of this session's active window.
 	sel=$(tmux display -p -t "$me:" '#{pane_id}')
 
-	# Usage follows a claude/pi agent in this window: the focused pane if it is one,
-	# else the one focused last (upane), else the first. So focusing the file tree
-	# or this sidebar keeps the block. pi publishes @agent_model
-	# (tmux-agent-state.ts). '|' not tab: empty fields collapse under tab IFS.
+	# Usage follows an agent in this window: the focused pane if it is one, else the
+	# one focused last (upane), else the first. So focusing this sidebar keeps the block.
+	# novacode publishes @agent_model as provider/model and @agent_account (unset on API keys).
+	# '|' not tab: empty fields collapse under tab IFS.
 	pick='' fa=''
-	while IFS='|' read -r pid a m act c; do
-		[[ $a =~ ^(claude|pi)$ && ! $c =~ ^(zsh|bash|fish|sh)$ ]] || continue
-		[ -n "$fa" ] || fa="$pid|$a|$m"
-		[ "$act" = 1 ] && { pick="$pid|$a|$m"; break; }
-		[ "$pid" = "$upane" ] && pick="$pid|$a|$m"
-	done < <(tmux list-panes -t "$TMUX_PANE" -F '#{pane_id}|#{?#{@agent},#{@agent},#{pane_current_command}}|#{@agent_model}|#{pane_active}|#{pane_current_command}')
-	IFS='|' read -r upane ag am <<<"${pick:-$fa}"
-	case $ag in
-	claude) src=claude ;;
-	pi) [[ $am == antigravity/* ]] && src=$am || src=claude ;;
-	*) src='' ;;
-	esac
-	# ponytail: re-reads the cache every 30s (or on provider change); only pi refreshes it, so the age shows staleness
-	if [ "$src" != "$shown" ] || ((SECONDS >= next_usage)); then
-		if [ -z "$src" ]; then
-			uw=()
-		elif [ "$src" = claude ]; then
-			mapfile -t uw < <(usage)
-			label=CLAUDE
+	while IFS='|' read -r pid a m act c ac; do
+		[[ $a =~ ^(claude|codex|novacode)$ && ! $c =~ ^(zsh|bash|fish|sh)$ ]] || continue
+		[ -n "$fa" ] || fa="$pid|$a|$m|$ac"
+		[ "$act" = 1 ] && { pick="$pid|$a|$m|$ac"; break; }
+		[ "$pid" = "$upane" ] && pick="$pid|$a|$m|$ac"
+	done < <(tmux list-panes -t "$TMUX_PANE" -F '#{pane_id}|#{?#{@agent},#{@agent},#{pane_current_command}}|#{@agent_model}|#{pane_active}|#{pane_current_command}|#{@agent_account}')
+	IFS='|' read -r upane ag am acct <<<"${pick:-$fa}"
+	[ "$ag" = novacode ] && ag=${am%%/*}
+	[[ $ag =~ ^(claude|codex)$ ]] && src=$ag || src=''
+	# This account's own cache; Claude Code/codex panes (no account) get the last-used copy.
+	file=$src
+	[ -n "$src" ] && [ -n "$acct" ] && [ -f ~/.novacode/cache/usage/"$src-$acct".json ] && file=$src-$acct
+	# ponytail: re-reads the cache every 30s (or on provider/account change); only novacode refreshes it, so the age shows staleness
+	if [ "$file" != "$shown" ] || ((SECONDS >= next_usage)); then
+		uw=()
+		[ -n "$src" ] && mapfile -t uw < <(usage "$file")
+		label=${src^^} shown=$file next_usage=$((SECONDS + 30))
+		if [ "$file" != "$src" ]; then
+			label+=" $acct"
 		else
-			m=${src#*/}
-			mapfile -t uw < <(usage_agy "$m")
-			label='AGY GEMINI'
-			[[ ${m,,} =~ claude|gpt|sonnet|opus ]] && label='AGY CLAUDE'
+			# No account file: codex's cache still names the login by email.
+			em=$(jq -r '.data.email // empty' ~/.novacode/cache/usage/"$src".json 2>/dev/null)
+			[ -n "$em" ] && label+=" ${em%%@*}"
 		fi
-		shown=$src next_usage=$((SECONDS + 30))
 	fi
 	foot=()
 	if [ ${#uw[@]} -gt 0 ]; then
-		at=0
-		for u in "${uw[@]}"; do IFS=$'\t' read -r _ _ _ a <<<"$u"; ((a > at)) && at=$a; done
+		IFS=$'\t' read -r _ _ _ at <<<"${uw[0]}"
 		age=$(((EPOCHSECONDS - at) / 60))m
 		((${age%m} >= 60)) && age=$((${age%m} / 60))h
 		foot=("$(printf ' %s%s · %s ago%s' "$dim" "$label" "$age" "$off")")
@@ -246,7 +227,8 @@ while :; do
 			# Window already reset since the cache was written: the percent is meaningless.
 			((r > 0 && r <= EPOCHSECONDS)) && c=${col[idle]}
 			f=$(((p * 5 + 50) / 100)); ((f > 5)) && f=5
-			bar=$(printf '%*s' "$f" '' | sed 's/ /█/g')$(printf '%*s' $((5 - f)) '' | sed 's/ /░/g')
+			# Thin bar centred on the text line: filled and empty cells both ━, empty in Catppuccin surface1.
+			bar=$(printf '%*s' "$f" '' | sed 's/ /━/g')$'\e[38;2;69;71;90m'$(printf '%*s' $((5 - f)) '' | sed 's/ /━/g')
 			t=''
 			if ((r > 0 && r <= EPOCHSECONDS)); then
 				t=stale
@@ -300,7 +282,7 @@ while :; do
 			g=' ' b=''
 			[ "$id" = "$sel" ] && g=$'\e[38;2;203;166;247m▎\e[0m' b=$'\e[1m'
 			# Name 2 columns narrower than before to make room for the logo.
-			lines+=("$(printf '%s%s%s%s %s%s %s%s %s%-7.7s%s \e[38;2;%sm%s%s' "$g" "$dim" "$br" "$off" "$ic" "$off" "${logo[$agent]:- }" "$off" "$b" "$agent" "$off" "$c" "$sw" "$off")")
+			lines+=("$(printf '%s%s%s%s %s%s %s%s %s%-8.8s%s \e[38;2;%sm%s%s' "$g" "$dim" "$br" "$off" "$ic" "$off" "${logo[$agent]:- }" "$off" "$b" "$agent" "$off" "$c" "$sw" "$off")")
 			# Background processes (@agent_bg): blue gear + count before the folder, apart from the state.
 			bgm='' dw=20
 			[ -n "$nbg" ] && bgm=$'\e[38;2;137;180;250m⚙'$nbg' ' dw=$((20 - ${#nbg} - 2))

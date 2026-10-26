@@ -1183,6 +1183,65 @@ ShellRoot {
         mask: Region {}
     }
 
+    // --- Scroll edges (Hyprland scrolling layout) ---------------------------
+    // A thin accent glow on a screen's left/right edge while tiled windows of its
+    // active workspace extend past that edge (columns scrolled off-screen).
+    // Recomputed 80ms after any Hyprland event; under niri hyprctl fails and
+    // nothing shows.
+    property var scrollEdges: ({}) // monitor name -> {left, right}
+    Connections {
+        target: Hyprland
+        function onRawEvent(event) { edgeDebounce.restart(); }
+    }
+    Timer {
+        id: edgeDebounce
+        interval: 80
+        running: true
+        onTriggered: edgeQuery.running = true
+    }
+    Process {
+        id: edgeQuery
+        command: ["sh", "-c", "jq -cn --argjson m \"$(hyprctl -j monitors)\" --argjson c \"$(hyprctl -j clients)\" '"
+            + "[$m[] as $o | ($c | map(select(.workspace.id == $o.activeWorkspace.id and (.floating | not)))) as $w"
+            + " | {key: $o.name, value: {left: any($w[]; .at[0] < $o.x),"
+            + " right: any($w[]; .at[0] + .size[0] > $o.x + $o.width / $o.scale)}}] | from_entries'"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try { root.scrollEdges = JSON.parse(text); } catch (e) { root.scrollEdges = {}; }
+            }
+        }
+    }
+    Variants {
+        model: Array.from(Quickshell.screens).reduce((a, s) => a.concat([{ screen: s, side: "left" }, { screen: s, side: "right" }]), [])
+        PanelWindow {
+            id: scrollEdge
+            required property var modelData
+            readonly property bool lit: root.scrollEdges[modelData.screen.name]?.[modelData.side] ?? false
+            screen: modelData.screen
+            anchors.top: true
+            anchors.bottom: true
+            anchors.left: modelData.side === "left"
+            anchors.right: modelData.side === "right"
+            implicitWidth: 3
+            exclusionMode: ExclusionMode.Ignore
+            color: "transparent"
+            WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.namespace: "island-scroll-edge"
+            mask: Region {}
+            Rectangle {
+                anchors.fill: parent
+                opacity: scrollEdge.lit ? 1 : 0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+                // Brightest at mid-height, fading out towards the corners.
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: "transparent" }
+                    GradientStop { position: 0.5; color: Qt.darker(Colors.accent, 1.6) }
+                    GradientStop { position: 1.0; color: "transparent" }
+                }
+            }
+        }
+    }
+
     // Auto-hide reveal trigger: full-width 2px strip on the top edge, on the
     // Overlay layer so nothing above it can take the pointer.
     PanelWindow {

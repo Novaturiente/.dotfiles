@@ -44,12 +44,11 @@ flush() {
 		# Reported via hook (@agent), or a known agent that has not reported yet.
 		# Foreground back to a shell = the agent exited.
 		def agent:
-			(if .[12] != "" then .[12] elif (.[10] | test("^(agy|claude|pi|codex|novacode)$")) then .[10] else "" end) as $n
+			(if .[12] != "" then .[12] elif (.[10] | test("^(agy|claude|codex|novacode)$")) then .[10] else "" end) as $n
 			| if $n == "" or (.[10] | test("^(zsh|bash|fish|sh)$")) then null
 			  else {name: $n, conversation: (.[13] | nz), cwd: (.[14] | nz), command: (.[17] | nz)} end;
-		# swarm-* = pi subagent sessions, pi-panels = parked pi panel tabs, @slot = a pi panel tab
-		# (viewer, file tree): all owned by pi extensions, never restored.
-		[split("\n")[] | select(length > 0) | split("\t") | select((.[2] | startswith("swarm-") or . == "pi-panels" | not) and .[15] == "")]
+		# @slot = a novacode panel pane, owned by novacode, never restored.
+		[split("\n")[] | select(length > 0) | split("\t") | select(.[15] == "")]
 		| {saved: $t, sessions: [group_by(.[2])[] | {name: .[0][2], windows: [group_by(.[3] | tonumber)[] | {
 			index: (.[0][3] | tonumber), name: .[0][4], auto_name: (.[0][7] == "1"),
 			active: (.[0][5] == "1"), layout: .[0][6],
@@ -100,7 +99,6 @@ claude_flags() {
 # else the latest one in the folder.
 resume_cmd() {
 	case $1 in
-	pi) if [ -n "$2" ]; then echo "pi --session '$2'"; else echo "pi -c"; fi ;;
 	agy) if [ -n "$2" ]; then echo "agy --conversation '$2'"; else echo "agy -c"; fi ;;
 	codex) if [ -n "$2" ]; then echo "codex resume '$2'"; else echo "codex resume --last"; fi ;;
 	novacode) if [ -n "$2" ]; then echo "novacode -r '$2'"; else echo "novacode -c"; fi ;;

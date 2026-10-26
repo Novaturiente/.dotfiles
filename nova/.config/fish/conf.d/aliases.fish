@@ -38,7 +38,6 @@ alias untar  'tar -zxvf'
 
 # ---- system control ----
 alias jctl   'journalctl -p 3 -xb'
-alias clear-cache 'rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp'
 
 # ---- git ----
 alias gadd 'git add . && git commit -m "Update"'

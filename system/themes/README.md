@@ -47,8 +47,7 @@ Most configs keep their own settings and pull in a small generated file:
 Ghostty (`theme = current`), zsh (`colors.zsh`), fish
 (`conf.d/00-theme.fish`), niri (`modules/colors.kdl`, merged into the `layout`
 block from `modules/layout.kdl`), rofi (`@import "current"`), Neovim
-(`lua/theme.lua`), mpv (`include=`), and qutebrowser
-(`theme_colors.py`).
+(`lua/theme.lua`), and mpv (`include=`).
 
 Files that are nothing but colour are generated whole: btop, atuin, television,
 eza, fast-syntax-highlighting, swaylock, the bat `.tmTheme` and lazygit.

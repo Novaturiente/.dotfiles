@@ -17,7 +17,7 @@ Complete system configuration for an Arch Linux (CachyOS kernel) setup on a Leno
 ├── scripts/               # Custom utility scripts
 │   ├── quickshell/        # Launchers/controllers for the Quickshell menus
 │   ├── rofi/              # Rofi menus (calendar, passwords, niri window switcher, tv-edit)
-│   ├── keybindings/       # Extract keybindings from Hyprland/niri/nvim/qutebrowser configs
+│   ├── keybindings/       # Extract keybindings from Hyprland/niri/nvim configs
 │   └── wm.sh              # Compositor shim: same answers under Hyprland and niri
 ├── system/
 │   ├── packages/          # novarch TOML package lists (shared + hosts/<hostname>/)
@@ -26,8 +26,8 @@ Complete system configuration for an Arch Linux (CachyOS kernel) setup on a Leno
 │   │   └── usr/           # /usr/local/bin helpers (battery-limit, vpn-run, howdy-ir-pre)
 │   ├── themes/            # Palettes + templates rendered by scripts/theme.sh
 │   └── setup.sh           # First-boot system setup script
-├── CLAUDE.md              # Agent guide: rules and orientation
-└── CLAUDE-reference.md    # Detailed reference (scripts, system config, theming, hardware)
+├── AGENTS.md              # Agent guide: rules and orientation
+└── AGENTS-reference.md    # Detailed reference (scripts, system config, theming, hardware)
 ```
 
 `nova/` mirrors the home directory — `nova/.config/ghostty/config` becomes `~/.config/ghostty/config` via stow.
@@ -45,7 +45,8 @@ cd ~/.dotfiles/system
 **The setup script will:**
 - Install novarch as a pacman package (curl `install.sh` from its GitHub release), point it at `system/packages/` and run `novarch sync`
 - Deploy system configs (`sudo cp -r system/system/. /`)
-- Symlink home directory configs via `stow -d ~/.dotfiles -t ~ nova`
+- Symlink home directory configs via `stow -d ~/.dotfiles -t ~ nova` (`~/.novacode` is created first, so only its config files are linked)
+- Install novacode (release script) and its packages at the tags pinned in `nova/.novacode/packages.lock.json`
 - Enable systemd services (`ly@tty2`, `battery-limit.timer`, `paccache.timer`, `pkgfile-update.timer`)
 - Set zsh as default shell
 - Configure the ufw firewall
@@ -144,10 +145,9 @@ packages = [
 | `windowmanager.toml` | Niri, Ly, Quickshell, Rofi, fonts, themes, screenshot/recording/OCR tools (Hyprland is in `manual-installs.toml`) |
 | `development.toml` | Build tools, Rust/Python/Node/Go/Lua, LSPs, linters, lazygit |
 | `work.toml` | Java, Docker, databases (PostgreSQL, MySQL), Chrome, WPS Office, Zoom |
-| `internet.toml` | Qutebrowser, Zen Browser, KDE Connect, LocalSend, Thunderbird |
+| `internet.toml` | Zen Browser, KDE Connect, LocalSend, Thunderbird |
 | `media.toml` | mpv, playerctl, imv, imagemagick, easyeffects |
 | `manual-installs.toml` | Packages added with `novarch add`, incl. Hyprland, hyprpm, xdg-desktop-portal-hyprland, hyprsunset |
-| `hosts/novarch/nvidia.toml` | NVIDIA drivers (currently all disabled — Intel iGPU only) |
 | `virtualization.toml` | QEMU for local VMs |
 
 ### novarch
@@ -166,7 +166,7 @@ novarch status          # Explicitly installed packages that no file lists
 
 ## Scripts
 
-Full list with details: `CLAUDE-reference.md` → Scripts.
+Full list with details: `AGENTS-reference.md` → Scripts.
 
 ### System Control (`scripts/`)
 
@@ -199,7 +199,7 @@ Full list with details: `CLAUDE-reference.md` → Scripts.
 
 ### Keybindings cheat-sheet (`scripts/keybindings/`)
 
-`Mod+Shift+/` opens the island's keybindings page (`nova/.config/quickshell/island/KeybindsPage.qml`). Its backend `scripts/quickshell/kbctl.sh` re-runs the extractors and shows the running compositor's binds (Hyprland or niri, picked by `wm.sh name`) plus neovim, qutebrowser and csvlens.
+`Mod+Shift+/` opens the island's keybindings page (`nova/.config/quickshell/island/KeybindsPage.qml`). Its backend `scripts/quickshell/kbctl.sh` re-runs the extractors and shows the running compositor's binds (Hyprland or niri, picked by `wm.sh name`) plus neovim and csvlens.
 
 ## System Configuration
 
@@ -237,8 +237,8 @@ Battery alerts come from the Quickshell island.
 
 ## Browsers
 
-- **Primary:** Zen Browser
-- **Secondary:** Qutebrowser (keyboard-driven, dark mode, follows the active theme)
+- **Primary:** novabrowser (`$BROWSER`, Mod+W)
+- **Previous:** Zen Browser
 - **Work:** Google Chrome
 
 ## File Management

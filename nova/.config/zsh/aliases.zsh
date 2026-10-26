@@ -108,14 +108,15 @@ alias winstop="ssh nova@novahome docker stop windows"
 alias winrestart="ssh nova@novahome docker restart windows"
 alias winsopen="ssh nova@novahome docker start windows && winapps windows"
 
-# alias novarch="uv run --project ~/.dotfiles/novarch ~/.dotfiles/novarch/run.py"
 alias editsystem="nvim ~/.dotfiles/system/packages"
 alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist && paru -Syu"
 
-alias clear-cache="rm -rf ~/.cache/qutebrowser && rm -rf ~/.cache/floorp"
 
 alias eeclogin="ssh -i ~/.ssh/id_eecdev eecdev@$EEC_SERVER_IP"
 
 alias cld="claude --dangerously-skip-permissions"
+
+# Alias, not a symlink: the process stays named novacode for the tmux sidebar.
+alias nv="novacode"
 
 alias lsql="lazysql"

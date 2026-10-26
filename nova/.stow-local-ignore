@@ -16,6 +16,3 @@ _darcs
 ^/LICENSE.*
 ^/COPYING
 ^/\.stow-local-ignore
-
-# pi-plan-mode opens its settings with O_NOFOLLOW and rejects symlinks; keep a real copy in ~/.pi/agent.
-^/\.pi/agent/pi-plan-mode\.json

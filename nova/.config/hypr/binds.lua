@@ -117,6 +117,7 @@ end
 -- ── Workspaces (niri vertical workspaces) ────────────────────────────────────
 -- Up/down only visit workspaces that hold windows, plus one empty after the
 -- last of them (niri's trailing empty workspace). Empty gaps are skipped.
+-- Workspace 1 (browsers) is always reachable going up, even when empty.
 -- Returns the target id, or nil when there is nowhere to go.
 local function ws_step(dir, moving)
     local cur = hl.get_active_workspace()
@@ -134,6 +135,7 @@ local function ws_step(dir, moving)
         return tail > cur.id and tail or nil
     end
     for i = #ids, 1, -1 do if ids[i] < cur.id then return ids[i] end end
+    return cur.id > 1 and 1 or nil
 end
 local function ws_focus(dir) return function()
     local id = ws_step(dir, false)

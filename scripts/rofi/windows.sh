@@ -9,7 +9,6 @@ get_app_name() {
     case "$app_id" in
         com.mitchellh.ghostty)       echo "Ghostty" ;;
         novabrowser)                 echo "novabrowser" ;;
-        org.qutebrowser.qutebrowser) echo "Qutebrowser" ;;
         google-chrome)               echo "Chrome" ;;
         *)
             # Extract last dot-separated segment, capitalize first letter
