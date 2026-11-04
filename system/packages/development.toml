@@ -33,7 +33,6 @@ packages = [
   "ghgrab-bin",
   "android-tools",
   "scrcpy",
-  "antigravity-cli",
 
   # Dev helpers installed outside novarch (declared 2026-09-26)
   "android-sdk-platform-tools",

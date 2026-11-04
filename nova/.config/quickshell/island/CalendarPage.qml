@@ -1,8 +1,9 @@
-// Calendar island page: khal events, event actions and the add-event form
-// with a month grid. Ported from the standalone calendar/shell.qml menu.
+// Calendar island page: a month grid with khal events and Kerala + India
+// holidays marked, the selected day's events beside it, event actions and the
+// add-event form.
 //
-// khal/ikhal/ics work lives in scripts/quickshell/calctl.sh. "Edit" hands off
-// to ikhal — khal has no CLI editor worth replacing.
+// khal/ikhal/ics and holiday work lives in scripts/quickshell/calctl.sh. "Edit"
+// hands off to ikhal — khal has no CLI editor worth replacing.
 //
 // Views: main | add | submenu | details | confirm
 import Quickshell
@@ -15,11 +16,12 @@ Page {
 
     readonly property string calctl: Quickshell.env("HOME") + "/.dotfiles/scripts/quickshell/calctl.sh"
     readonly property int pageWidth: 720
+    readonly property int gridWidth: 336
 
-    property var events: []
     property string view: "main"
     property string curUid: ""
     property string curTitle: ""
+    property string curDate: ""
     property var details: ({ title: "", time: "", loc: "", desc: "" })
     property bool confirmYes: false
 
@@ -27,7 +29,67 @@ Page {
         "July", "August", "September", "October", "November", "December"]
     readonly property var dowNames: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
 
-    Process { id: act }
+    // ── selected date, shared by the main grid and the add form ─────────
+    property int yr: 2026
+    property int mo: 0 // 0-11
+    property int dy: 1
+    property date now: new Date()
+    readonly property string ym: yr + "-" + ("0" + (mo + 1)).slice(-2)
+    function iso(d) { return ym + "-" + ("0" + d).slice(-2); }
+    function isoDate() { return iso(dy); }
+    function today() { const t = new Date(); now = t; yr = t.getFullYear(); mo = t.getMonth(); dy = t.getDate(); }
+    function daysIn(yy, mm) { return new Date(yy, mm + 1, 0).getDate(); }
+    function setFromIso(s) {
+        const p = s.split("-");
+        if (p.length !== 3) return;
+        const yy = parseInt(p[0]), mm = parseInt(p[1]) - 1, dd = parseInt(p[2]);
+        if (isNaN(yy) || isNaN(mm) || isNaN(dd)) return;
+        yr = yy; mo = mm; dy = Math.min(Math.max(1, dd), daysIn(yy, mm));
+    }
+    function move(delta) { // move selected day by delta, rolling months/years
+        const dt = new Date(yr, mo, dy + delta);
+        yr = dt.getFullYear(); mo = dt.getMonth(); dy = dt.getDate();
+    }
+    function stepMonth(delta) {
+        const dt = new Date(yr, mo + delta, 1);
+        yr = dt.getFullYear(); mo = dt.getMonth();
+        dy = Math.min(dy, daysIn(yr, mo));
+    }
+
+    // ── month data: { events: [{date, uid, time, title}], holidays: {iso: name} } ──
+    property var month: ({ events: [], holidays: {} })
+    readonly property var eventDays: {
+        const s = {};
+        for (const e of month.events) s[e.date] = true;
+        return s;
+    }
+    readonly property var dayEvents: month.events.filter(e => e.date === isoDate())
+    readonly property string dayHoliday: month.holidays[isoDate()] || ""
+    onYmChanged: reload()
+
+    Process {
+        id: monthProc
+        property string asked
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (monthProc.asked !== page.ym) { // month changed while loading
+                    page.reload();
+                    return;
+                }
+                try { page.month = JSON.parse(text); } catch (e) { page.month = { events: [], holidays: {} }; }
+            }
+        }
+    }
+    // Runs again from onStreamFinished if the month changes mid-load.
+    function reload() {
+        if (monthProc.running) return;
+        monthProc.asked = ym;
+        monthProc.command = ["bash", calctl, "month", ym];
+        monthProc.running = true;
+    }
+
+    // Fire-and-forget actions; every one may change events, so reload after.
+    Process { id: act; onExited: page.reload() }
     function run(args) { act.command = ["bash", calctl].concat(args); act.running = true; }
     Process {
         id: q
@@ -35,16 +97,24 @@ Page {
         stdout: StdioCollector { onStreamFinished: { const f = q.cb; q.cb = null; if (f) f(text.trim()); } }
     }
     function query(args, cb) { q.cb = cb; q.command = ["bash", calctl].concat(args); q.running = true; }
-    function reload() { query(["list"], t => { try { events = JSON.parse(t); } catch (e) { events = []; } }); }
 
     function showMain() {
         view = "main";
-        Qt.callLater(() => mainList.focusField());
+        Qt.callLater(() => mainGrid.forceActiveFocus());
+    }
+    // A day with events or a holiday shows its list; an empty day goes to the add form.
+    function openDay() {
+        if (dayEvents.length || dayHoliday) {
+            dayList.reset();
+            dayList.focusField();
+        } else
+            openAdd();
     }
     function openActions(uid, title) {
         curUid = uid;
         curTitle = title;
-        query(["details", uid], t => {
+        curDate = isoDate();
+        query(["details", uid, curDate], t => {
             try { details = JSON.parse(t); } catch (e) {}
             view = "submenu";
             subList.reset();
@@ -53,30 +123,17 @@ Page {
     }
     function openAdd() {
         view = "add";
-        cal.today();
         startPicker.clear();
         endPicker.clear();
         addTitle.text = "";
         addDetails.text = "";
-        Qt.callLater(() => cal.forceActiveFocus());
+        Qt.callLater(() => addGrid.forceActiveFocus());
     }
     function submitAdd() {
         if (addTitle.text.trim() === "")
             return;
-        run(["add", cal.isoDate(), startPicker.value(), endPicker.value(), addTitle.text, addDetails.text]);
-        reload();
+        run(["add", isoDate(), startPicker.value(), endPicker.value(), addTitle.text, addDetails.text]);
         showMain();
-    }
-    function mainAction(row) {
-        if (!row)
-            return;
-        if (row.act === "add")
-            openAdd();
-        else if (row.act === "ikhal") {
-            run(["edit"]);
-            closeRequested();
-        } else
-            openActions(row.uid, row.title);
     }
     function runSub(id) {
         switch (id) {
@@ -85,7 +142,7 @@ Page {
             Qt.callLater(() => detailsView.forceActiveFocus());
             break;
         case "copy":
-            run(["copy", curUid]);
+            run(["copy", curUid, curDate]);
             closeRequested();
             break;
         case "edit":
@@ -102,7 +159,6 @@ Page {
     function confirm(yes) {
         if (yes) {
             run(["delete", curUid]);
-            reload();
             showMain();
         } else {
             view = "submenu";
@@ -111,8 +167,9 @@ Page {
     }
 
     onOpened: {
-        mainList.reset();
+        today();
         reload();
+        dayList.reset();
         showMain();
     }
 
@@ -120,26 +177,70 @@ Page {
         width: page.pageWidth
 
         // ═══ MAIN ═══════════════════════════════════════════════════════
-        SearchList {
-            id: mainList
+        Column {
             visible: page.view === "main"
-            listWidth: page.pageWidth
-            glyph: "󰸗"
-            placeholder: "Filter events…  (type to search, Enter opens)"
-            emptyText: "No matching events"
-            countText: page.events.length + ""
-            model: {
-                const qy = text.toLowerCase();
-                const rows = [
-                    { act: "add", title: "Add event", sub: "Pick a date, time and title", glyph: "󰃷" },
-                    { act: "ikhal", title: "Open ikhal", sub: "Full calendar in the terminal", glyph: "󰸗" }
-                ];
-                for (const ev of page.events)
-                    rows.push({ uid: ev.uid, title: ev.title, sub: ev.when, glyph: "󰃭" });
-                return rows.filter(r => qy === "" || (r.title + " " + r.sub).toLowerCase().indexOf(qy) !== -1);
+            width: page.pageWidth
+            spacing: Tokens.spacing.medium
+            topPadding: Tokens.padding.small
+            bottomPadding: Tokens.padding.small
+
+            Row {
+                spacing: Tokens.spacing.extraLarge
+
+                MonthGrid {
+                    id: mainGrid
+                    onPicked: page.openDay()
+                    onEscaped: page.closeRequested()
+                    onTabbed: dayList.focusField()
+                }
+
+                Column {
+                    id: dayCol
+                    width: page.pageWidth - page.gridWidth - parent.spacing
+                    spacing: Tokens.spacing.small
+
+                    T {
+                        anchors.verticalCenter: undefined
+                        width: parent.width
+                        leftPadding: Tokens.padding.small
+                        text: Qt.formatDate(new Date(page.yr, page.mo, page.dy), "dddd, d MMMM yyyy")
+                        font.weight: Font.Medium
+                        font.pixelSize: Tokens.fontSize.larger
+                    }
+                    T {
+                        anchors.verticalCenter: undefined
+                        visible: page.dayHoliday !== ""
+                        width: parent.width
+                        leftPadding: Tokens.padding.small
+                        text: page.dayHoliday
+                        wrapMode: Text.WordWrap
+                        color: Colors.red
+                    }
+                    SearchList {
+                        id: dayList
+                        listWidth: dayCol.width
+                        maxRows: 6
+                        glyph: "󰸗"
+                        placeholder: "Filter this day…"
+                        emptyText: "No matching events"
+                        countText: page.dayEvents.length + ""
+                        model: {
+                            const qy = text.toLowerCase();
+                            const rows = page.dayEvents.map(e => ({ uid: e.uid, title: e.title, sub: e.time || "All day", glyph: "󰃭" }));
+                            rows.push({ act: "add", title: "Add event", sub: "On " + page.isoDate(), glyph: "󰃷" });
+                            return rows.filter(r => qy === "" || (r.title + " " + r.sub).toLowerCase().indexOf(qy) !== -1);
+                        }
+                        onAccepted: (i, row) => {
+                            if (!row) return;
+                            if (row.act === "add") page.openAdd();
+                            else page.openActions(row.uid, row.title);
+                        }
+                        onEscaped: mainGrid.forceActiveFocus()
+                    }
+                }
             }
-            onAccepted: (i, row) => page.mainAction(row)
-            onEscaped: page.closeRequested()
+
+            Label { text: "Arrows move the day · PgUp/PgDn month · Home today · Enter opens the day · Tab events · Esc closes" }
         }
 
         // ═══ ADD EVENT ══════════════════════════════════════════════════
@@ -163,171 +264,30 @@ Page {
 
                 // ── left: date field + month grid ──────────────────────
                 Column {
-                    id: leftCol
-                    width: 336
+                    width: page.gridWidth
                     spacing: Tokens.spacing.medium
 
                     Label { text: "Date" }
                     Input {
-                        id: dateInput
                         width: parent.width
-                        field.text: cal.isoDate()
+                        field.text: page.isoDate()
                         field.placeholderText: "YYYY-MM-DD"
                         field.onEditingFinished: {
-                            cal.setFromIso(field.text);
-                            field.text = Qt.binding(() => cal.isoDate());
+                            page.setFromIso(field.text);
+                            field.text = Qt.binding(() => page.isoDate());
                         }
                     }
-
-                    Item {
-                        id: cal
-                        width: parent.width
-                        height: calCol.implicitHeight + 2 * Tokens.padding.small
-                        property int yr: 2026
-                        property int mo: 0 // 0-11
-                        property int dy: 1
-                        property date now: new Date()
-                        function today() { const t = new Date(); now = t; yr = t.getFullYear(); mo = t.getMonth(); dy = t.getDate(); }
-                        function daysIn(yy, mm) { return new Date(yy, mm + 1, 0).getDate(); }
-                        function isoDate() {
-                            const mm = ("0" + (mo + 1)).slice(-2), dd = ("0" + dy).slice(-2);
-                            return yr + "-" + mm + "-" + dd;
-                        }
-                        function setFromIso(s) {
-                            const p = s.split("-");
-                            if (p.length !== 3) return;
-                            const yy = parseInt(p[0]), mm = parseInt(p[1]) - 1, dd = parseInt(p[2]);
-                            if (isNaN(yy) || isNaN(mm) || isNaN(dd)) return;
-                            yr = yy; mo = mm; dy = Math.min(Math.max(1, dd), daysIn(yy, mm));
-                        }
-                        function move(delta) { // move selected day by delta, rolling months/years
-                            const dt = new Date(yr, mo, dy + delta);
-                            yr = dt.getFullYear(); mo = dt.getMonth(); dy = dt.getDate();
-                        }
-                        function stepMonth(delta) {
-                            const dt = new Date(yr, mo + delta, 1);
-                            yr = dt.getFullYear(); mo = dt.getMonth();
-                            dy = Math.min(dy, daysIn(yr, mo));
-                        }
-                        Keys.onPressed: e => {
-                            if (e.key === Qt.Key_Left) move(-1);
-                            else if (e.key === Qt.Key_Right) move(1);
-                            else if (e.key === Qt.Key_Up) move(-7);
-                            else if (e.key === Qt.Key_Down) move(7);
-                            else if (e.key === Qt.Key_PageUp) stepMonth(-1);
-                            else if (e.key === Qt.Key_PageDown) stepMonth(1);
-                            else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) addTitle.focusField();
-                            else return;
-                            e.accepted = true;
-                        }
-
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: Tokens.rounding.large
-                            color: "transparent"
-                            border.width: 1
-                            border.color: cal.activeFocus ? Qt.alpha(Colors.accent, 0.6) : Colors.outline
-                        }
-
-                        Column {
-                            id: calCol
-                            x: Tokens.padding.small
-                            y: Tokens.padding.small
-                            width: parent.width - 2 * Tokens.padding.small
-                            spacing: Tokens.spacing.small
-
-                            Item {
-                                width: parent.width
-                                height: 36
-                                T {
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: Tokens.padding.medium
-                                    text: "‹"
-                                    color: Colors.accent
-                                    font.pixelSize: Tokens.fontSize.large
-                                    MouseArea { anchors.fill: parent; anchors.margins: -10; onClicked: cal.stepMonth(-1) }
-                                }
-                                T {
-                                    anchors.centerIn: parent
-                                    text: page.monthNames[cal.mo] + " " + cal.yr
-                                    font.weight: Font.Medium
-                                    font.pixelSize: Tokens.fontSize.larger
-                                }
-                                T {
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: Tokens.padding.medium
-                                    text: "›"
-                                    color: Colors.accent
-                                    font.pixelSize: Tokens.fontSize.large
-                                    MouseArea { anchors.fill: parent; anchors.margins: -10; onClicked: cal.stepMonth(1) }
-                                }
-                            }
-
-                            Grid {
-                                columns: 7
-                                Repeater {
-                                    model: 7
-                                    T {
-                                        required property int index
-                                        anchors.verticalCenter: undefined
-                                        width: calCol.width / 7
-                                        height: 24
-                                        horizontalAlignment: Text.AlignHCenter
-                                        text: page.dowNames[index]
-                                        color: Colors.subtext
-                                        font.pixelSize: Tokens.fontSize.smaller
-                                    }
-                                }
-                            }
-
-                            // day cells (6 rows × 7)
-                            Grid {
-                                columns: 7
-                                Repeater {
-                                    model: 42
-                                    Item {
-                                        id: cell
-                                        required property int index
-                                        // first weekday of the month, and this cell's day number
-                                        readonly property int firstDow: new Date(cal.yr, cal.mo, 1).getDay()
-                                        readonly property int dayNum: index - firstDow + 1
-                                        readonly property bool inMonth: dayNum >= 1 && dayNum <= cal.daysIn(cal.yr, cal.mo)
-                                        readonly property bool sel: inMonth && dayNum === cal.dy
-                                        readonly property bool isToday: inMonth && dayNum === cal.now.getDate()
-                                            && cal.mo === cal.now.getMonth() && cal.yr === cal.now.getFullYear()
-                                        width: calCol.width / 7
-                                        height: 38
-                                        Rectangle {
-                                            anchors.fill: parent
-                                            anchors.margins: 2
-                                            radius: Tokens.rounding.medium
-                                            color: cell.sel ? Colors.accent : cellHover.containsMouse && cell.inMonth ? Colors.surface1 : "transparent"
-                                            border.width: cell.isToday && !cell.sel ? 1 : 0
-                                            border.color: Colors.accent
-                                            T {
-                                                anchors.centerIn: parent
-                                                text: cell.inMonth ? cell.dayNum : ""
-                                                color: cell.sel ? Colors.base : cell.isToday ? Colors.accent : Colors.fg
-                                                font.weight: cell.sel || cell.isToday ? Font.Medium : Font.Normal
-                                            }
-                                        }
-                                        MouseArea {
-                                            id: cellHover
-                                            anchors.fill: parent
-                                            hoverEnabled: true
-                                            enabled: cell.inMonth
-                                            onClicked: { cal.dy = cell.dayNum; cal.forceActiveFocus(); }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                    MonthGrid {
+                        id: addGrid
+                        onPicked: addTitle.focusField()
+                        onEscaped: page.showMain()
+                        onTabbed: addTitle.focusField()
                     }
                 }
 
                 // ── right: times, title, details ───────────────────────
                 Column {
-                    width: page.pageWidth - leftCol.width - parent.spacing
+                    width: page.pageWidth - page.gridWidth - parent.spacing
                     spacing: Tokens.spacing.medium
 
                     TimePicker { id: startPicker; label: "Start" }
@@ -458,6 +418,146 @@ Page {
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: "←/→ choose · Enter confirm · Esc back"
+            }
+        }
+    }
+
+    // Month grid on the page's selected date. Red numbers = holidays, dot = events.
+    // picked(): Enter or a click on a day. Esc/Tab are handed to the view.
+    component MonthGrid: Item {
+        id: grid
+        signal picked
+        signal escaped
+        signal tabbed
+        width: page.gridWidth
+        height: calCol.implicitHeight + 2 * Tokens.padding.small
+        Keys.onPressed: e => {
+            if (e.key === Qt.Key_Left) page.move(-1);
+            else if (e.key === Qt.Key_Right) page.move(1);
+            else if (e.key === Qt.Key_Up) page.move(-7);
+            else if (e.key === Qt.Key_Down) page.move(7);
+            else if (e.key === Qt.Key_PageUp) page.stepMonth(-1);
+            else if (e.key === Qt.Key_PageDown) page.stepMonth(1);
+            else if (e.key === Qt.Key_Home) page.today();
+            else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) grid.picked();
+            else if (e.key === Qt.Key_Escape) grid.escaped();
+            else if (e.key === Qt.Key_Tab) grid.tabbed();
+            else return;
+            e.accepted = true;
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            radius: Tokens.rounding.large
+            color: "transparent"
+            border.width: 1
+            border.color: grid.activeFocus ? Qt.alpha(Colors.accent, 0.6) : Colors.outline
+        }
+
+        Column {
+            id: calCol
+            x: Tokens.padding.small
+            y: Tokens.padding.small
+            width: parent.width - 2 * Tokens.padding.small
+            spacing: Tokens.spacing.small
+
+            Item {
+                width: parent.width
+                height: 36
+                T {
+                    anchors.left: parent.left
+                    anchors.leftMargin: Tokens.padding.medium
+                    text: "‹"
+                    color: Colors.accent
+                    font.pixelSize: Tokens.fontSize.large
+                    MouseArea { anchors.fill: parent; anchors.margins: -10; onClicked: { page.stepMonth(-1); grid.forceActiveFocus(); } }
+                }
+                T {
+                    anchors.centerIn: parent
+                    text: page.monthNames[page.mo] + " " + page.yr
+                    font.weight: Font.Medium
+                    font.pixelSize: Tokens.fontSize.larger
+                    MouseArea { anchors.fill: parent; onClicked: { page.today(); grid.forceActiveFocus(); } }
+                }
+                T {
+                    anchors.right: parent.right
+                    anchors.rightMargin: Tokens.padding.medium
+                    text: "›"
+                    color: Colors.accent
+                    font.pixelSize: Tokens.fontSize.large
+                    MouseArea { anchors.fill: parent; anchors.margins: -10; onClicked: { page.stepMonth(1); grid.forceActiveFocus(); } }
+                }
+            }
+
+            Grid {
+                columns: 7
+                Repeater {
+                    model: 7
+                    T {
+                        required property int index
+                        anchors.verticalCenter: undefined
+                        width: calCol.width / 7
+                        height: 24
+                        horizontalAlignment: Text.AlignHCenter
+                        text: page.dowNames[index]
+                        color: Colors.subtext
+                        font.pixelSize: Tokens.fontSize.smaller
+                    }
+                }
+            }
+
+            // day cells (6 rows × 7)
+            Grid {
+                columns: 7
+                Repeater {
+                    model: 42
+                    Item {
+                        id: cell
+                        required property int index
+                        // first weekday of the month, and this cell's day number
+                        readonly property int firstDow: new Date(page.yr, page.mo, 1).getDay()
+                        readonly property int dayNum: index - firstDow + 1
+                        readonly property bool inMonth: dayNum >= 1 && dayNum <= page.daysIn(page.yr, page.mo)
+                        readonly property bool sel: inMonth && dayNum === page.dy
+                        readonly property bool isToday: inMonth && dayNum === page.now.getDate()
+                            && page.mo === page.now.getMonth() && page.yr === page.now.getFullYear()
+                        readonly property bool holiday: inMonth && !!page.month.holidays[page.iso(dayNum)]
+                        readonly property bool hasEvents: inMonth && !!page.eventDays[page.iso(dayNum)]
+                        width: calCol.width / 7
+                        height: 38
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 2
+                            radius: Tokens.rounding.medium
+                            color: cell.sel ? Colors.accent : cellHover.containsMouse && cell.inMonth ? Colors.surface1 : "transparent"
+                            border.width: cell.isToday && !cell.sel ? 1 : 0
+                            border.color: Colors.accent
+                            T {
+                                anchors.centerIn: parent
+                                text: cell.inMonth ? cell.dayNum : ""
+                                color: cell.sel ? Colors.base : cell.holiday ? Colors.red : cell.isToday ? Colors.accent : Colors.fg
+                                font.weight: cell.sel || cell.isToday || cell.holiday ? Font.Medium : Font.Normal
+                            }
+                            Rectangle {
+                                visible: cell.hasEvents
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: 4
+                                width: 5
+                                height: 5
+                                radius: 2.5
+                                color: cell.sel ? Colors.base : Colors.accent
+                            }
+                        }
+                        MouseArea {
+                            id: cellHover
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            enabled: cell.inMonth
+                            onClicked: { page.dy = cell.dayNum; grid.forceActiveFocus(); grid.picked(); }
+                        }
+                    }
+                }
             }
         }
     }

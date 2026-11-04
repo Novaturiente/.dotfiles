@@ -26,3 +26,8 @@ nova/.config/kdeconnect/certificate.pem
 
 # Shell history: local only, may hold secrets
 nova/.config/zsh/.histfile
+
+# Work skills with client infrastructure details: local only (repo is public)
+nova/.novacode/skills/eec-infra/
+nova/.novacode/skills/coolify/
+nova/.novacode/skills/semrush-ops/

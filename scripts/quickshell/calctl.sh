@@ -5,7 +5,6 @@
 set -euo pipefail
 
 KHAL_BASE="${XDG_DATA_HOME:-$HOME/.local/share}/khal/calendars"
-RANGE_DAYS=60
 TERMINAL="${TERMINAL:-ghostty}"
 export GDK_BACKEND=wayland
 
@@ -13,16 +12,38 @@ notify() { command -v notify-send >/dev/null && notify-send "Calendar" "$1"; }
 
 event_file() { find "$KHAL_BASE" -type f -name "${1}.ics" 2>/dev/null | head -n1; }
 
-cmd_list() {   # JSON [{uid, when, title}] over the next RANGE_DAYS
-    khal list now "${RANGE_DAYS}d" --day-format "" --once \
-        --format "{uid}	{start-date} {start-time}	{title}" 2>/dev/null \
-        | grep -vE '^[[:space:]]*$' \
-        | jq -Rn '[inputs | split("\t") | {uid:.[0], when:(.[1]|gsub("^ +| +$";"")), title:.[2]}]'
+# Kerala + India holidays for <year> as JSON {"YYYY-MM-DD": name}, from the
+# PyPI `holidays` package run through uvx. Cached per year; offline → {}.
+holidays_json() {
+    local year="$1" dir="${XDG_CACHE_HOME:-$HOME/.cache}/island" f
+    f="$dir/holidays-KL-$year.json"
+    if [[ ! -s "$f" ]]; then
+        mkdir -p "$dir"
+        uvx --from holidays python -c 'import holidays, json, sys
+print(json.dumps({d.isoformat(): n for d, n in holidays.India(subdiv="KL", years=int(sys.argv[1])).items()}))' \
+            "$year" >"$f.tmp" 2>/dev/null && mv "$f.tmp" "$f" || { rm -f "$f.tmp"; echo '{}'; return; }
+    fi
+    cat "$f"
 }
 
-cmd_details() {  # <uid> -> JSON {title,time,loc,desc}
-    local uid="$1" f
-    f() { khal list now "${RANGE_DAYS}d" --format "{uid}	$1" 2>/dev/null | grep -F "$uid	" | head -1 | cut -f2-; }
+cmd_month() {  # <YYYY-MM> -> JSON {events:[{date,uid,time,title}], holidays:{iso:name}}
+    local ym="$1" start
+    start=$(date -d "$ym-01" +%d/%m/%Y)
+    # "#dd/mm/yyyy" day headers, then that day's events (multi-day events repeat per day)
+    khal list "$start" 31d --day-format "#{date}" --format "{uid}	{start-time}	{title}" 2>/dev/null \
+        | jq -Rn --arg ym "$ym" --argjson hol "$(holidays_json "${ym%-*}")" '
+            reduce inputs as $l ({d: null, ev: []};
+                if ($l | startswith("#")) then .d = ($l[1:] | split("/") | "\(.[2])-\(.[1])-\(.[0])")
+                elif ($l | test("\\S")) then ($l | split("\t")) as $f | .ev += [{date: .d, uid: $f[0], time: $f[1], title: $f[2]}]
+                else . end)
+            | {events: [.ev[] | select(.date | startswith($ym))],
+               holidays: ($hol | with_entries(select(.key | startswith($ym))))}'
+}
+
+cmd_details() {  # <uid> <date_iso> -> JSON {title,time,loc,desc}
+    local uid="$1" day f
+    day=$(date -d "$2" +%d/%m/%Y)
+    f() { khal list "$day" 1d --format "{uid}	$1" 2>/dev/null | grep -F "$uid	" | head -1 | cut -f2-; }
     jq -n --arg title "$(f '{title}')" --arg time "$(f '{start} - {end}')" \
           --arg loc "$(f '{location}')" --arg desc "$(f '{description}')" \
           '{title:$title, time:$time, loc:$loc, desc:$desc}'
@@ -58,8 +79,8 @@ cmd_delete() {
     [[ -n "$f" ]] && { /usr/bin/rm -f "$f" && notify "Deleted"; echo "OK"; } || { notify "Event not found"; echo "ERR:notfound"; }
 }
 
-cmd_copy() {   # <uid> : copy full details to clipboard
-    local d; d=$(cmd_details "$1")
+cmd_copy() {   # <uid> <date_iso> : copy full details to clipboard
+    local d; d=$(cmd_details "$1" "$2")
     printf '%s\nWhen: %s\nWhere: %s\n\n%s\n' \
         "$(jq -r .title <<<"$d")" "$(jq -r .time <<<"$d")" "$(jq -r .loc <<<"$d")" "$(jq -r .desc <<<"$d")" \
         | wl-copy
@@ -70,11 +91,11 @@ cmd_edit()   { setsid "$TERMINAL" -e ikhal >/dev/null 2>&1 & }
 
 cmd="${1:-}"; shift || true
 case "$cmd" in
-list)    cmd_list ;;
+month)   cmd_month "$@" ;;
 details) cmd_details "$@" ;;
 add)     cmd_add "$@" ;;
 delete)  cmd_delete "$@" ;;
 copy)    cmd_copy "$@" ;;
 edit)    cmd_edit ;;
-*) echo "usage: calctl {list|details|add|delete|copy|edit}" >&2; exit 2 ;;
+*) echo "usage: calctl {month|details|add|delete|copy|edit}" >&2; exit 2 ;;
 esac

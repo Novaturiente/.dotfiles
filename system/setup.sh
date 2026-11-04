@@ -60,6 +60,8 @@ sudo systemctl enable ly@tty2.service
 systemctl --user mask pulseaudio.service pulseaudio.socket
 
 sudo systemctl enable battery-limit.timer paccache.timer
+# CPU power average for the island's battery page (raw RAPL stays root-only).
+sudo systemctl enable rapl-watts.service
 
 # Services this laptop runs. tailscaled carries the sshfs mount to novahome,
 # linux-enable-ir-emitter powers the IR camera for face unlock.

@@ -15,7 +15,8 @@
 // output, input, launcher (app search; apps from scripts/quickshell/applaunch.sh,
 // Up/Down/Enter, click to launch), power (Left/Right/Enter; everything but Lock
 // needs a second press within 3 s or a 1 s hold), polkit (password prompt; opens
-// by itself when an app asks for authentication). Click the island to open the dashboard; click outside or press
+// by itself when an app asks for authentication). Click the clock to open the dashboard,
+// the battery for the battery page, a dot to switch workspace; click outside or press
 // Esc to close (Esc on a sub-page goes back to the dashboard). On a dashboard
 // tile the icon toggles, the rest opens its picker.
 //
@@ -24,12 +25,14 @@
 //
 // Notifications: the island is the notification server under Hyprland. One live
 // popup morphs the idle pill into the card; two or more stack at the right edge.
-// Resting the pointer on the idle pill for 300 ms opens `hub` (media player +
-// in-memory notification history); leaving it closes again.
+// Right-clicking the clock, or the dashboard's bell, opens `hub` (media player +
+// in-memory notification history); it closes like any other page.
 //
 // wallpaper (Ctrl+Alt+W): strip of images in ~/Pictures; Left/Right, Enter sets,
 // Esc closes.
 // theme (Mod+Shift+T): palettes from scripts/theme.sh --list; Left/Right, Enter applies.
+// tools (Mod+T): toolbox (calculator, timer, stopwatch, alarms) in ToolsPage.qml;
+// a running timer/stopwatch shows as a chip in the idle pill.
 //
 // Adding a mode: add its name to `modes`, a Page below, and a line in `page`.
 import Quickshell
@@ -52,13 +55,12 @@ import common
 ShellRoot {
     id: root
 
-    readonly property var modes: ["idle", "volume", "brightness", "dashboard", "tray", "battery", "wifi", "bluetooth", "output", "input", "launcher", "power", "polkit", "clipboard", "wallpaper", "theme", "hub", "browser", "switcher", "calendar", "pass", "keybindings"]
+    readonly property var modes: ["idle", "volume", "brightness", "dashboard", "tray", "battery", "wifi", "bluetooth", "output", "input", "launcher", "power", "polkit", "clipboard", "wallpaper", "theme", "hub", "browser", "switcher", "calendar", "pass", "keybindings", "tools"]
     readonly property var subPages: ["battery", "wifi", "bluetooth", "output", "input"]
     property string mode: "idle"
     // Anything bigger than the pill or an OSD: grabs the keyboard and closes on
     // a click outside.
-    // hub is hover-driven, so it neither grabs the keyboard nor catches clicks.
-    readonly property bool expanded: !["idle", "volume", "brightness", "hub"].includes(mode)
+    readonly property bool expanded: !["idle", "volume", "brightness"].includes(mode)
     // Which slider the OSD page shows; kept apart from `mode` so the page does
     // not switch icon while it fades out.
     property string osdKind: "volume"
@@ -87,44 +89,9 @@ ShellRoot {
         onTriggered: root.hovered = false
     }
 
-    // Hover: 300 ms dwell on the idle pill opens the dashboard, leaving closes
-    // it (a clicked one, or one you navigate inside, stays). The dashboard's
-    // bell opens the hub (media + notification history), which also closes on leave.
-    property bool hoverOpened: false
-    readonly property bool hoverPage: mode === "hub" || (hoverOpened && mode === "dashboard")
-    onPillHoveredChanged: {
-        if (pillHovered) {
-            hubLeave.stop();
-            if (mode === "idle" && !notifInIsland)
-                hubDwell.restart();
-        } else {
-            hubDwell.stop();
-            if (hoverPage)
-                hubLeave.restart();
-        }
-    }
-    Timer {
-        id: hubDwell
-        interval: 300
-        onTriggered: {
-            if (root.mode !== "idle" || root.notifInIsland)
-                return;
-            root.show("dashboard");
-            root.hoverOpened = true;
-        }
-    }
-    Timer {
-        id: hubLeave
-        interval: 300
-        // Not while typing a reply into a history entry.
-        onTriggered: if (root.hoverPage && !root.histTyping) root.show("idle")
-    }
-
     function show(m: string): void {
         if (!modes.includes(m))
             return;
-        hoverOpened = false;
-        histTyping = false;
         if (m === "volume" || m === "brightness") {
             osdKind = m;
             hideTimer.restart();
@@ -428,6 +395,23 @@ ShellRoot {
     // The display device is an aggregate with no health; read BAT1 for that.
     readonly property var laptopBat: UPower.devices.values.find(d => d.isLaptopBattery) ?? null
     readonly property var peripherals: UPower.devices.values.filter(d => !d.isLaptopBattery && d.type !== UPowerDeviceType.LinePower && d.isPresent)
+    // CPU package watts on AC, from rapl-watts.service (system/system); "" when
+    // the service is not running. Polled only while the battery page is open.
+    property string cpuWatts: ""
+    FileView {
+        id: raplFile
+        path: "/run/rapl-watts"
+        printErrors: false
+        onLoaded: root.cpuWatts = text().trim()
+        onLoadFailed: root.cpuWatts = ""
+    }
+    Timer {
+        interval: 2000
+        running: root.mode === "battery"
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: raplFile.reload()
+    }
 
     function duration(s: real): string {
         const m = Math.round(s / 60);
@@ -596,14 +580,12 @@ ShellRoot {
         h.n?.dismiss();
     }
     // Inline reply from history (KDE Connect SMS etc.).
-    property bool histTyping: false
     function replyHist(h: var, text: string): void {
         if (!text || !h.n)
             return;
         const n = h.n;
         history = history.filter(x => x.key !== h.key);
         n.sendInlineReply(text);
-        histTyping = false;
     }
 
     // --- Night mode --------------------------------------------------------
@@ -709,26 +691,38 @@ ShellRoot {
     // Inline components cannot see `root`, so they take everything as props.
     // T (text), Page and SearchList live in their own files in this folder.
 
-    // Plain slider; emits moved(0..1) on press and drag.
+    // macOS Control Center block: soft translucent rounded panel.
+    component Module: Rectangle {
+        radius: 14
+        color: Qt.alpha(Colors.fg, 0.07)
+        border.width: 1
+        border.color: Qt.alpha(Colors.fg, 0.06)
+    }
+
+    // macOS Control Center slider: thick rounded track with the fill and an
+    // optional icon inside it. Emits moved(0..1) on press and drag; a click on
+    // the icon emits iconClicked instead (mute).
     component Bar: Item {
         id: bar
         property real value
+        property string icon
         signal moved(real v)
+        signal iconClicked
         implicitWidth: 220
-        implicitHeight: 16
+        implicitHeight: 26
         anchors.verticalCenter: parent ? parent.verticalCenter : undefined
 
         Rectangle {
-            anchors.verticalCenter: parent.verticalCenter
-            width: parent.width
-            height: 6
-            radius: 3
-            color: Colors.surface1
+            anchors.fill: parent
+            radius: height / 2
+            color: Qt.alpha(Colors.fg, 0.14)
+            clip: true
 
+            // Never narrower than the icon's circle, so the icon always sits on the fill.
             Rectangle {
-                width: parent.width * Math.max(0, Math.min(1, bar.value))
+                width: Math.max(parent.height, parent.width * Math.max(0, Math.min(1, bar.value)))
                 height: parent.height
-                radius: 3
+                radius: parent.radius
                 color: Colors.accent
             }
         }
@@ -740,11 +734,23 @@ ShellRoot {
             onPressed: m => set(m.x)
             onPositionChanged: m => set(m.x)
         }
+        T {
+            visible: bar.icon !== ""
+            width: bar.height
+            horizontalAlignment: Text.AlignHCenter
+            text: bar.icon
+            color: Colors.base
+            MouseArea {
+                anchors.fill: parent
+                onClicked: bar.iconClicked()
+            }
+        }
     }
 
-    // Quick-settings tile: accent fill when on. The icon toggles; the body opens
+    // Quick-settings tile, macOS Control Center style: neutral block with a
+    // round icon that turns accent when on. The icon toggles; the body opens
     // the picker when there is one (chevron shown), else it toggles too.
-    component Tile: Rectangle {
+    component Tile: Module {
         id: tile
         property string icon
         property string title
@@ -754,30 +760,29 @@ ShellRoot {
         signal toggled
         signal opened
         width: 220
-        height: 52
-        radius: Tokens.rounding.large
-        color: on ? Colors.accent : Colors.surface0
-        readonly property color ink: on ? Colors.base : Colors.fg
+        height: 56
 
-        MouseArea {
-            anchors.fill: parent
+        StateLayer {
             onClicked: tile.hasPage ? tile.opened() : tile.toggled()
         }
         Row {
-            x: Tokens.padding.small
+            x: Tokens.padding.small + 2
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Tokens.spacing.small
+            spacing: Tokens.spacing.small + 2
             Rectangle {
-                width: 36
-                height: 36
-                radius: 18
+                width: 32
+                height: 32
+                radius: 16
                 anchors.verticalCenter: parent.verticalCenter
-                color: Qt.alpha(tile.ink, 0.12)
+                color: tile.on ? Colors.accent : Qt.alpha(Colors.fg, 0.14)
+                Behavior on color {
+                    CAnim {}
+                }
                 T {
                     anchors.centerIn: parent
                     text: tile.icon
-                    font.pixelSize: Tokens.fontSize.large
-                    color: tile.ink
+                    font.pixelSize: Tokens.fontSize.larger
+                    color: tile.on ? Colors.base : Colors.fg
                 }
                 MouseArea {
                     anchors.fill: parent
@@ -789,18 +794,17 @@ ShellRoot {
                 T {
                     anchors.verticalCenter: undefined
                     text: tile.title
-                    width: 140
+                    width: 136
                     elide: Text.ElideRight
-                    font.bold: true
-                    color: tile.ink
+                    font.weight: Font.DemiBold
                 }
                 T {
                     anchors.verticalCenter: undefined
                     text: tile.sub
-                    width: 140
+                    width: 136
                     elide: Text.ElideRight
-                    font.pixelSize: Tokens.fontSize.smaller
-                    color: tile.on ? Colors.surface1 : Colors.subtext0
+                    font.pixelSize: Tokens.fontSize.small
+                    color: Colors.subtext0
                 }
             }
         }
@@ -809,7 +813,7 @@ ShellRoot {
             anchors.right: parent.right
             anchors.rightMargin: Tokens.padding.small
             text: String.fromCodePoint(0xF0142)
-            color: tile.ink
+            color: Colors.subtext0
         }
     }
 
@@ -926,17 +930,21 @@ ShellRoot {
             visible: hdr.hasToggle
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            width: 44
+            // macOS switch: accent track when on, white knob either way.
+            width: 40
             height: 24
             radius: 12
-            color: hdr.on ? Colors.accent : Colors.surface1
+            color: hdr.on ? Colors.accent : Qt.alpha(Colors.fg, 0.2)
+            Behavior on color {
+                CAnim {}
+            }
             Rectangle {
-                x: hdr.on ? 22 : 2
+                x: hdr.on ? 18 : 2
                 anchors.verticalCenter: parent.verticalCenter
                 width: 20
                 height: 20
                 radius: 10
-                color: hdr.on ? Colors.base : Colors.subtext0
+                color: Colors.text
                 Behavior on x {
                     Anim {
                         type: Anim.FastSpatial
@@ -1268,13 +1276,19 @@ ShellRoot {
         visible: !root.notifInIsland && root.popups.length > 0
         anchors.top: true
         anchors.right: true
-        margins.top: Tokens.padding.medium
+        // Full height with input masked to the cards: resizing the layer surface
+        // every frame while a card collapses made the stack's bottom jitter.
+        anchors.bottom: true
+        mask: Region {
+            item: notifStack
+        }
+        // No top margin: the window starts at the screen edge so cards drop in
+        // from it; the gap is the Column's topPadding instead.
         margins.right: Tokens.padding.medium
         implicitWidth: 440
-        implicitHeight: Math.max(1, notifStack.implicitHeight)
         color: "transparent"
-        exclusionMode: ExclusionMode.Normal
-        exclusiveZone: 0
+        // Ignore the island's 34px reserved strip so the stack starts at the screen edge.
+        exclusionMode: ExclusionMode.Ignore
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.namespace: "island-notifications"
         // OnDemand only while hovered: Hyprland focuses an OnDemand layer when it
@@ -1288,19 +1302,25 @@ ShellRoot {
             HoverHandler {
                 id: stackHover
             }
-            spacing: Tokens.spacing.medium
-            move: Transition {
-                Anim {
-                    property: "y"
-                }
-            }
+            topPadding: Tokens.padding.medium
+            // No spacing or move transition: each slot carries its own gap, which
+            // collapses with the card, so the cards below glide up in one motion.
             Repeater {
                 model: ScriptModel {
                     values: root.notifInIsland ? [] : root.popups
                 }
-                NotifCard {
-                    implicitWidth: 440
-                    onDismissed: root.dropNotif(modelData, expired)
+                Item {
+                    id: slot
+                    required property var modelData
+                    width: 440
+                    height: card.implicitHeight + card.gap
+                    NotifCard {
+                        id: card
+                        modelData: slot.modelData
+                        implicitWidth: 440
+                        gap: Tokens.spacing.medium
+                        onDismissed: root.dropNotif(modelData, expired)
+                    }
                 }
             }
         }
@@ -1320,14 +1340,12 @@ ShellRoot {
         color: "transparent"
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.namespace: "island"
-        // A hover-opened dashboard keeps the pill-only mask (so leaving the pill
-        // registers and closes it) and leaves the keyboard alone; click to pin it.
         // A notification in the pill may carry an inline reply field: OnDemand
         // lets a click on it take the keyboard without grabbing it otherwise.
-        WlrLayershell.keyboardFocus: root.expanded && !root.hoverOpened ? WlrKeyboardFocus.Exclusive
-            : (root.notifInIsland || root.mode === "hub") && root.pillHovered ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+        WlrLayershell.keyboardFocus: root.expanded ? WlrKeyboardFocus.Exclusive
+            : root.notifInIsland && root.pillHovered ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
         mask: Region {
-            item: root.expanded && !root.hoverOpened ? catcher : island
+            item: root.expanded ? catcher : island
         }
 
         MouseArea {
@@ -1371,7 +1389,8 @@ ShellRoot {
                     switcher: switcherPage,
                     calendar: calendarPage,
                     pass: passPage,
-                    keybindings: keybindsPage
+                    keybindings: keybindsPage,
+                    tools: toolsPage
                 })[root.mode]
 
             anchors.top: parent.top
@@ -1422,12 +1441,16 @@ ShellRoot {
                 }
             }
 
-            // Opens the dashboard from the pill; inside open pages it just keeps
-            // clicks from reaching the catcher behind.
+            // Left click on the pill (the clock; dots and battery have their own)
+            // opens the dashboard, right click the hub (notifications); inside open
+            // pages it keeps clicks from the catcher behind.
             MouseArea {
                 anchors.fill: parent
-                // show() clears hoverOpened, so a click pins a hover-opened dashboard.
-                onClicked: if (!root.expanded || root.hoverOpened) root.show("dashboard")
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onClicked: e => {
+                    if (!root.expanded)
+                        root.show(e.button === Qt.RightButton ? "hub" : "dashboard");
+                }
             }
 
             Page {
@@ -1437,7 +1460,7 @@ ShellRoot {
                 Row {
                     spacing: Tokens.spacing.medium
 
-                    // Workspace dots: focused one is a wide accent pill.
+                    // Workspace dots: focused one is accent-coloured.
                     Row {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 5
@@ -1449,19 +1472,14 @@ ShellRoot {
                                 required property var modelData
                                 readonly property bool cur: modelData.id === Hyprland.focusedWorkspace?.id
                                 anchors.verticalCenter: parent.verticalCenter
-                                width: cur ? 16 : 7
+                                width: 7
                                 height: 7
                                 radius: 3.5
                                 color: cur ? Colors.accent : Colors.overlay1
-                                Behavior on width {
-                                    Anim {
-                                        type: Anim.FastSpatial
-                                    }
-                                }
                                 MouseArea {
                                     anchors.fill: parent
                                     anchors.margins: -3
-                                    onClicked: Hyprland.dispatch("workspace " + parent.modelData.id)
+                                    onClicked: Hyprland.dispatch("hl.dsp.focus({ workspace = " + parent.modelData.id + " })")
                                 }
                             }
                         }
@@ -1494,6 +1512,22 @@ ShellRoot {
                             anchors.fill: parent
                             anchors.margins: -3
                             onClicked: Hyprland.dispatch("hl.dsp.workspace.toggle_special(\"scratch\")")
+                        }
+                    }
+
+                    // Running timer / stopwatch from the toolbox; click opens it.
+                    T {
+                        visible: toolsPage.pillText !== ""
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: toolsPage.pillText
+                        color: Colors.accent
+                        MouseArea {
+                            anchors.fill: parent
+                            anchors.margins: -3
+                            onClicked: {
+                                toolsPage.startView = toolsPage.pillView;
+                                root.show("tools");
+                            }
                         }
                     }
 
@@ -1591,7 +1625,7 @@ ShellRoot {
                 }
             }
 
-            // Hover hub: media player (if any) above notification history.
+            // Hub: media player (if any) above notification history.
             Page {
                 id: hubPage
                 active: island.page === hubPage
@@ -1806,9 +1840,6 @@ ShellRoot {
                                                 anchors.fill: parent
                                                 font.family: "JetBrainsMono Nerd Font"
                                                 placeholderText: hrow.modelData.n?.inlineReplyPlaceholder || "Reply…"
-                                                // Keep the hub open on leave only once something is typed.
-                                                onActiveFocusChanged: root.histTyping = activeFocus && length > 0
-                                                onTextChanged: root.histTyping = activeFocus && length > 0
                                                 onAccepted: root.replyHist(hrow.modelData, text)
                                             }
                                         }
@@ -1839,6 +1870,7 @@ ShellRoot {
                         font.pixelSize: Tokens.fontSize.larger
                     }
                     Bar {
+                        implicitHeight: 8 // thin in the pill, like the macOS HUD
                         value: osdPage.value
                         onMoved: v => osdPage.isVol ? root.setVolume(v) : root.setBrightness(v)
                     }
@@ -1936,6 +1968,12 @@ ShellRoot {
                 id: keybindsPage
                 active: island.page === keybindsPage
                 onCloseRequested: root.show("idle")
+            }
+            ToolsPage {
+                id: toolsPage
+                active: island.page === toolsPage
+                onCloseRequested: root.show("idle")
+                onOpenPage: m => root.show(m)
             }
 
             Page {
@@ -2151,31 +2189,43 @@ ShellRoot {
                     spacing: Tokens.spacing.small
                     Repeater {
                         model: root.powerActions
-                        delegate: Rectangle {
+                        // macOS-style round glass buttons; the selected one turns accent,
+                        // an armed one red.
+                        delegate: Item {
                             id: pbtn
                             required property int index
                             required property var modelData
                             readonly property bool armed: root.powerArmed === index
-                            width: 88
-                            height: 76
-                            radius: Tokens.rounding.medium
-                            color: armed ? Colors.red : index === root.powerSel ? Colors.surface1 : "transparent"
+                            readonly property bool sel: index === root.powerSel
+                            width: 84
+                            height: 92
                             Column {
                                 anchors.centerIn: parent
-                                spacing: Tokens.spacing.extraSmall
-                                T {
-                                    anchors.verticalCenter: undefined
+                                spacing: Tokens.spacing.small
+                                Rectangle {
                                     anchors.horizontalCenter: parent.horizontalCenter
-                                    text: root.glyph(pbtn.modelData.icon)
-                                    font.pixelSize: Tokens.fontSize.large
-                                    color: pbtn.armed ? Colors.crust : Colors.fg
+                                    width: 56
+                                    height: 56
+                                    radius: 28
+                                    color: pbtn.armed ? Colors.red : pbtn.sel ? Colors.accent : Qt.alpha(Colors.fg, 0.1)
+                                    border.width: 1
+                                    border.color: Qt.alpha(Colors.fg, 0.06)
+                                    Behavior on color {
+                                        CAnim {}
+                                    }
+                                    T {
+                                        anchors.centerIn: parent
+                                        text: root.glyph(pbtn.modelData.icon)
+                                        font.pixelSize: Tokens.fontSize.large
+                                        color: pbtn.armed ? Colors.crust : pbtn.sel ? Colors.base : Colors.fg
+                                    }
                                 }
                                 T {
                                     anchors.verticalCenter: undefined
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     text: pbtn.armed ? "Again?" : pbtn.modelData.label
                                     font.pixelSize: Tokens.fontSize.small
-                                    color: pbtn.armed ? Colors.crust : Colors.subtext0
+                                    color: pbtn.armed || pbtn.sel ? Colors.fg : Colors.subtext0
                                 }
                             }
                             MouseArea {
@@ -2282,40 +2332,47 @@ ShellRoot {
                             }
                         }
                     }
-                    Row {
-                        spacing: Tokens.spacing.medium
-                        T {
-                            text: root.glyph(root.muted ? 0xF075F : 0xF057E)
-                            width: 24
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: if (root.sink?.audio) root.sink.audio.muted = !root.muted
+                    // Display and Sound modules, as in macOS Control Center.
+                    Repeater {
+                        model: [
+                            { label: "Display", sound: false },
+                            { label: "Sound", sound: true }
+                        ]
+                        Module {
+                            id: sliderMod
+                            required property var modelData
+                            width: 448
+                            height: sliderCol.implicitHeight + 2 * Tokens.padding.medium
+                            Column {
+                                id: sliderCol
+                                x: Tokens.padding.medium
+                                y: Tokens.padding.medium
+                                width: parent.width - 2 * Tokens.padding.medium
+                                spacing: Tokens.spacing.small
+                                Item {
+                                    width: parent.width
+                                    height: modLabel.implicitHeight
+                                    T {
+                                        id: modLabel
+                                        text: sliderMod.modelData.label
+                                        font.weight: Font.DemiBold
+                                    }
+                                    T {
+                                        anchors.right: parent.right
+                                        text: Math.round((sliderMod.modelData.sound ? root.volume : root.brightness) * 100) + "%"
+                                        color: Colors.subtext0
+                                        font.pixelSize: Tokens.fontSize.small
+                                    }
+                                }
+                                Bar {
+                                    anchors.verticalCenter: undefined
+                                    width: parent.width
+                                    value: sliderMod.modelData.sound ? root.volume : root.brightness
+                                    icon: root.glyph(!sliderMod.modelData.sound ? 0xF00E0 : root.muted ? 0xF075F : 0xF057E)
+                                    onMoved: v => sliderMod.modelData.sound ? root.setVolume(v) : root.setBrightness(v)
+                                    onIconClicked: if (sliderMod.modelData.sound && root.sink?.audio) root.sink.audio.muted = !root.muted
+                                }
                             }
-                        }
-                        Bar {
-                            width: 360
-                            value: root.volume
-                            onMoved: v => root.setVolume(v)
-                        }
-                        T {
-                            text: Math.round(root.volume * 100) + "%"
-                            width: 40
-                        }
-                    }
-                    Row {
-                        spacing: Tokens.spacing.medium
-                        T {
-                            text: root.glyph(0xF00E0)
-                            width: 24
-                        }
-                        Bar {
-                            width: 360
-                            value: root.brightness
-                            onMoved: v => root.setBrightness(v)
-                        }
-                        T {
-                            text: Math.round(root.brightness * 100) + "%"
-                            width: 40
                         }
                     }
                     Grid {
@@ -2534,8 +2591,11 @@ ShellRoot {
                         }
                         Stat {
                             icon: root.glyph(0xF140B)
-                            value: (root.bat?.changeRate ?? 0).toFixed(1) + " W"
-                            label: "Power"
+                            // On AC and not charging (full, or held at the 80% cap) the
+                            // battery moves ~0 W and nothing else reports system draw.
+                            readonly property bool moving: UPower.onBattery || root.bat?.state === UPowerDeviceState.Charging
+                            value: moving ? (root.bat?.changeRate ?? 0).toFixed(1) + " W" : root.cpuWatts !== "" ? root.cpuWatts + " W" : "On AC"
+                            label: UPower.onBattery ? "Draw" : moving ? "Charging" : root.cpuWatts !== "" ? "CPU draw" : "Idle battery"
                         }
                     }
                     // Power profile (tlp-pd serves the power-profiles D-Bus API).

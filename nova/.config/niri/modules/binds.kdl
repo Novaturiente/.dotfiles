@@ -16,13 +16,13 @@ binds {
         spawn "ghostty"
     }
     Mod+W hotkey-overlay-title="novabrowser" {
-        spawn "novabrowser"
+        spawn "novabrowser-webkit"
     }
     Mod+Ctrl+W hotkey-overlay-title="novabrowser (Work)" {
-        spawn "novabrowser" "--profile=Work"
+        spawn "novabrowser-webkit" "--profile=Work"
     }
     Mod+Shift+W hotkey-overlay-title="novabrowser (personal)" {
-        spawn "novabrowser" "--profile=personal"
+        spawn "novabrowser-webkit" "--profile=personal"
     }
     Mod+Return hotkey-overlay-title="Terminal (tmux)" {
 		spawn-sh "ghostty --title='tmux' -e zsh -ic tmux"
@@ -39,7 +39,10 @@ binds {
     Mod+N hotkey-overlay-title="Neovim" {
         spawn "ghostty" "-e" "nvim"
     }
-    Mod+T hotkey-overlay-title="Task scratchpad" {
+    Mod+T hotkey-overlay-title="Toolbox" {
+        spawn "qs" "-c" "island" "ipc" "call" "island" "toggle" "tools"
+    }
+    Mod+Shift+N hotkey-overlay-title="Task scratchpad" {
         spawn "~/.dotfiles/scripts/tasks.sh"
     }
     Mod+Ctrl+T hotkey-overlay-title="TV remote" {

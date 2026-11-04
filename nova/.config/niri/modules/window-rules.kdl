@@ -9,7 +9,7 @@ window-rule {
     open-focused true
 }
 window-rule {
-    geometry-corner-radius 0
+    geometry-corner-radius 8
     clip-to-geometry true
 }
 // Specific window rules
@@ -31,7 +31,7 @@ window-rule {
     open-on-workspace "Main"
 }
 window-rule {
-    match app-id="novabrowser"
+    match app-id="^novabrowser(-webkit)?$"
     draw-border-with-background false
     open-on-workspace "Main"
 }

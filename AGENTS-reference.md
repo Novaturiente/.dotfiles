@@ -31,7 +31,8 @@ Detail split out of `AGENTS.md` to keep the always-loaded context small. Read th
 - `cp` → `rsync` (progress bar)
 - `ls/la/ll/lt` → `eza` variants
 - `gadd` → auto-stage and commit with message
-- `winstart/winstop/winrestart/winsopen` → drive the Windows VM on `novahome` over ssh + docker
+- `winstart/winstop` → start/stop the local WinApps Windows VM (docker compose, `~/.config/winapps/compose.yaml`)
+- `winrestart/winsopen` → drive the Windows VM on `novahome` over ssh + docker
 
 ## Editors
 
@@ -64,6 +65,8 @@ Detail split out of `AGENTS.md` to keep the always-loaded context small. Read th
 | `ocr_select.sh` | Region select → screenshot → RapidOCR (PP-OCRv6, `python-rapidocr` AUR) → clipboard |
 | `file_picker.sh` | Zenity file dialog → wl-copy → ydotool paste |
 | `calendar-notify.sh` | Parse khal events → schedule 10min-before notifications via `at` |
+| `screenshot-region.sh` | Region screenshot to stdout: grabs the full screen before `slurp` (which steals focus and closes app popups), then crops with `magick`. Used by `Print` in Hyprland (`Mod+Shift+S` uses `screenshot-edit.sh` instead) |
+| `screenshot-edit.sh` | `Mod+Shift+S`: frozen full-screen frame in `satty` with the crop tool (popups stay visible), then only the cropped part reopens in `satty` for annotating and copying |
 | `record-script.sh` | wl-screenrec wrapper (full/region/audio modes) |
 
 ### Rofi Menus (`scripts/rofi/`)
@@ -100,6 +103,7 @@ One extractor per app writes `bindings/<app>.txt`: `extract-hyprland-keybindings
 
 ### Systemd Services
 - `battery-limit.timer` — runs `/usr/local/bin/battery-limit.sh` as root every 5 min
+- `rapl-watts.service` — runs `/usr/local/bin/rapl-watts` as root: writes the CPU package power (RAPL, 2 s average) to `/run/rapl-watts`, which the island's battery page shows on AC. The raw counter stays root-only (Platypus, CVE-2020-8694)
 - `paccache.timer` — weekly; keeps 2 versions of installed packages, none of uninstalled (drop-in in `system/system/etc/systemd/system/paccache.service.d/`)
 - Battery alerts come from the Quickshell island (batsignal was removed)
 
@@ -129,8 +133,9 @@ adding one palette file. See `system/themes/README.md`.
 **Under Hyprland and niri** the island (`nova/.config/quickshell/island/`) is the
 notification server. The startup hook (`hyprland.lua`, niri `modules/startup.kdl`)
 stops `quickshell-notifications.service` and starts `qs -c island -d`. Popups
-stack top-right, never in the pill. Hovering the idle pill for 300 ms opens `hub`
-(media player + in-memory notification history, lost on island restart).
+stack top-right, never in the pill. Nothing opens on hover: click the clock for the
+dashboard; right-click it (or the dashboard's bell) for `hub` (media player + in-memory notification history,
+lost on island restart).
 
 **Fallback** popups come from `nova/.config/quickshell/notifications/`, ported by
 hand from caelestia-shell, via `quickshell-notifications.service` (pulled in by
@@ -144,7 +149,8 @@ icon name the theme actually has; a missing one falls back to a lettered badge,
 which is deliberate.
 
 ## Browsers
-- **Primary:** novabrowser (`/usr/sbin/novabrowser`, CEF-based, qutebrowser-style config in `~/.config/novabrowser/`). Default for web links via `mimeapps.list` and `$BROWSER` (`.profile`); Mod+W. Mod+S opens the `browser-url` Quickshell menu (`scripts/quickshell/browser-url*.sh`, `browser-open.sh`) over its bookmarks and history
+- **Primary:** novabrowser-webkit (`/usr/sbin/novabrowser-webkit`, WebKitGTK build, package `novabrowser-webkit-bin`). Default for web links via `mimeapps.list` and `$BROWSER` (`.profile`); Mod+W, Mod+Ctrl+W (`--profile=Work`), Mod+Shift+W (`--profile=personal`)
+- **CEF build:** novabrowser (`/usr/sbin/novabrowser`, qutebrowser-style config in `~/.config/novabrowser/`). Mod+S opens the `browser-url` Quickshell menu (`scripts/quickshell/browser-url*.sh`, `browser-open.sh`) over its bookmarks and history
 - **Previous:** Zen Browser; still installed, its theme templates remain in `system/themes/templates/apps/zen-browser/`
 - **Work:** Google Chrome
 
@@ -161,7 +167,7 @@ which is deliberate.
 
 ## File Management
 - No terminal file manager is installed; browse from the shell or `broot`.
-- **MIME defaults** (`nova/.config/mimeapps.list`): novabrowser (web), Neovim (Markdown, CSV/TSV, Org, plain text, logs, code, config), zathura (PDF, epub, PostScript), imv (images), mpv (video/audio). Without a desktop environment, `xdg-open` detects type by content (`file`), so small scripts can read as `text/plain` and open in Neovim; GTK apps detect by extension and are unaffected
+- **MIME defaults** (`nova/.config/mimeapps.list`): novabrowser-webkit (web), Neovim (Markdown, CSV/TSV, Org, plain text, logs, code, config), zathura (PDF, epub, PostScript), imv (images), mpv (video/audio). Without a desktop environment, `xdg-open` detects type by content (`file`), so small scripts can read as `text/plain` and open in Neovim; GTK apps detect by extension and are unaffected
 
 ## Hardware Specifications
 

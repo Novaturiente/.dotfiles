@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # --- CONFIGURATION ---
-# Load env (OMNIROUTE_API_KEY) since niri-spawned scripts may not inherit login env
+# Load env (NINEROUTER_API_KEY) since niri-spawned scripts may not inherit login env
 [ -f ~/.env ] && set -a && . ~/.env && set +a
 
-# OmniRoute gateway (OpenAI-compatible) on novahome; override with env
-OMNIROUTE_URL="${OMNIROUTE_URL:-http://novahome:20128/v1}"
-OMNIROUTE_MODEL="${OMNIROUTE_MODEL:-antigravity/gemini-3.7-flash-low}"
-invoke_url="${OMNIROUTE_URL}/chat/completions"
+# 9router gateway (OpenAI-compatible) on novahome; override with env
+NINEROUTER_URL="${NINEROUTER_URL:-http://novahome:20129/v1}"
+NINEROUTER_MODEL="${NINEROUTER_MODEL:-ag/gemini-3.8-flash-low}"
+invoke_url="${NINEROUTER_URL}/chat/completions"
 
-if [ -z "$OMNIROUTE_API_KEY" ]; then
-	notify-send "AI Fix" "OMNIROUTE_API_KEY not set in ~/.env"
+if [ -z "$NINEROUTER_API_KEY" ]; then
+	notify-send "AI Fix" "NINEROUTER_API_KEY not set in ~/.env"
 	exit 1
 fi
 # Save raw API response (before <answer> extraction) for testing; set empty to disable
@@ -39,7 +39,7 @@ CLEAN_INPUT=$(echo "$INPUT_TEXT" | sed 's/\\/\\\\/g')
 PROMPT_SAFE=$(echo "$CLEAN_INPUT" | sed 's/"/\\"/g')
 notify-send -t 1000 "AI Fix" "Fixing... $CLEAN_INPUT"
 
-# 2. Run AI (OmniRoute chat completions API)
+# 2. Run AI (9router chat completions API)
 # We keep the tags <answer> in the prompt so we can find the text easily
 PROMPT="You are a grammar correction tool. 
 1. Output ONLY the corrected text. 
@@ -53,17 +53,18 @@ Fix this text: $PROMPT_SAFE
 # Build JSON body with jq so content is safely escaped (OpenAI chat/completions)
 payload=$(jq -n \
 	--arg content "$PROMPT" \
-	--arg model "$OMNIROUTE_MODEL" \
+	--arg model "$NINEROUTER_MODEL" \
 	'{
 		model: $model,
 		messages: [{ role: "user", content: $content }],
+		stream: false,
 		temperature: 0.3,
 		max_tokens: 4096
 	}')
 
 response=$(curl -s -w "\n%{http_code}" --request POST \
 	--url "$invoke_url" \
-	--header "Authorization: Bearer $OMNIROUTE_API_KEY" \
+	--header "Authorization: Bearer $NINEROUTER_API_KEY" \
 	--header "Content-Type: application/json" \
 	--data "$payload")
 

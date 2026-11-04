@@ -25,7 +25,7 @@ hl.config({
 		resize_on_border = true,
 	},
 	decoration = {
-		rounding = 0,
+		rounding = 8,
 		-- Dark drop shadow, pushed down so windows look lifted off the wallpaper.
 		shadow = {
 			enabled = true,
@@ -49,6 +49,7 @@ hl.config({
 	input = {
 		kb_layout = "us",
 		follow_mouse = 1, -- focus-follows-mouse
+		focus_on_close = 2, -- "mru": back to the last focused window, like niri (default picks the nearest)
 		sensitivity = 0,
 		touchpad = {
 			tap_to_click = true,
@@ -108,14 +109,25 @@ hl.window_rule({ match = { class = "^scrcpy$" }, scrolling_width = 0.3, workspac
 hl.window_rule({ match = { title = "^dexmode$" }, maximize = true, workspace = "1" })
 hl.window_rule({ match = { class = "^lin-whatsapp$" }, workspace = "1" })
 hl.window_rule({ match = { class = "^io\\.github\\.nova\\.LinWhatsappNative$" }, workspace = "1" })
-hl.window_rule({ match = { class = "^novabrowser$" }, workspace = "1" })
+hl.window_rule({ match = { class = "^novabrowser(-webkit)?$" }, workspace = "1" })
 hl.window_rule({ match = { class = "^com.mitchellh.ghostty$" }, workspace = "2" })
 hl.window_rule({ match = { title = "^tmux$" }, scrolling_width = 1.0 })
 -- Opens in the Mod+grave scratchpad; after the ghostty rule so it wins over workspace 2.
 hl.window_rule({ match = { title = "^tasks-scratchpad$" }, workspace = "special:scratch", float = true, size = { 1200, 850 }, center = true })
-hl.window_rule({ match = { class = "^satty$" }, float = true })
+hl.window_rule({ match = { class = "^(com\\.gabm\\.)?satty$" }, float = true })
 hl.window_rule({ match = { title = "^Select File to Attach$" }, float = true })
 hl.window_rule({ match = { class = "^zenity$" }, float = true })
+-- GTK portal dialogs (zenity --file-selection, browser file pickers) would tile as a new column.
+hl.window_rule({ match = { class = "^xdg-desktop-portal-gtk$" }, float = true, center = true })
+
+-- Closing the last column scrolls the view left by its full width (hardcoded in
+-- the scrolling layout), which can push the focused column off screen and hand
+-- focus to whatever lands under the cursor. Bring the focused column back into
+-- view once the close is done; niri never moves it.
+hl.on("window.close", function(w)
+	if w.floating then return end
+	hl.timer(function() hl.dispatch(hl.dsp.layout("fit_into_view")) end, { timeout = 1, type = "oneshot" })
+end)
 hl.window_rule({ match = { class = "^labwc$" }, maximize = true })
 
 -- Frosted Quickshell panels: blur only where the panel is (90% alpha), not the

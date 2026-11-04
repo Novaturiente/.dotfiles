@@ -1,17 +1,27 @@
 {
   "agent-browser": {
     "source": "https://github.com/vercel-labs/agent-browser",
-    "rev": "1165952d74ceed98fdc2dd97190ad41f44dd0e24",
-    "tag": "v0.39.1"
+    "rev": "5868f7c05020e047c00e68e4abf9253cce864f41",
+    "tag": "v0.41.1"
   },
   "caveman": {
     "source": "https://github.com/juliusbrussee/caveman",
     "rev": "d262ab3882952a59312ff3537cd86d894523c5ab",
     "tag": "v4.0.1"
   },
+  "elephant-goldfish-model": {
+    "source": "https://github.com/google/elephant-goldfish-model",
+    "rev": "b3a35956759bf7f024af2ff061b2e0b44b438e4c",
+    "tag": "v0.1.0"
+  },
+  "mattpocock": {
+    "source": "https://github.com/mattpocock/skills",
+    "rev": "d1478fcb140db0b93c0c8df17bcfd311844749d0",
+    "tag": "v1.3.2"
+  },
   "ponytail": {
     "source": "https://github.com/DietrichGebert/ponytail",
-    "rev": "16352ac229eb08a9598dcae48fe9f2b342567d86",
-    "tag": "v5.3.2"
+    "rev": "7801d061243d7b753bad0e0b3c057cd250b11755",
+    "tag": "v5.3.3"
   }
 }

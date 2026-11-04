@@ -1,0 +1,12 @@
+#%PAM-1.0
+# Face first, then the stock chain: login -> system-local-login -> system-login -> system-auth.
+# Was a symlink to /etc/pam.d/dankshell; once DankMaterialShell was removed the
+# link dangled, PAM fell back to `other` (pam_deny) and every password failed.
+#
+# Own pam_howdy line WITHOUT workaround=: system-auth's workaround=native-input scans
+# in the background while the password prompt runs, but swaylock answers that prompt
+# instantly with whatever was typed before Enter, so pam_unix failed before the face
+# scan finished. With no workaround Howdy blocks: Enter on an empty field scans the face.
+auth optional   pam_exec.so quiet /usr/local/bin/howdy-ir-pre
+auth sufficient pam_howdy.so
+auth include    login

@@ -1,0 +1,16 @@
+[Unit]
+Description=Publish CPU package power (RAPL) to /run/rapl-watts for the island
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/rapl-watts
+Restart=on-failure
+UMask=0022
+ProtectSystem=strict
+ReadWritePaths=/run
+ProtectHome=yes
+PrivateNetwork=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

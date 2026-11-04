@@ -1,0 +1,24 @@
+#!/bin/bash
+# rapl-watts - publish the CPU package power (Intel RAPL) as a 2 s average, in
+# watts, for the Quickshell island's battery page.
+#
+# The raw energy counter stays root-only: readable RAPL enables the Platypus
+# side channel (CVE-2020-8694). Only this coarse average lands in a
+# world-readable file. Run by rapl-watts.service.
+set -u
+
+RAPL=/sys/class/powercap/intel-rapl:0
+OUT=/run/rapl-watts
+INTERVAL=2
+
+max=$(<"$RAPL/max_energy_range_uj")
+prev=$(<"$RAPL/energy_uj")
+while sleep "$INTERVAL"; do
+    now=$(<"$RAPL/energy_uj")
+    d=$((now - prev))
+    ((d < 0)) && d=$((d + max)) # counter wrapped
+    prev=$now
+    # microjoules over INTERVAL seconds -> watts with one decimal
+    printf '%d.%d\n' $((d / (INTERVAL * 1000000))) $((d / (INTERVAL * 100000) % 10)) >"$OUT.tmp" &&
+        mv "$OUT.tmp" "$OUT"
+done

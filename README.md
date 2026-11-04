@@ -237,7 +237,8 @@ Battery alerts come from the Quickshell island.
 
 ## Browsers
 
-- **Primary:** novabrowser (`$BROWSER`, Mod+W)
+- **Primary:** novabrowser-webkit (`$BROWSER`, Mod+W)
+- **Also installed:** novabrowser (CEF build; Mod+S URL bar still reads its bookmarks and history)
 - **Previous:** Zen Browser
 - **Work:** Google Chrome
 

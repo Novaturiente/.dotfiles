@@ -1,11 +1,11 @@
 [Default Applications]
-# Browser — novabrowser
-x-scheme-handler/http=novabrowser.desktop
-x-scheme-handler/https=novabrowser.desktop
-x-scheme-handler/about=novabrowser.desktop
-x-scheme-handler/unknown=novabrowser.desktop
-text/html=novabrowser.desktop
-application/xhtml+xml=novabrowser.desktop
+# Browser — novabrowser-webkit
+x-scheme-handler/http=novabrowser-webkit.desktop
+x-scheme-handler/https=novabrowser-webkit.desktop
+x-scheme-handler/about=novabrowser-webkit.desktop
+x-scheme-handler/unknown=novabrowser-webkit.desktop
+text/html=novabrowser-webkit.desktop
+application/xhtml+xml=novabrowser-webkit.desktop
 
 # Documents — zathura
 application/epub+zip=org.pwmt.zathura.desktop

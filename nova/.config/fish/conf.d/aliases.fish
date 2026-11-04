@@ -44,8 +44,8 @@ alias gadd 'git add . && git commit -m "Update"'
 
 # ---- misc ----
 alias fileserver 'python3 -m http.server 8080 --directory ~/Share'
-alias winstart 'ssh nova@novahome docker start windows'
-alias winstop  'ssh nova@novahome docker stop windows'
+alias winstart 'docker compose -f ~/.config/winapps/compose.yaml start'
+alias winstop  'docker compose -f ~/.config/winapps/compose.yaml stop'
 alias winrestart 'ssh nova@novahome docker restart windows'
 alias winsopen 'ssh nova@novahome docker start windows && winapps windows'
 

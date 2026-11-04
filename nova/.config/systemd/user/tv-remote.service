@@ -1,0 +1,14 @@
+[Unit]
+Description=TV media controls: MPRIS player for the Xiaomi TV and its adb connection (scripts/tv-remote.py)
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+# novahome publishes the MPRIS player (~/Automation/tv-watch/); here only keep adb up for the binds
+Environment=TV_MPRIS=0
+ExecStart=%h/.dotfiles/scripts/tv-remote.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=graphical-session.target

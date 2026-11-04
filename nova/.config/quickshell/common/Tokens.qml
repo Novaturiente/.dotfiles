@@ -1,9 +1,10 @@
-// Material 3 Expressive motion and shape tokens.
+// Motion and shape tokens.
 //
-// Ported by hand from caelestia-shell's C++ config plugin
-// (plugin/src/Caelestia/Config/tokens.hpp) so the values live in plain QML and
-// need no compiled dependency. Hand-written — unlike Colors.qml, scripts/theme.sh
-// does not touch this file.
+// Names come from caelestia-shell's Material 3 Expressive tokens
+// (plugin/src/Caelestia/Config/tokens.hpp) so callers stay unchanged, but the
+// expressive* values are tuned to macOS motion: a quick ease-out with no
+// overshoot instead of the Material spring bounce. Hand-written — unlike
+// Colors.qml, scripts/theme.sh does not touch this file.
 //
 // Curves are cubic-bezier control-point lists in the form QML's
 // `easing.bezierCurve` wants: triples of (x, y) ending at (1, 1). `emphasized`
@@ -21,24 +22,25 @@ Singleton {
             standard:                 [0.2, 0, 0, 1, 1, 1],
             standardAccel:            [0.3, 0, 1, 1, 1, 1],
             standardDecel:            [0, 0, 0, 1, 1, 1],
-            expressiveFastSpatial:    [0.42, 1.67, 0.21, 0.9, 1, 1],
-            expressiveDefaultSpatial: [0.38, 1.21, 0.22, 1, 1, 1],
-            expressiveSlowSpatial:    [0.39, 1.29, 0.35, 0.98, 1, 1],
-            expressiveFastEffects:    [0.31, 0.94, 0.34, 1, 1, 1],
-            expressiveDefaultEffects: [0.34, 0.8, 0.34, 1, 1, 1],
-            expressiveSlowEffects:    [0.34, 0.88, 0.34, 1, 1, 1]
+            // macOS-style ease-out, no overshoot.
+            expressiveFastSpatial:    [0.32, 0.72, 0, 1, 1, 1],
+            expressiveDefaultSpatial: [0.32, 0.72, 0, 1, 1, 1],
+            expressiveSlowSpatial:    [0.32, 0.72, 0, 1, 1, 1],
+            expressiveFastEffects:    [0.25, 0.1, 0.25, 1, 1, 1],
+            expressiveDefaultEffects: [0.25, 0.1, 0.25, 1, 1, 1],
+            expressiveSlowEffects:    [0.25, 0.1, 0.25, 1, 1, 1]
         },
         durations: {
             small: 200,
             normal: 400,
             large: 600,
             extraLarge: 1000,
-            expressiveFastSpatial: 350,
-            expressiveDefaultSpatial: 500,
-            expressiveSlowSpatial: 650,
+            expressiveFastSpatial: 300,
+            expressiveDefaultSpatial: 380,
+            expressiveSlowSpatial: 480,
             expressiveFastEffects: 150,
             expressiveDefaultEffects: 200,
-            expressiveSlowEffects: 300
+            expressiveSlowEffects: 280
         }
     })
 

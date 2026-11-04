@@ -1,0 +1,32 @@
+# Based on winapps-src/compose.yaml. Docs: https://github.com/dockur/windows
+# Windows USERNAME/PASSWORD live in ~/.local/state/winapps/windows.env (outside this public dotfiles repo).
+
+name: "winapps"
+volumes:
+  data: # Windows C: drive, at /var/lib/docker/volumes/winapps_data/_data
+services:
+  windows:
+    image: ghcr.io/dockur/windows:latest
+    container_name: WinApps
+    env_file: ${HOME}/.local/state/winapps/windows.env # not ~/.local/share/winapps: winapps-setup --uninstall deletes that
+    environment:
+      VERSION: "11"
+      RAM_SIZE: "4G"
+      CPU_CORES: "4"
+      DISK_SIZE: "64G"
+      HOME: "${HOME}"
+    ports:
+      - "127.0.0.1:8006:8006" # VNC web UI for the install
+      - "127.0.0.1:3389:3389/tcp"
+      - "127.0.0.1:3389:3389/udp"
+    cap_add:
+      - NET_ADMIN
+    stop_grace_period: 120s
+    restart: on-failure
+    volumes:
+      - data:/storage
+      - ${HOME}:/shared # \\host.lan\Data inside Windows
+      - ${HOME}/.local/bin/winapps-src/oem:/oem # post-install RDP RemoteApp registry setup
+    devices:
+      - /dev/kvm
+      - /dev/net/tun

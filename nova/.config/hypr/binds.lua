@@ -8,6 +8,8 @@ local S   = "~/.dotfiles/scripts/"
 
 local function bind(keys, action, opts) hl.bind(keys, action, opts) end
 local function run(cmd) return dsp.exec_cmd(cmd) end
+-- own systemd scope: systemd-oomd then kills only this app, not the whole Hyprland session
+local function app(cmd) return run("systemd-run --user --scope --collect -q -- " .. cmd) end
 local LOCK   = { locked = true, repeating = true }
 local REPEAT = { repeating = true }
 
@@ -18,16 +20,18 @@ bind("CTRL + ALT + W",         run("qs -c island ipc call island toggle wallpape
 
 -- ── Applications ───────────────────────────────────────────────────────────
 bind(M .. " + space",          run("ghostty"))
-bind(M .. " + W",              run("novabrowser"))
-bind(M .. " + CTRL + W",       run("novabrowser --profile=Work"))
-bind(M .. " + SHIFT + W",      run("novabrowser --profile=personal"))
+bind(M .. " + W",              app("novabrowser-webkit"))
+bind(M .. " + CTRL + W",       app("novabrowser-webkit --profile=Work"))
+bind(M .. " + SHIFT + W",      app("novabrowser-webkit --profile=personal"))
 bind(M .. " + Return",         run("ghostty --title='tmux' -e zsh -ic tmux"))
 bind(M .. " + D",              run("qs -c island ipc call island toggle launcher || " .. S .. "quickshell/launcher.sh"))
 bind(M .. " + SHIFT + D",      run(S .. "rofi/tv-edit.sh"))
 bind(M .. " + N",              run("ghostty -e nvim"))
-bind(M .. " + T",              run(S .. "tasks.sh"))
+bind(M .. " + T",              run("qs -c island ipc call island toggle tools"))
 bind(M .. " + CTRL + T",       run("~/.local/bin/tv-remote"))
 bind(M .. " + E",              run("ghostty -e explorenova"))
+-- aiwa push-to-talk (also cuts Jarvis off); main pid only, so espeak-ng children don't get USR1
+bind(M .. " + A",              run("systemctl --user kill --kill-whom=main -s USR1 aiwa"))
 
 -- ── Utilities & menus ──────────────────────────────────────────────────────
 bind(M .. " + O",              run(S .. "file_picker.sh"))
@@ -48,8 +52,8 @@ local shot = "~/Desktop/Screenshots/Screenshot\\ from\\ $(date +%Y-%m-%d\\ %H-%M
 local function save(geom) -- grim to file + clipboard, like niri's screenshot actions
     return run("mkdir -p ~/Desktop/Screenshots && f=" .. shot .. " && grim " .. geom .. " \"$f\" && wl-copy < \"$f\"")
 end
-bind(M .. " + SHIFT + S", run("grim -g \"$(slurp)\" - | satty -f - --copy-command 'wl-copy'"), { description = "screenshot region -> satty" })
-bind("Print",             save("-g \"$(slurp)\""), { description = "screenshot region" })
+bind(M .. " + SHIFT + S", run(S .. "screenshot-edit.sh"), { description = "screenshot region -> satty" })
+bind("Print",             run("mkdir -p ~/Desktop/Screenshots && f=" .. shot .. " && " .. S .. "screenshot-region.sh > \"$f\" && wl-copy < \"$f\" || rm -f \"$f\""), { description = "screenshot region" })
 bind("CTRL + Print",      save("-o \"$(hyprctl -j monitors | jq -r '.[] | select(.focused).name')\""), { description = "screenshot screen" })
 bind("ALT + Print",       save("-g \"$(hyprctl -j activewindow | jq -r '\"\\(.at[0]),\\(.at[1]) \\(.size[0])x\\(.size[1])\"')\""), { description = "screenshot window" })
 
@@ -92,6 +96,27 @@ bind("SHIFT + XF86AudioMute",        run("if pkill swayidle; then notify-send 'S
 bind("XF86AudioMicMute",             run(VOL:format("micmute", "set-mute @DEFAULT_AUDIO_SOURCE@ toggle")), { locked = true })
 bind("XF86MonBrightnessUp",          run(BRIGHT:format("up", "up")),     LOCK)
 bind("XF86MonBrightnessDown",        run(BRIGHT:format("down", "down")), LOCK)
+
+-- ── TV (Xiaomi TV over adb; tv-remote.service keeps the connection up) ─────
+local TVKEY = "adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_"
+bind(M .. " + CTRL + space", run(TVKEY .. "MEDIA_PLAY_PAUSE"))
+-- Mod+Alt+Space toggles TV remote mode: until pressed again, the keyboard drives the TV
+-- and no key reaches the laptop.
+local TV_KEYS = { Up = "DPAD_UP", Down = "DPAD_DOWN", Left = "DPAD_LEFT", Right = "DPAD_RIGHT",
+    Return = "DPAD_CENTER", Escape = "BACK", BackSpace = "DEL", Home = "HOME", space = "SPACE",
+    XF86AudioRaiseVolume = "VOLUME_UP", XF86AudioLowerVolume = "VOLUME_DOWN", XF86AudioMute = "VOLUME_MUTE" }
+for c in ("abcdefghijklmnopqrstuvwxyz0123456789"):gmatch(".") do TV_KEYS[c] = c:upper() end
+local function tv_mode(on) return function()
+    hl.dispatch(dsp.submap(on and "tv" or "reset"))
+    hl.exec_cmd("notify-send -t 2000 'TV remote' '" .. (on and "On: keyboard controls the TV" or "Off") .. "'")
+end end
+bind(M .. " + ALT + space", tv_mode(true))
+hl.define_submap("tv", function()
+    hl.bind(M .. " + ALT + space", tv_mode(false))
+    hl.bind(M .. " + CTRL + space", run(TVKEY .. "MEDIA_PLAY_PAUSE"))
+    for k, code in pairs(TV_KEYS) do hl.bind(k, run(TVKEY .. code), REPEAT) end
+    hl.bind("catchall", function() end) -- swallow every other key
+end)
 
 -- ── Columns (focus-column-* / move-column-*) ────────────────────────────────
 for _, k in ipairs({ "left", "H" }) do
@@ -194,7 +219,7 @@ bind(M .. " + SHIFT + R",    dsp.window.resize({ x = 0, y = -100, relative = tru
 bind(M .. " + ALT + R",      dsp.layout("promote"))                   -- closest to reset-window-height
 bind(M .. " + F",            dsp.layout("colresize 1.0"))             -- maximize-column
 bind(M .. " + SHIFT + F",    dsp.window.fullscreen({ mode = "fullscreen" }))
-bind(M .. " + C",            dsp.layout("fit active"))                -- center-column
+bind(M .. " + C",            dsp.layout("center"))                    -- center-column
 bind(M .. " + CTRL + C",     dsp.layout("fit visible"))               -- center-visible-columns
 
 bind(M .. " + minus",         dsp.layout("colresize -0.1"),                              REPEAT)

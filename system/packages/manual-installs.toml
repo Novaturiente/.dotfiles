@@ -17,4 +17,11 @@ packages = [
   "android-sdk-build-tools",
   "wps-office",
   "python-pyqt6-webengine",
+  "webkitgtk-6.0",
+  "novabrowser-webkit-bin",
+  "hyprlock",
+  "webkitgtk-6.0-nova-bin",
+  "perf",
+  "llvm-bolt",
+  "explorenova-bin",
 ]

@@ -11,7 +11,8 @@
 //   drag sideways   past 30% of the width dismisses; short of that it snaps back
 //   drag up / down  collapses or expands the card
 //   middle click    closes immediately
-//   right click     expands / collapses (full text, actions, inline reply)
+//   right click     dismisses
+//   ▾ button        expands / collapses (full text, actions, inline reply)
 //   hover           holds the expiry timer open
 pragma ComponentBehavior: Bound
 
@@ -124,14 +125,28 @@ StyledRect {
     border.width: 1
     radius: Tokens.rounding.large
 
-    // implicitWidth is set by the stack in shell.qml. The entry slide reads it at
-    // construction time, so it has to be a real number by then, not a later binding.
+    // implicitWidth is set by the stack in shell.qml.
+    // Space the stack leaves below this card; collapses to 0 with the card on exit.
+    property real gap: 0
     implicitHeight: Math.max(imageSize + inner.anchors.margins * 2, targetHeight)
 
-    // Slide in from off the right edge (the stack sits top-right) on the
-    // decelerating emphasized curve.
-    x: implicitWidth
-    Component.onCompleted: x = 0
+    // Drop in from the top screen edge on the decelerating emphasized curve. Starts
+    // far off-screen; the real distance is known once the stack has placed the card.
+    transform: Translate {
+        id: enter
+        y: -10000
+    }
+    Component.onCompleted: Qt.callLater(() => {
+        enterAnim.from = -(root.mapToItem(null, 0, 0).y + root.implicitHeight);
+        enterAnim.start();
+    })
+    Anim {
+        id: enterAnim
+        target: enter
+        property: "y"
+        to: 0
+        curve: Tokens.anim.curves.emphasizedDecel
+    }
 
     Behavior on x {
         enabled: !dragArea.drag.active && !root.closing
@@ -186,6 +201,12 @@ StyledRect {
             }
             Anim {
                 target: root
+                property: "gap"
+                to: 0
+                type: Anim.FastEffects
+            }
+            Anim {
+                target: root
                 property: "opacity"
                 to: 0
                 type: Anim.FastEffects
@@ -215,7 +236,7 @@ StyledRect {
             if (e.button === Qt.MiddleButton)
                 root.close();
             else if (e.button === Qt.RightButton)
-                root.expanded = !root.expanded;
+                root.close();
         }
 
         onReleased: e => {

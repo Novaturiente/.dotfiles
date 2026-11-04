@@ -6,15 +6,17 @@
 # Keys in the sidebar: 1-9 jump to that agent, q closes.
 WIDTH=15%
 
-# Agent panes, in sidebar order: id, name, state, session:window, folder, command, bg count.
+# Agent panes, in sidebar order: id, name, state, session:window, folder, command,
+# session name (@agent_name, set by novacode; "-" = none), bg count.
 # ponytail: pane whose foreground is a shell = agent exited without reporting off; hidden, not cleared
 agents() {
-	tmux list-panes -a -F '#{pane_id}	#{@agent}	#{@agent_state}	#{session_name}:#{window_index}	#{b:pane_current_path}	#{pane_current_command}	#{@agent_bg}' |
+	tmux list-panes -a -F '#{pane_id}	#{@agent}	#{@agent_state}	#{session_name}:#{window_index}	#{b:pane_current_path}	#{pane_current_command}	#{@agent_name}	#{@agent_bg}' |
 		awk -F'\t' -v OFS='\t' '
 			# Known agent not yet reported via hook (e.g. agy before its first prompt): show as idle.
 			$2 == "" && $6 ~ /^(agy|claude|codex|novacode)$/ { $2 = $6; $3 = "idle" }
 			# Empty field would collapse under IFS=tab in read and shift the columns.
 			$3 == "" { $3 = "idle" }
+			$7 == "" { $7 = "-" }
 			$2 != "" && $6 !~ /^(zsh|bash|fish|sh)$/'
 }
 
@@ -175,7 +177,7 @@ while :; do
 	[ "$(stat -Lc %Y "$0")" = "$mt" ] || exec "$0"
 	# Last pane left in the window: close instead of lingering alone.
 	[ "$(tmux display -p -t "$TMUX_PANE" '#{window_panes}')" -gt 1 ] || exit
-	read -r h me < <(tmux display -p -t "$TMUX_PANE" '#{pane_height} #{session_name}')
+	read -r h w me < <(tmux display -p -t "$TMUX_PANE" '#{pane_height} #{pane_width} #{session_name}')
 	# Selected agent = active pane of this session's active window.
 	sel=$(tmux display -p -t "$me:" '#{pane_id}')
 
@@ -238,24 +240,30 @@ while :; do
 			foot+=("$(printf ' %s%s%s \e[38;2;%sm%s%s%4d%% %s%s%s' "$dim" "$n" "$off" "$c" "$bar" "$off" "$p" "$dim" "$t" "$off")")
 		done
 	fi
-	# Tree: each session, its agents under it; sessions grouped by project.
+	# Tree: project heading, its sessions, each session's agents under it.
 	# rows = click target per screen line (p:<pane> or s:<session>), parallel to
 	# lines. Agent numbers (1-9 keys) run across sessions in the same order as prefix+j/k.
 	mapfile -t all < <(agents)
 	projects
-	ids=() lines=("" "${dim} SESSIONS${off}" "") rows=("" "" "")
+	ids=() lines=("" "${dim} SESSIONS${off}") rows=("" "")
+	myproj=${aproj[$me]:-${sproj[$me]}} prevpj=$'\n'
 	while IFS=$'\t' read -r name wins pj; do
-		# Mauve name = this session, plain otherwise.
-		# Project after the name, both inside the same 20 columns: blue for this
-		# session, Catppuccin text (white) for the others.
-		nc='' pc='205;214;244'
-		[ "$name" = "$me" ] && nc=$'\e[1;38;2;203;166;247m' pc='137;180;250'
-		pw=$((19 - ${#name}))
-		if [ -n "$pj" ] && ((pw > 0)); then
-			lines+=("$(printf ' %s%s%s \e[38;2;%sm%-*.*s%s %s%sw%s' "$nc" "$name" "$off" "$pc" "$pw" "$pw" "$pj" "$off" "$dim" "$wins" "$off")")
-		else
-			lines+=("$(printf ' %s%-20.20s%s %s%sw%s' "$nc" "$name" "$off" "$dim" "$wins" "$off")")
+		# Project heading once per group, a blank line before each group; sessions
+		# with no project come last, with no heading. Bold blue = this session's
+		# project, Catppuccin text (white) for the others.
+		if [ "$pj" != "$prevpj" ]; then
+			lines+=("") rows+=("")
+			if [ -n "$pj" ]; then
+				pc='205;214;244'
+				[ "$pj" = "$myproj" ] && pc='137;180;250'
+				lines+=("$(printf ' \e[1;38;2;%sm%.*s%s' "$pc" $((w - 2)) "$pj" "$off")") rows+=("")
+			fi
+			prevpj=$pj
 		fi
+		# Mauve name = this session, plain otherwise.
+		nc=''
+		[ "$name" = "$me" ] && nc=$'\e[1;38;2;203;166;247m'
+		lines+=("$(printf ' %s%-20.20s%s %s%sw%s' "$nc" "$name" "$off" "$dim" "$wins" "$off")")
 		rows+=("s:$name")
 		mine=()
 		for a in "${all[@]}"; do
@@ -266,8 +274,10 @@ while :; do
 			lines+=("$(printf '   %s%.24s%s' "$dim" "${first[$name]}" "$off")") rows+=("s:$name")
 		fi
 		for k in "${!mine[@]}"; do
-			IFS=$'\t' read -r id agent state loc dir _ nbg <<<"${mine[k]}"
-			ids+=("$id") rows+=("p:$id" "p:$id")
+			IFS=$'\t' read -r id agent state loc dir _ nm nbg <<<"${mine[k]}"
+			# Session name novacode gave the conversation, in place of the folder.
+			[ "$nm" = - ] || dir=$nm
+			ids+=("$id") rows+=("p:$id")
 			c=${col[$state]:-${col[idle]}}
 			case $state in
 			working) ic=@W@ sw=working ;;
@@ -284,11 +294,17 @@ while :; do
 			# Name 2 columns narrower than before to make room for the logo.
 			lines+=("$(printf '%s%s%s%s %s%s %s%s %s%-8.8s%s \e[38;2;%sm%s%s' "$g" "$dim" "$br" "$off" "$ic" "$off" "${logo[$agent]:- }" "$off" "$b" "$agent" "$off" "$c" "$sw" "$off")")
 			# Background processes (@agent_bg): blue gear + count before the folder, apart from the state.
-			bgm='' dw=20
-			[ -n "$nbg" ] && bgm=$'\e[38;2;137;180;250m⚙'$nbg' ' dw=$((20 - ${#nbg} - 2))
-			lines+=("$(printf '%s%s%s%s   %s\e[38;2;166;173;200m%.*s%s' "$g" "$dim" "$cont" "$off" "$bgm" "$dw" "$dir" "$off")")
+			# Wrapped at word breaks to the pane width (5 columns of tree prefix, 1 spare);
+			# lines after the first indent past the gear.
+			bgm='' bw=0
+			[ -n "$nbg" ] && bgm=$'\e[38;2;137;180;250m⚙'$nbg' ' bw=$((${#nbg} + 2))
+			dw=$((w - 6 - bw)); ((dw < 4)) && dw=4
+			lead=$bgm
+			while IFS= read -r part; do
+				lines+=("$(printf '%s%s%s%s   %s\e[38;2;166;173;200m%s%s' "$g" "$dim" "$cont" "$off" "$lead" "$part" "$off")") rows+=("p:$id")
+				lead=$(printf '%*s' "$bw" '')
+			done < <(fold -s -w "$dw" <<<"$dir")
 		done
-		lines+=("") rows+=("")
 	done < <(sessions)
 
 	# ponytail: clipped at pane height, no scrolling; add it if sessions+agents outgrow the pane

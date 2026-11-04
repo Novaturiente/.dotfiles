@@ -14,11 +14,13 @@ Mod+7                       focus workspace=7
 Mod+8                       focus workspace=8
 Mod+9                       focus workspace=9
 Mod+Alt+R                   layout promote
+Mod+Alt+space               lua function
+Mod+A                       systemctl --user kill --kill-whom=main -s USR1 aiwa
 Mod+BackSpace               window.close
 Mod+B                       island toggleAutoHide
 Mod+bracketleft             layout consume_or_expel prev
 Mod+bracketright            layout consume_or_expel next
-Mod+C                       layout fit active
+Mod+C                       layout center
 Mod+comma                   layout consume
 Mod+Ctrl+1                  window.move workspace=1
 Mod+Ctrl+2                  window.move workspace=2
@@ -55,10 +57,11 @@ Mod+Ctrl+Shift+mouse_up     layout swapcol l
 Mod+Ctrl+Shift+P            dpms action=off
 Mod+Ctrl+Shift+R            record-script.sh --region
 Mod+Ctrl+S                  island toggle dashboard
+Mod+Ctrl+space              adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
 Mod+Ctrl+T                  ~/.local/bin/tv-remote
 Mod+Ctrl+U                  lua function
 Mod+Ctrl+up                 window.move direction=u
-Mod+Ctrl+W                  novabrowser --profile=Work
+Mod+Ctrl+W                  systemd-run --user --scope --collect -q -- novabrowser-we...
 Mod+D                       island toggle launcher
 Mod+down                    lua function
 Mod+E                       ghostty -e explorenova
@@ -116,20 +119,71 @@ Mod+Shift+slash             island toggle keybindings
 Mod+Shift+S                 screenshot region -> satty
 Mod+Shift+Tab               switch focus floating/tiling
 Mod+Shift+T                 island toggle theme
-Mod+Shift+W                 novabrowser --profile=personal
+Mod+Shift+W                 systemd-run --user --scope --collect -q -- novabrowser-we...
 Mod+S                       island toggle browser
 Mod+space                   ghostty
 Mod+Tab                     island toggle switcher
-Mod+T                       tasks.sh
+Mod+T                       island toggle tools
 Mod+up                      lua function
 Mod+V                       island toggle clipboard
-Mod+W                       novabrowser
+Mod+W                       systemd-run --user --scope --collect -q -- novabrowser-we...
 [passthru] Mod+Escape       submap reset
 Print                       screenshot region
 Shift+XF86AudioLowerVolume  island brightness down
 Shift+XF86AudioMute         if pkill swayidle; then notify-send 'Suspend disabled'; e...
 Shift+XF86AudioRaiseVolume  island brightness up
 switch:on:Lid Switch        systemctl suspend-then-hibernate
+[tv] 0                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_0
+[tv] 1                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_1
+[tv] 2                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_2
+[tv] 3                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_3
+[tv] 4                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_4
+[tv] 5                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_5
+[tv] 6                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_6
+[tv] 7                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_7
+[tv] 8                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_8
+[tv] 9                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_9
+[tv] a                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_A
+[tv] BackSpace              adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_DEL
+[tv] b                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_B
+[tv] c                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_C
+[tv] catchall               lua function
+[tv] d                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_D
+[tv] Down                   adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] e                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_E
+[tv] Escape                 adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] f                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_F
+[tv] g                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_G
+[tv] h                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_H
+[tv] Home                   adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] i                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_I
+[tv] j                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_J
+[tv] k                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_K
+[tv] l                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_L
+[tv] Left                   adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] m                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_M
+[tv] Mod+Alt+space          lua function
+[tv] Mod+Ctrl+space         adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] n                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_N
+[tv] o                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_O
+[tv] p                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_P
+[tv] q                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_Q
+[tv] r                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_R
+[tv] Return                 adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] Right                  adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] s                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_S
+[tv] space                  adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] t                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_T
+[tv] u                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_U
+[tv] Up                     adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] v                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_V
+[tv] w                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_W
+[tv] x                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_X
+[tv] XF86AudioLowerVolume   adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] XF86AudioMute          adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] XF86AudioRaiseVolume   adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_...
+[tv] y                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_Y
+[tv] z                      adb -s 192.168.220.102:5555 shell input keyevent KEYCODE_Z
 XF86AudioLowerVolume        island volume -5
 XF86AudioMicMute            island volume micmute
 XF86AudioMute               island volume mute
