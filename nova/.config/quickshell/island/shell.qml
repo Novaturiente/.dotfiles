@@ -669,6 +669,26 @@ ShellRoot {
     // One fixed image (no shuffle). Path lives in ~/.local/state/island/wallpaper;
     // the wallpaper page sets it, lock.sh reads it over IPC (getWallpaper).
     property string wallpaper: ""
+    // Black veil over bright wallpapers so text in transparent terminals stays
+    // readable. From the mean grey and the share of near-white pixels (stars,
+    // sky); 0 for dark images, capped at 0.55.
+    property real wallDim: 0
+    onWallpaperChanged: {
+        wallDim = 0;
+        if (wallpaper)
+            wallLum.running = true;
+    }
+    Process {
+        id: wallLum
+        command: ["magick", root.wallpaper, "-colorspace", "Gray", "-resize", "200x200", "(", "+clone", "-threshold", "65%", ")", "-format", "%[fx:mean]\n", "info:"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const [mean, bright] = text.trim().split("\n").map(Number);
+                if (!isNaN(mean) && !isNaN(bright))
+                    root.wallDim = Math.min(0.55, Math.max(0, mean - 0.25) * 1.2 + bright * 1.5);
+            }
+        }
+    }
     function setWallpaper(path: string): void {
         wpFile.setText(path);
         root.wallpaper = path;
@@ -1174,6 +1194,16 @@ ShellRoot {
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
                 sourceSize: Qt.size(parent.width, parent.height)
+            }
+            Rectangle {
+                anchors.fill: parent
+                color: "black"
+                opacity: root.wallDim
+                Behavior on opacity {
+                    Anim {
+                        type: Anim.SlowEffects
+                    }
+                }
             }
         }
     }
