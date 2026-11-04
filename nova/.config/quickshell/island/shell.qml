@@ -1312,8 +1312,8 @@ ShellRoot {
         mask: Region {
             item: notifStack
         }
-        // No top margin: the window starts at the screen edge so cards drop in
-        // from it; the gap is the Column's topPadding instead.
+        // No top margin: the window starts at the screen edge; the gap is the
+        // Column's topPadding instead.
         margins.right: Tokens.padding.medium
         implicitWidth: 440
         color: "transparent"

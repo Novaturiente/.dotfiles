@@ -130,23 +130,11 @@ StyledRect {
     property real gap: 0
     implicitHeight: Math.max(imageSize + inner.anchors.margins * 2, targetHeight)
 
-    // Drop in from the top screen edge on the decelerating emphasized curve. Starts
-    // far off-screen; the real distance is known once the stack has placed the card.
-    transform: Translate {
-        id: enter
-        y: -10000
-    }
-    Component.onCompleted: Qt.callLater(() => {
-        enterAnim.from = -(root.mapToItem(null, 0, 0).y + root.implicitHeight);
-        enterAnim.start();
-    })
-    Anim {
-        id: enterAnim
-        target: enter
-        property: "y"
-        to: 0
-        curve: Tokens.anim.curves.emphasizedDecel
-    }
+    // Slide in from off the right screen edge (the stack sits top-right) on the
+    // decelerating emphasized curve. Reads implicitWidth at construction, so the
+    // stack sets it as a plain number.
+    x: implicitWidth
+    Component.onCompleted: x = 0
 
     Behavior on x {
         enabled: !dragArea.drag.active && !root.closing
@@ -180,8 +168,8 @@ StyledRect {
         }
     }
 
-    // Exit: throw the card off whichever side it was last dragged toward, then
-    // collapse the gap it leaves behind.
+    // Exit: slide off to the right (or left, if swiped that way), then collapse
+    // the gap it leaves behind.
     SequentialAnimation {
         id: exitAnim
 
