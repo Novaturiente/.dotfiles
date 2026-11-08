@@ -39,6 +39,9 @@ gui:
   sidePanelWidth: 0.5
   # Hide the bottom command log / extras panel by default
   showCommandLog: false
+  # Catppuccin Mocha (mauve)
+  authorColors:
+    '*': '#${LAVENDER}'
 
 os:
   # Open files in Neovim in a NEW tmux window (lazygit stays in its
@@ -50,7 +53,3 @@ os:
   editAtLine: '~/.dotfiles/scripts/lazygit-edit.sh "{{filename}}" {{line}}'
   editInTerminal: false
   open: '~/.dotfiles/scripts/lazygit-edit.sh "{{filename}}"'
-
-# Catppuccin Mocha (mauve)
-authorColors:
-  '*': '#${LAVENDER}'

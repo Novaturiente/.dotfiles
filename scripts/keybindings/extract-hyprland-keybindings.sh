@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Extract keybindings from Hyprland's binds.lua and write bindings/hyprland.txt.
+# Extract keybindings from Hyprland's binds.lua and write ~/.cache/keybindings/hyprland.txt.
 # `hyprctl binds` is no help here: with a Lua config every action shows up as
 # "__lua". So binds.lua is run under plain lua with a stub `hl` that records
 # each hl.bind() call instead (loops in binds.lua expand for free). A bind
@@ -11,8 +11,8 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BINDINGS_DIR="${SCRIPT_DIR}/bindings"
+# Generated output lives in the cache, not the repo (hand-written ones stay in bindings/)
+BINDINGS_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/keybindings"
 OUT_FILE="${BINDINGS_DIR}/hyprland.txt"
 CONFIG="${1:-${HYPR_BINDS:-$HOME/.config/hypr/binds.lua}}"
 

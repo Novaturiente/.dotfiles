@@ -1,0 +1,84 @@
+# novahome (Acer Aspire A515-57G home server, headless). Separate packages folder from
+# the laptop's system/packages: novarch reads every top-level file in its folder, so the
+# laptop's desktop lists would otherwise come along. No desktop, window manager, fonts,
+# audio or gaming packages here.
+# Base system, boot, kernels, firmware and hardware tools.
+packages = [
+  "base",
+  "base-devel",
+  "sudo",
+  "which",
+  "less",
+  "diffutils",
+  "perl",
+  "python",
+  "texinfo",
+  "man-db",
+  "man-pages",
+  "bash-completion",
+  "logrotate",
+  "lsb-release",
+  "plocate",
+
+  # Boot: limine, initramfs, old-kernel module cleanup (linux-modules-cleanup.service)
+  "mkinitcpio",
+  "limine",
+  "limine-mkinitcpio-hook",
+  "kernel-modules-hook",
+  "efibootmgr",
+  "efitools",
+
+  # Kernels. NVIDIA modules stay so nvidia-pm.conf can power the RTX 2050 off (D3);
+  # nouveau would keep it awake. No container uses the NVIDIA card.
+  "linux-cachyos",
+  "linux-cachyos-headers",
+  "linux-cachyos-nvidia-open",
+  "linux-cachyos-lts",
+  "linux-cachyos-lts-headers",
+  "linux-cachyos-lts-nvidia-open",
+  "nvidia-utils",
+  "linux-firmware",
+  "intel-ucode",
+
+  # CachyOS tooling
+  "cachyos-hooks",
+  "cachyos-keyring",
+  "cachyos-mirrorlist",
+  "cachyos-v3-mirrorlist",
+  "cachyos-v4-mirrorlist",
+  "cachyos-rate-mirrors",
+  "cachyos-settings",
+  "chwd",
+  "hwdetect",
+  "hwinfo",
+  "rebuild-detector",
+  "reflector",
+  "pacman-contrib",
+  "paru",
+
+  # Disks and filesystems (/mnt/storage is an ext4 USB SSD)
+  "cryptsetup",
+  "device-mapper",
+  "lvm2",
+  "mdadm",
+  "dosfstools",
+  "e2fsprogs",
+  "btrfs-progs",
+  "exfatprogs",
+  "smartmontools",
+  "nvme-cli",
+  "hdparm",
+  "lsscsi",
+
+  # Power and hardware: power-profile udev rule, intel_lpmd, battery health mode
+  "power-profiles-daemon",
+  "intel-lpmd",
+  "acer-wmi-battery-dkms",
+  "cpupower",
+  "turbostat",
+  "msr-tools",
+  "sysfsutils",
+  "dmidecode",
+  "usbutils",
+  "ethtool",
+]

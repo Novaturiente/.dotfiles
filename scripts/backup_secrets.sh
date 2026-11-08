@@ -10,7 +10,10 @@ if [ -z "$SOURCES" ]; then
     exit 1
 fi
 
-DEST="$HOME/.dotfiles/secrets.7z"
+# Outside the repo so the archive can never be committed
+DEST_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/backups"
+mkdir -p "$DEST_DIR"
+DEST="$DEST_DIR/secrets.7z"
 
 echo "Creating encrypted backup of:"
 for s in $SOURCES; do echo "  - $s"; done
@@ -29,4 +32,4 @@ echo "You will be prompted for the password twice."
 chmod 600 "$DEST"
 echo ""
 echo "Backup complete: $DEST"
-echo "To restore: 7z x secrets.7z -o$HOME"
+echo "To restore: 7z x $DEST -o$HOME"

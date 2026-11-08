@@ -15,7 +15,9 @@ mkdir -p ~/.config/novarch
 novarch sync || exit 1
 
 # System files: system/system mirrors /, so copy the whole tree onto it
-# (tlp.conf, sleep.conf, zram, docker, udev, units, /usr/local helpers, polkit, pam).
+# (tlp.conf, sleep.conf, logind, zram, docker, udev, units, /usr/local helpers, polkit, pam).
+# Check the sudoers rule first: a broken file in sudoers.d locks sudo out.
+visudo -cf system/system/etc/sudoers.d/vpn-run || exit 1
 sudo cp -r system/system/. /
 sudo chmod 0440 /etc/sudoers.d/vpn-run
 
@@ -59,14 +61,15 @@ sudo systemctl enable ly@tty2.service
 
 systemctl --user mask pulseaudio.service pulseaudio.socket
 
-sudo systemctl enable battery-limit.timer paccache.timer
+sudo systemctl enable paccache.timer
 # CPU power average for the island's battery page (raw RAPL stays root-only).
 sudo systemctl enable rapl-watts.service
 
 # Services this laptop runs. tailscaled carries the sshfs mount to novahome,
 # linux-enable-ir-emitter powers the IR camera for face unlock.
+# mullvad-netns.service is enabled by install-vpn-netns.sh, once its config exists.
 sudo systemctl enable NetworkManager.service bluetooth.service sshd.service \
-	docker.service tailscaled.service tlp.service mullvad-netns.service \
+	docker.service tailscaled.service tlp.service \
 	linux-enable-ir-emitter.service
 
 # Set zsh as default login shell
@@ -92,11 +95,13 @@ sudo mkinitcpio -P
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw default deny routed
-sudo ufw allow 22
+# SSH and dev servers (3000, 3001): only over Tailscale and from the LAN.
+for port in 22 3000 3001; do
+	sudo ufw allow in on tailscale0 to any port "$port" proto tcp
+	sudo ufw allow from 192.168.0.0/16 to any port "$port" proto tcp
+done
 sudo ufw allow 1714:1764/tcp # KDE Connect
 sudo ufw allow 1714:1764/udp
-sudo ufw allow 3000
-sudo ufw allow 3001
 sudo ufw allow in on wlan0 to 224.0.0.251 port 5353 proto udp  # mDNS
 sudo ufw allow in on wlan0 to 239.255.255.250 port 1900 proto udp  # SSDP
 sudo ufw allow in on wlan0 from 192.168.220.0/24

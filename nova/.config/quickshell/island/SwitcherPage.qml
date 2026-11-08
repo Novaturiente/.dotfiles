@@ -1,4 +1,4 @@
-// Window switcher page (Mod+Tab / Alt+Tab): the Wayland foreign-toplevel list,
+// Window switcher page (Alt+Tab): the Wayland foreign-toplevel list,
 // filtered by title and app id. Tab / Shift+Tab cycle, Enter or click focuses.
 import Quickshell
 import Quickshell.Wayland

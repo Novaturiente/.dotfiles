@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Run by `wl-paste --watch` (clip-push.service) on every clipboard change.
 # Image copied -> push it to novahome, where a stand-in wl-paste serves it to
 # agents' Ctrl+V. Anything else -> drop the remote copy so a stale image never
@@ -33,7 +33,7 @@ if [ -n "$type" ]; then
 	{ wl-paste -t text/plain; wl-paste -t text/uri-list | sed -n 's#^file://##p'; } 2>/dev/null |
 		tr -d '\r' | sort -u | while read -r p; do
 			case $p in "$HOME"/*.png | "$HOME"/*.jpg | "$HOME"/*.jpeg | "$HOME"/*.gif | "$HOME"/*.webp | "$HOME"/*.bmp)
-				[ -f "$p" ] && $ssh "mkdir -p '$(dirname "$p")' && cat > '$p'" < "$p" ;;
+				[ -f "$p" ] && $ssh "mkdir -p $(printf %q "$(dirname "$p")") && cat > $(printf %q "$p")" < "$p" ;;
 			esac
 		done
 elif [ -e "$mark" ]; then

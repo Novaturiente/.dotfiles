@@ -1,0 +1,25 @@
+#!/usr/bin/python
+# Wrapper around android-tv-remote 1.1.3 (/usr/bin/tv-remote). Two patches:
+# 1. adb_shell push hangs on this TV (MiTV Android 14) for files >64KB -> push scrcpy-server in 60KB chunks, cat on device.
+# 2. App hardcodes scrcpy client version 4.0; server must match installed scrcpy -> read version from `scrcpy --version`.
+# ponytail: delete this file once upstream fixes both (check after android-tv-remote updates).
+import subprocess, sys, tempfile
+from gnome_adb_tv_remote.core.scrcpy_controller import ScrcpyServerController as C
+
+C.SCRCPY_VERSION = subprocess.run(["scrcpy", "--version"], capture_output=True, text=True).stdout.split()[1]
+
+def _chunked_push(self):
+    data = open(self._find_local_server(), "rb").read()
+    dst, parts = self.DEVICE_SERVER_PATH, []
+    with tempfile.TemporaryDirectory() as d:
+        for i in range(0, len(data), 60000):
+            p = f"{d}/p{i}"
+            open(p, "wb").write(data[i:i + 60000])
+            self._adb.device.push(p, f"{dst}.p{i}")
+            parts.append(f"{dst}.p{i}")
+    self._adb.shell(f"cat {' '.join(parts)} > {dst} && rm {' '.join(parts)}")
+
+C._ensure_server_on_device = _chunked_push
+
+from gnome_adb_tv_remote.__main__ import main
+sys.exit(main())

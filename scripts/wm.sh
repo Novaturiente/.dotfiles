@@ -5,6 +5,7 @@
 #   wm.sh focus <id>   -> focus that window
 #   wm.sh dpms on|off  -> power monitors on/off
 #   wm.sh name         -> "hyprland" or "niri"
+#   wm.sh output       -> "<name> <x> <y> <scale>" of the focused output (logical x/y)
 #   wm.sh focus-app <name>...  -> focus the first window whose app_id (then
 #                      title) contains a name, case-insensitive; exit 1 if none
 # Hyprland is detected by a live socket, not just the env var: a stale
@@ -23,8 +24,10 @@ if [[ ${1:-} == focus-app ]]; then
     exit 1
 fi
 
+usage() { echo "usage: wm.sh {focused|windows|focus <id>|focus-app <name>...|dpms on|off|name|output}" >&2; exit 2; }
+
 if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]] && hyprctl -j version >/dev/null 2>&1; then
-    case "$1" in
+    case "${1:-}" in
         focused) hyprctl -j activewindow | jq -c '{app_id: .class, title}' ;;
         # focusHistoryID: 0 = most recent, so negate it to sort like niri's timestamp
         windows) hyprctl -j clients | jq -c '[.[] | select(.mapped) | {id: .address, app_id: .class, title, pid,
@@ -33,13 +36,17 @@ if [[ -n ${HYPRLAND_INSTANCE_SIGNATURE:-} ]] && hyprctl -j version >/dev/null 2>
         focus)   hyprctl dispatch "hl.dsp.focus({ window = 'address:$2' })" >/dev/null ;;
         dpms)    hyprctl dispatch "hl.dsp.dpms({ action = '$2' })" >/dev/null ;;
         name)    echo hyprland ;;
+        output)  hyprctl -j monitors | jq -r '.[] | select(.focused) | "\(.name) \(.x) \(.y) \(.scale)"' ;;
+        *)       usage ;;
     esac
 else
-    case "$1" in
+    case "${1:-}" in
         focused) niri msg -j focused-window | jq -c '{app_id, title}' ;;
         windows) niri msg -j windows ;;
         focus)   niri msg action focus-window --id "$2" ;;
         dpms)    niri msg action "power-$2-monitors" ;;
         name)    echo niri ;;
+        output)  niri msg -j focused-output | jq -r '"\(.name) \(.logical.x) \(.logical.y) \(.logical.scale)"' ;;
+        *)       usage ;;
     esac
 fi

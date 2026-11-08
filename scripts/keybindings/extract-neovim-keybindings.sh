@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Extract keybindings from Neovim by running it headless and dumping
-# nvim_get_keymap() for all modes. Writes bindings/neovim.txt with
+# nvim_get_keymap() for all modes. Writes ~/.cache/keybindings/neovim.txt with
 # padded columns (mode+key, action) so the keybindings menu aligns.
 #
 # Usage: extract-neovim-keybindings.sh
@@ -9,8 +9,8 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BINDINGS_DIR="${SCRIPT_DIR}/bindings"
+# Generated output lives in the cache, not the repo (hand-written ones stay in bindings/)
+BINDINGS_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/keybindings"
 OUT_FILE="${BINDINGS_DIR}/neovim.txt"
 DUMP_LUA=$(mktemp)
 DUMP_OUT=$(mktemp)

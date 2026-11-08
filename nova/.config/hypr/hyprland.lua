@@ -13,7 +13,7 @@ hl.env("QT_QPA_PLATFORM", "wayland")
 hl.env("QT_QPA_PLATFORMTHEME", "xdgdesktopportal")
 hl.env("QML2_IMPORT_PATH", "/home/nova/.config/quickshell")
 hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
-hl.env("XCURSOR_SIZE", "25")
+hl.env("XCURSOR_SIZE", "24")
 
 -- ── Look ───────────────────────────────────────────────────────────────────
 hl.config({
@@ -152,7 +152,7 @@ hl.on("hyprland.start", function()
 	-- GitHub route). Reload afterwards so the hl.plugin.hyprglass guard below
 	-- sees the plugin; on first parse it isn't loaded yet.
 	hl.exec_cmd("hyprctl plugin load /home/nova/.local/share/hyprglass/hyprglass.so && hyprctl reload")
-	hl.exec_cmd("swayidle")
+	hl.exec_cmd("swayidle -w")
 	hl.exec_cmd("kdeconnectd")
 	-- Tray icon for the island's tray row (kdeconnectd itself has none).
 	hl.exec_cmd("kdeconnect-indicator")

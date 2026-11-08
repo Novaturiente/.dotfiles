@@ -18,9 +18,12 @@ fi
 
 mkdir -p "$(dirname "$CONF")"
 if [ ! -f "$CONF" ]; then
+    if [ -z "${RDP_PASS:-}" ]; then
+        read -rsp "Windows VM password for Nova: " RDP_PASS; echo
+    fi
     cat > "$CONF" <<EOF
 RDP_USER="Nova"
-RDP_PASS="novarch"
+RDP_PASS="$RDP_PASS"
 RDP_IP="$VM_IP"
 WAFLAVOR="manual"
 RDP_SCALE="100"
@@ -31,6 +34,7 @@ DEBUG="true"
 AUTOPAUSE="off"
 PORT_TIMEOUT="20"
 EOF
+    chmod 600 "$CONF"
     echo "Wrote default config to $CONF"
 else
     echo "Keeping existing config at $CONF"

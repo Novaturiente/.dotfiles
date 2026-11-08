@@ -2,21 +2,18 @@
 
 Windows-Hello-style face authentication on this laptop, using the built-in
 **infrared** camera — not the RGB one. Covers `sudo`, the `ly` greeter, the
-`dms` lock screen, and polkit prompts.
+`swaylock` lock screen, and polkit prompts.
 
-Three of those four work from one edit to `/etc/pam.d/system-auth`. The `dms`
-lock screen needs its own config and its own `pam_howdy` options — that is the
-single most surprising part of this setup and has its own section below.
+Three of those four work from one edit to `/etc/pam.d/system-auth`. The
+lock screen needs its own PAM file and its own `pam_howdy` options — that is
+the single most surprising part of this setup and has its own section below.
 
-**Current lock screen is swaylock, not dms.** Under both Hyprland and niri,
-swayidle and Mod+Shift+L run `scripts/lock.sh`, which execs `swaylock`. Its
-PAM file `/etc/pam.d/swaylock` (owned by `swaylock-effects`, listed as a pacman
-backup file, so upgrades write a `.pacnew` instead of overwriting it) holds
-the same stack as `system/system/etc/pam.d/dankshell`, including the
-no-`workaround=` rule from Problem 2 below. It is not tracked in this repo; on
-a fresh install copy it with
-`sudo install -m 644 system/system/etc/pam.d/dankshell /etc/pam.d/swaylock`.
-The dms sections below still apply if the dms lock screen is used again.
+Under both Hyprland and niri, swayidle and Mod+Shift+L run `scripts/lock.sh`,
+which execs `swaylock`. Its PAM file is tracked as
+`system/system/etc/pam.d/swaylock` and lands in `/etc/pam.d/swaylock` with the
+rest of `system/system` (`setup.sh` copies the tree onto `/`). The package
+`swaylock-effects` lists that file as a pacman backup file, so upgrades write a
+`.pacnew` instead of overwriting it.
 
 Set up 2026-08-27 on CachyOS. An earlier attempt (Jan 2026) failed and this
 document exists mainly to record *why*, because the failure modes are silent
@@ -172,16 +169,16 @@ A black or ~1KB PNG means the emitter is not firing.
 
 ### 3. Drop in the files from this repo
 
-Run from `~/.dotfiles/system` — the paths below are relative to it. The full
+Run from `~/.dotfiles` — the paths below are relative to it. The full
 contents are reproduced under "File contents" at the end, so this works even
 without the repo.
 
 ```sh
-cd ~/.dotfiles/system
+cd ~/.dotfiles
 
-sudo cp system/etc/udev/rules.d/99-ir-camera-power.rules /etc/udev/rules.d/
-sudo cp system/etc/systemd/system/linux-enable-ir-emitter.service /etc/systemd/system/
-sudo install -m 755 system/usr/local/bin/howdy-ir-pre /usr/local/bin/howdy-ir-pre
+sudo cp system/system/etc/udev/rules.d/99-ir-camera-power.rules /etc/udev/rules.d/
+sudo cp system/system/etc/systemd/system/linux-enable-ir-emitter.service /etc/systemd/system/
+sudo install -m 755 system/system/usr/local/bin/howdy-ir-pre /usr/local/bin/howdy-ir-pre
 
 sudo udevadm control --reload
 sudo udevadm trigger --subsystem-match=usb
@@ -276,9 +273,8 @@ Three of the four targets funnel into a single file:
 - `ly` → `login` → `system-local-login` → `system-login` → `system-auth`
 - polkit → `/usr/lib/pam.d/polkit-1` → `system-auth`
 
-**The `dms` lock screen does not.** It needs separate handling — see
-"DMS lock screen" below. Do not assume `system-auth` covers it; `strings`
-on the `dms` binary mentions `system-auth`, which is misleading.
+**The `swaylock` lock screen needs more.** Its own howdy lines must come before
+`system-auth` — see "Swaylock lock screen" below.
 
 `ly` needs no extra setup beyond this file. It is a TTY greeter, so
 `pam_howdy`'s native mode has the real terminal it requires.
@@ -340,8 +336,8 @@ Why this exact shape:
   through to the normal password prompt rather than denying.
 - **`workaround=native-input`** rather than `native`. Native mode needs a real
   terminal whose foreground process group matches, which `sudo` and `ly` have
-  but a Wayland lock screen does not. Without the `input` fallback, `dms` will
-  match your face and then sit there waiting on its password field, because
+  but a Wayland lock screen does not. Without the `input` fallback, a GUI prompt
+  can match your face and then sit there waiting on its password field, because
   nothing submits the empty prompt. The `input` half injects one Enter
   keypress via `/dev/uinput` to close that gap.
 
@@ -357,112 +353,41 @@ cp /etc/pam.d/system-auth.bak /etc/pam.d/system-auth
 
 ---
 
-## DMS lock screen
+## Swaylock lock screen
 
-The lock screen is the one target that needs its own configuration, and it
-took the longest to get right. Two independent problems.
+The lock screen is the one target that needs its own configuration.
 
-### Problem 1: dms does not use `/etc/pam.d/system-auth`
+### Why it needs its own howdy lines
 
-The lock screen runs through quickshell, which calls `pam_start_confdir()`
-rather than using the standard PAM path. By default dms **generates** a
-flattened, self-contained copy of the system auth stack at
-`~/.local/state/DankMaterialShell/pam/dankshell` and points PAM at that
-directory. It regenerates on each lock, so editing that file by hand is
-pointless.
+**`workaround=native-input` breaks face auth in a GUI lock screen.**
+`system-auth` carries it for `sudo`, but in `swaylock` howdy scans in the
+background while the password prompt runs, and `swaylock` answers that prompt
+at once with whatever was typed before Enter. `pam_unix` then fails before the
+scan finishes.
 
-Confirm which config is actually in use — the journal states it outright:
+The fix is a lock-screen stack whose own `pam_howdy` line carries no
+`workaround=`. Howdy then blocks: Enter on an empty field scans the face.
+Because `pam_howdy` is `sufficient`, a match short-circuits the stack and
+`pam_unix` never prompts. A failed scan falls through to `login`, which
+asks for the password as usual.
 
-```
-quickshell.service.pam.subprocess: Starting pam session for user "nova"
-  with config "dankshell" in dir "/home/nova/.local/state/DankMaterialShell/pam"
-```
-
-To use a real file instead, set dms's `lockPamPath`. There is a UI control
-under Settings ("Which PAM service the lock screen uses to authenticate" →
-Custom...), or set it directly:
-
-```sh
-jq '.lockPamPath = "/etc/pam.d/dankshell"' \
-   ~/.config/DankMaterialShell/settings.json > /tmp/s.json \
-  && mv /tmp/s.json ~/.config/DankMaterialShell/settings.json
-dms restart
-```
-
-After restarting, the journal line must read `in dir "/etc/pam.d"`. If it
-still names the state directory, the setting did not take.
-
-Note `dms auth sync` is the official way to write `/etc/pam.d/dankshell`, but
-it refuses to run under `sudo` ("This program should not be run as root") and
-hangs on an internal privilege prompt when run with `-y`. Writing the file
-directly, as below, works fine.
-
-### Problem 2: the `input` workaround prevents the scan
-
-**`workaround=native-input` must NOT be used for the lock screen.** It breaks
-face auth there completely, in a way that looks like a camera fault: the IR
-emitter never fires and the prompt rejects you instantly.
-
-What happens is that native mode is unavailable (no real terminal in a Wayland
-GUI), so howdy falls back to `input`, which installs a uinput observer, waits
-for a hidden-input prompt that never arrives in a GUI conversation, and
-returns immediately without ever scanning. The journal signature:
-
-```
-pam_howdy: Native prompt conversation unavailable, falling back to input workaround
-kernel: input: Howdy virtual keyboard as /devices/virtual/input/input109
-pam_howdy: pam_unix(dankshell:auth): authentication failure
-```
-
-Note the total absence of any verdict line, and that failure lands in the same
-second — far too fast for a scan.
-
-The fix is to omit `workaround=` entirely in the lock-screen config. Because
-`pam_howdy` is `sufficient`, a successful match short-circuits the stack and
-`pam_unix` never prompts, so there is nothing for the workaround to submit.
-It is needed under `sudo` and not here.
+**The file must exist.** `/etc/pam.d/swaylock` was once a symlink to the
+DankMaterialShell PAM file. When that shell was removed the link dangled, PAM
+fell back to `other` (`pam_deny`) and every password failed.
 
 ### Install the lock-screen config
 
-`/etc/pam.d/dankshell` is identical to the generated stack except the
-`pam_howdy.so` line carries no `workaround=` option:
+`system/system/etc/pam.d/swaylock` is copied by `setup.sh` with the rest of
+the tree. To install it alone:
 
 ```sh
-cd ~/.dotfiles/system
+cd ~/.dotfiles
 sudo install -m 644 -o root -g root \
-  system/etc/pam.d/dankshell /etc/pam.d/dankshell
+  system/system/etc/pam.d/swaylock /etc/pam.d/swaylock
 ```
 
-**Prefer regenerating it on a fresh install.** The committed copy is a
-snapshot of this machine's `system-auth` as flattened by dms; a different
-distro release may have a different stack. Regenerate rather than assume:
-
-```sh
-# dms writes the flattened stack to the user state dir and prints the path
-GEN=$(dms auth resolve-lock --quiet)
-
-# same file, with the workaround option stripped from the pam_howdy line
-sed 's/\(pam_howdy\.so\)\s*workaround=\S*/\1/' "$GEN" > /tmp/dankshell.new
-
-sudo install -m 644 -o root -g root /tmp/dankshell.new /etc/pam.d/dankshell
-dms auth validate --path /etc/pam.d/dankshell --json   # never under sudo
-```
-
-`validate` should report `"valid": true` with empty `missingModules` and
-`errors`. Do this **after** step 5, so `system-auth` already contains the
-howdy lines that get flattened in.
-
-Working journal output looks like this:
-
-```
-quickshell.service.pam.subprocess: Starting pam session for user "nova"
-  with config "dankshell" in dir "/etc/pam.d"
-pam_howdy: Face verification succeeded
-```
-
-If dms's own auth sync ever rewrites this file, re-apply the workaround
-removal. The `# BEGIN DMS LOCKSCREEN AUTH` marker comments are retained so
-dms recognizes the file as managed rather than custom.
+Do this **after** step 5, so `system-auth` (reached through `login`) already
+holds the howdy lines.
 
 ---
 
@@ -474,8 +399,8 @@ sudo -k && sudo true        # expect: "Face matched user nova"
 
 Then, at the machine:
 
-- Lock with `dms ipc call lock lock` and look at the camera without pressing
-  anything. The scan takes a few seconds and needs no keypress.
+- Lock with Mod+Shift+L, press Enter on the empty field and look at the
+  camera. The scan takes a few seconds.
 - Reboot and wait at the `ly` greeter instead of typing. This doubles as the
   reboot-persistence test for the udev rule and the emitter service.
 - Trigger any GUI privilege prompt for polkit.
@@ -483,7 +408,7 @@ Then, at the machine:
 Useful during any of these — howdy logs every verdict:
 
 ```sh
-journalctl --since "-3min" | grep -iE "howdy|dankshell|pam_"
+journalctl --since "-3min" | grep -iE "howdy|swaylock|pam_"
 ```
 
 Recovery if the greeter misbehaves: `Ctrl+Alt+F2` to a TTY, log in with your
@@ -498,9 +423,8 @@ password, restore the backup.
 | `All frames were too dark`, darkness 85+ | Emitter not firing, or you are backlit | Check `power/control` is `on`; run `linux-enable-ir-emitter run` manually and re-test |
 | Works once, fails after | The `pam_exec` pre-scan hook is missing or not executable | `sudo /usr/local/bin/howdy-ir-pre` should exit 0 silently |
 | `failed to expend shell variable` | `HOME` unset | Confirm `Environment=HOME=/root` in the unit, `HOME=/root` in the script |
-| Lock screen: instant reject, IR never fires, no verdict in journal | `workaround=` present in the lock-screen config | Remove the option from `/etc/pam.d/dankshell` |
-| Lock screen: edits to `/etc/pam.d/dankshell` have no effect | dms is using its generated state-dir copy | Set `lockPamPath`, then `dms restart`; journal must say `in dir "/etc/pam.d"` |
-| `dms auth sync` hangs or refuses to run | Known: rejects root, hangs on internal prompt with `-y` | Write `/etc/pam.d/dankshell` directly |
+| Lock screen: password fails before the scan ends | `workaround=` on the lock screen's own `pam_howdy` line | Remove the option from `/etc/pam.d/swaylock` |
+| Lock screen: every password fails | `/etc/pam.d/swaylock` missing or a dangling link, so PAM uses `other` | Reinstall it from `system/system/etc/pam.d/swaylock` |
 | Emitter never found by `configure` | Wrong device picked | Re-run and choose the `GREY` device |
 | SSH sessions trying to use the camera | — | Already prevented: `abort_if_ssh = true` is Howdy's default |
 
@@ -608,47 +532,22 @@ fi
 exec systemctl start linux-enable-ir-emitter.service >/dev/null 2>&1
 ```
 
-### `/etc/pam.d/dankshell` (mode 644, root:root)
+### `/etc/pam.d/swaylock` (mode 644, root:root)
 
-Prefer regenerating this rather than copying it verbatim — see the DMS
-section. Note `pam_howdy.so` carries **no** `workaround=` option here,
-unlike in `system-auth`.
+Note `pam_howdy.so` carries **no** `workaround=` option here, unlike in
+`system-auth`.
 
 ```
 #%PAM-1.0
-# BEGIN DMS LOCKSCREEN AUTH (managed by dms greeter sync)
-auth       requisite    pam_nologin.so
-auth       required   pam_shells.so
-auth       requisite  pam_nologin.so
-auth       required                    pam_faillock.so      preauth
-auth       optional                    pam_exec.so          quiet /usr/local/bin/howdy-ir-pre
-auth       sufficient                  pam_howdy.so
--auth      [success=2 default=ignore]  pam_systemd_home.so
-auth       [success=1 default=bad]     pam_unix.so          try_first_pass nullok
-auth       [default=die]               pam_faillock.so      authfail
-auth       optional                    pam_permit.so
-auth       required                    pam_env.so
-auth       required                    pam_faillock.so      authsucc
-account    required   pam_access.so
-account    required   pam_nologin.so
--account   [success=1 default=ignore]  pam_systemd_home.so
-account    required                    pam_unix.so
-account    optional                    pam_permit.so
-account    required                    pam_time.so
-session    optional   pam_loginuid.so
-session    optional   pam_keyinit.so       force revoke
--session   optional                    pam_systemd_home.so
-session    required                    pam_limits.so
-session    required                    pam_unix.so
-session    optional                    pam_permit.so
-session    optional   pam_lastlog2.so      silent
-session    optional   pam_motd.so
-session    optional   pam_mail.so          dir=/var/spool/mail standard quiet
-session    optional   pam_umask.so
--session   optional   pam_systemd.so
-session    required   pam_env.so
--password  [success=1 default=ignore]  pam_systemd_home.so
-password   required                    pam_unix.so          try_first_pass nullok shadow
-password   optional                    pam_permit.so
-# END DMS LOCKSCREEN AUTH
+# Face first, then the stock chain: login -> system-local-login -> system-login -> system-auth.
+# Was a symlink to /etc/pam.d/dankshell; once DankMaterialShell was removed the
+# link dangled, PAM fell back to `other` (pam_deny) and every password failed.
+#
+# Own pam_howdy line WITHOUT workaround=: system-auth's workaround=native-input scans
+# in the background while the password prompt runs, but swaylock answers that prompt
+# instantly with whatever was typed before Enter, so pam_unix failed before the face
+# scan finished. With no workaround Howdy blocks: Enter on an empty field scans the face.
+auth optional   pam_exec.so quiet /usr/local/bin/howdy-ir-pre
+auth sufficient pam_howdy.so
+auth include    login
 ```

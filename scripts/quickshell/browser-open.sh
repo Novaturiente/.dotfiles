@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Open a URL in novabrowser and focus the window the tab landed in.
+# Open a URL in novabrowser-webkit and focus the window the tab landed in.
 # The compositor may not honor the browser's activation request, so focus over IPC.
 # Usage: browser-open.sh <url-or-typed-text>
 #   - full url (has scheme)  -> opened as-is
@@ -7,7 +7,7 @@
 #   - anything else          -> Google search
 set -euo pipefail
 IN="${1:?usage: browser-open.sh <url-or-text>}"
-APP="novabrowser"
+APP="novabrowser-webkit"   # binary name == window app_id (StartupWMClass)
 SEARCH="https://www.google.com/search?q="
 
 if [[ "$IN" =~ ^[a-zA-Z][a-zA-Z0-9+.-]*:// ]]; then

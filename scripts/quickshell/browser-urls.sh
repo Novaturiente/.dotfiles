@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Emit novabrowser bookmarks + history as a JSON array for the Quickshell url menu.
+# Emit novabrowser-webkit bookmarks + history (default profile) as a JSON array for the Quickshell url menu.
 # Each element: {"title":..., "url":..., "icon":..., "bookmark":bool}
-# Bookmarks: ~/.config/novabrowser/bookmarks/urls ("url title" per line, qutebrowser format).
-# History:   ~/.local/share/novabrowser/history.sqlite, ranked the way the browser ranks it.
-# shortcut: no favicons (novabrowser keeps them in CEF's cache, not a readable db), "icon" is always "".
+# Bookmarks: ~/.local/share/novabrowser-webkit/bookmarks/urls ("url title" per line, qutebrowser format).
+# History:   ~/.local/share/novabrowser-webkit/history.sqlite, ranked the way the browser ranks it.
+# shortcut: no favicons (no readable favicon db), "icon" is always "".
 set -euo pipefail
 
 DELIM=$'\t'
-BOOKMARKS="${XDG_CONFIG_HOME:-$HOME/.config}/novabrowser/bookmarks/urls"
-DB="${XDG_DATA_HOME:-$HOME/.local/share}/novabrowser/history.sqlite"
+BOOKMARKS="${XDG_DATA_HOME:-$HOME/.local/share}/novabrowser-webkit/bookmarks/urls"
+DB="${XDG_DATA_HOME:-$HOME/.local/share}/novabrowser-webkit/history.sqlite"
 
 LIST=""
 if [[ -f "$BOOKMARKS" ]]; then

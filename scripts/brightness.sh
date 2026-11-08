@@ -7,17 +7,19 @@ if [ $# -ne 1 ]; then
 fi
 
 # Get current brightness percentage
-current_percent=$(brightnessctl get)
+current_percent=$(brightnessctl -m | cut -d, -f4 | tr -d %)
+# Fine 1% steps at or below this, 5% steps above (same for both directions)
+THRESHOLD=35
 
 # Determine adjustment step
 if [ "$1" = "up" ]; then
-    if [ "$current_percent" -gt 32 ]; then
+    if [ "$current_percent" -ge "$THRESHOLD" ]; then
         brightnessctl set +5%
     else
         brightnessctl set +1%
     fi
 elif [ "$1" = "down" ]; then
-    if [ "$current_percent" -gt 36 ]; then
+    if [ "$current_percent" -gt "$THRESHOLD" ]; then
         brightnessctl set 5%-
     else
         brightnessctl set 1%-

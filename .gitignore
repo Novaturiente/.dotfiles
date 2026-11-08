@@ -20,9 +20,13 @@ nova/.config/gtk-3.0/assets
 nova/.config/gtk-4.0/assets
 nova/.config/gtk-4.0/servers
 
-# KDE Connect identity: private key and its certificate are per-machine secrets
-nova/.config/kdeconnect/privateKey.pem
-nova/.config/kdeconnect/certificate.pem
+# KDE Connect: track only the top-level config; the private key and its
+# certificate are per-machine secrets, device dirs are per-machine state
+nova/.config/kdeconnect/*
+!nova/.config/kdeconnect/config
+
+# winapps: holds the Windows VM password (RDP_PASS), written by scripts/winapps-setup.sh
+nova/.config/winapps/winapps.conf
 
 # Shell history: local only, may hold secrets
 nova/.config/zsh/.histfile

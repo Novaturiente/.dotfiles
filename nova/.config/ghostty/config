@@ -20,7 +20,6 @@ background-blur = true
 # Window Settings
 window-padding-x = 5
 window-decoration = none
-window-save-state = always
 
 # GTK Settings
 gtk-titlebar = false

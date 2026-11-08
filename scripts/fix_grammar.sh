@@ -14,7 +14,7 @@ if [ -z "$NINEROUTER_API_KEY" ]; then
 	exit 1
 fi
 # Save raw API response (before <answer> extraction) for testing; set empty to disable
-DEBUG_OUTPUT_FILE="${DEBUG_OUTPUT_FILE:-/tmp/fix_grammar_response.txt}"
+DEBUG_OUTPUT_FILE="${DEBUG_OUTPUT_FILE:-}"
 # Ensure ydotool knows where to look
 export YDOTOOL_SOCKET="/run/user/$(id -u)/.ydotool_socket"
 
@@ -34,10 +34,8 @@ if [ -z "$INPUT_TEXT" ]; then
 	exit 1
 fi
 
-# Clean input: escape backslashes for sed, then escape double quotes for safe use in PROMPT
-CLEAN_INPUT=$(echo "$INPUT_TEXT" | sed 's/\\/\\\\/g')
-PROMPT_SAFE=$(echo "$CLEAN_INPUT" | sed 's/"/\\"/g')
-notify-send -t 1000 "AI Fix" "Fixing... $CLEAN_INPUT"
+# No manual escaping: jq --arg below JSON-escapes the prompt
+notify-send -t 1000 "AI Fix" "Fixing... $INPUT_TEXT"
 
 # 2. Run AI (9router chat completions API)
 # We keep the tags <answer> in the prompt so we can find the text easily
@@ -47,7 +45,7 @@ PROMPT="You are a grammar correction tool.
 3. Do not include any additional text.
 4. Enclose the fixed text inside <answer> </answer>
 
-Fix this text: $PROMPT_SAFE
+Fix this text: $INPUT_TEXT
 "
 
 # Build JSON body with jq so content is safely escaped (OpenAI chat/completions)

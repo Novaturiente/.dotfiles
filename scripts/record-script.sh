@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 RECORDING_DIR="$(xdg-user-dir VIDEOS)/Screencasts"
-PIDFILE="/tmp/wl-screenrec.pid"
-MODFILE="/tmp/wl-screenrec.recmix-modules"
+PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/wl-screenrec.pid"
+MODFILE="${XDG_RUNTIME_DIR:-/tmp}/wl-screenrec.recmix-modules"
 
 mkdir -p "$RECORDING_DIR"
 
@@ -32,7 +32,8 @@ stop_recording() {
         pid=$(cat "$PIDFILE")
         if kill -0 "$pid" 2>/dev/null; then
             kill -INT "$pid"
-            wait "$pid" 2>/dev/null
+            # not our child (started by an earlier run): poll until it has written the file
+            while kill -0 "$pid" 2>/dev/null; do sleep 0.1; done
             rm -f "$PIDFILE"
             teardown_mix
             notify-send "Recording Stopped" "Saved to $RECORDING_DIR" -a 'wl-screenrec'
@@ -50,6 +51,8 @@ if stop_recording; then
 fi
 
 FILENAME="$RECORDING_DIR/recording_$(getdate).mp4"
+# Fullscreen modes record the focused output (wl-screenrec, hardware encoding)
+OUTPUT=$(~/.dotfiles/scripts/wm.sh output | cut -d" " -f1)
 
 case "$1" in
     --region)
@@ -73,16 +76,16 @@ case "$1" in
         ;;
     --fullscreen-both)
         setup_mix || exit 1
-        notify-send "Recording Screen + System + Mic" "$FILENAME" -a 'wf-recorder'
-        wf-recorder -a recmix.monitor -f "$FILENAME" &
+        notify-send "Recording Screen + System + Mic" "$FILENAME" -a 'wl-screenrec'
+        wl-screenrec -o "$OUTPUT" --audio --audio-device recmix.monitor -f "$FILENAME" &
         ;;
     --fullscreen-audio)
-        notify-send "Recording Screen + Audio" "$FILENAME" -a 'wf-recorder'
-        wf-recorder -a -f "$FILENAME" &
+        notify-send "Recording Screen + Audio" "$FILENAME" -a 'wl-screenrec'
+        wl-screenrec -o "$OUTPUT" --audio -f "$FILENAME" &
         ;;
     *)
-        notify-send "Recording Screen" "$FILENAME" -a 'wf-recorder'
-        wf-recorder -f "$FILENAME" &
+        notify-send "Recording Screen" "$FILENAME" -a 'wl-screenrec'
+        wl-screenrec -o "$OUTPUT" -f "$FILENAME" &
         ;;
 esac
 

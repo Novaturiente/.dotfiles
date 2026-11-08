@@ -70,9 +70,15 @@ def selftest():
 
 def main():
     if os.environ.get("TV_MPRIS") == "0":
+        delay = 5
         while True:
-            ensure_connected()
-            time.sleep(5)
+            # back off while the TV is away (5s doubling to 5min), reset once connected
+            if ensure_connected():
+                delay = 5
+                time.sleep(5)
+            else:
+                time.sleep(delay)
+                delay = min(delay * 2, 300)
     import dbus
     import dbus.service
     from dbus.mainloop.glib import DBusGMainLoop

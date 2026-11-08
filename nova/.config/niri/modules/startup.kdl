@@ -5,7 +5,7 @@
 // The island is the polkit agent (only one can register), so no GNOME agent.
 // spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 // System utilities
-spawn-at-startup "swayidle"
+spawn-at-startup "swayidle" "-w"
 // Island = bar, OSD, notifications, polkit, wallpaper (same as hyprland.lua).
 // Stop the standalone notification daemon so the island owns the bus name.
 spawn-sh-at-startup "systemctl --user stop quickshell-notifications.service; qs -c island -d"

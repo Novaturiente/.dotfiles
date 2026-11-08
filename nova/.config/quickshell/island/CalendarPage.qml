@@ -50,6 +50,14 @@ Page {
         const dt = new Date(yr, mo, dy + delta);
         yr = dt.getFullYear(); mo = dt.getMonth(); dy = dt.getDate();
     }
+    // Plain letter key as "h" or, with Shift, "H"; "" for anything else. From
+    // e.key, not e.text: virtual keyboards (wtype) can send Shift+g as text "g".
+    function vimKey(e) {
+        if (e.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier) || e.key < Qt.Key_A || e.key > Qt.Key_Z)
+            return "";
+        const c = String.fromCharCode(e.key); // Key_A..Key_Z are ASCII A..Z
+        return e.modifiers & Qt.ShiftModifier ? c : c.toLowerCase();
+    }
     function stepMonth(delta) {
         const dt = new Date(yr, mo + delta, 1);
         yr = dt.getFullYear(); mo = dt.getMonth();
@@ -240,7 +248,7 @@ Page {
                 }
             }
 
-            Label { text: "Arrows move the day · PgUp/PgDn month · Home today · Enter opens the day · Tab events · Esc closes" }
+            Label { text: "Arrows/hjkl move the day · g/G first/last · PgUp/PgDn or H/L month · Home/t today · Enter opens the day · Tab events · Esc closes" }
         }
 
         // ═══ ADD EVENT ══════════════════════════════════════════════════
@@ -279,9 +287,10 @@ Page {
                     }
                     MonthGrid {
                         id: addGrid
+                        activeFocusOnTab: true
                         onPicked: addTitle.focusField()
                         onEscaped: page.showMain()
-                        onTabbed: addTitle.focusField()
+                        onTabbed: addGrid.nextItemInFocusChain().forceActiveFocus()
                     }
                 }
 
@@ -313,7 +322,7 @@ Page {
                 }
             }
 
-            Label { text: "Arrows move the day · PgUp/PgDn month · Enter → Title · Enter in Title saves · Esc cancels" }
+            Label { text: "Arrows/hjkl move the day · H/L month · Enter → Title · Tab next field · Space AM/PM · Enter in Title saves · Esc cancels" }
         }
 
         // ═══ SUBMENU ════════════════════════════════════════════════════
@@ -394,7 +403,7 @@ Page {
             bottomPadding: Tokens.padding.extraLarge
             Keys.onPressed: e => {
                 if (e.key === Qt.Key_Escape) page.showMain();
-                else if (e.key === Qt.Key_Left || e.key === Qt.Key_Right || e.key === Qt.Key_Tab) page.confirmYes = !page.confirmYes;
+                else if (e.key === Qt.Key_Left || e.key === Qt.Key_Right || e.key === Qt.Key_Tab || page.vimKey(e) === "h" || page.vimKey(e) === "l") page.confirmYes = !page.confirmYes;
                 else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) page.confirm(page.confirmYes);
                 else return;
                 e.accepted = true;
@@ -417,7 +426,7 @@ Page {
             }
             Label {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "←/→ choose · Enter confirm · Esc back"
+                text: "←/→ or h/l choose · Enter confirm · Esc back"
             }
         }
     }
@@ -432,13 +441,16 @@ Page {
         width: page.gridWidth
         height: calCol.implicitHeight + 2 * Tokens.padding.small
         Keys.onPressed: e => {
-            if (e.key === Qt.Key_Left) page.move(-1);
-            else if (e.key === Qt.Key_Right) page.move(1);
-            else if (e.key === Qt.Key_Up) page.move(-7);
-            else if (e.key === Qt.Key_Down) page.move(7);
-            else if (e.key === Qt.Key_PageUp) page.stepMonth(-1);
-            else if (e.key === Qt.Key_PageDown) page.stepMonth(1);
-            else if (e.key === Qt.Key_Home) page.today();
+            const v = page.vimKey(e);
+            if (e.key === Qt.Key_Left || v === "h") page.move(-1);
+            else if (e.key === Qt.Key_Right || v === "l") page.move(1);
+            else if (e.key === Qt.Key_Up || v === "k") page.move(-7);
+            else if (e.key === Qt.Key_Down || v === "j") page.move(7);
+            else if (e.key === Qt.Key_PageUp || v === "H") page.stepMonth(-1);
+            else if (e.key === Qt.Key_PageDown || v === "L") page.stepMonth(1);
+            else if (v === "g") page.dy = 1;
+            else if (v === "G") page.dy = page.daysIn(page.yr, page.mo);
+            else if (e.key === Qt.Key_Home || v === "t") page.today();
             else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) grid.picked();
             else if (e.key === Qt.Key_Escape) grid.escaped();
             else if (e.key === Qt.Key_Tab) grid.tabbed();
@@ -617,6 +629,14 @@ Page {
         height: 44
         radius: Tokens.rounding.medium
         color: !selected ? (bHover.containsMouse ? Colors.surface2 : Colors.surface1) : destructive ? Colors.red : Colors.accent
+        border.width: activeFocus ? 2 : 0
+        border.color: selected ? Colors.fg : Colors.accent
+        Keys.onPressed: e => {
+            if (e.key === Qt.Key_Space || e.key === Qt.Key_Return || e.key === Qt.Key_Enter) {
+                btn.clicked();
+                e.accepted = true;
+            }
+        }
         T {
             anchors.centerIn: parent
             text: btn.text
@@ -662,6 +682,7 @@ Page {
         Item { width: Tokens.spacing.extraSmall; height: 1 }
         Button {
             width: 72
+            activeFocusOnTab: true
             anchors.verticalCenter: parent.verticalCenter
             text: tp.pm ? "PM" : "AM"
             selected: tp.pm

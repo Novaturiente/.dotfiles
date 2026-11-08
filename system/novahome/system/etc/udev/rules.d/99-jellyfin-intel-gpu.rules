@@ -1,0 +1,5 @@
+# Pin a stable symlink to the Intel iGPU (Alder Lake-P, PCI 0000:00:02.0) render node.
+# The kernel can renumber /dev/dri/renderD128 vs renderD129 (Intel vs NVIDIA RTX 2050)
+# across reboots. Jellyfin's compose maps /dev/dri/intel-render -> /dev/dri/renderD128
+# inside the container, so QuickSync always targets the Intel GPU regardless of numbering.
+SUBSYSTEM=="drm", KERNEL=="renderD*", KERNELS=="0000:00:02.0", SYMLINK+="dri/intel-render"

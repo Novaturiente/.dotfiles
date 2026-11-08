@@ -79,6 +79,7 @@ Page {
     // ── Calculator ─────────────────────────────────────────────────────
     readonly property var calcResult: Tools.calc(calcIn.text)
     property var calcHistory: []
+    property int calcSel: -1 // history line picked with Ctrl+J/K; -1 = the field
     function calcAccept() {
         if (!calcResult)
             return;
@@ -265,6 +266,20 @@ Page {
                 glyph: String.fromCodePoint(0xF00EC)
                 field.placeholderText: "2 * (3 + 4)^2, sqrt(2), 17 % 5…"
                 field.onAccepted: page.calcAccept()
+                field.onTextChanged: page.calcSel = -1
+                onKeyPressed: e => {
+                    const n = page.calcHistory.length;
+                    const ctrl = e.modifiers & Qt.ControlModifier;
+                    if (ctrl && (e.key === Qt.Key_J || e.key === Qt.Key_N) && n)
+                        page.calcSel = Math.min(n - 1, page.calcSel + 1);
+                    else if (ctrl && (e.key === Qt.Key_K || e.key === Qt.Key_P))
+                        page.calcSel = Math.max(-1, page.calcSel - 1);
+                    else if ((e.key === Qt.Key_Return || e.key === Qt.Key_Enter) && page.calcSel >= 0)
+                        calcIn.text = page.calcHistory[page.calcSel].res;
+                    else
+                        return;
+                    e.accepted = true;
+                }
             }
             T {
                 anchors.verticalCenter: undefined
@@ -281,10 +296,11 @@ Page {
                 model: page.calcHistory
                 Rectangle {
                     required property var modelData
+                    required property int index
                     width: page.pageWidth
                     height: 36
                     radius: Tokens.rounding.medium
-                    color: "transparent"
+                    color: index === page.calcSel ? Colors.surface2 : "transparent"
                     T {
                         x: Tokens.padding.medium
                         width: parent.width - 2 * Tokens.padding.medium
@@ -300,7 +316,7 @@ Page {
                     }
                 }
             }
-            Hint { text: "Enter copies the answer and keeps going from it · click a line to reuse it · Esc back" }
+            Hint { text: "Enter copies the answer and keeps going from it · Ctrl+J/K + Enter or click reuses a line · Esc back" }
         }
 
         // ═══ TIMER ══════════════════════════════════════════════════════
@@ -313,7 +329,7 @@ Page {
             Keys.onPressed: e => {
                 if (page.timerTotal === 0)
                     return;
-                if (e.key === Qt.Key_Space)
+                if (e.key === Qt.Key_Space || e.key === Qt.Key_Return || e.key === Qt.Key_Enter)
                     page.timerToggle();
                 else if (e.key === Qt.Key_R)
                     page.timerReset();
@@ -335,15 +351,35 @@ Page {
                     page.timerStart(Tools.parseDuration(timerIn.text));
                     timerIn.text = "";
                 }
+                field.onTextChanged: presets.sel = -1
+                onKeyPressed: e => {
+                    const n = presets.model.length;
+                    const ctrl = e.modifiers & Qt.ControlModifier;
+                    if (ctrl && e.key === Qt.Key_L)
+                        presets.sel = (presets.sel + 1) % n;
+                    else if (ctrl && e.key === Qt.Key_H)
+                        presets.sel = presets.sel <= 0 ? n - 1 : presets.sel - 1;
+                    else if ((e.key === Qt.Key_Return || e.key === Qt.Key_Enter) && presets.sel >= 0) {
+                        const m = presets.model[presets.sel];
+                        presets.sel = -1;
+                        page.timerStart(m * 60);
+                    } else
+                        return;
+                    e.accepted = true;
+                }
             }
             Row {
                 visible: page.timerTotal === 0
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: Tokens.spacing.small
                 Repeater {
+                    id: presets
+                    property int sel: -1 // preset picked with Ctrl+H/L; -1 = the field
                     model: [1, 5, 10, 15, 25, 60]
                     Btn {
                         required property int modelData
+                        required property int index
+                        selected: index === presets.sel
                         width: 80
                         text: modelData < 60 ? modelData + " min" : "1 hour"
                         onClicked: page.timerStart(modelData * 60)
@@ -379,8 +415,8 @@ Page {
                 Btn { text: "Reset"; onClicked: page.timerReset() }
             }
             Hint {
-                text: page.timerTotal === 0 ? "Enter starts · a bare number means minutes · Esc back"
-                    : "Space pause · + one more minute · R reset · Esc back (keeps running)"
+                text: page.timerTotal === 0 ? "Enter starts · a bare number means minutes · Ctrl+H/L pick a preset · Esc back"
+                    : "Space/Enter pause · + one more minute · R reset · Esc back (keeps running)"
             }
         }
 
@@ -518,9 +554,12 @@ Page {
 
     // Search-field look from SearchList, with a leading glyph.
     component Input: Rectangle {
+        id: input
         property alias field: tf
         property alias text: tf.text
         property string glyph
+        // Seen before the field's own keys (it eats Ctrl+K and Ctrl+H); set e.accepted to take one.
+        signal keyPressed(var e)
         function focusField() {
             tf.forceActiveFocus();
         }
@@ -546,6 +585,7 @@ Page {
             font.family: "SF Pro Display"
             font.pixelSize: Tokens.fontSize.larger
             background: null
+            Keys.onPressed: e => input.keyPressed(e)
         }
     }
 

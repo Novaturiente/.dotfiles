@@ -89,7 +89,10 @@ done
 # Run the app on labwc's Xwayland (not niri's satellite). Blocks until it closes.
 # No +auto-reconnect: we want xfreerdp to exit when the app window closes so the
 # container tears down. cleanup() runs on exit regardless.
-DISPLAY="$DISP" xfreerdp3 /v:"$RDP_IP" /u:"$RDP_USER" /p:"$RDP_PASS" /cert:tofu \
+# All arguments go in on stdin, one per line (/args-from:stdin), so the password
+# never appears on argv where ps can see it. (/from-stdin would also prompt for
+# the empty domain first and eat the password line as the domain.)
+printf '%s\n' /v:"$RDP_IP" /u:"$RDP_USER" /p:"$RDP_PASS" /cert:tofu \
     +home-drive +clipboard /sound \
     /wm-class:"$FULL_NAME" \
-    "$app_arg" || true
+    "$app_arg" | DISPLAY="$DISP" xfreerdp3 /args-from:stdin || true

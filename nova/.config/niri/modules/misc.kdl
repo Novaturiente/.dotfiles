@@ -4,12 +4,12 @@
 screenshot-path "~/Desktop/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 switch-events {
     lid-close {
-        spawn "systemctl suspend-then-hibernate"
+        spawn "systemctl" "suspend-then-hibernate"
     }
 }
 cursor {
     xcursor-theme "Bibata-Modern-Classic"
-    xcursor-size 25
+    xcursor-size 24
     hide-when-typing
 }
 // Global background-blur tuning (niri 26.04+). This only sets HOW blur looks;

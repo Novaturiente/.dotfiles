@@ -27,6 +27,9 @@ gui:
       - '#f7768e'
     defaultFgColor:
       - '#c0caf5'
+    # Catppuccin Mocha (mauve)
+    authorColors:
+      '*': '#9d7cd8'
   # Accordion: only the focused side section is expanded; all others
   # collapse to a single title line (one expanded at a time).
   expandFocusedSidePanel: true
@@ -39,7 +42,6 @@ gui:
   sidePanelWidth: 0.5
   # Hide the bottom command log / extras panel by default
   showCommandLog: false
-
 os:
   # Open files in Neovim in a NEW tmux window (lazygit stays in its
   # pane). editInTerminal false = lazygit does not grab the terminal; the
@@ -50,7 +52,3 @@ os:
   editAtLine: '~/.dotfiles/scripts/lazygit-edit.sh "{{filename}}" {{line}}'
   editInTerminal: false
   open: '~/.dotfiles/scripts/lazygit-edit.sh "{{filename}}"'
-
-# Catppuccin Mocha (mauve)
-authorColors:
-  '*': '#9d7cd8'

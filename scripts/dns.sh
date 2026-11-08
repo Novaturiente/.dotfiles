@@ -12,5 +12,6 @@ if [[ "$ACTION" == "on" ]]; then
 elif [[ "$ACTION" == "off" ]]; then
 	nmcli connection modify "$CONNECTION" ipv4.ignore-auto-dns no
 	nmcli connection modify "$CONNECTION" ipv6.ignore-auto-dns no
+	nmcli connection modify "$CONNECTION" ipv4.dns "" ipv6.dns ""
 	nmcli connection down "$CONNECTION" && nmcli connection up "$CONNECTION"
 fi

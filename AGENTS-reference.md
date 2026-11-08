@@ -9,28 +9,31 @@ Detail split out of `AGENTS.md` to keep the always-loaded context small. Read th
 | **Shell** | zsh (primary, default login shell); fish config is kept but unused |
 | **Terminal** | Ghostty (ZedMono Nerd Font, size 13, themed by `scripts/theme.sh`, `background-opacity = 0.0` + blur) |
 | **Multiplexer** | tmux (prefix: backtick `` ` ``, vi mode) |
-| **History** | atuin (synced) |
+| **History** | atuin (synced; `~/.config/atuin` is a stow link, up-key filter = directory, AI enabled) |
 | **Navigation** | zoxide (cd replacement), fzf (fuzzy finder) |
 | **ls replacement** | eza (with icons and color) |
 | **cat replacement** | bat (plain mode default) |
 | **find replacement** | fd |
 | **grep replacement** | ripgrep (rg) |
 
+The graphical session PATH and GNUPGHOME come from `nova/.config/environment.d/10-path.conf`; cargo lives in `~/.local/share/cargo/bin`, bun in `~/.local/share/bun`.
+
 ### Shell Config Loading Order
 1. `.profile` — XDG dirs, API keys, base env
 2. `.zprofile` — login overrides (Rust mirrors)
 3. `.zshrc` — sources `.profile`, then loads from `$XDG_CONFIG_HOME/zsh/`:
-   - `variables.zsh` — editor, PATH, locale
+   - `variables.zsh` — editor, man pager, Go PATH, locale
    - `aliases.zsh` — aliases and helper functions (eza, trash, git, ssh, `cproj`)
    - `pluginload.zsh` — zsh plugins (autopair, syntax-highlighting, deja inline suggestions); the fish-style Tab menu is native `menu select`, configured in `.zshrc`
-   - `prompt.zsh` — powerline-style prompt with git/language detection
+   - `prompt.zsh` — powerline-style prompt with git/language detection (one `git status --porcelain=v2` call per prompt; clock via `%D{}`)
 4. **fish** (unused, zsh is the login shell) — `~/.config/fish/config.fish` re-declares the same env/PATH, then auto-loads `conf.d/*.fish` (aliases, autopair, auto-venv). Completions: carapace bridge + native fish + man-page-generated (`fish_update_completions`). Plugins via fisher (`fish_plugins`). Inline autosuggestions read `~/.local/share/fish/fish_history` (not atuin's DB).
 
 ### Notable Aliases
-- `rm` → `trash-put` (safe delete)
+- `rm` → `trash` (safe delete)
 - `cp` → `rsync` (progress bar)
 - `ls/la/ll/lt` → `eza` variants
 - `gadd` → auto-stage and commit with message
+- `cproj [dir]` → tmux session with lazygit (30%) + novacode (70%)
 - `winstart/winstop` → start/stop the local WinApps Windows VM (docker compose, `~/.config/winapps/compose.yaml`)
 - `winrestart/winsopen` → drive the Windows VM on `novahome` over ssh + docker
 
@@ -52,58 +55,54 @@ Detail split out of `AGENTS.md` to keep the always-loaded context small. Read th
 | Script | Purpose |
 |--------|---------|
 | `brightness.sh` | Adaptive step brightness (1% below 32%, 5% above) |
-| `volume.sh` | playerctl volume adjust |
-| `battery-limit.sh` | Lenovo IdeaPad conservation mode (70%+ → enable). Lives in `system/system/usr/local/bin/`; the root timer runs the root-owned copy in `/usr/local/bin`, never the user-writable repo file |
 | `dns.sh` | Toggle Adguard DNS on NetworkManager connection |
 | `tv-only-output.sh` | Switch niri output to the TV only (niri-only; uses `niri msg`) |
-| `wm.sh` | Compositor shim: `focused`, `windows`, `focus <id>`, `focus-app <name>`, `dpms on\|off`. Returns niri's JSON shape under both Hyprland (`hyprctl`) and niri. Detects Hyprland by a live socket, not just `HYPRLAND_INSTANCE_SIGNATURE` |
+| `wm.sh` | Compositor shim: `focused`, `windows`, `focus <id>`, `focus-app <name>`, `dpms on\|off`, `name`, `output` (focused output's `name x y scale`). Unknown subcommands print usage and exit 2. Returns niri's JSON shape under both Hyprland (`hyprctl`) and niri. Detects Hyprland by a live socket, not just `HYPRLAND_INSTANCE_SIGNATURE` |
+| `tv-remote` | Patched android-tv-remote wrapper (chunked scrcpy-server push, scrcpy version match); `~/.local/bin/tv-remote` symlinks here |
+| `backup_secrets.sh` | Encrypted 7z of `~/.ssh` and `~/.gnupg` to `~/.local/share/backups/secrets.7z` |
 
 ### Productivity
 | Script | Purpose |
 |--------|---------|
-| `fix_grammar.sh` | Clipboard text → NVIDIA API (gpt-oss-120b) → grammar correction → paste back |
+| `fix_grammar.sh` | Clipboard text → 9router gateway on `novahome` (OpenAI-compatible; `NINEROUTER_URL`, `NINEROUTER_MODEL`) → grammar correction → paste back |
 | `ocr_select.sh` | Region select → screenshot → RapidOCR (PP-OCRv6, `python-rapidocr` AUR) → clipboard |
 | `file_picker.sh` | Zenity file dialog → wl-copy → ydotool paste |
-| `calendar-notify.sh` | Parse khal events → schedule 10min-before notifications via `at` |
-| `screenshot-region.sh` | Region screenshot to stdout: grabs the full screen before `slurp` (which steals focus and closes app popups), then crops with `magick`. Used by `Print` in Hyprland (`Mod+Shift+S` uses `screenshot-edit.sh` instead) |
+| `screenshot-region.sh` | Region screenshot to stdout: grabs the full screen before `slurp` (which steals focus and closes app popups), then crops with `magick`. Used by `Print` in Hyprland (`Mod+Shift+S` uses `screenshot-edit.sh` instead). Scales the crop by the focused output's scale (`wm.sh output`), so it works on scaled monitors and under niri |
 | `screenshot-edit.sh` | `Mod+Shift+S`: frozen full-screen frame in `satty` with the crop tool (popups stay visible), then only the cropped part reopens in `satty` for annotating and copying |
-| `record-script.sh` | wl-screenrec wrapper (full/region/audio modes) |
+| `record-script.sh` | Screen recorder: wf-recorder (region), wl-screenrec on the focused output (fullscreen, VAAPI); full/region/audio modes. Pid file in `$XDG_RUNTIME_DIR` |
 
 ### Rofi Menus (`scripts/rofi/`)
 | Script | Purpose |
 |--------|---------|
-| `calendar.sh` | khal calendar front-end |
-| `passrofi.sh` | rbw password picker with per-domain autofill |
-| `windows.sh` | Window switcher for niri (Hyprland uses the island's `switcher` page on Mod+Tab / Alt+Tab) |
 | `tv-edit.sh` | Edit the TV output configuration |
 
 ### Keybinding Extractors (`scripts/keybindings/`)
-One extractor per app writes `bindings/<app>.txt`: `extract-hyprland-keybindings.sh`, `extract-niri-keybindings.sh`, neovim (csvlens is hand-written).
+One extractor per app writes `~/.cache/keybindings/<app>.txt` (not tracked): `extract-hyprland-keybindings.sh`, `extract-niri-keybindings.sh`, neovim. Hand-written sheets (csvlens) stay in `scripts/keybindings/bindings/`.
 - **Hyprland:** `hyprctl binds` shows every action as `__lua`, so the extractor runs `hypr/binds.lua` under plain `lua` with a stub `hl` that records each `hl.bind()`. A bind whose derived label is unclear gets `{ description = "..." }` in `binds.lua`; the extractor prefers it.
 - **Viewer:** Mod+Shift+/ opens the island's `keybindings` page (`island/KeybindsPage.qml`, `qs -c island ipc call island toggle keybindings`). Its backend `scripts/quickshell/kbctl.sh` refreshes and lists bindings, showing only the running compositor's file (`wm.sh name` → `hyprland` or `niri`), first.
-- `keybindings.sh` (rofi) is the older viewer; nothing binds it and it still only refreshes niri.
 
 ## System Configuration
 
 ### Power Management (TLP)
 - AC: performance governor, performance EPP
 - Battery: powersave governor, balance_power EPP
-- No charge thresholds in TLP (its ideapad driver only takes 0/1); `battery-limit.timer` toggles conservation mode
+- Charge limit: `STOP_CHARGE_THRESH_BAT1="1"` keeps IdeaPad conservation mode on (TLP's lenovo driver only takes 0/1; the battery is `BAT1`)
+- USB autosuspend skips the camera (`USB_DENYLIST="5986:2169"`); NVMe uses `DISK_IOSCHED="none"`
 - WiFi power saving: off on AC, on on battery
 - Sleep mode: s2idle (modern standby)
 
 ### Firewall (ufw)
 - Incoming and routed: DROP by default; outgoing: ACCEPT
-- Allow: SSH (22), KDE Connect (1714-1764 tcp/udp), 3000, 3001, mDNS/SSDP and 192.168.220.0/24 on wlan0
+- Allow: SSH (22) and dev servers (3000, 3001, tcp) only on `tailscale0` and from 192.168.0.0/16; KDE Connect (1714-1764 tcp/udp); mDNS/SSDP and 192.168.220.0/24 on wlan0
 - Rules are recreated by `setup.sh`
 
 ### Boot
 - systemd-boot (managed by `systemd-boot-manager`); no GRUB on this system
-- Kernel params: `zswap.enabled=0 nowatchdog quiet splash` (btrfs root on subvol `@`)
+- Kernel params: `nowatchdog quiet splash` (btrfs root on subvol `@`). zswap is not on the command line; CachyOS's `/usr/lib/udev/rules.d/30-zram.rules` turns it off at runtime because zram is used
+- Power key and lid switch: logind ignores both (`system/system/etc/systemd/logind.conf.d/10-keys.conf`); the compositor binds own them (Hyprland `binds.lua`, niri `binds.kdl` and `misc.kdl` `switch-events`)
 
 ### Systemd Services
-- `battery-limit.timer` — runs `/usr/local/bin/battery-limit.sh` as root every 5 min
-- `rapl-watts.service` — runs `/usr/local/bin/rapl-watts` as root: writes the CPU package power (RAPL, 2 s average) to `/run/rapl-watts`, which the island's battery page shows on AC. The raw counter stays root-only (Platypus, CVE-2020-8694)
+- `rapl-watts.service` — runs `/usr/local/bin/rapl-watts` as root: writes the CPU package power (RAPL, 2 s average) to `/run/rapl-watts`, which the island's battery page shows on AC. On battery it does no work and removes the file. The raw counter stays root-only (Platypus, CVE-2020-8694)
 - `paccache.timer` — weekly; keeps 2 versions of installed packages, none of uninstalled (drop-in in `system/system/etc/systemd/system/paccache.service.d/`)
 - Battery alerts come from the Quickshell island (batsignal was removed)
 
@@ -123,10 +122,12 @@ adding one palette file. See `system/themes/README.md`.
   scripts/theme.sh" header. Edit the template or the palette instead.
 - **GTK:** `scripts/theme.sh` renders `gtk.css` + `theme-colors.css` into `~/.config/gtk-{3,4}.0/` (not stowed).
   The widget theme (`adw-gtk3-dark`) is fixed — only the colours change.
+  `~/.config/gtk-3.0` and `gtk-4.0` are real directories: `settings.ini` (and gtk-3.0's `bookmarks`) are stow links, `gtk.css` and `theme-colors.css` are rendered there by `theme.sh`; cursor is Bibata-Modern-Classic 24 everywhere (GTK, gsettings, Hyprland, niri).
+- **hyprglass** (Liquid Glass Hyprland plugin): `hyprland.lua` loads `~/.local/share/hyprglass/hyprglass.so` at startup. Rebuild it after each Hyprland upgrade: clone https://github.com/hyprnux/hyprglass, `make`, copy `hyprglass.so` to `~/.local/share/hyprglass/`.
 - **Qt:** left to the xdg portal; not templated here
 - **Terminal font:** ZedMono Nerd Font (size 13)
 - **Editor font:** JetBrains Mono NL Nerd Font (size 13-15)
-- **Icon theme:** Cool-Dark-Icons (Rofi), breeze-dark (GTK)
+- **Icon theme:** breeze-dark (Rofi, GTK, Qt via `kdeglobals`); Qt widget style Fusion
 
 ## Notifications
 
@@ -138,8 +139,8 @@ dashboard; right-click it (or the dashboard's bell) for `hub` (media player + in
 lost on island restart).
 
 **Fallback** popups come from `nova/.config/quickshell/notifications/`, ported by
-hand from caelestia-shell, via `quickshell-notifications.service` (pulled in by
-`graphical-session.target`, stopped once the island starts). Popups only. The
+hand from caelestia-shell, via `quickshell-notifications.service` (not enabled; start it by hand with
+`systemctl --user start quickshell-notifications.service` if the island is down). Popups only. The
 unit sets `QML2_IMPORT_PATH` itself, because niri's `environment {}` block only
 reaches processes niri spawns. Its do-not-disturb is
 `qs -c notifications ipc call notifs dnd` (`status`, `clear` too).
@@ -150,7 +151,7 @@ which is deliberate.
 
 ## Browsers
 - **Primary:** novabrowser-webkit (`/usr/sbin/novabrowser-webkit`, WebKitGTK build, package `novabrowser-webkit-bin`). Default for web links via `mimeapps.list` and `$BROWSER` (`.profile`); Mod+W, Mod+Ctrl+W (`--profile=Work`), Mod+Shift+W (`--profile=personal`)
-- **CEF build:** novabrowser (`/usr/sbin/novabrowser`, qutebrowser-style config in `~/.config/novabrowser/`). Mod+S opens the `browser-url` Quickshell menu (`scripts/quickshell/browser-url*.sh`, `browser-open.sh`) over its bookmarks and history
+- **CEF build:** novabrowser (`/usr/sbin/novabrowser`, qutebrowser-style config in `~/.config/novabrowser/`). Mod+S opens the `browser-url` Quickshell menu (`scripts/quickshell/browser-url*.sh`, `browser-open.sh`) over novabrowser-webkit's bookmarks (`~/.local/share/novabrowser-webkit/bookmarks/urls`) and history (`~/.local/share/novabrowser-webkit/history.sqlite`), opening links in novabrowser-webkit
 - **Previous:** Zen Browser; still installed, its theme templates remain in `system/themes/templates/apps/zen-browser/`
 - **Work:** Google Chrome
 
@@ -162,11 +163,12 @@ which is deliberate.
 - **Lua** (luarocks)
 - **Java** (OpenJDK, for work)
 - **Databases:** PostgreSQL (+ pgvector), MySQL, DBeaver GUI
-- **Containers:** Docker (WinApps connects to a Windows VM on `novahome` in manual mode)
+- **Containers:** Docker (WinApps connects to a Windows VM on `novahome` in manual mode). `nova/.config/winapps/winapps.conf` is gitignored (holds `RDP_PASS`); `scripts/winapps-setup.sh` creates it and prompts for the password
+- **KDE Connect:** only `nova/.config/kdeconnect/config` is tracked; the private key, certificate and device dirs are gitignored
 - **Git tools:** lazygit, git-filter-repo
 
 ## File Management
-- No terminal file manager is installed; browse from the shell or `broot`.
+- No terminal file manager is installed (superfile was removed; broot is not installed); browse from the shell.
 - **MIME defaults** (`nova/.config/mimeapps.list`): novabrowser-webkit (web), Neovim (Markdown, CSV/TSV, Org, plain text, logs, code, config), zathura (PDF, epub, PostScript), imv (images), mpv (video/audio). Without a desktop environment, `xdg-open` detects type by content (`file`), so small scripts can read as `text/plain` and open in Neovim; GTK apps detect by extension and are unaffected
 
 ## Hardware Specifications
@@ -195,8 +197,8 @@ which is deliberate.
 | **Networking** | Tailscale VPN active, Docker/Podman bridge networks |
 
 ### Hardware-Specific Config Notes
-- **TLP** is tuned for Meteor Lake: s2idle sleep, Intel HWP, NatACPI enabled (charge limit handled by `battery-limit.timer`)
-- **Battery conservation** managed via Lenovo IdeaPad ACPI sysfs (`/sys/bus/platform/drivers/ideapad_acpi/`)
+- **TLP** is tuned for Meteor Lake: s2idle sleep, Intel HWP, NatACPI enabled (charge limit: TLP `STOP_CHARGE_THRESH_BAT1="1"`)
+- **Battery conservation** is IdeaPad conservation mode, set by TLP through the `ideapad_laptop` driver (`/sys/class/power_supply/BAT1/charge_types`)
 - **intel-compute-runtime** + **intel-media-driver** installed for OpenCL and media acceleration
 - NPU: kernel driver (`intel_vpu`) loaded; the userspace `intel-npu-driver` is not installed
 - **No NVIDIA or gaming packages** — there is no NVIDIA package list (nvidia.toml was removed); gaming.yaml and Steam were removed 2026-09-26

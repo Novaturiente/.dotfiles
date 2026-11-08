@@ -8,12 +8,9 @@ source ~/.profile
 # -------------------------------------------------------------------
 source $XDG_CONFIG_HOME/zsh/variables.zsh
 
-[ -f ~/.env.zsh ] && source ~/.env.zsh
-[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
-
 # Deduplicate PATH (paths already added by .profile / variables.zsh)
 typeset -U path PATH
-path=("$HOME/.local/bin" "$HOME/.cargo/bin" "$HOME/.npm-global/bin" $path)
+path=("$HOME/.local/bin" "$HOME/.local/share/cargo/bin" "$HOME/.npm-global/bin" $path)
 
 # Cache dir for generated tool-init scripts + the compdump
 [ -d "${XDG_CACHE_HOME:-$HOME/.cache}/zsh" ] || mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
@@ -91,6 +88,7 @@ autoload -Uz compinit
 ZSH_COMPDUMP="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump"
 if [[ -n $ZSH_COMPDUMP(#qN.mh+24) ]]; then
   compinit -d "$ZSH_COMPDUMP"        # dump >24h old -> full rebuild + security audit
+  touch "$ZSH_COMPDUMP"              # compinit leaves an unchanged dump's mtime alone
 else
   compinit -C -d "$ZSH_COMPDUMP"     # fresh -> trust cache, skip audit
 fi
@@ -127,21 +125,6 @@ _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/fzf.zsh" fzf --zsh
 _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/atuin.zsh" atuin init zsh
 
 # -------------------------------------------------------------------
-# Google Cloud SDK
-# -------------------------------------------------------------------
-[ -f "$HOME/google-cloud-sdk/path.zsh.inc" ] && . "$HOME/google-cloud-sdk/path.zsh.inc"
-[ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ] && . "$HOME/google-cloud-sdk/completion.zsh.inc"
-
-# -------------------------------------------------------------------
-# Bun
-# -------------------------------------------------------------------
-[ -s "$HOME/.bun/_bun" ] && zsh-defer source "$HOME/.bun/_bun"
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-zsh-defer source /home/nova/.config/broot/launcher/bash/br
-
-# -------------------------------------------------------------------
 # Vi-mode UX parity with fish (cursor shape per mode + `jk` to exit insert)
 #   Uses add-zle-hook-widget so it chains with fast-syntax-highlighting /
 #   deja instead of clobbering their zle-keymap-select hook.
@@ -172,9 +155,6 @@ _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/carapace.zsh" carapace _carapac
 # zoxide — MUST be initialized last (zoxide doctor requirement)
 # -------------------------------------------------------------------
 _cache_eval "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zoxide.zsh" zoxide init zsh --cmd cd
-
-# bun completions
-[ -s "/home/nova/.bun/_bun" ] && source "/home/nova/.bun/_bun"
 
 # zoxide: suppress the init-order doctor warning (noise in every command output)
 export _ZO_DOCTOR=0

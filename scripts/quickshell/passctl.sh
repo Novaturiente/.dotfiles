@@ -9,8 +9,8 @@
 set -euo pipefail
 
 CLIP_TIMEOUT=45
-TIMER_PID_FILE="/tmp/passctl-timer.pid"
-UNLOCK_LOCK="/tmp/passctl-unlock.lock"
+TIMER_PID_FILE="${XDG_RUNTIME_DIR:-/tmp}/passctl-timer.pid"
+UNLOCK_LOCK="${XDG_RUNTIME_DIR:-/tmp}/passctl-unlock.lock"
 DEFAULT_SEQ="username :tab password :enter"
 
 notify() { notify-send -a "Pass" -t "${2:-3000}" "$1"; }
@@ -182,7 +182,7 @@ cmd_add() {     # <url> <username> <password|''>  ('' = generate); prints uuid
     local url="$1" user="$2" pw="${3:-}" name
     name=$(sed -E 's|https?://||; s|www\.||; s|/.*||' <<<"$url")
     if [[ -z "$pw" ]]; then
-        pw=$(tr -dc 'A-Za-z0-9!@#$%^&*' </dev/urandom | head -c 24)
+        pw=$(head -c 512 /dev/urandom | tr -dc 'A-Za-z0-9!@#$%^&*' | head -c 24)
         printf '%s' "$pw" | wl-copy
         notify "Password generated and copied" 5000
     fi

@@ -16,14 +16,14 @@ Complete system configuration for an Arch Linux (CachyOS kernel) setup on a Leno
 │   └── .tmux.conf         # Tmux configuration
 ├── scripts/               # Custom utility scripts
 │   ├── quickshell/        # Launchers/controllers for the Quickshell menus
-│   ├── rofi/              # Rofi menus (calendar, passwords, niri window switcher, tv-edit)
+│   ├── rofi/              # Rofi menus (tv-edit)
 │   ├── keybindings/       # Extract keybindings from Hyprland/niri/nvim configs
 │   └── wm.sh              # Compositor shim: same answers under Hyprland and niri
 ├── system/
 │   ├── packages/          # novarch TOML package lists (shared + hosts/<hostname>/)
 │   ├── system/            # System config files (mirrors / filesystem)
 │   │   ├── etc/           # TLP, PAM, sudoers, systemd units, udev, docker
-│   │   └── usr/           # /usr/local/bin helpers (battery-limit, vpn-run, howdy-ir-pre)
+│   │   └── usr/           # /usr/local/bin helpers (vpn-run, mullvad-netns, howdy-ir-pre, rapl-watts)
 │   ├── themes/            # Palettes + templates rendered by scripts/theme.sh
 │   └── setup.sh           # First-boot system setup script
 ├── AGENTS.md              # Agent guide: rules and orientation
@@ -47,7 +47,7 @@ cd ~/.dotfiles/system
 - Deploy system configs (`sudo cp -r system/system/. /`)
 - Symlink home directory configs via `stow -d ~/.dotfiles -t ~ nova` (`~/.novacode` is created first, so only its config files are linked)
 - Install novacode (release script) and its packages at the tags pinned in `nova/.novacode/packages.lock.json`
-- Enable systemd services (`ly@tty2`, `battery-limit.timer`, `paccache.timer`, `pkgfile-update.timer`)
+- Enable systemd services (`ly@tty2`, `rapl-watts.service`, `paccache.timer`, `pkgfile-update.timer`)
 - Set zsh as default shell
 - Configure the ufw firewall
 - Reboot
@@ -173,8 +173,6 @@ Full list with details: `AGENTS-reference.md` → Scripts.
 | Script | Purpose |
 |--------|---------|
 | `brightness.sh` | Adaptive brightness (1% step below 32%, 5% above) via brightnessctl |
-| `volume.sh` | Media volume via playerctl |
-| `battery-limit.sh` | Lenovo IdeaPad battery conservation mode (in `system/system/usr/local/bin/`) |
 | `dns.sh` | Toggle Adguard DNS on a NetworkManager connection |
 | `wm.sh` | Compositor shim (focused window, window list, focus, dpms, session name) for Hyprland and niri |
 
@@ -185,16 +183,12 @@ Full list with details: `AGENTS-reference.md` → Scripts.
 | `fix_grammar.sh` | Clipboard text → LLM API → grammar correction → paste back |
 | `ocr_select.sh` | Region select → screenshot → RapidOCR → clipboard |
 | `file_picker.sh` | Zenity file dialog → clipboard → ydotool paste |
-| `calendar-notify.sh` | Parse khal events → schedule 10min-before notifications via `at` |
 | `record-script.sh` | wf-recorder / wl-screenrec wrapper (full/region/audio modes) |
 
 ### Rofi Menus (`scripts/rofi/`)
 
 | Script | Purpose |
 |--------|---------|
-| `calendar.sh` | khal calendar front-end |
-| `passrofi.sh` | rbw password picker with per-domain autofill |
-| `windows.sh` | Window switcher for niri |
 | `tv-edit.sh` | Edit the TV output configuration |
 
 ### Keybindings cheat-sheet (`scripts/keybindings/`)
@@ -214,18 +208,17 @@ Full list with details: `AGENTS-reference.md` → Scripts.
 | Turbo Boost | on | on |
 | Sleep Mode | s2idle (modern standby) | |
 
-No charge thresholds in TLP; `battery-limit.timer` toggles IdeaPad conservation mode instead.
+Charge limit: TLP keeps IdeaPad conservation mode on permanently (`STOP_CHARGE_THRESH_BAT1="1"`).
 
 ### Boot
 
 - systemd-boot (managed by `systemd-boot-manager`); no GRUB
-- Kernel params: `zswap.enabled=0 nowatchdog quiet splash`
+- Kernel params: `nowatchdog quiet splash` (zswap is turned off at runtime by CachyOS's `30-zram.rules`)
 
 ### Systemd Services
 
 | Service | Purpose |
 |---------|---------|
-| `battery-limit.timer` | Runs battery limit script every 5 min |
 | `paccache.timer` | Weekly; keeps 2 versions of installed packages |
 
 Battery alerts come from the Quickshell island.
@@ -233,12 +226,12 @@ Battery alerts come from the Quickshell island.
 ### Firewall (ufw)
 
 - Incoming and routed: DROP by default; outgoing: ACCEPT
-- Allow: SSH (22), KDE Connect (1714–1764 tcp/udp), 3000, 3001, mDNS/SSDP and 192.168.220.0/24 on wlan0
+- Allow: SSH (22) and dev ports 3000, 3001 only on `tailscale0` and from 192.168.0.0/16, KDE Connect (1714–1764 tcp/udp), mDNS/SSDP and 192.168.220.0/24 on wlan0
 
 ## Browsers
 
 - **Primary:** novabrowser-webkit (`$BROWSER`, Mod+W)
-- **Also installed:** novabrowser (CEF build; Mod+S URL bar still reads its bookmarks and history)
+- **Also installed:** novabrowser (CEF build). Mod+S URL bar reads novabrowser-webkit's bookmarks and history
 - **Previous:** Zen Browser
 - **Work:** Google Chrome
 

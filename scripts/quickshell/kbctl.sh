@@ -2,12 +2,14 @@
 # kbctl — headless backend for the Quickshell keybindings cheat-sheet.
 # `refresh` re-runs the per-app extractors (with the CORRECT config paths, incl.
 # niri's binds now living in modules/binds.kdl); `list` emits every app's
-# bindings as JSON for the tabbed UI. Source of truth: scripts/keybindings/bindings/*.txt
+# bindings as JSON for the tabbed UI. Generated files: ${XDG_CACHE_HOME:-~/.cache}/keybindings/*.txt;
+# hand-written ones (csvlens.txt): scripts/keybindings/bindings/*.txt
 # Only the running compositor's tab is shown (hyprland.txt or niri.txt).
 set -euo pipefail
 
 KB="$HOME/.dotfiles/scripts/keybindings"
-BIN="$KB/bindings"
+BIN="${XDG_CACHE_HOME:-$HOME/.cache}/keybindings"   # extractor output
+STATIC="$KB/bindings"                              # hand-written, tracked
 WM_NAMES=(hyprland niri)
 WM=$(bash "$HOME/.dotfiles/scripts/wm.sh" name)
 
@@ -26,7 +28,7 @@ cmd_list() {
     # Running WM first, the rest alphabetical; other WMs' files are skipped. The UI
     # opens on the first entry, and that should be the window manager.
     local files=("$BIN/$WM.txt")
-    for f in "$BIN"/*.txt; do
+    for f in "$BIN"/*.txt "$STATIC"/*.txt; do
         [[ " ${WM_NAMES[*]} " == *" $(basename "$f" .txt) "* ]] || files+=("$f")
     done
     for f in "${files[@]}"; do

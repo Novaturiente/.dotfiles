@@ -24,7 +24,7 @@ _tmux_state_save() { ~/.config/tmux/state.sh save 2>/dev/null; }
 # Bare `tmux` there runs the fish wrapper: starts tmux.service if needed, then attaches.
 alias th="ssh -t novahome tmux"
 
-# Claude project: lazygit (30%) + claude --dangerously-skip-permissions (70%)
+# Claude project: lazygit (30%) + novacode (70%)
 # in a persistent tmux session named after the target dir (default: $PWD).
 # Inside tmux -> switch-client; outside tmux -> start tmux and attach.
 cproj() {
@@ -39,12 +39,12 @@ cproj() {
     session="${session//./-}"
     session="${session// /_}"
 
-    export PATH="$HOME/.local/bin:${CARGO_HOME:-$HOME/.cargo}/bin:$HOME/.npm-global/bin:${GOPATH:-$HOME/go}/bin:$PATH"
+    export PATH="$HOME/.local/bin:${CARGO_HOME:-$HOME/.local/share/cargo}/bin:$HOME/.npm-global/bin:${GOPATH:-$HOME/go}/bin:$PATH"
     tmux set-environment -g PATH "$PATH" 2>/dev/null || true
 
     local lazygit_bin claude_cmd
     lazygit_bin="$(command -v lazygit || echo /usr/bin/lazygit)"
-    claude_cmd="$(command -v claude || echo "$HOME/.local/bin/claude") --dangerously-skip-permissions"
+    claude_cmd="$(command -v novacode || echo novacode)"
 
     local needs_rebuild=1
     if tmux has-session -t="$session" 2>/dev/null; then
@@ -115,8 +115,6 @@ alias systemupdate="sudo reflector --latest 10 --protocol https --sort rate --sa
 
 
 alias eeclogin="ssh -i ~/.ssh/id_eecdev eecdev@$EEC_SERVER_IP"
-
-alias cld="claude --dangerously-skip-permissions"
 
 # Alias, not a symlink: the process stays named novacode for the tmux sidebar.
 alias nv="novacode"

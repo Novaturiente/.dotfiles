@@ -182,7 +182,7 @@ Page {
                 onAccepted: (i, m) => { if (m) page.runSubAction(m.id); }
                 onEscaped: page.back()
             }
-            Hint { text: "↑↓ move · Enter select · Esc back" }
+            Hint { text: "↑↓ or Ctrl+J/K move · Enter select · Esc back" }
         }
 
         // ═══ ADD PASSWORD ═══════════════════════════════════════════════
@@ -228,7 +228,7 @@ Page {
             bottomPadding: Tokens.padding.extraLarge
 
             Keys.onPressed: e => {
-                if (e.key === Qt.Key_Left || e.key === Qt.Key_Right || e.key === Qt.Key_Tab) page.confirmSel = 1 - page.confirmSel;
+                if (e.key === Qt.Key_Left || e.key === Qt.Key_Right || e.key === Qt.Key_Tab || ((e.key === Qt.Key_H || e.key === Qt.Key_L) && !e.modifiers)) page.confirmSel = 1 - page.confirmSel;
                 else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter) page.confirm(page.confirmSel === 0);
                 else if (e.key === Qt.Key_Escape) page.back();
                 else return;
@@ -277,7 +277,7 @@ Page {
             Hint {
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
-                text: "←→ choose · Enter confirm · Esc cancel"
+                text: "←→ or h/l choose · Enter confirm · Esc cancel"
             }
         }
     }

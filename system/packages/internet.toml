@@ -4,11 +4,9 @@ packages = [
   "zen-browser-bin",
   "firefoxpwa",
   "browserpass",
-  "thunderbird",
   "wireguard-tools",
   "kdeconnect",
   "localsend",
-  "cryptomator",
   "cryptomator-cli",
   "anydesk-bin",
 ]

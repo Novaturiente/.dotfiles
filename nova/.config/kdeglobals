@@ -141,13 +141,12 @@ Splitter State=\x00\x00\x00\xff\x00\x00\x00\x01\x00\x00\x00\x02\x00\x00\x00\x9a\
 ColorSchemeHash=9f63c7711a13123582e720791ea0f8c0172977d2
 TerminalApplication=ghostty
 TerminalService=com.mitchellh.ghostty.desktop
-widgetStyle=kvantum
+widgetStyle=Fusion
 
 [Icons]
-Theme=BigSur-black-dark
+Theme=breeze-dark
 
 [KDE]
-LookAndFeelPackage=com.github.yeyushengfan258.McSur-dark
 ShowDeleteCommand=false
 
 [KFileDialog Settings]

@@ -131,4 +131,3 @@ application/rss+xml=nvim.desktop
 application/atom+xml=nvim.desktop
 
 # Misc
-x-scheme-handler/claude-cli=claude-code-url-handler.desktop

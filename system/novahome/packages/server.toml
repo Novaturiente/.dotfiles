@@ -1,0 +1,49 @@
+# novahome: networking and the self-hosted services. The services themselves are Docker
+# stacks and systemd user units under ~/Automation, ~/Jellyfin and ~/Immich (restored
+# from /mnt/storage backups, not from this repo).
+packages = [
+  # Network
+  "networkmanager",
+  "networkmanager-openvpn",
+  "iwd",
+  "wpa_supplicant",
+  "wireless-regdb",
+  "openssh",
+  "mosh",
+  "tailscale",
+  "mullvad-vpn-daemon",
+  "xl2tpd",
+  "ufw",
+  "iptables",
+  "dnsmasq",
+  "bind",
+  "inetutils",
+  "nss-mdns",
+  "tcpdump",
+  "gnu-netcat",
+  "rsync",
+  "wget",
+
+  # Services
+  "docker",
+  "docker-compose",
+  "samba",
+  # backup-automation.sh snapshots SQLite DBs with the sqlite3 CLI.
+  "sqlite",
+  "s-nail",
+  # telegram-file-bot (ffmpeg/ffprobe) and tv-watch (adb)
+  "ffmpeg",
+  "android-tools",
+  # TV phone card: tv-mpris.py (MPRIS over D-Bus) shared to the phone by a headless
+  # kdeconnectd (kdeconnect.service runs it with QT_QPA_PLATFORM=offscreen).
+  "kdeconnect",
+  "python-dbus",
+  "python-gobject",
+  "python-docker",
+  "python-fastapi",
+  "uvicorn",
+  "python-pyftpdlib",
+  "python-pyopenssl",
+  "python-defusedxml",
+  "python-packaging",
+]

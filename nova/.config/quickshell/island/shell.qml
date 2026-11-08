@@ -12,8 +12,8 @@
 //   volume <arg>       "+5", "-5" or "mute"
 //   brightness <arg>   "up" or "down" (same steps as scripts/brightness.sh)
 // Modes: idle, volume, brightness, dashboard, tray, battery, wifi, bluetooth,
-// output, input, launcher (app search; apps from scripts/quickshell/applaunch.sh,
-// Up/Down/Enter, click to launch), power (Left/Right/Enter; everything but Lock
+// output, input, spotlight (Mod+D search over apps, files, windows, pages, power,
+// bookmarks, sums and the web; in SpotlightPage.qml), power (Left/Right/Enter; everything but Lock
 // needs a second press within 3 s or a 1 s hold), polkit (password prompt; opens
 // by itself when an app asks for authentication). Click the clock to open the dashboard,
 // the battery for the battery page, a dot to switch workspace; click outside or press
@@ -55,11 +55,13 @@ import common
 ShellRoot {
     id: root
 
-    readonly property var modes: ["idle", "volume", "brightness", "dashboard", "tray", "battery", "wifi", "bluetooth", "output", "input", "launcher", "power", "polkit", "clipboard", "wallpaper", "theme", "hub", "browser", "switcher", "calendar", "pass", "keybindings", "tools"]
+    readonly property var modes: ["idle", "volume", "brightness", "dashboard", "tray", "battery", "wifi", "bluetooth", "output", "input", "spotlight", "power", "polkit", "clipboard", "wallpaper", "theme", "hub", "browser", "switcher", "calendar", "pass", "keybindings", "tools"]
     readonly property var subPages: ["battery", "wifi", "bluetooth", "output", "input"]
     property string mode: "idle"
     // Anything bigger than the pill or an OSD: grabs the keyboard and closes on
     // a click outside.
+    // Spotlight draws its own field pill and result panel, so the island has no surface then.
+    readonly property bool islandBare: mode === "spotlight"
     readonly property bool expanded: !["idle", "volume", "brightness"].includes(mode)
     // Which slider the OSD page shows; kept apart from `mode` so the page does
     // not switch icon while it fades out.
@@ -101,13 +103,19 @@ ShellRoot {
         // Leaving the password prompt (Esc, click outside) cancels the request.
         if (mode === "polkit" && m !== "polkit" && polkit.flow && !polkit.flow.isCompleted)
             polkit.flow.cancelAuthenticationRequest();
+        // New page: fresh cursor. Back from a dashboard picker keeps the dashboard's spot.
+        if (m !== mode && !(m === "dashboard" && subPages.includes(mode))) {
+            if (!expanded)
+                kbNav = false;
+            if (m === "dashboard")
+                dashSel = 0;
+            listSel = m === "battery" ? Math.max(0, profiles.indexOf(PowerProfiles.profile)) : 0;
+        }
         mode = m;
         // Text fields must own the keyboard while their page is up; everywhere
         // else the island takes it back so Esc keeps working.
-        if (m === "launcher") {
-            appSearch.reset();
+        if (m === "spotlight") {
             appLister.running = true;
-            Qt.callLater(() => appSearch.focusField());
         } else if (m === "polkit") {
             polkitField.text = "";
             Qt.callLater(() => polkitField.forceActiveFocus());
@@ -210,9 +218,9 @@ ShellRoot {
 
     // --- Clipboard history (Mod+V) -----------------------------------------
     // cliphist records every copy (text, images, copied files as uri-lists);
-    // the watcher lives and dies with the island, so it is Hyprland-only.
-    // Images are decoded once into clipCache for thumbnails.
-    // ponytail: clipCache is never pruned; add cleanup if it ever grows large.
+    // the watcher lives and dies with the island (Hyprland and niri both run it).
+    // Images are decoded once into clipCache for thumbnails; after each listing,
+    // cache files whose id is no longer listed are deleted.
     readonly property string clipCache: Quickshell.env("HOME") + "/.cache/island/clip"
     property var clips: [] // [{line, text, image}], newest first
     Process {
@@ -223,7 +231,9 @@ ShellRoot {
         id: clipLister
         command: ["sh", "-c", "d=$1; mkdir -p \"$d\"; cliphist list | head -n 200 | while IFS= read -r l; do"
             + " case $l in *'[[ binary data'*) id=${l%%\t*}; [ -s \"$d/$id\" ] || printf '%s\\n' \"$l\" | cliphist decode > \"$d/$id\";; esac;"
-            + " printf '%s\\n' \"$l\"; done", "sh", root.clipCache]
+            + " printf '%s\\n' \"$l\"; done > \"$d/.list\";"
+            + " for f in \"$d\"/*; do [ -e \"$f\" ] || continue; grep -q \"^${f##*/}\t\" \"$d/.list\" || rm -f \"$f\"; done;"
+            + " cat \"$d/.list\"", "sh", root.clipCache]
         stdout: StdioCollector {
             onStreamFinished: root.clips = text.split("\n").filter(l => l.includes("\t")).map(l => {
                 const tab = l.indexOf("\t");
@@ -288,6 +298,207 @@ ShellRoot {
     ]
     property int powerSel: 0
     property int powerArmed: -1
+    // --- Keyboard navigation (pages without a text field) -------------------
+    // h/j/k/l work as the arrows, g/G as Home/End. The focus ring shows only
+    // once a key was pressed, so mouse use stays clean; that first key only
+    // shows the ring. Pages in their own files handle their own keys.
+    property int dashSel: 0 // 0 Display, 1 Sound, 2-7 the tiles (2 columns)
+    property int listSel: 0 // cursor on the other pages
+    property bool kbNav: false
+    function navKey(e: var): int {
+        if (e.modifiers & (Qt.ControlModifier | Qt.AltModifier))
+            return e.key;
+        return { h: Qt.Key_Left, j: Qt.Key_Down, k: Qt.Key_Up, l: Qt.Key_Right, g: Qt.Key_Home, G: Qt.Key_End }[e.text] ?? e.key;
+    }
+    function pageKey(e: var): bool {
+        const k = navKey(e), m = mode;
+        const moves = [Qt.Key_Up, Qt.Key_Down, Qt.Key_Tab, Qt.Key_Backtab].concat(["dashboard", "battery", "tray"].includes(m) ? [Qt.Key_Left, Qt.Key_Right] : []);
+        let done = true;
+        if (e.text === "q" && expanded)
+            show("idle");
+        else if (k === Qt.Key_Backspace && subPages.includes(m))
+            show("dashboard");
+        else if (!kbNav && moves.includes(k) && m !== "power")
+            done = true; // first move only shows the ring
+        else if (m === "dashboard")
+            done = dashKey(e, k);
+        else if (m === "power")
+            done = powerKey(k);
+        else if ((m === "wifi" || m === "bluetooth") && k === Qt.Key_Left)
+            show("dashboard");
+        else if (m === "wifi")
+            done = rowListKey(k, e, wifiRep, wifiScroll, wifiNets.length, () => Networking.wifiEnabled = !Networking.wifiEnabled, () => {
+                if (wifiDev)
+                    wifiDev.scannerEnabled = !wifiDev.scannerEnabled;
+            });
+        else if (m === "bluetooth")
+            done = rowListKey(k, e, btRep, btScroll, btDevices.length, () => {
+                if (btAdapter)
+                    btAdapter.enabled = !btAdapter.enabled;
+            }, () => {
+                if (btAdapter?.enabled)
+                    btAdapter.discovering = !btAdapter.discovering;
+            });
+        else if (m === "output" || m === "input")
+            done = island.page.key(k, e);
+        else if (m === "hub")
+            done = hubKey(k, e);
+        else if (m === "battery")
+            done = batKey(k);
+        else if (m === "tray")
+            done = trayKey(k, e);
+        else
+            done = false;
+        if (done)
+            kbNav = true;
+        return done;
+    }
+    // Vertical cursor over n rows (j/k, g/G); false for any other key.
+    function listMove(k: int, n: int): bool {
+        if (k === Qt.Key_Down)
+            listSel = Math.min(n - 1, listSel + 1);
+        else if (k === Qt.Key_Up)
+            listSel = Math.max(0, listSel - 1);
+        else if (k === Qt.Key_Home)
+            listSel = 0;
+        else if (k === Qt.Key_End)
+            listSel = Math.max(0, n - 1);
+        else
+            return false;
+        return true;
+    }
+    function dashKey(e: var, k: int): bool {
+        const i = dashSel, tile = i >= 2 ? dashGrid.children[i - 2] : null;
+        const step = k === Qt.Key_Right ? 0.05 : -0.05;
+        if (k === Qt.Key_Tab)
+            dashSel = (i + 1) % 8;
+        else if (k === Qt.Key_Backtab)
+            dashSel = (i + 7) % 8;
+        else if (k === Qt.Key_Up)
+            dashSel = i <= 1 ? 0 : i <= 3 ? 1 : i - 2;
+        else if (k === Qt.Key_Down)
+            dashSel = i === 0 ? 1 : i === 1 ? 2 : Math.min(7, i + 2);
+        else if (k === Qt.Key_Home)
+            dashSel = 0;
+        else if (k === Qt.Key_End)
+            dashSel = 7;
+        else if ((k === Qt.Key_Left || k === Qt.Key_Right) && i === 0)
+            setBrightness(brightness + step);
+        else if ((k === Qt.Key_Left || k === Qt.Key_Right) && i === 1)
+            setVolume(volume + step);
+        else if (k === Qt.Key_Left || k === Qt.Key_Right)
+            dashSel = i % 2 ? (k === Qt.Key_Left ? i - 1 : i) : (k === Qt.Key_Right ? i + 1 : i);
+        else if ((k === Qt.Key_Space || e.text === "m") && i === 1 && sink?.audio)
+            sink.audio.muted = !muted;
+        else if (k === Qt.Key_Space && tile)
+            tile.toggled();
+        else if ((k === Qt.Key_Return || k === Qt.Key_Enter) && tile)
+            tile.hasPage ? tile.opened() : tile.toggled();
+        else if (e.text === "n")
+            show("hub");
+        else if (e.text === "b")
+            show("battery");
+        else if (e.text === "t")
+            show("tray");
+        else
+            return false;
+        return true;
+    }
+    function powerKey(k: int): bool {
+        if (k === Qt.Key_Left)
+            powerSel = Math.max(0, powerSel - 1);
+        else if (k === Qt.Key_Right)
+            powerSel = Math.min(powerActions.length - 1, powerSel + 1);
+        else if (k === Qt.Key_Return || k === Qt.Key_Enter)
+            powerPress(powerSel, false);
+        else
+            return false;
+        return true;
+    }
+    // Wi-Fi and Bluetooth lists: Enter/Space/l = the row's click, d/x = forget
+    // (twice, like the mouse), t = radio on/off, r = scan.
+    // shortcut: the cursor is an index, so it can land on another network when the
+    // signal sort reorders the list; track the object if that bites.
+    function rowListKey(k: int, e: var, rep: var, scroll: var, n: int, toggle: var, scan: var): bool {
+        listSel = Math.max(0, Math.min(listSel, n - 1));
+        const row = rep.itemAt(listSel);
+        if (listMove(k, n))
+            scroll.reveal(rep.itemAt(listSel));
+        else if ((k === Qt.Key_Return || k === Qt.Key_Enter || k === Qt.Key_Space || k === Qt.Key_Right) && row)
+            row.clicked();
+        else if ((e.text === "d" || e.text === "x" || k === Qt.Key_Delete) && row?.action)
+            row.forget();
+        else if (e.text === "t")
+            toggle();
+        else if (e.text === "r")
+            scan();
+        else
+            return false;
+        return true;
+    }
+    // Hub: Enter = default action, Space/o/l = expand, h = collapse, d/x = dismiss,
+    // c = copy, r = reply, 1-9 = the entry's action chips, C = clear all,
+    // p / [ / ] = media play-pause / previous / next.
+    function hubKey(k: int, e: var): bool {
+        const n = history.length;
+        listSel = Math.max(0, Math.min(listSel, n - 1));
+        const row = hubRep.itemAt(listSel), t = e.text;
+        if (listMove(k, n))
+            hubScroll.reveal(hubRep.itemAt(listSel));
+        else if ((k === Qt.Key_Return || k === Qt.Key_Enter) && row)
+            histDefault(row.modelData);
+        else if ((k === Qt.Key_Space || k === Qt.Key_Right || t === "o") && row)
+            row.open = !row.open;
+        else if (k === Qt.Key_Left && row)
+            row.open = false;
+        else if ((t === "d" || t === "x" || k === Qt.Key_Delete) && row)
+            dismissHist(row.modelData);
+        else if (t === "c" && row)
+            row.copy();
+        else if (t === "r" && row?.modelData.n?.hasInlineReply)
+            row.reply();
+        else if (t >= "1" && t <= "9" && t.length === 1 && row && histActions(row.modelData.n)[+t - 1])
+            invokeHist(row.modelData, histActions(row.modelData.n)[+t - 1]);
+        else if (t === "C")
+            clearHistory();
+        else if (t === "p" && player)
+            player.togglePlaying();
+        else if (t === "]" && player)
+            player.next();
+        else if (t === "[" && player)
+            player.previous();
+        else
+            return false;
+        return true;
+    }
+    // Battery: h/l (or j/k) pick a power profile, Enter/Space applies it.
+    readonly property var profiles: [PowerProfile.PowerSaver, PowerProfile.Balanced].concat(PowerProfiles.hasPerformanceProfile ? [PowerProfile.Performance] : [])
+    function batKey(k: int): bool {
+        if (k === Qt.Key_Left || k === Qt.Key_Up)
+            listSel = Math.max(0, listSel - 1);
+        else if (k === Qt.Key_Right || k === Qt.Key_Down)
+            listSel = Math.min(profiles.length - 1, listSel + 1);
+        else if (k === Qt.Key_Return || k === Qt.Key_Enter || k === Qt.Key_Space)
+            PowerProfiles.profile = profiles[listSel];
+        else
+            return false;
+        return true;
+    }
+    // Tray: h/l move, Enter/Space activate, m = the item's menu.
+    function trayKey(k: int, e: var): bool {
+        const n = SystemTray.items.values.length;
+        if (k === Qt.Key_Left)
+            listSel = Math.max(0, listSel - 1);
+        else if (k === Qt.Key_Right)
+            listSel = Math.min(n - 1, listSel + 1);
+        else if (k === Qt.Key_Return || k === Qt.Key_Enter || k === Qt.Key_Space)
+            trayKeys.press(listSel, false);
+        else if (e.text === "m")
+            trayKeys.press(listSel, true);
+        else
+            return false;
+        return true;
+    }
     Timer {
         id: armTimer
         interval: 3000
@@ -586,6 +797,7 @@ ShellRoot {
         const n = h.n;
         history = history.filter(x => x.key !== h.key);
         n.sendInlineReply(text);
+        island.forceActiveFocus(); // the reply field went away with its entry
     }
 
     // --- Night mode --------------------------------------------------------
@@ -604,8 +816,22 @@ ShellRoot {
         ipcToggle.command = cmd;
         ipcToggle.running = true;
     }
+    // pkill returns before hyprsunset exits; wait it out so the pgrep re-read
+    // sees the new state.
+    function toggleNight(): void {
+        runToggle(["sh", "-c", "if pkill -x hyprsunset; then for i in $(seq 20); do pgrep -x hyprsunset >/dev/null || break; sleep 0.1; done; else setsid -f hyprsunset -t 4000 >/dev/null 2>&1; sleep 0.2; fi"]);
+    }
+
+    // Dashboard switches without a picker page, offered by Spotlight (Wi-Fi,
+    // Bluetooth and sound open their pages there instead). keys: extra search words.
+    readonly property var systemToggles: [
+        { title: "Do not disturb", keys: "dnd notifications", on: dnd, icon: 0xF009A, act: () => dnd = !dnd },
+        { title: "Night mode", keys: "night light hyprsunset warm", on: night, icon: 0xF0594, act: () => toggleNight() }
+    ]
 
     onModeChanged: {
+        if (mode === "spotlight")
+            nightRead.running = true;
         if (mode === "dashboard") {
             nightRead.running = true;
             brightRead.running = true;
@@ -777,10 +1003,13 @@ ShellRoot {
         property string sub
         property bool on
         property bool hasPage
+        property bool sel // keyboard focus ring
         signal toggled
         signal opened
         width: 220
         height: 56
+        border.width: sel ? 2 : 1
+        border.color: sel ? Colors.accent : Qt.alpha(Colors.fg, 0.06)
 
         StateLayer {
             onClicked: tile.hasPage ? tile.opened() : tile.toggled()
@@ -991,6 +1220,15 @@ ShellRoot {
             width: parent.width
             spacing: 2
         }
+        // Keep a keyboard-selected row in view.
+        function reveal(it: Item): void {
+            if (!it)
+                return;
+            if (it.y < contentY)
+                contentY = it.y;
+            else if (it.y + it.height > contentY + height)
+                contentY = it.y + it.height - height;
+        }
     }
 
     // List row. `action` is an optional trailing icon button (forget) that
@@ -1003,12 +1241,26 @@ ShellRoot {
         property bool active
         property string action
         property bool armed
+        property bool sel // keyboard focus ring
         signal clicked
         signal actionClicked
         width: 448
         height: 44
         radius: Tokens.rounding.medium
-        color: active ? Colors.surface2 : hover.containsMouse ? Colors.surface1 : "transparent"
+        color: active ? Colors.surface2 : sel || hover.containsMouse ? Colors.surface1 : "transparent"
+        border.width: sel ? 1.5 : 0
+        border.color: Colors.accent
+        // First call arms, a second within 3 s fires (mouse and the d key).
+        function forget(): void {
+            if (armed) {
+                armed = false;
+                disarm.stop();
+                actionClicked();
+            } else {
+                armed = true;
+                disarm.restart();
+            }
+        }
 
         MouseArea {
             id: hover
@@ -1038,7 +1290,7 @@ ShellRoot {
                 T {
                     anchors.verticalCenter: undefined
                     visible: row.armed || row.sub !== ""
-                    text: row.armed ? "Click again to forget" : row.sub
+                    text: row.armed ? (row.sel ? "Press d again to forget" : "Click again to forget") : row.sub
                     font.pixelSize: Tokens.fontSize.smaller
                     color: row.armed ? Colors.red : Colors.subtext0
                 }
@@ -1067,16 +1319,7 @@ ShellRoot {
                 id: act
                 anchors.fill: parent
                 hoverEnabled: true
-                onClicked: {
-                    if (row.armed) {
-                        row.armed = false;
-                        disarm.stop();
-                        row.actionClicked();
-                    } else {
-                        row.armed = true;
-                        disarm.restart();
-                    }
-                }
+                onClicked: row.forget()
             }
         }
     }
@@ -1088,8 +1331,34 @@ ShellRoot {
         property string icon
         property var nodes: []
         property var current: null
+        property bool ring // keyboard focus ring shown
+        property int sel: 0
         signal back
         signal pick(var node)
+        onOpened: sel = Math.max(0, nodes.indexOf(current))
+        // h/l volume, m mute, j/k/g/G pick a device, Enter/Space switch to it.
+        function key(k: int, e: var): bool {
+            const a = current?.audio;
+            if ((k === Qt.Key_Left || k === Qt.Key_Right) && a) {
+                a.muted = false;
+                a.volume = Math.max(0, Math.min(1, a.volume + (k === Qt.Key_Right ? 0.05 : -0.05)));
+            } else if (e.text === "m" && a)
+                a.muted = !a.muted;
+            else if (k === Qt.Key_Down)
+                sel = Math.min(nodes.length - 1, sel + 1);
+            else if (k === Qt.Key_Up)
+                sel = Math.max(0, sel - 1);
+            else if (k === Qt.Key_Home)
+                sel = 0;
+            else if (k === Qt.Key_End)
+                sel = nodes.length - 1;
+            else if ((k === Qt.Key_Return || k === Qt.Key_Enter || k === Qt.Key_Space) && nodes[sel])
+                pick(nodes[sel]);
+            else
+                return false;
+            apScroll.reveal(apRep.itemAt(sel));
+            return true;
+        }
 
         Column {
             spacing: Tokens.spacing.medium
@@ -1123,10 +1392,14 @@ ShellRoot {
                 }
             }
             Scroll {
+                id: apScroll
                 Repeater {
+                    id: apRep
                     model: ap.nodes
                     delegate: ListRow {
                         required property var modelData
+                        required property int index
+                        sel: ap.ring && index === ap.sel
                         active: modelData === ap.current
                         icon: active ? String.fromCodePoint(0xF012C) : ""
                         title: modelData.description || modelData.nickname || modelData.name
@@ -1138,7 +1411,22 @@ ShellRoot {
     }
 
     component Tray: Row {
+        id: tray
+        property int sel: -1 // keyboard focus ring, -1 = none
         spacing: Tokens.spacing.small
+        // Left click / Enter activates; right click / m opens the item's menu.
+        function press(i: int, menu: bool): void {
+            const it = trayRep.itemAt(i);
+            if (!it)
+                return;
+            const item = it.modelData;
+            if (!menu && !item.onlyMenu) {
+                item.activate();
+            } else if (item.hasMenu) {
+                const p = it.mapToItem(null, 0, 0);
+                item.display(QsWindow.window, p.x, p.y);
+            }
+        }
 
         T {
             visible: SystemTray.items.values.length === 0
@@ -1146,27 +1434,30 @@ ShellRoot {
             color: Colors.subtext
         }
         Repeater {
+            id: trayRep
             model: SystemTray.items
             delegate: Image {
                 id: icon
                 required property SystemTrayItem modelData
+                required property int index
                 width: 20
                 height: 20
                 sourceSize: Qt.size(20, 20)
                 source: modelData.icon
 
+                Rectangle {
+                    visible: tray.sel === icon.index
+                    anchors.fill: parent
+                    anchors.margins: -4
+                    radius: 6
+                    color: "transparent"
+                    border.width: 1.5
+                    border.color: Colors.accent
+                }
                 MouseArea {
                     anchors.fill: parent
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
-                    onClicked: m => {
-                        const item = icon.modelData;
-                        if (m.button === Qt.LeftButton && !item.onlyMenu) {
-                            item.activate();
-                        } else if (item.hasMenu) {
-                            const p = icon.mapToItem(null, 0, 0);
-                            item.display(QsWindow.window, p.x, p.y);
-                        }
-                    }
+                    onClicked: m => tray.press(icon.index, m.button !== Qt.LeftButton)
                 }
             }
         }
@@ -1224,12 +1515,16 @@ ShellRoot {
     // --- Scroll edges (Hyprland scrolling layout) ---------------------------
     // A thin accent glow on a screen's left/right edge while tiled windows of its
     // active workspace extend past that edge (columns scrolled off-screen).
-    // Recomputed 80ms after any Hyprland event; under niri hyprctl fails and
-    // nothing shows.
+    // Recomputed 80ms after any Hyprland event that can move windows; under
+    // niri hyprctl fails and nothing shows. Focus events stay in: focusing a
+    // column scrolls the layout. Title/layer/etc. events can't move a window
+    // and fire constantly (terminal titles), so they're skipped.
+    readonly property var edgeQuietEvents: ["windowtitle", "windowtitlev2", "activelayout", "submap", "urgent",
+        "openlayer", "closelayer", "screencast", "bell", "configreloaded", "ignoregrouplock", "lockgroups"]
     property var scrollEdges: ({}) // monitor name -> {left, right}
     Connections {
         target: Hyprland
-        function onRawEvent(event) { edgeDebounce.restart(); }
+        function onRawEvent(event) { if (!root.edgeQuietEvents.includes(event.name)) edgeDebounce.restart(); }
     }
     Timer {
         id: edgeDebounce
@@ -1386,6 +1681,7 @@ ShellRoot {
 
         // Soft drop shadow; a sibling because the pill clips its children.
         RectangularShadow {
+            visible: !root.islandBare
             anchors.fill: island
             radius: island.radius
             offset.y: 6
@@ -1409,7 +1705,7 @@ ShellRoot {
                     bluetooth: btPage,
                     output: outPage,
                     input: inPage,
-                    launcher: launcherPage,
+                    spotlight: spotlightPage,
                     power: powerPage,
                     polkit: polkitPage,
                     clipboard: clipPage,
@@ -1437,28 +1733,16 @@ ShellRoot {
                 onHoveredChanged: root.pillHovered = hovered
             }
             // Open pages get a wider margin so content clears the 28px corners.
-            width: page.implicitWidth + (root.expanded ? Tokens.padding.largeIncreased : Tokens.padding.large) * 2
-            height: page.implicitHeight + (root.expanded ? Tokens.padding.large : Tokens.padding.small) * 2
+            width: page.implicitWidth + (root.islandBare ? 0 : root.expanded ? Tokens.padding.largeIncreased : Tokens.padding.large) * 2
+            height: page.implicitHeight + (root.islandBare ? 0 : root.expanded ? Tokens.padding.large : Tokens.padding.small) * 2
             radius: Math.min(height / 2, Tokens.rounding.extraLarge)
-            color: Colors.bg
-            border.color: Colors.outline
+            color: root.islandBare ? "transparent" : Colors.bg
+            border.color: root.islandBare ? "transparent" : Colors.outline
             clip: true
             focus: true
 
             Keys.onEscapePressed: root.show(root.subPages.includes(root.mode) ? "dashboard" : "idle")
-            Keys.onPressed: e => {
-                if (root.mode !== "power")
-                    return;
-                if (e.key === Qt.Key_Left)
-                    root.powerSel = Math.max(0, root.powerSel - 1);
-                else if (e.key === Qt.Key_Right)
-                    root.powerSel = Math.min(root.powerActions.length - 1, root.powerSel + 1);
-                else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter)
-                    root.powerPress(root.powerSel, false);
-                else
-                    return;
-                e.accepted = true;
-            }
+            Keys.onPressed: e => e.accepted = root.pageKey(e)
 
             Behavior on width {
                 Anim {
@@ -1762,17 +2046,30 @@ ShellRoot {
                     }
 
                     Scroll {
+                        id: hubScroll
                         visible: root.history.length > 0
                         Repeater {
+                            id: hubRep
                             model: root.history
                             Rectangle {
                                 id: hrow
                                 required property var modelData
+                                required property int index
+                                readonly property bool sel: root.kbNav && index === root.listSel
                                 property bool open: false
+                                function copy(): void {
+                                    copyChip.clicked();
+                                }
+                                function reply(): void {
+                                    open = true;
+                                    Qt.callLater(() => { if (histReply.visible) histReply.forceActiveFocus(); });
+                                }
                                 width: 448
                                 height: hcol.implicitHeight + Tokens.padding.small * 2
                                 radius: Tokens.rounding.medium
                                 color: open ? Colors.surface1 : Colors.surface0
+                                border.width: sel ? 1.5 : 0
+                                border.color: Colors.accent
                                 // Click = default action, else focus the sender's window.
                                 // Right click = show the full text.
                                 MouseArea {
@@ -1837,7 +2134,9 @@ ShellRoot {
                                             model: root.histActions(hrow.modelData.n)
                                             HistChip {
                                                 required property var modelData
-                                                label: modelData.text
+                                                required property int index
+                                                // Number = its key while the row has the keyboard.
+                                                label: (hrow.sel && index < 9 ? (index + 1) + "  " : "") + modelData.text
                                                 onClicked: root.invokeHist(hrow.modelData, modelData)
                                             }
                                         }
@@ -1870,6 +2169,7 @@ ShellRoot {
                                                 anchors.fill: parent
                                                 font.family: "JetBrainsMono Nerd Font"
                                                 placeholderText: hrow.modelData.n?.inlineReplyPlaceholder || "Reply…"
+                                                Keys.onEscapePressed: island.forceActiveFocus()
                                                 onAccepted: root.replyHist(hrow.modelData, text)
                                             }
                                         }
@@ -1911,29 +2211,20 @@ ShellRoot {
                 }
             }
 
-            Page {
-                id: launcherPage
-                active: island.page === launcherPage
-
-                SearchList {
-                    id: appSearch
-                    glyph: root.glyph(0xF0349)
-                    placeholder: "Search applications…"
-                    model: {
-                        const q = text.toLowerCase();
-                        return root.apps.filter(a => q === "" || a.name.toLowerCase().includes(q)).map(a => ({
-                                    title: a.name,
-                                    sub: a.comment || "",
-                                    icon: Quickshell.iconPath(a.icon, "application-x-executable"),
-                                    file: a.file
-                                }));
-                    }
-                    onAccepted: (i, row) => {
-                        if (row)
-                            root.launchApp(row.file);
-                    }
-                    onEscaped: root.show("idle")
+            SpotlightPage {
+                id: spotlightPage
+                active: island.page === spotlightPage
+                apps: root.apps
+                powerActions: root.powerActions
+                toggles: root.systemToggles
+                onOpenTool: v => {
+                    toolsPage.startView = v;
+                    root.show("tools");
                 }
+                onLaunchApp: file => root.launchApp(file)
+                onRunPower: i => root.powerPress(i, true)
+                onOpenMode: m => root.show(m)
+                onCloseRequested: root.show("idle")
             }
 
             Page {
@@ -2049,6 +2340,15 @@ ShellRoot {
                         Keys.onRightPressed: incrementCurrentIndex()
                         Keys.onReturnPressed: pick()
                         Keys.onEnterPressed: pick()
+                        Keys.onPressed: e => {
+                            if (e.text === "h")
+                                decrementCurrentIndex();
+                            else if (e.text === "l")
+                                incrementCurrentIndex();
+                            else
+                                return;
+                            e.accepted = true;
+                        }
                         delegate: Rectangle {
                             required property int index
                             required property var modelData
@@ -2160,6 +2460,15 @@ ShellRoot {
                         Keys.onRightPressed: incrementCurrentIndex()
                         Keys.onReturnPressed: pick()
                         Keys.onEnterPressed: pick()
+                        Keys.onPressed: e => {
+                            if (e.text === "h")
+                                decrementCurrentIndex();
+                            else if (e.text === "l")
+                                incrementCurrentIndex();
+                            else
+                                return;
+                            e.accepted = true;
+                        }
                         delegate: Rectangle {
                             required property int index
                             required property string filePath
@@ -2324,6 +2633,9 @@ ShellRoot {
             Page {
                 id: dashPage
                 active: island.page === dashPage
+                // Size from the Column, not childrenRect (implicitHeight binding loop).
+                implicitWidth: dashCol.implicitWidth
+                implicitHeight: dashCol.implicitHeight
 
                 // Bell, top-right: opens the notification hub.
                 T {
@@ -2371,6 +2683,9 @@ ShellRoot {
                         Module {
                             id: sliderMod
                             required property var modelData
+                            required property int index
+                            border.width: root.kbNav && root.dashSel === index ? 2 : 1
+                            border.color: root.kbNav && root.dashSel === index ? Colors.accent : Qt.alpha(Colors.fg, 0.06)
                             width: 448
                             height: sliderCol.implicitHeight + 2 * Tokens.padding.medium
                             Column {
@@ -2405,11 +2720,14 @@ ShellRoot {
                             }
                         }
                     }
+                    // Children stay in this order: root.dashKey indexes them (2-7).
                     Grid {
+                        id: dashGrid
                         columns: 2
                         spacing: Tokens.spacing.small
 
                         Tile {
+                            sel: root.kbNav && root.dashSel === 2
                             on: Networking.wifiEnabled
                             hasPage: true
                             icon: root.glyph(on ? 0xF05A9 : 0xF05AA)
@@ -2419,6 +2737,7 @@ ShellRoot {
                             onOpened: root.show("wifi")
                         }
                         Tile {
+                            sel: root.kbNav && root.dashSel === 3
                             on: root.btAdapter?.enabled ?? false
                             hasPage: true
                             icon: root.glyph(on ? 0xF00AF : 0xF00B2)
@@ -2428,6 +2747,7 @@ ShellRoot {
                             onOpened: root.show("bluetooth")
                         }
                         Tile {
+                            sel: root.kbNav && root.dashSel === 4
                             on: !root.muted
                             hasPage: true
                             icon: root.glyph(on ? 0xF057E : 0xF075F)
@@ -2437,6 +2757,7 @@ ShellRoot {
                             onOpened: root.show("output")
                         }
                         Tile {
+                            sel: root.kbNav && root.dashSel === 5
                             on: !(root.source?.audio?.muted ?? true)
                             hasPage: true
                             icon: root.glyph(on ? 0xF036C : 0xF036D)
@@ -2446,6 +2767,7 @@ ShellRoot {
                             onOpened: root.show("input")
                         }
                         Tile {
+                            sel: root.kbNav && root.dashSel === 6
                             on: root.dnd
                             icon: root.glyph(on ? 0xF009B : 0xF009A)
                             title: "Do not disturb"
@@ -2453,13 +2775,12 @@ ShellRoot {
                             onToggled: root.dnd = !root.dnd
                         }
                         Tile {
+                            sel: root.kbNav && root.dashSel === 7
                             on: root.night
                             icon: root.glyph(0xF0594)
                             title: "Night mode"
                             sub: on ? "On" : "Off"
-                            // pkill returns before hyprsunset exits; wait it out so the
-                            // pgrep re-read sees the new state.
-                            onToggled: root.runToggle(["sh", "-c", "if pkill -x hyprsunset; then for i in $(seq 20); do pgrep -x hyprsunset >/dev/null || break; sleep 0.1; done; else setsid -f hyprsunset -t 4000 >/dev/null 2>&1; sleep 0.2; fi"])
+                            onToggled: root.toggleNight()
                         }
                     }
                     Tray {}
@@ -2483,10 +2804,14 @@ ShellRoot {
                         onScan: if (root.wifiDev) root.wifiDev.scannerEnabled = !root.wifiDev.scannerEnabled
                     }
                     Scroll {
+                        id: wifiScroll
                         Repeater {
+                            id: wifiRep
                             model: root.wifiNets
                             delegate: ListRow {
                                 required property var modelData
+                                required property int index
+                                sel: root.kbNav && index === root.listSel
                                 active: modelData.connected
                                 icon: root.wifiIcon(modelData.signalStrength)
                                 title: modelData.name
@@ -2538,11 +2863,15 @@ ShellRoot {
                         onScan: if (root.btAdapter?.enabled) root.btAdapter.discovering = !root.btAdapter.discovering
                     }
                     Scroll {
+                        id: btScroll
                         Repeater {
+                            id: btRep
                             model: root.btDevices
                             delegate: ListRow {
                                 id: btRow
                                 required property var modelData
+                                required property int index
+                                sel: root.kbNav && index === root.listSel
                                 active: modelData.connected
                                 icon: root.btIcon(modelData)
                                 title: modelData.name
@@ -2573,6 +2902,7 @@ ShellRoot {
                 icon: root.glyph(root.muted ? 0xF075F : 0xF057E)
                 nodes: root.sinks
                 current: root.sink
+                ring: root.kbNav
                 onBack: root.show("dashboard")
                 onPick: n => Pipewire.preferredDefaultAudioSink = n
             }
@@ -2584,6 +2914,7 @@ ShellRoot {
                 icon: root.glyph(root.source?.audio?.muted ? 0xF036D : 0xF036C)
                 nodes: root.sources
                 current: root.source
+                ring: root.kbNav
                 onBack: root.show("dashboard")
                 onPick: n => Pipewire.preferredDefaultAudioSource = n
             }
@@ -2640,7 +2971,10 @@ ShellRoot {
                             delegate: Rectangle {
                                 id: prof
                                 required property var modelData
+                                required property int index
                                 readonly property bool on: PowerProfiles.profile === modelData.p
+                                border.width: root.kbNav && index === root.listSel ? 2 : 0
+                                border.color: on ? Colors.fg : Colors.accent
                                 visible: modelData.p !== PowerProfile.Performance || PowerProfiles.hasPerformanceProfile
                                 width: 140
                                 height: 44
@@ -2673,7 +3007,10 @@ ShellRoot {
             Page {
                 id: trayPage
                 active: island.page === trayPage
-                Tray {}
+                Tray {
+                    id: trayKeys
+                    sel: root.kbNav ? root.listSel : -1
+                }
             }
         }
     }

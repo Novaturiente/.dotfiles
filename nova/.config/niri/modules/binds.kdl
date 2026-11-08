@@ -27,8 +27,8 @@ binds {
     Mod+Return hotkey-overlay-title="Terminal (tmux)" {
 		spawn-sh "ghostty --title='tmux' -e zsh -ic tmux"
     }
-    Mod+D hotkey-overlay-title="Application launcher" {
-        spawn-sh "qs -c island ipc call island toggle launcher"
+    Mod+D hotkey-overlay-title="Spotlight search" {
+        spawn-sh "qs -c island ipc call island toggle spotlight"
     }
     // Mod+P hotkey-overlay-title="Phone (calls + SMS)" {
     //     spawn "~/.local/bin/ac-phone"
@@ -66,8 +66,8 @@ binds {
     Mod+Ctrl+G hotkey-overlay-title="Grammar fix" {
         spawn-sh "~/.dotfiles/scripts/fix_grammar.sh"
     }
-    Mod+Shift+C hotkey-overlay-title="Calendar" {
-        spawn "qs" "-c" "island" "ipc" "call" "island" "toggle" "calendar"
+    Mod+Shift+C hotkey-overlay-title="Control centre" {
+        spawn-sh "qs -c island ipc call island toggle dashboard";
     }
     Mod+V hotkey-overlay-title="Clipboard Manager" {
         spawn-sh "qs -c island ipc call island toggle clipboard";
@@ -75,8 +75,8 @@ binds {
     Mod+Shift+P hotkey-overlay-title="Password Manager" {
         spawn "~/.dotfiles/scripts/quickshell/pass.sh"
     }
-    Mod+Ctrl+S hotkey-overlay-title="Control centre" {
-        spawn-sh "qs -c island ipc call island toggle dashboard";
+    Mod+Ctrl+N hotkey-overlay-title="Notifications" {
+        spawn-sh "qs -c island ipc call island toggle hub";
     }
     Mod+P hotkey-overlay-title="Phone mirror" {
         spawn-sh "scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --window-height=1150"
@@ -146,7 +146,7 @@ binds {
         power-off-monitors
     }
     XF86PowerOff allow-when-locked=true {
-        spawn "systemctl suspend-then-hibernate"
+        spawn "systemctl" "suspend-then-hibernate"
     }
     Mod+B hotkey-overlay-title="Toggle bar auto-hide" {
         spawn-sh "qs -c island ipc call island toggleAutoHide"
@@ -173,7 +173,7 @@ binds {
     }
     // Shift+wheel-press = toggle swayidle (auto-lock + suspend-then-hibernate)
     Shift+XF86AudioMute allow-when-locked=true {
-        spawn-sh "if pkill swayidle; then notify-send 'Suspend disabled'; else swayidle & notify-send 'Suspend enabled'; fi"
+        spawn-sh "if pkill swayidle; then notify-send 'Suspend disabled'; else swayidle -w & notify-send 'Suspend enabled'; fi"
     }
     XF86AudioMicMute allow-when-locked=true {
         spawn-sh "qs -c island ipc call island volume micmute"
@@ -280,9 +280,6 @@ binds {
     }
     Mod+Page_Up {
         focus-workspace-up
-    }
-    Mod+Tab hotkey-overlay-title="Window switcher" {
-        spawn "qs" "-c" "island" "ipc" "call" "island" "toggle" "switcher"
     }
     Mod+Ctrl+Page_Down {
         move-column-to-workspace-down

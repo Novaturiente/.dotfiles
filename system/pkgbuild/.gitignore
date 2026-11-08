@@ -1,5 +1,0 @@
-# Track only the recipes; everything makepkg downloads or builds is transient.
-*
-!*/
-!.gitignore
-!PKGBUILD

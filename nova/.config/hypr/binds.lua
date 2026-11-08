@@ -24,25 +24,23 @@ bind(M .. " + W",              app("novabrowser-webkit"))
 bind(M .. " + CTRL + W",       app("novabrowser-webkit --profile=Work"))
 bind(M .. " + SHIFT + W",      app("novabrowser-webkit --profile=personal"))
 bind(M .. " + Return",         run("ghostty --title='tmux' -e zsh -ic tmux"))
-bind(M .. " + D",              run("qs -c island ipc call island toggle launcher || " .. S .. "quickshell/launcher.sh"))
+bind(M .. " + D",              run("qs -c island ipc call island toggle spotlight || " .. S .. "quickshell/launcher.sh"))
 bind(M .. " + SHIFT + D",      run(S .. "rofi/tv-edit.sh"))
 bind(M .. " + N",              run("ghostty -e nvim"))
 bind(M .. " + T",              run("qs -c island ipc call island toggle tools"))
 bind(M .. " + CTRL + T",       run("~/.local/bin/tv-remote"))
 bind(M .. " + E",              run("ghostty -e explorenova"))
--- aiwa push-to-talk (also cuts Jarvis off); main pid only, so espeak-ng children don't get USR1
-bind(M .. " + A",              run("systemctl --user kill --kill-whom=main -s USR1 aiwa"))
 
 -- ── Utilities & menus ──────────────────────────────────────────────────────
 bind(M .. " + O",              run(S .. "file_picker.sh"))
 bind(M .. " + SHIFT + O",      run(S .. "ocr_select.sh"))
 bind(M .. " + S",              run("qs -c island ipc call island toggle browser"))
 bind(M .. " + CTRL + G",       run(S .. "fix_grammar.sh"))
-bind(M .. " + SHIFT + C",      run("qs -c island ipc call island toggle calendar"))
+bind(M .. " + SHIFT + C",      run("qs -c island ipc call island toggle dashboard"))
 bind(M .. " + SHIFT + N",      run(S .. "tasks.sh"))
 bind(M .. " + V",              run("qs -c island ipc call island toggle clipboard"))
 bind(M .. " + SHIFT + P",      run(S .. "quickshell/pass.sh"))
-bind(M .. " + CTRL + S",       run("qs -c island ipc call island toggle dashboard"))
+bind(M .. " + CTRL + N",       run("qs -c island ipc call island toggle hub"))  -- notifications + media
 bind(M .. " + P",              run("scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --window-height=1150"))
 bind(M .. " + CTRL + P",       run("scrcpy --max-fps 60 -Sw --turn-screen-off --stay-awake --keep-active --power-off-on-close --new-display=1920x1080 --window-title 'dexmode'"))
 bind("ALT + space",            run("handy --toggle-transcription"))
@@ -92,7 +90,7 @@ local BRIGHT = "qs -c island ipc call island brightness %s || " .. S .. "brightn
 bind("SHIFT + XF86AudioRaiseVolume", run(BRIGHT:format("up", "up")),     LOCK)
 bind("SHIFT + XF86AudioLowerVolume", run(BRIGHT:format("down", "down")), LOCK)
 bind("XF86AudioMute",                run(VOL:format("mute", "set-mute @DEFAULT_AUDIO_SINK@ toggle")),      { locked = true })
-bind("SHIFT + XF86AudioMute",        run("if pkill swayidle; then notify-send 'Suspend disabled'; else swayidle & notify-send 'Suspend enabled'; fi"), { locked = true })
+bind("SHIFT + XF86AudioMute",        run("if pkill swayidle; then notify-send 'Suspend disabled'; else swayidle -w & notify-send 'Suspend enabled'; fi"), { locked = true })
 bind("XF86AudioMicMute",             run(VOL:format("micmute", "set-mute @DEFAULT_AUDIO_SOURCE@ toggle")), { locked = true })
 bind("XF86MonBrightnessUp",          run(BRIGHT:format("up", "up")),     LOCK)
 bind("XF86MonBrightnessDown",        run(BRIGHT:format("down", "down")), LOCK)
@@ -186,8 +184,7 @@ end
 bind(M .. " + grave",         dsp.workspace.toggle_special("scratch"))
 bind(M .. " + SHIFT + grave", dsp.window.move({ workspace = "special:scratch" }))
 
--- Window switcher (Mod+Tab) and niri's overview slot (Alt+Tab).
-bind(M .. " + Tab",  run("qs -c island ipc call island toggle switcher"))
+-- Window switcher (niri's overview slot, Alt+Tab).
 bind("ALT + Tab",    run("qs -c island ipc call island toggle switcher"))
 
 -- ── Mouse wheel ────────────────────────────────────────────────────────────

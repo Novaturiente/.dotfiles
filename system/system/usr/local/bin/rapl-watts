@@ -10,11 +10,18 @@ set -u
 RAPL=/sys/class/powercap/intel-rapl:0
 OUT=/run/rapl-watts
 INTERVAL=2
+AC=/sys/class/power_supply/ACAD/online # the island shows watts on AC only
 
 max=$(<"$RAPL/max_energy_range_uj")
 prev=$(<"$RAPL/energy_uj")
 while sleep "$INTERVAL"; do
+    if [[ $(<"$AC") != 1 ]]; then # on battery: no work, no stale value
+        rm -f "$OUT"
+        prev=
+        continue
+    fi
     now=$(<"$RAPL/energy_uj")
+    [[ -z $prev ]] && { prev=$now; continue; } # first sample after AC returns
     d=$((now - prev))
     ((d < 0)) && d=$((d + max)) # counter wrapped
     prev=$now

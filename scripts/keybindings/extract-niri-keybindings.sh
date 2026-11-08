@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Extract keybindings from niri config.kdl and write bindings/niri.txt
+# Extract keybindings from niri config.kdl and write ~/.cache/keybindings/niri.txt
 # so the keybindings menu shows your current niri shortcuts.
 #
 # Usage: extract-niri-keybindings.sh [config.kdl]
@@ -8,8 +8,8 @@
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BINDINGS_DIR="${SCRIPT_DIR}/bindings"
+# Generated output lives in the cache, not the repo (hand-written ones stay in bindings/)
+BINDINGS_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/keybindings"
 OUT_FILE="${BINDINGS_DIR}/niri.txt"
 # Binds live in the included modules/binds.kdl (not config.kdl, which only has
 # `include` lines) — default there so extraction isn't empty.

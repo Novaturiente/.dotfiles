@@ -5,7 +5,7 @@
 // array of rows { title, sub, icon (image url), glyph (Nerd Font text),
 // thumb (large image url, makes the row tall), dim (bool) }.
 //
-// Keys: Up/Down or Ctrl+P/N move (wrapping), Enter emits accepted(), Esc emits
+// Keys: Up/Down, Ctrl+K/J or Ctrl+P/N move (wrapping), Enter emits accepted(), Esc emits
 // escaped(). A page sees every key first through keyPressed(e) and can take it
 // by setting e.accepted.
 import QtQuick
@@ -26,6 +26,9 @@ Column {
     property int listWidth: 720
     property int rowHeight: 56
     property int maxRows: 8
+    // Field and list as two separate surfaces (a pill, a panel below it) for
+    // a page that hides the island surface; Spotlight.
+    property bool detached: false
 
     readonly property var current: model[currentIndex]
     property point lastPointer
@@ -46,16 +49,16 @@ Column {
             currentIndex = (currentIndex + d + model.length) % model.length;
     }
 
-    spacing: Tokens.spacing.small
+    spacing: detached ? Tokens.spacing.medium : Tokens.spacing.small
 
     onModelChanged: if (currentIndex >= model.length) currentIndex = 0
 
     Rectangle {
         width: sl.listWidth
         height: 50
-        radius: Tokens.rounding.large
-        color: Colors.inputBg
-        border.color: field.activeFocus ? Qt.alpha(Colors.accent, 0.6) : Colors.outline
+        radius: sl.detached ? height / 2 : Tokens.rounding.large
+        color: sl.detached ? Colors.bg : Colors.inputBg
+        border.color: field.activeFocus && !sl.detached ? Qt.alpha(Colors.accent, 0.6) : Colors.outline
         border.width: 1
 
         T {
@@ -84,9 +87,9 @@ Column {
                 const ctrl = e.modifiers & Qt.ControlModifier;
                 if (e.key === Qt.Key_Escape)
                     sl.escaped();
-                else if (e.key === Qt.Key_Down || (ctrl && e.key === Qt.Key_N))
+                else if (e.key === Qt.Key_Down || (ctrl && (e.key === Qt.Key_N || e.key === Qt.Key_J)))
                     sl.move(1);
-                else if (e.key === Qt.Key_Up || (ctrl && e.key === Qt.Key_P))
+                else if (e.key === Qt.Key_Up || (ctrl && (e.key === Qt.Key_P || e.key === Qt.Key_K)))
                     sl.move(-1);
                 else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter)
                     sl.accepted(sl.currentIndex, sl.current);
@@ -106,7 +109,7 @@ Column {
     }
 
     T {
-        visible: sl.model.length === 0
+        visible: sl.model.length === 0 && sl.emptyText !== ""
         anchors.verticalCenter: undefined
         width: sl.listWidth
         topPadding: Tokens.padding.medium
@@ -116,98 +119,110 @@ Column {
         color: Colors.subtext
     }
 
-    ListView {
-        id: list
+    Rectangle {
+        readonly property int pad: sl.detached ? Tokens.padding.small : 0
         visible: sl.model.length > 0
         width: sl.listWidth
-        // From the model, not contentHeight: a 0-high ListView builds no rows.
-        height: Math.min(sl.model.reduce((h, r) => h + (r.thumb ? 2 : 1), 0), sl.maxRows) * sl.rowHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-        model: sl.model
-        currentIndex: sl.currentIndex
-        onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
-        ScrollBar.vertical: StyledScrollBar {
-            flickable: list
-        }
-        delegate: Rectangle {
-            id: row
-            required property int index
-            required property var modelData
-            readonly property bool sel: index === sl.currentIndex
-            width: ListView.view.width
-            height: modelData.thumb ? sl.rowHeight * 2 : sl.rowHeight
-            radius: Tokens.rounding.medium
-            color: sel ? Colors.surface2 : hover.containsMouse ? Colors.surface0 : "transparent"
+        height: list.height + pad * 2
+        radius: Tokens.rounding.extraLarge
+        color: sl.detached ? Colors.bg : "transparent"
+        border.color: Colors.outline
+        border.width: sl.detached ? 1 : 0
 
-            Row {
-                x: Tokens.padding.medium
-                width: parent.width - 2 * Tokens.padding.medium
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Tokens.spacing.medium
-
-                // Leading icon: thumbnail, image icon, or glyph.
-                Item {
-                    width: row.modelData.thumb ? 200 : 32
-                    height: row.modelData.thumb ? row.height - Tokens.padding.small * 2 : 32
-                    anchors.verticalCenter: parent.verticalCenter
-                    Image {
-                        anchors.fill: parent
-                        visible: !!(row.modelData.thumb || row.modelData.icon)
-                        source: row.modelData.thumb || row.modelData.icon || ""
-                        sourceSize: Qt.size(width * 2, height * 2)
-                        fillMode: Image.PreserveAspectFit
-                        asynchronous: true
-                    }
-                    T {
-                        anchors.centerIn: parent
-                        visible: !row.modelData.thumb && !row.modelData.icon
-                        text: row.modelData.glyph || ""
-                        color: row.sel ? Colors.accent : Colors.subtext0
-                        font.pixelSize: Tokens.fontSize.large
-                    }
-                }
-                Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - parent.children[0].width - parent.spacing
-                    spacing: 2
-                    T {
-                        anchors.verticalCenter: undefined
-                        width: parent.width
-                        text: row.modelData.title || ""
-                        elide: Text.ElideRight
-                        maximumLineCount: 1
-                        font.weight: Font.Medium
-                        color: row.modelData.dim ? Colors.subtext0 : Colors.fg
-                    }
-                    T {
-                        anchors.verticalCenter: undefined
-                        visible: text !== ""
-                        width: parent.width
-                        text: row.modelData.sub || ""
-                        elide: Text.ElideRight
-                        maximumLineCount: 1
-                        font.pixelSize: Tokens.fontSize.smaller
-                        color: Colors.subtext
-                    }
-                }
+        ListView {
+            id: list
+            x: parent.pad
+            y: parent.pad
+            width: parent.width - parent.pad * 2
+            // From the model, not contentHeight: a 0-high ListView builds no rows.
+            height: Math.min(sl.model.reduce((h, r) => h + (r.thumb ? 2 : 1), 0), sl.maxRows) * sl.rowHeight
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            model: sl.model
+            currentIndex: sl.currentIndex
+            onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
+            ScrollBar.vertical: StyledScrollBar {
+                flickable: list
             }
-            MouseArea {
-                id: hover
-                anchors.fill: parent
-                hoverEnabled: true
-                // Select on real pointer movement only: a row that slides under a
-                // resting cursor while the island grows must not steal the selection.
-                onPositionChanged: m => {
-                    const p = mapToGlobal(m.x, m.y);
-                    if (p.x === sl.lastPointer.x && p.y === sl.lastPointer.y)
-                        return;
-                    sl.lastPointer = p;
-                    sl.currentIndex = row.index;
+            delegate: Rectangle {
+                id: row
+                required property int index
+                required property var modelData
+                readonly property bool sel: index === sl.currentIndex
+                width: ListView.view.width
+                height: modelData.thumb ? sl.rowHeight * 2 : sl.rowHeight
+                radius: Tokens.rounding.medium
+                color: sel ? Colors.surface2 : hover.containsMouse ? Colors.surface0 : "transparent"
+
+                Row {
+                    x: Tokens.padding.medium
+                    width: parent.width - 2 * Tokens.padding.medium
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: Tokens.spacing.medium
+
+                    // Leading icon: thumbnail, image icon, or glyph.
+                    Item {
+                        width: row.modelData.thumb ? 200 : 32
+                        height: row.modelData.thumb ? row.height - Tokens.padding.small * 2 : 32
+                        anchors.verticalCenter: parent.verticalCenter
+                        Image {
+                            anchors.fill: parent
+                            visible: !!(row.modelData.thumb || row.modelData.icon)
+                            source: row.modelData.thumb || row.modelData.icon || ""
+                            sourceSize: Qt.size(width * 2, height * 2)
+                            fillMode: Image.PreserveAspectFit
+                            asynchronous: true
+                        }
+                        T {
+                            anchors.centerIn: parent
+                            visible: !row.modelData.thumb && !row.modelData.icon
+                            text: row.modelData.glyph || ""
+                            color: row.sel ? Colors.accent : Colors.subtext0
+                            font.pixelSize: Tokens.fontSize.large
+                        }
+                    }
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width - parent.children[0].width - parent.spacing
+                        spacing: 2
+                        T {
+                            anchors.verticalCenter: undefined
+                            width: parent.width
+                            text: row.modelData.title || ""
+                            elide: Text.ElideRight
+                            maximumLineCount: 1
+                            font.weight: Font.Medium
+                            color: row.modelData.dim ? Colors.subtext0 : Colors.fg
+                        }
+                        T {
+                            anchors.verticalCenter: undefined
+                            visible: text !== ""
+                            width: parent.width
+                            text: row.modelData.sub || ""
+                            elide: Text.ElideRight
+                            maximumLineCount: 1
+                            font.pixelSize: Tokens.fontSize.smaller
+                            color: Colors.subtext
+                        }
+                    }
                 }
-                onClicked: {
-                    sl.currentIndex = row.index;
-                    sl.accepted(row.index, row.modelData);
+                MouseArea {
+                    id: hover
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    // Select on real pointer movement only: a row that slides under a
+                    // resting cursor while the island grows must not steal the selection.
+                    onPositionChanged: m => {
+                        const p = mapToGlobal(m.x, m.y);
+                        if (p.x === sl.lastPointer.x && p.y === sl.lastPointer.y)
+                            return;
+                        sl.lastPointer = p;
+                        sl.currentIndex = row.index;
+                    }
+                    onClicked: {
+                        sl.currentIndex = row.index;
+                        sl.accepted(row.index, row.modelData);
+                    }
                 }
             }
         }

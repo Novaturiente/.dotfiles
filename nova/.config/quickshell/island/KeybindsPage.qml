@@ -2,7 +2,7 @@
 // right. Data comes from scripts/quickshell/kbctl.sh:
 //   refresh -> re-run the per-app extractors
 //   list    -> JSON [{app, count, bindings:[{key,desc}]}]
-// Tab / Shift+Tab switch app, Enter or click copies "key  desc".
+// Tab / Shift+Tab or Ctrl+L / Ctrl+H switch app, Enter or click copies "key  desc".
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -141,7 +141,7 @@ Page {
             width: leftPane.width
             wrapMode: Text.WordWrap
             lineHeight: 1.3
-            text: "Tab / Shift+Tab switch\nEnter copy · Esc close"
+            text: "Tab / Shift+Tab or Ctrl+L/H switch\nCtrl+J/K move · Enter copy · Esc close"
             color: Colors.subtext
             font.pixelSize: Tokens.fontSize.smaller
         }
@@ -182,9 +182,10 @@ Page {
             onAccepted: (i, row) => page.copy(row)
             onEscaped: page.closeRequested()
             onKeyPressed: e => {
-                if (e.key === Qt.Key_Backtab || (e.key === Qt.Key_Tab && (e.modifiers & Qt.ShiftModifier)))
+                const ctrl = e.modifiers & Qt.ControlModifier;
+                if (e.key === Qt.Key_Backtab || (e.key === Qt.Key_Tab && (e.modifiers & Qt.ShiftModifier)) || (ctrl && e.key === Qt.Key_H))
                     page.switchApp(-1);
-                else if (e.key === Qt.Key_Tab)
+                else if (e.key === Qt.Key_Tab || (ctrl && e.key === Qt.Key_L))
                     page.switchApp(1);
                 else
                     return;

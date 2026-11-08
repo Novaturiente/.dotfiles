@@ -20,7 +20,11 @@ if [[ $EUID -ne 0 ]]; then
         "$@"
 fi
 
-user=$1 runtime=$2 wld=$3 dpy=$4; shift 4
+# The user comes from sudo, never from the caller: a passed name would let
+# anyone with the sudoers rule run commands as root. $1 is kept and ignored.
+user=${SUDO_USER:-}
+[[ -n $user && $user != root ]] || { echo "vpn-run: run as your user, not root" >&2; exit 1; }
+runtime=$2 wld=$3 dpy=$4; shift 4
 exec ip netns exec vpn runuser -u "$user" -- \
     env XDG_RUNTIME_DIR="$runtime" WAYLAND_DISPLAY="$wld" DISPLAY="$dpy" \
         QT_QPA_PLATFORM=wayland "$@"

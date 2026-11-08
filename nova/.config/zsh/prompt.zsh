@@ -32,29 +32,22 @@ function make_segment() {
 }
 
 # Function to get git status
+# One `git status` call gives branch and dirty state (tracked changes vs HEAD,
+# untracked files ignored, like the old `git diff --quiet HEAD`).
 function get_git_status() {
-    if ! command -v git &> /dev/null; then
-        return 1
-    fi
+    (( $+commands[git] )) || return 1
 
-    local git_dir=$(git rev-parse --git-dir 2>/dev/null)
-    if [ -z "$git_dir" ]; then
-        return 1
-    fi
+    local line branch state=clean
+    for line in ${(f)"$(git status --porcelain=v2 --branch --untracked-files=no --ignore-submodules 2>/dev/null)"}; do
+        case $line in
+            "# branch.head "*) branch=${line#\# branch.head } ;;
+            "#"*) ;;
+            *) state=dirty ;;
+        esac
+    done
+    [[ -z $branch || $branch == "(detached)" ]] && return 1
 
-    local branch=$(git branch --show-current 2>/dev/null)
-    if [ -z "$branch" ]; then
-        return 1
-    fi
-
-    git diff --quiet --ignore-submodules HEAD 2>/dev/null
-    local dirty_status=$?
-
-    if [ "$dirty_status" -eq 1 ]; then
-        echo "$branch|dirty"
-    else
-        echo "$branch|clean"
-    fi
+    echo "$branch|$state"
 }
 
 # Function to get runtime/language indicators
@@ -64,7 +57,7 @@ function get_runtime_indicator() {
     [[ -f "Cargo.toml" ]] && indicators+=("$POWERLINE_CHARS_RUST rs")
     [[ -f "package.json" ]] && indicators+=("$POWERLINE_CHARS_NODE js")
     [[ -f "Containerfile" || -f "podman-compose.yml" || -f "Dockerfile" ]] && indicators+=("$POWERLINE_CHARS_DOCKER docker")
-    echo "${indicators[@]}"
+    print -rl -- "${indicators[@]}"
 }
 
 # --- Main Prompt Functions ---
@@ -79,7 +72,7 @@ function right_prompt() {
         [[ -n $_pylib ]] && py_version=${_pylib[1]#python}
         rprompt+="$POWERLINE_COLOR_STATUS_FG($venv_name; $py_version) %{%f%} "
     fi
-    rprompt+="%{$POWERLINE_COLOR_TIME_FG%}🕐 $(date '+%H:%M:%S')%{%f%}"
+    rprompt+="%{$POWERLINE_COLOR_TIME_FG%}🕐 %D{%H:%M:%S}%{%f%}"
     echo -n "$rprompt"
 }
 
@@ -115,7 +108,7 @@ function set_prompt() {
     fi
 
     # Runtime/Language indicators
-    local runtime_indicators=($(get_runtime_indicator))
+    local runtime_indicators=(${(f)"$(get_runtime_indicator)"})
     for indicator in "${runtime_indicators[@]}"; do
         make_segment " $indicator" "$POWERLINE_COLOR_STATUS_FG"
     done
