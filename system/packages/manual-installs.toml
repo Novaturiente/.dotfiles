@@ -21,4 +21,6 @@ packages = [
   "llvm-bolt",
   "explorenova-bin",
   "himalaya",
+  "moonlight-qt",
+  "zed",
 ]
