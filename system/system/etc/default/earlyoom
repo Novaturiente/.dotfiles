@@ -1,0 +1,5 @@
+# earlyoom options (read by earlyoom.service as EnvironmentFile).
+# Package default plus the desktop session: when swap runs out, earlyoom must
+# kill a browser, never the compositor, its watchdog, Xwayland or the island
+# (qs), because killing any of those ends or breaks the whole session.
+EARLYOOM_ARGS="-r 3600 -n --avoid '(^|/)(init|systemd|Xorg|sshd|Hyprland|start-hyprland|Xwayland|qs)$'"

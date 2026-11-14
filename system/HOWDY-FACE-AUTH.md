@@ -118,6 +118,14 @@ Its config lives at `/root/.config/linux-enable-ir-emitter.toml`, but note that
 system, which is what lets the pre-scan script apply the control unprivileged.
 Only *writing* the config needs root.
 
+### v7 gotcha: `--config` must be passed under PAM
+
+Since v7, `linux-enable-ir-emitter run` detects `PAM_USER` (set by `pam_exec`)
+and loads that user's `~/.config/linux-enable-ir-emitter.toml`, ignoring
+`HOME`. With the config in `/root`, it finds nothing and exits 0 without
+enabling the emitter: the camera light comes on but the IR emitter stays dark.
+`howdy-ir-pre` therefore passes `--config` explicitly.
+
 ---
 
 ## Install
@@ -523,10 +531,13 @@ Note the route order — see "The pre-scan script needs two routes" above. Putti
 #
 # Do NOT reorder these. Calling systemctl first pops a polkit authentication dialog
 # on every sudo, because starting a system unit as nova needs authorization.
+#
+# --config is required: since v7 the tool sees PAM_USER under pam_exec and reads that
+# user's ~/.config instead, finds nothing, and exits 0 without touching the emitter.
 CONF=/root/.config/linux-enable-ir-emitter.toml
 
 if [ -r "$CONF" ]; then
-    HOME=/root exec /usr/bin/linux-enable-ir-emitter run >/dev/null 2>&1
+    HOME=/root exec /usr/bin/linux-enable-ir-emitter run --config "$CONF" >/dev/null 2>&1
 fi
 
 exec systemctl start linux-enable-ir-emitter.service >/dev/null 2>&1

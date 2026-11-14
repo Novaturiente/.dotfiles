@@ -1,7 +1,8 @@
 #!/bin/sh
 # Status-bar system info: CPU use and fastest core clock, RAM, battery.
 # Run by tmux #() every status-interval; CPU use is the delta since the last run.
-# Output: CPU 12% @ 4.3 GHz │ RAM 10.2 of 15 GB │ Battery 80% (charging)
+# Output (Nerd Font icons): 󰻠 12% 4.3GHz  󰍛 10.2/15G  󰂁 80%
+# Battery icon follows the level; 󰂄 = charging, 󰚥 = plugged in, not charging.
 cache=${XDG_RUNTIME_DIR:-/tmp}/tmux-sysinfo-cpu
 
 # /proc/stat cpu line: user nice system idle iowait irq softirq steal ...
@@ -19,25 +20,28 @@ ghz=$(cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq 2>/dev/null |
 	sort -n | tail -1 | awk '{printf "%.1f", $1 / 1000000}')
 
 ram=$(awk '/^MemTotal/ {t = $2} /^MemAvailable/ {a = $2}
-	END {printf "%.1f of %.0f GB", (t - a) / 1048576, t / 1048576}' /proc/meminfo)
+	END {printf "%.1f/%.0fG", (t - a) / 1048576, t / 1048576}' /proc/meminfo)
 
 bat=''
 for b in /sys/class/power_supply/BAT*; do
 	[ -f "$b/status" ] || continue
 	st=$(cat "$b/status")
-	case $st in
-	Charging) note=' (charging)' ;;
-	Full) note=' (full)' ;;
-	"Not charging") note=' (plugged in)' ;;
-	*) note='' ;;
-	esac
 	if [ -f "$b/capacity" ]; then
-		bat=" │ Battery $(cat "$b/capacity")%$note"
+		cap=$(cat "$b/capacity")
+		# 0-9% outline, then one icon per 10%, full at 100%.
+		set -- 󰂎 󰁺 󰁻 󰁼 󰁽 󰁾 󰁿 󰂀 󰂁 󰂂 󰁹
+		shift $((cap / 10))
+		icon=$1
+		case $st in
+		Charging) icon=󰂄 ;;
+		"Not charging") icon=󰚥 ;;
+		esac
+		bat="  $icon $cap%"
 	else
 		# Some firmware (novahome) reports no charge level, only the status.
-		bat=" │ Battery $(printf '%s' "$st" | tr 'A-Z' 'a-z')"
+		bat="  󰁹 $(printf '%s' "$st" | tr 'A-Z' 'a-z')"
 	fi
 	break
 done
 
-printf 'CPU %s%% @ %s GHz │ RAM %s%s' "$cpu" "$ghz" "$ram" "$bat"
+printf '󰻠 %s%% %sGHz  󰍛 %s%s' "$cpu" "$ghz" "$ram" "$bat"

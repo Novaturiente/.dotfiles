@@ -46,7 +46,7 @@ fallback, so `rbw` from a terminal works exactly as before.
 | `/usr/share/polkit-1/actions/dev.novaturiente.rbw-tpm.policy` | `auth_self` action gating that helper |
 | `scripts/rbw-tpm-face-setup.sh` | One-time seal (run with sudo) |
 | `scripts/rbw-pinentry.sh` | pinentry shim: face → PIN → master password |
-| `scripts/quickshell/pass.sh` | Drops the face-request flag before unlocking |
+| `island/shell.qml` | Returns to the pass page after the polkit prompt |
 
 Install:
 
@@ -64,7 +64,6 @@ Verify:
 
 ```sh
 rbw lock
-touch "$XDG_RUNTIME_DIR/rbw-face-request"
 rbw unlock && echo "VAULT UNLOCKED"
 ```
 
@@ -85,13 +84,6 @@ HOWDY-FACE-AUTH.md.
 with sha256. `openssl rand -hex 32` gives 64 characters and fails with the
 thoroughly misleading `ERROR: get password / ERROR: Invalid key authorization`,
 which reads like a permissions or format problem. Use `-hex 16`.
-
-**A flag file, not an environment variable.** `rbw-agent` — not `pass.sh` —
-spawns the pinentry shim, so the shim's environment comes from the daemon and
-would never carry the request. `pass.sh` touches
-`$XDG_RUNTIME_DIR/rbw-face-request` and the shim consumes it. That the flag is
-user-writable grants nothing: it only routes to `pkexec`, which still
-authenticates.
 
 **polkit needs a running authentication agent.** Without one, `pkexec` from a
 non-terminal process fails outright. See HOWDY-FACE-AUTH.md.
@@ -127,11 +119,11 @@ shell history.
 
 ## Scope
 
-Face unlock is deliberately wired only to `Mod+Shift+P`, because `pass.sh` is
-what sets the flag. Any other caller — `rbw` in a terminal, or the agent lock
-expiring during other use — gets the normal PIN prompt. To make it apply
-everywhere, set the flag from a wrapper around `rbw` instead, or have the shim
-attempt the face path unconditionally and fall through on failure.
+Face unlock runs for every unlock: `Mod+Shift+P`, Spotlight's Passwords entry,
+`rbw` in a terminal, and the agent lock expiring during other use. It used to
+run only after `pass.sh` dropped a request flag, so every other caller got the
+PIN prompt. Cancelling the polkit prompt falls through to the PIN; it can also
+count toward faillock, so do not cancel it repeatedly.
 
 ---
 
@@ -208,21 +200,11 @@ caching the grant would defeat the point of requiring a live face match.
 
 ### Changes to existing scripts
 
-`scripts/quickshell/pass.sh` drops the request flag before unlocking, ahead of
-opening the UI so the polkit dialog is not rendered underneath it:
-
-```sh
-: > "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/rbw-face-request" 2>/dev/null || true
-```
-
-`scripts/rbw-pinentry.sh` gains a `try_face` step ahead of the PIN path. It
-consumes the flag before attempting, so a failure falls through to the PIN
-instead of looping:
+`scripts/rbw-pinentry.sh` gains a `try_face` step ahead of the PIN path. A
+failure or cancelled prompt falls through to the PIN:
 
 ```sh
 try_face() {
-    [[ -e "$FACE_FLAG" ]] || return 1
-    rm -f "$FACE_FLAG"
     [[ -x "$FACE_UNSEAL" ]] && command -v pkexec >/dev/null || return 1
     pkexec "$FACE_UNSEAL" 2>/dev/null
 }

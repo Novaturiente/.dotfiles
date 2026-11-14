@@ -521,13 +521,18 @@ ShellRoot {
     // so no other agent may be started alongside it.
     PolkitAgent {
         id: polkit
-        onAuthenticationRequestStarted: root.show("polkit")
+        // Face unlock from the open pass page goes through polkit: come back to it after.
+        onAuthenticationRequestStarted: {
+            root.polkitReturn = root.mode === "pass" ? "pass" : "idle";
+            root.show("polkit");
+        }
     }
+    property string polkitReturn: "idle"
     Connections {
         target: polkit.flow
         function onIsCompletedChanged(): void {
             if (polkit.flow?.isCompleted && root.mode === "polkit")
-                root.show("idle");
+                root.show(root.polkitReturn);
         }
     }
 

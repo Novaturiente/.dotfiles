@@ -70,6 +70,8 @@ if [ "$state" != "$prev" ] && [ "$seen" != 1 ]; then
 		tmux list-clients -F '#{client_tty}' | while read -r t; do
 			printf '\033]777;notify;%s %s;%s\033\\' "$agent" "$state" "$where" >"$t" 2>/dev/null
 		done
+		# Top-right notes popup in the terminal (agent-notes.sh).
+		"$dir/agent-notes.sh" show
 		;;
 	esac
 fi

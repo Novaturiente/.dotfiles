@@ -50,15 +50,8 @@ desktop lists.
 - **Face unlock for sudo and swaylock:** hand edits to `/etc/pam.d/system-auth`
   and the IR emitter setup. Follow `system/HOWDY-FACE-AUTH.md`.
 - **Bitwarden face unlock (rbw + TPM):** follow `system/RBW-FACE-UNLOCK.md`.
-- **hyprglass plugin:** build it by hand into `~/.local/share/hyprglass/`;
+- **hyprglass plugin:** run `~/.dotfiles/scripts/hyprglass.sh build` (again after each Hyprland upgrade);
   `hyprland.lua` loads it at startup.
-- **Mullvad VPN namespace** (`vpn-run`): download a WireGuard config for this
-  device from the Mullvad account page (never reuse another device's key), then:
-
-  ```sh
-  sudo bash ~/.dotfiles/system/install-vpn-netns.sh /path/to/mullvad.conf
-  ```
-
 - **novacode links:** `novacode install`, `mcp add` and `Always` approvals turn
   the stowed links in `~/.novacode` into real files. Check with
   `ls -l ~/.novacode` and relink if needed.

@@ -54,7 +54,7 @@ flush() {
 			active: (.[0][5] == "1"), layout: .[0][6],
 			panes: [sort_by(.[8] | tonumber)[] | {
 				index: (.[8] | tonumber), active: (.[9] == "1"), cwd: .[1], branch: (.[16] | nz),
-				sidebar: (.[11] == "1"), agent: agent}]}]}]}' >"$tmp"; then
+				sidebar: (if .[11] == "1" then true elif .[11] == "" then false else .[11] end), agent: agent}]}]}]}' >"$tmp"; then
 		[ -f "$file" ] && cp "$file" "$file.bak"
 		mv "$tmp" "$file" # atomic: a crash never leaves a half-written file
 	else
@@ -117,8 +117,11 @@ finish() {
 	# f_* names: restore's loop has already read the next row into p/sb/an/... .
 	while IFS=$tab read -r f_p f_sb f_an f_ac f_cmd f_miss; do
 		[ -n "$f_p" ] || continue
-		if [ "$f_sb" = 1 ]; then
-			tmux respawn-pane -k -t "$f_p" "$sidebar" \; set -p -t "$f_p" @sidebar 1
+		# Panel: 1 = agents sidebar, files/bar = project tree/button bar (agent-sidebar.sh <kind>).
+		if [ "$f_sb" != 0 ]; then
+			cmd=$sidebar
+			[ "$f_sb" = 1 ] || cmd="$sidebar $f_sb"
+			tmux respawn-pane -k -t "$f_p" "$cmd" \; set -p -t "$f_p" @sidebar "$f_sb"
 			continue
 		fi
 		[ "$f_miss" = - ] || tmux send-keys -t "$f_p" -l "echo 'restore: $f_miss no longer exists, opened its nearest parent'" \; send-keys -t "$f_p" Enter
@@ -141,7 +144,7 @@ restore() {
 	[ -s "$file" ] && rows=$(jq -r '.sessions[] as $s | $s.windows[] as $w | $w.panes[] | [
 		$s.name, ($w.index | tostring), (if $w.name == "" then "-" else $w.name end),
 		(if $w.auto_name then "1" else "0" end), $w.layout, (if $w.active then "1" else "0" end),
-		(if .active then "1" else "0" end), .cwd, (if .sidebar then "1" else "0" end),
+		(if .active then "1" else "0" end), .cwd, (if .sidebar == true then "1" elif .sidebar then .sidebar else "0" end),
 		(.agent.name // "-"), (.agent.conversation // "-"), (.agent.command // "-")] | join("\t")' "$file" 2>/dev/null)
 	if [ -n "$rows" ]; then
 		# Starting session out of the way (saved names may include "0"); dropped after.

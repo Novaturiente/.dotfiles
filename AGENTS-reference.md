@@ -98,13 +98,16 @@ One extractor per app writes `~/.cache/keybindings/<app>.txt` (not tracked): `ex
 
 ### Boot
 - systemd-boot (managed by `systemd-boot-manager`); no GRUB on this system
-- Kernel params: `nowatchdog quiet splash` (btrfs root on subvol `@`). zswap is not on the command line; CachyOS's `/usr/lib/udev/rules.d/30-zram.rules` turns it off at runtime because zram is used
+- Kernel params: `nowatchdog quiet splash` (btrfs root on subvol `@`). zswap is not on the command line; `system/system/etc/tmpfiles.d/zswap.conf` turns it on at boot (CachyOS's `30-zram.rules`, which turns it off, only fires when zram exists)
 - Power key and lid switch: logind ignores both (`system/system/etc/systemd/logind.conf.d/10-keys.conf`); the compositor binds own them (Hyprland `binds.lua`, niri `binds.kdl` and `misc.kdl` `switch-events`)
 
 ### Systemd Services
 - `rapl-watts.service` — runs `/usr/local/bin/rapl-watts` as root: writes the CPU package power (RAPL, 2 s average) to `/run/rapl-watts`, which the island's battery page shows on AC. On battery it does no work and removes the file. The raw counter stays root-only (Platypus, CVE-2020-8694)
 - `paccache.timer` — weekly; keeps 2 versions of installed packages, none of uninstalled (drop-in in `system/system/etc/systemd/system/paccache.service.d/`)
 - Battery alerts come from the Quickshell island (batsignal was removed)
+- `battery-limit.timer` — every 5 min runs `/usr/local/bin/battery-limit.sh`, which turns IdeaPad conservation mode on at ≥70% charge and off below
+- `docker.socket` (not `docker.service`) — dockerd starts on first `docker` command, not at boot; the WinApps container has `restart: "no"`, start it with `winstart`
+- `earlyoom.service` — kills the biggest process when RAM and swap both run low; `system/system/etc/default/earlyoom` adds `Hyprland|start-hyprland|Xwayland|qs` to its `--avoid` list so the session survives
 
 ## Theming & Fonts
 
@@ -123,7 +126,7 @@ adding one palette file. See `system/themes/README.md`.
 - **GTK:** `scripts/theme.sh` renders `gtk.css` + `theme-colors.css` into `~/.config/gtk-{3,4}.0/` (not stowed).
   The widget theme (`adw-gtk3-dark`) is fixed — only the colours change.
   `~/.config/gtk-3.0` and `gtk-4.0` are real directories: `settings.ini` (and gtk-3.0's `bookmarks`) are stow links, `gtk.css` and `theme-colors.css` are rendered there by `theme.sh`; cursor is Bibata-Modern-Classic 24 everywhere (GTK, gsettings, Hyprland, niri).
-- **hyprglass** (Liquid Glass Hyprland plugin): `hyprland.lua` loads `~/.local/share/hyprglass/hyprglass.so` at startup. Rebuild it after each Hyprland upgrade: clone https://github.com/hyprnux/hyprglass, `make`, copy `hyprglass.so` to `~/.local/share/hyprglass/`.
+- **hyprglass** (Liquid Glass Hyprland plugin): `hyprland.lua`'s start hook runs `scripts/hyprglass.sh load`, which loads `~/.local/share/hyprglass/hyprglass.so` only if it embeds the running Hyprland's commit hash, else sends a notification and skips it (a mismatched plugin crashed Hyprland). After each Hyprland upgrade run `scripts/hyprglass.sh build` (clones/updates `~/.local/src/hyprglass`, builds, installs, keeps `hyprglass.so.prev.bak`), then log out and back in; never hot-swap the plugin in a live session.
 - **Qt:** left to the xdg portal; not templated here
 - **Terminal font:** ZedMono Nerd Font (size 13)
 - **Editor font:** JetBrains Mono NL Nerd Font (size 13-15)
@@ -185,7 +188,7 @@ which is deliberate.
 | **RAM** | 16 GB (15.2 GiB usable), soldered |
 | **Storage** | Samsung PM9C1a 1 TB NVMe SSD (DRAM-less, PCIe) |
 | | 2 GB EFI partition (`/boot`, vfat) + 952 GB btrfs (root + home, single partition) |
-| **Swap** | 7.6 GB zram (zstd, `ram / 2`) + 8 GB swap file (`/swap/swapfile`) |
+| **Swap** | zswap (zstd, pool ≤20% RAM) in front of 16 GB swap file (`/swap/swapfile`, made with `btrfs filesystem mkswapfile`); zram off via an empty `zram-generator.conf` |
 | **WiFi** | Intel AX211 (WiFi 6E, CNVi, Meteor Lake PCH) |
 | **Bluetooth** | Intel AX211 BT 5.3 |
 | **Webcam** | Bison Integrated RGB Camera (USB) |

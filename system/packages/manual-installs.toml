@@ -20,7 +20,10 @@ packages = [
   "perf",
   "llvm-bolt",
   "explorenova-bin",
+  "sesh-bin",
   "himalaya",
   "moonlight-qt",
   "zed",
+  "qmd",
+  "epiphany",
 ]

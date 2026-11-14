@@ -30,6 +30,10 @@ packages = [
   "herdr-bin",
   "khal",
 
+  # Notes vault (~/Notes): zk link index; obsidian app as a viewer
+  "zk",
+  "obsidian",
+
   # CLI tools installed outside novarch (declared 2026-09-26)
   "pv",
   "tuxedo-bin",

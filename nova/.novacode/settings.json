@@ -1,6 +1,17 @@
 {
   "model": "claude/claude-opus-5-5",
   "cacheRetention": "long",
+  "hooks": {
+    "onActivity": "[ \"$NOVACODE_STATE\" = working ] || [ -z \"$TMUX\" ] || { sleep 0.5; ~/.config/tmux/agent-notes.sh show; }"
+  },
+  "permissions": {
+    "ask": [
+      "Write(/home/nova/Notes/private/**)",
+      "Edit(/home/nova/Notes/private/**)",
+      "Write(~/Notes/private/**)",
+      "Edit(~/Notes/private/**)"
+    ]
+  },
   "agents": {
     "env": {
       "CAVEMAN_DEFAULT_MODE": "off",

@@ -10,10 +10,6 @@ set -uo pipefail
 DIR="${XDG_DATA_HOME:-$HOME/.local/share}/rbw-tpm"
 REAL_PINENTRY="${RBW_REAL_PINENTRY:-pinentry-qt}"
 
-# Face-unlock request flag, dropped by pass.sh (Mod+Shift+P) just before it unlocks.
-# A flag file rather than an env var because rbw-agent — not pass.sh — spawns us, so
-# our environment comes from the daemon and would never carry the request.
-FACE_FLAG="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/rbw-face-request"
 FACE_UNSEAL=/usr/local/libexec/rbw-tpm-face-unseal
 
 # Ask the GUI pinentry for a secret; prints it raw. $1 = prompt, $2 = description.
@@ -41,11 +37,10 @@ unseal() {   # $1 = pin
 
 # Face path: pkexec runs the root helper, polkit does the authentication (face via
 # pam_howdy, login password as its own fallback), and the helper unseals a blob whose
-# auth value we are not allowed to read. Consume the flag before trying, so a failure
-# falls through to the PIN below instead of looping.
+# auth value we are not allowed to read. Tried on every unlock, whoever asked (pass.sh,
+# Spotlight, rbw in a terminal, re-lock after lock_timeout); a failure or a cancelled
+# dialog falls through to the PIN below.
 try_face() {
-    [[ -e "$FACE_FLAG" ]] || return 1
-    rm -f "$FACE_FLAG"
     [[ -x "$FACE_UNSEAL" ]] && command -v pkexec >/dev/null || return 1
     pkexec "$FACE_UNSEAL" 2>/dev/null
 }

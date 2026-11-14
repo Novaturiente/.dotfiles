@@ -28,8 +28,8 @@ Personal dotfiles and system configuration for an Arch Linux (CachyOS kernel) se
 ├── system/
 │   ├── packages/          # novarch TOML package lists (shared + hosts/<hostname>/)
 │   ├── system/            # System config files (mirrors /etc structure)
-│   │   ├── etc/           # TLP, Ly, PAM, systemd services, udev, sudoers
-│   │   └── usr/           # /usr/local helpers (vpn-run, mullvad-netns, howdy-ir-pre)
+│   │   ├── etc/           # TLP, Ly, PAM, systemd services, udev, earlyoom, zswap
+│   │   └── usr/           # /usr/local helpers (howdy-ir-pre, rapl-watts, battery-limit.sh)
 │   ├── novahome/          # Headless home server: own setup.sh, packages/ (novarch packages_dir there), system/ (mirrors /)
 │   └── setup.sh           # First-boot system setup script (this laptop)
 └── .gitignore
@@ -85,6 +85,6 @@ Rules you must know without reading it:
 ## Important Notes
 
 - **Wayland-native:** All scripts assume Wayland (wl-copy, slurp, grim, ydotool, hyprctl / niri msg via `scripts/wm.sh`)
-- **Hyprland packages** (`hyprland`, `hyprpm`, `xdg-desktop-portal-hyprland`, `hyprsunset`) are in `manual-installs.toml`; niri stays in `windowmanager.toml`. The `hyprglass` plugin is built by hand into `~/.local/share/hyprglass/`
+- **Hyprland packages** (`hyprland`, `hyprpm`, `xdg-desktop-portal-hyprland`, `hyprsunset`) are in `manual-installs.toml`; niri stays in `windowmanager.toml`. The `hyprglass` plugin is built into `~/.local/share/hyprglass/` by `scripts/hyprglass.sh build`; rerun it after each Hyprland upgrade, then log out and back in
 - **Nerd Fonts required:** Icons used throughout rofi, quickshell, prompts, and terminal configs
 - **Sensitive files:** API keys and credentials are stored in `.profile` and `.env` files — never commit actual values

@@ -22,7 +22,7 @@ services:
     cap_add:
       - NET_ADMIN
     stop_grace_period: 120s
-    restart: on-failure
+    restart: "no" # start by hand (winstart): the VM takes 4G RAM and boot-time CPU; on-failure brought it back at every boot
     volumes:
       - data:/storage
       - ${HOME}:/shared # \\host.lan\Data inside Windows

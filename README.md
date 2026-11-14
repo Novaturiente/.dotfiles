@@ -22,8 +22,8 @@ Complete system configuration for an Arch Linux (CachyOS kernel) setup on a Leno
 ├── system/
 │   ├── packages/          # novarch TOML package lists (shared + hosts/<hostname>/)
 │   ├── system/            # System config files (mirrors / filesystem)
-│   │   ├── etc/           # TLP, PAM, sudoers, systemd units, udev, docker
-│   │   └── usr/           # /usr/local/bin helpers (vpn-run, mullvad-netns, howdy-ir-pre, rapl-watts)
+│   │   ├── etc/           # TLP, PAM, systemd units, udev, docker, earlyoom, zswap
+│   │   └── usr/           # /usr/local/bin helpers (howdy-ir-pre, rapl-watts, battery-limit.sh)
 │   ├── themes/            # Palettes + templates rendered by scripts/theme.sh
 │   └── setup.sh           # First-boot system setup script
 ├── AGENTS.md              # Agent guide: rules and orientation

@@ -16,10 +16,7 @@ novarch sync || exit 1
 
 # System files: system/system mirrors /, so copy the whole tree onto it
 # (tlp.conf, sleep.conf, logind, zram, docker, udev, units, /usr/local helpers, polkit, pam).
-# Check the sudoers rule first: a broken file in sudoers.d locks sudo out.
-visudo -cf system/system/etc/sudoers.d/vpn-run || exit 1
 sudo cp -r system/system/. /
-sudo chmod 0440 /etc/sudoers.d/vpn-run
 
 # Login manager: Ly (installed from packages/windowmanager.toml).
 # Ly is a TUI greeter running on its own VT; it needs no dedicated user.
@@ -64,12 +61,15 @@ systemctl --user mask pulseaudio.service pulseaudio.socket
 sudo systemctl enable paccache.timer
 # CPU power average for the island's battery page (raw RAPL stays root-only).
 sudo systemctl enable rapl-watts.service
+# IdeaPad conservation mode on/off by charge level, every 5 min.
+sudo systemctl enable battery-limit.timer
 
 # Services this laptop runs. tailscaled carries the sshfs mount to novahome,
 # linux-enable-ir-emitter powers the IR camera for face unlock.
-# mullvad-netns.service is enabled by install-vpn-netns.sh, once its config exists.
+# docker.socket, not docker.service: dockerd starts on first use, not at boot
+# (keeps it and network-online.target off the boot path).
 sudo systemctl enable NetworkManager.service bluetooth.service sshd.service \
-	docker.service tailscaled.service tlp.service \
+	docker.socket tailscaled.service tlp.service \
 	linux-enable-ir-emitter.service
 
 # Set zsh as default login shell
@@ -85,8 +85,8 @@ sudo systemctl enable --now pkgfile-update.timer
 #   kernel command line), and the kernel command line needs `quiet splash`.
 # - Face unlock for sudo/swaylock needs the hand edits to /etc/pam.d/system-auth
 #   described in system/HOWDY-FACE-AUTH.md.
-# - The hyprglass Hyprland plugin is built by hand into
-#   ~/.local/share/hyprglass/ (hyprland.lua loads it at startup).
+# - The hyprglass Hyprland plugin: run scripts/hyprglass.sh build (again after
+#   each Hyprland upgrade); hyprland.lua loads it at startup if it matches.
 # - After reboot: `sudo tailscale up` once, so the ~/server mount can reach novahome.
 # - `novacode login claude` once (settings.json picks a claude/ model).
 sudo mkinitcpio -P

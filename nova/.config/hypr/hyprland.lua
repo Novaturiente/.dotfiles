@@ -149,9 +149,10 @@ hl.on("hyprland.start", function()
 			.. "; qs -c island -d"
 	)
 	-- hyprglass is built by hand (hyprpm can't clone Hyprland over the flaky
-	-- GitHub route). Reload afterwards so the hl.plugin.hyprglass guard below
-	-- sees the plugin; on first parse it isn't loaded yet.
-	hl.exec_cmd("hyprctl plugin load /home/nova/.local/share/hyprglass/hyprglass.so && hyprctl reload")
+	-- GitHub route). The script loads it only when it was built for this
+	-- Hyprland (a mismatched one crashed Hyprland), then reloads so the
+	-- hl.plugin.hyprglass guard below sees it; on first parse it isn't loaded yet.
+	hl.exec_cmd("~/.dotfiles/scripts/hyprglass.sh load")
 	hl.exec_cmd("swayidle -w")
 	hl.exec_cmd("kdeconnectd")
 	-- Tray icon for the island's tray row (kdeconnectd itself has none).
